@@ -1,4 +1,4 @@
-hackathone-portal
+hackaton-portal
 =================
 
-hackathone.org.pl project
+hackaton.pl project
