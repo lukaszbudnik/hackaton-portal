@@ -2,11 +2,12 @@ package controllers
 
 import play.api._
 import play.api.mvc._
+import play.i18n._
 
 object Application extends Controller {
   
   def index = Action {
-    Ok(views.html.index("Wiamy w portalu hackaton.pl"))
+    Ok(views.html.index(Messages.get(Lang.forCode("pl"), "home.welcome")))
   }
   
 }
