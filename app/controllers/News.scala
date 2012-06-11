@@ -10,20 +10,18 @@ import model.Hackathon
 object News extends Controller {
 
   def index = Action {
-    /** @TODO is there a better place for this call? Is there any application lifecycle listener in Play? AOP, etc? */
-    Hackathon.startDatabaseSession()
-    
-    var news:model.News = null
-    
+
+    val news = model.News("title", "text", "author", new Date())
+
     transaction {
-      news = new model.News("title", "text", "author", new Date())
       Hackathon.news.insert(news)
-      
-      news.title = "title 2"
-      Hackathon.news.update(news)
+
+      Hackathon.news.update(n =>
+        where(n.id === news.id)
+        set(n.title := "my new title")
+      )
+
+      Ok(views.html.news(Hackathon.news.get(news.id)))
     }
-    
-    Ok(views.html.news(news))
   }
-  
 }
