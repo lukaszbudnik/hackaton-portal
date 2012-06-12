@@ -6,24 +6,57 @@ import org.squeryl.Schema
 import play.api.mvc._
 import play.api._
 import model.Hackathon
+import play.api.data._
+import play.api.data.Forms._
+import scala.collection.mutable.ListBuffer
 
 object News extends Controller {
 
-  def index = Action {
+  val newsForm = Form(
+    mapping(
+      "title" -> nonEmptyText,
+      "text" -> nonEmptyText,
+      "author" -> nonEmptyText,
+      "published" -> date("dd/MM/yyyy"))(model.News.apply)(model.News.unapply))
+
+  def news = Action {
     /** @TODO is there a better place for this call? Is there any application lifecycle listener in Play? AOP, etc? */
     Hackathon.startDatabaseSession()
-    
-    var news:model.News = null
-    
+
+    var newsList: List[model.News] = null
+
     transaction {
-      news = new model.News("title", "text", "author", new Date())
-      Hackathon.news.insert(news)
-      
-      news.title = "title 2"
-      Hackathon.news.update(news)
+      newsList = Hackathon.news.where(n => n.id gt 0).seq.toList
     }
-    
-    Ok(views.html.news(news))
+
+    Ok(views.html.news(newsList, newsForm))
   }
-  
+
+  def create = Action {
+    implicit request =>
+      newsForm.bindFromRequest.fold(
+        errors => BadRequest(views.html.news({
+          var newsList: List[model.News] = null
+          transaction {
+            newsList = Hackathon.news.where(n => n.id gt 0).seq.toList
+          }
+          newsList
+        }, errors)),
+        news => {
+          transaction {
+            Hackathon.news.insert(news)
+          }
+          Redirect(routes.News.news)
+        })
+  }
+
+  def delete(id: Long) = Action {
+
+    transaction {
+      Hackathon.news.deleteWhere(n => n.id === id)
+    }
+
+    Redirect(routes.News.news())
+  }
+
 }

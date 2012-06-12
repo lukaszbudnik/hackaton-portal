@@ -9,7 +9,7 @@ object ApplicationBuild extends Build {
 
     val appDependencies = Seq(
       "org.squeryl" %% "squeryl" % "0.9.5-2",
-      "com.h2database" % "h2" % "1.2.127"
+      "com.h2database" % "h2" % "1.3.167"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(

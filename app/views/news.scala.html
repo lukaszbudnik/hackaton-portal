@@ -1,8 +1,38 @@
-@(news: model.News)
+@(news: Iterable[model.News], newsForm: Form[model.News])
+
+@import helper._
 
 @main("News") {
     
-	<h1>@news.title (id @news.id)</h1>
-  
+    <h1>@news.size task(s)</h1>
+
+    <ul>
+        @news.map { n =>
+            <li>
+                @n.title @n.author @n.published
+        		<br/>
+        		@n.text
+
+                @form(routes.News.delete(n.id)) {
+                    <input type="submit" value="Delete">
+                }
+            </li>
+        }
+    </ul>
+                
+    <h2>Add a new news</h2>
+    
+    @form(routes.News.create) {
+        
+        @inputText(newsForm("title")) 
+        @inputText(newsForm("text"))
+        @inputText(newsForm("author"))
+        @inputText(newsForm("published"))
+        
+        <input type="submit" value="Create">
+        
+    }
+
+    
 }
 

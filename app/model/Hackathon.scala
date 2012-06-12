@@ -9,7 +9,7 @@ import org.squeryl.adapters.H2Adapter
 import org.squeryl.KeyedEntity
 import org.squeryl.adapters.PostgreSqlAdapter
 
-class News(
+case class News(
   var title: String,
   var text: String,
   var author: String,
@@ -34,9 +34,12 @@ object Hackathon extends Schema {
     /** @TODO and this setting as well? */
     /** @TODO How to switch between adapters when we will deploy on Heroku? new H2Adapter -> new PostgreSqlAdapter */
     Class.forName("org.h2.Driver")
-    SessionFactory.concreteFactory = Some(() => Session.create(
-      java.sql.DriverManager.getConnection(databaseConnection, databaseUsername, databasePassword),
-      new H2Adapter))
+    SessionFactory.concreteFactory = Some(() => 
+      {
+        val session:Session = Session.create(java.sql.DriverManager.getConnection(databaseConnection, databaseUsername, databasePassword), new H2Adapter)
+        session.bindToCurrentThread
+		session
+      })
   }
 }
 
