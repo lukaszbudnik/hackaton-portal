@@ -20,9 +20,6 @@ object News extends Controller {
       "published" -> date("dd/MM/yyyy"))(model.News.apply)(model.News.unapply))
 
   def news = Action {
-    /** @TODO is there a better place for this call? Is there any application lifecycle listener in Play? AOP, etc? */
-    Hackathon.startDatabaseSession()
-
     var newsList: List[model.News] = null
 
     transaction {
