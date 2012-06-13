@@ -12,12 +12,12 @@ import scala.collection.mutable.ListBuffer
 
 object News extends Controller {
 
-  val newsForm = Form(
-    mapping(
-      "title" -> nonEmptyText,
-      "text" -> nonEmptyText,
-      "author" -> nonEmptyText,
-      "published" -> date("dd/MM/yyyy"))(model.News.apply)(model.News.unapply))
+  // val newsForm = Form(
+  //   mapping(
+  //     "title" -> nonEmptyText,
+  //     "text" -> nonEmptyText,
+  //     "author" -> nonEmptyText,
+  //     "published" -> date("dd/MM/yyyy"))(model.News.apply)(model.News.unapply))
 
   def news = Action {
     var newsList: List[model.News] = null
@@ -26,25 +26,26 @@ object News extends Controller {
       newsList = Hackathon.news.where(n => n.id gt 0).seq.toList
     }
 
-    Ok(views.html.news(newsList, newsForm))
+    Ok(views.html.news(newsList))
   }
 
   def create = Action {
-    implicit request =>
-      newsForm.bindFromRequest.fold(
-        errors => BadRequest(views.html.news({
-          var newsList: List[model.News] = null
-          transaction {
-            newsList = Hackathon.news.where(n => n.id gt 0).seq.toList
-          }
-          newsList
-        }, errors)),
-        news => {
-          transaction {
-            Hackathon.news.insert(news)
-          }
-          Redirect(routes.News.news)
-        })
+    // implicit request =>
+    //       newsForm.bindFromRequest.fold(
+    //         errors => BadRequest(views.html.news({
+    //           var newsList: List[model.News] = null
+    //           transaction {
+    //             newsList = Hackathon.news.where(n => n.id gt 0).seq.toList
+    //           }
+    //           newsList
+    //         }, errors)),
+    //         news => {
+    //           transaction {
+    //             Hackathon.news.insert(news)
+    //           }
+    //           Redirect(routes.News.news)
+    //         })
+    Redirect(routes.News.news)
   }
 
   def delete(id: Long) = Action {

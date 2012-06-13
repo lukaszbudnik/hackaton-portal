@@ -1,4 +1,4 @@
-@(news: Iterable[model.News], newsForm: Form[model.News])
+@(news: Iterable[model.News])
 
 @import helper._
 
@@ -9,7 +9,7 @@
     <ul>
         @news.map { n =>
             <li>
-                @n.title @n.author @n.published
+                @n.title @n.published
         		<br/>
         		@n.text
 
@@ -18,21 +18,6 @@
                 }
             </li>
         }
-    </ul>
-                
-    <h2>Add a new news</h2>
-    
-    @form(routes.News.create) {
-        
-        @inputText(newsForm("title")) 
-        @inputText(newsForm("text"))
-        @inputText(newsForm("author"))
-        @inputText(newsForm("published"))
-        
-        <input type="submit" value="Create">
-        
-    }
-
-    
+    </ul>    
 }
 
