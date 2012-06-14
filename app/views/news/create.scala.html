@@ -1,0 +1,26 @@
+@(newsForm: Form[model.News])(implicit flash: Flash)
+
+@import helper._
+
+@main("Add a news") {
+    
+    <h2>Add a news</h2>
+  
+    @form(routes.News.create) {
+        
+        @inputText(newsForm("title")) 
+        @inputText(newsForm("text"))
+        @inputText(newsForm("author"))
+        @inputText(newsForm("published"))
+        
+        <input type="submit" value="Add">
+        
+    }
+
+    @flash.get("status").map { status =>
+       <h2>@status</h2>
+    }
+
+    
+}
+

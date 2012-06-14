@@ -19,31 +19,29 @@ object News extends Controller {
       "author" -> nonEmptyText,
       "published" -> date("dd/MM/yyyy"))(model.News.apply)(model.News.unapply))
 
-  def news = Action {
+  def index = Action {
     var newsList: List[model.News] = null
 
     transaction {
       newsList = Hackathon.news.where(n => n.id gt 0).seq.toList
     }
 
-    Ok(views.html.news(newsList, newsForm))
+    Ok(views.html.news.index(newsList))
   }
-
+  
+  def createForm = Action { implicit request =>
+      Ok(views.html.news.create(newsForm))
+  }
+  
   def create = Action {
     implicit request =>
       newsForm.bindFromRequest.fold(
-        errors => BadRequest(views.html.news({
-          var newsList: List[model.News] = null
-          transaction {
-            newsList = Hackathon.news.where(n => n.id gt 0).seq.toList
-          }
-          newsList
-        }, errors)),
+        errors => BadRequest(views.html.news.create(errors)),
         news => {
           transaction {
             Hackathon.news.insert(news)
           }
-          Redirect(routes.News.news)
+          Redirect(routes.News.create).flashing("status" -> "News added")
         })
   }
 
@@ -53,7 +51,7 @@ object News extends Controller {
       Hackathon.news.deleteWhere(n => n.id === id)
     }
 
-    Redirect(routes.News.news())
+    Redirect(routes.News.index)
   }
 
 }

@@ -1,0 +1,26 @@
+@(news: Iterable[model.News])
+
+@import helper._
+
+@main("News") {
+    
+    <h1>@news.size news</h1>
+
+    <ul>
+        @news.map { n =>
+            <li>
+                @n.title @n.author @n.published
+        		<br/>
+        		@n.text
+
+                @form(routes.News.delete(n.id)) {
+                    <input type="submit" value="Delete">
+                }
+            </li>
+        }
+    </ul>
+                
+    <p>Create news <a href="/news/create">Create News</a></p>
+                
+}
+
