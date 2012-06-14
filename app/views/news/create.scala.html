@@ -1,4 +1,4 @@
-@(newsForm: Form[model.News])(implicit flash: Flash)
+@(newsForm: Form[model.News], users: List[model.User])(implicit flash: Flash)
 
 @import helper._
 
@@ -10,7 +10,13 @@
         
         @inputText(newsForm("title")) 
         @inputText(newsForm("text"))
-        @inputText(newsForm("author"))
+        
+        
+        @select(newsForm("author_id"), users.map{ u =>
+        	u.id.toString -> u.name
+        },
+        '_label -> "Choose User (*)")
+        
         @inputText(newsForm("published"))
         
         <input type="submit" value="Add">

@@ -8,6 +8,11 @@ case class News(title: String, text: String, author_id: Long, published: Date) e
   val id: Long = 0L
 }
 
+case class User(name: String, email: String, github_username: String, open_id: String) extends KeyedEntity[Long] {
+  val id: Long = 0L
+}
+
 object Hackathon extends Schema {
   val news = table[News]
+  val users = table[User]("Users")
 }

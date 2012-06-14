@@ -16,27 +16,41 @@ object News extends Controller {
     mapping(
       "title" -> nonEmptyText,
       "text" -> nonEmptyText,
-      "author" -> play.api.data.Forms.longNumber,
+      "author_id" -> play.api.data.Forms.longNumber,
       "published" -> date("dd/MM/yyyy"))(model.News.apply)(model.News.unapply))
 
   def index = Action {
     var newsList: List[model.News] = null
 
     transaction {
-      newsList = Hackathon.news.where(n => n.id gt 0).seq.toList
+      newsList = Hackathon.news.seq.toList
     }
 
     Ok(views.html.news.index(newsList))
   }
-  
+
   def createForm = Action { implicit request =>
-      Ok(views.html.news.create(newsForm))
+    var users: List[model.User] = null
+
+    transaction {
+      users = Hackathon.users.seq.toList
+    }
+
+    Ok(views.html.news.create(newsForm, users))
   }
-  
+
   def create = Action {
     implicit request =>
       newsForm.bindFromRequest.fold(
-        errors => BadRequest(views.html.news.create(errors)),
+        errors => {
+          var users: List[model.User] = null
+
+          transaction {
+            users = Hackathon.users.seq.toList
+          }
+          
+          BadRequest(views.html.news.create(errors, users))
+        },
         news => {
           transaction {
             Hackathon.news.insert(news)
