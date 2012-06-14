@@ -16,7 +16,7 @@ object News extends Controller {
     mapping(
       "title" -> nonEmptyText,
       "text" -> nonEmptyText,
-      "author" -> nonEmptyText,
+      "author" -> play.api.data.Forms.longNumber,
       "published" -> date("dd/MM/yyyy"))(model.News.apply)(model.News.unapply))
 
   def index = Action {
