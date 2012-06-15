@@ -17,7 +17,7 @@ CREATE SEQUENCE role_id_seq;
 CREATE TABLE roles (
     id integer NOT NULL DEFAULT nextval('role_id_seq'),
     name varchar(255),
-    description clob,
+    description text,
     
     PRIMARY KEY (id)
 );
@@ -40,7 +40,7 @@ CREATE TABLE locations (
     country varchar(255),
     city varchar(255),
     postal_code varchar(255),
-    full_address clob,
+    full_address text,
     name varchar(255),
     
     PRIMARY KEY (id)
@@ -66,7 +66,7 @@ CREATE SEQUENCE problem_id_seq;
 CREATE TABLE problems (
     id integer NOT NULL DEFAULT nextval('problem_id_seq'),
     name varchar(255),
-    description clob,
+    description text,
     
     hackathon_id integer NOT NULL,
     submitter_id integer NOT NULL,
@@ -95,7 +95,7 @@ CREATE SEQUENCE news_id_seq;
 CREATE TABLE news (
     id integer NOT NULL DEFAULT nextval('news_id_seq'),
     title varchar(255),
-    text clob,
+    text text,
     published timestamp,
     
     author_id integer NOT NULL,
