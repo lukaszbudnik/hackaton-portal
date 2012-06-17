@@ -4,27 +4,39 @@
 
 @main("News") {
     
-    <h1>@news.size news</h1>
+    <div class="container">
+    
+	    <div class="page-header">
+	    <h1>News</h1>
+	    </div>
   
-	@flash.get("status").map { status =>
-       <h2>@status</h2>
-    }
+  	
+		@flash.get("status").map { status =>
+		   <div class="alert alert-success">
+		   	<button type="button" class="close" data-dismiss="alert">×</button>
+	       	<strong>@status</strong>
+	       </div>
+	    }
 
-    <ul>
         @news.map { n =>
-            <li>
-                @n.title @n.authorId @n.published
-        		<br/>
-        		@n.text
-
-                @form(routes.News.delete(n.id)) {
-                    <input type="submit" value="Delete">
-                }
-            </li>
+            <div class="page-header">
+    		<h2>@n.title</h2>
+    		<br/>
+    		@n.text
+    		<br/>
+    		<br/>
+    		@n.authorId @n.published
+    		labels: <span class="label">qwq</span>
+    		<br/>
+    		@form(routes.News.delete(n.id)) {
+                <input type="submit" value="Delete" class="btn btn-danger" />
+            }
+    		</div>
         }
-    </ul>
                 
-    <p>Create news <a href="@routes.News.newNews">Create News</a></p>
+    	<p><a href="@routes.News.newNews">Create News</a></p>
+    
+    </div>
 
 }
 

@@ -3,6 +3,8 @@
 @import helper._
 
 @main("Add a news") {
+
+	<div class="container">
     
     <h2>Add a news</h2>
   
@@ -19,8 +21,10 @@
         
         @inputText(newsForm("published"))
         
-        <input type="submit" value="Add">
+        <input type="submit" value="Add" class="btn btn-primary" />
         
     }
+    
+    </div>
 }
 
