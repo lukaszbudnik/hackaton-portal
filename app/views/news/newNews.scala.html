@@ -18,11 +18,14 @@
         @select(newsForm("authorId"), users.map{ u =>
         	u.id.toString -> u.name
         },
-        '_label -> "Choose User (*)")
+        '_label -> "Choose User")
         
         @inputText(newsForm("published"))
         
-        <input type="submit" value="Add" class="btn btn-primary" />
+        <div class="form-actions">
+	        <button type="submit" class="btn btn-primary">Create news</button>
+	        <a href="@routes.News.index" class="btn">Cancel</a>
+      	</div>
         
     }
     
