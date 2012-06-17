@@ -9,6 +9,8 @@ GET     /                           controllers.Application.index
 GET     /news                       controllers.News.index
 GET     /news/create                controllers.News.createForm
 POST    /news/create                controllers.News.create
+GET     /news/:id                   controllers.News.view(id: Long)
+POST    /news/update/:id            controllers.News.update(id: Long)
 POST    /news/delete/:id            controllers.News.delete(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path

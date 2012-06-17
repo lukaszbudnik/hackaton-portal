@@ -1,10 +1,14 @@
-@(news: Iterable[model.News])
+@(news: Iterable[model.News])(implicit flash: Flash)
 
 @import helper._
 
 @main("News") {
     
     <h1>@news.size news</h1>
+  
+	@flash.get("status").map { status =>
+       <h2>@status</h2>
+    }
 
     <ul>
         @news.map { n =>
@@ -20,7 +24,7 @@
         }
     </ul>
                 
-    <p>Create news <a href="/news/create">Create News</a></p>
+    <p>Create news <a href="@routes.News.create">Create News</a></p>
 
 }
 

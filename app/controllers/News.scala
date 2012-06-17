@@ -19,7 +19,7 @@ object News extends Controller {
       "author_id" -> play.api.data.Forms.longNumber,
       "published" -> date("dd/MM/yyyy"))(model.News.apply)(model.News.unapply))
 
-  def index = Action {
+  def index = Action { implicit request =>
     var newsList: List[model.News] = null
 
     transaction {
@@ -55,7 +55,7 @@ object News extends Controller {
           transaction {
             Hackathon.news.insert(news)
           }
-          Redirect(routes.News.create).flashing("status" -> "News added")
+          Redirect(routes.News.index).flashing("status" -> "News added")
         })
   }
 
@@ -65,7 +65,7 @@ object News extends Controller {
       Hackathon.news.deleteWhere(n => n.id === id)
     }
 
-    Redirect(routes.News.index)
+    Redirect(routes.News.index).flashing("status" -> "News deleted")
   }
 
 }

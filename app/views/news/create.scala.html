@@ -1,4 +1,4 @@
-@(newsForm: Form[model.News], users: List[model.User])(implicit flash: Flash)
+@(newsForm: Form[model.News], users: List[model.User])
 
 @import helper._
 
@@ -22,11 +22,5 @@
         <input type="submit" value="Add">
         
     }
-
-    @flash.get("status").map { status =>
-       <h2>@status</h2>
-    }
-
-    
 }
 
