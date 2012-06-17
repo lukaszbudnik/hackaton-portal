@@ -13,7 +13,12 @@ case class User(name: String, email: String, @Column("github_username") githubUs
   val id: Long = 0L
 }
 
-object Hackathon extends Schema {
+object Model extends Schema {
   val news = table[News]
   val users = table[User]("Users")
+  
+  def lookupNews(id: Long): News = {
+    news.lookup(id).get
+  }
+  
 }

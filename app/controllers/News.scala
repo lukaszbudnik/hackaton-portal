@@ -5,7 +5,7 @@ import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.Schema
 import play.api.mvc._
 import play.api._
-import model.Hackathon
+import model.Model
 import play.api.data._
 import play.api.data.Forms._
 import scala.collection.mutable.ListBuffer
@@ -23,7 +23,7 @@ object News extends Controller {
     var newsList: List[model.News] = null
 
     transaction {
-      newsList = Hackathon.news.seq.toList
+      newsList = Model.news.seq.toList
     }
 
     Ok(views.html.news.index(newsList))
@@ -35,7 +35,7 @@ object News extends Controller {
     var users: List[model.User] = null
 
     transaction {
-      users = Hackathon.users.seq.toList
+      users = Model.users.seq.toList
     }
 
     Ok(views.html.news.newNews(newsForm, users))
@@ -48,14 +48,14 @@ object News extends Controller {
           var users: List[model.User] = null
 
           transaction {
-            users = Hackathon.users.seq.toList
+            users = Model.users.seq.toList
           }
           
           BadRequest(views.html.news.newNews(errors, users))
         },
         news => {
           transaction {
-            Hackathon.news.insert(news)
+            Model.news.insert(news)
           }
           Redirect(routes.News.index).flashing("status" -> "News added")
         })
@@ -68,7 +68,7 @@ object News extends Controller {
   def delete(id: Long) = Action {
 
     transaction {
-      Hackathon.news.deleteWhere(n => n.id === id)
+      Model.news.deleteWhere(n => n.id === id)
     }
 
     Redirect(routes.News.index).flashing("status" -> "News deleted")
