@@ -5,13 +5,19 @@
 # Home page
 GET     /                           controllers.Application.index
 
-# News page
-GET     /news                       controllers.News.index
-GET     /news/create                controllers.News.createForm
-POST    /news/create                controllers.News.create
-GET     /news/:id                   controllers.News.view(id: Long)
-POST    /news/update/:id            controllers.News.update(id: Long)
-POST    /news/delete/:id            controllers.News.delete(id: Long)
-
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+# News routes
+# Create
+GET     /news/new                   controllers.News.newNews
+POST    /news                       controllers.News.create
+# Retrieve
+GET     /news                       controllers.News.index
+GET     /news/view/:id              controllers.News.view(id: Long)
+# Update
+GET     /news/edit/:id              controllers.News.edit(id: Long)
+POST    /news/update/:id            controllers.News.update(id: Long)
+# Delete
+POST    /news/delete/:id            controllers.News.delete(id: Long)
+

@@ -16,7 +16,7 @@ object News extends Controller {
     mapping(
       "title" -> nonEmptyText,
       "text" -> nonEmptyText,
-      "author_id" -> play.api.data.Forms.longNumber,
+      "authorId" -> play.api.data.Forms.longNumber,
       "published" -> date("dd/MM/yyyy"))(model.News.apply)(model.News.unapply))
 
   def index = Action { implicit request =>
@@ -28,15 +28,17 @@ object News extends Controller {
 
     Ok(views.html.news.index(newsList))
   }
+  
+  def view(id: Long) = TODO
 
-  def createForm = Action { implicit request =>
+  def newNews = Action { implicit request =>
     var users: List[model.User] = null
 
     transaction {
       users = Hackathon.users.seq.toList
     }
 
-    Ok(views.html.news.create(newsForm, users))
+    Ok(views.html.news.newNews(newsForm, users))
   }
 
   def create = Action {
@@ -49,7 +51,7 @@ object News extends Controller {
             users = Hackathon.users.seq.toList
           }
           
-          BadRequest(views.html.news.create(errors, users))
+          BadRequest(views.html.news.newNews(errors, users))
         },
         news => {
           transaction {
@@ -58,6 +60,10 @@ object News extends Controller {
           Redirect(routes.News.index).flashing("status" -> "News added")
         })
   }
+  
+  def edit(id: Long) = TODO
+  
+  def update(id: Long) = TODO
 
   def delete(id: Long) = Action {
 

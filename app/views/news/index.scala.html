@@ -13,7 +13,7 @@
     <ul>
         @news.map { n =>
             <li>
-                @n.title @n.author_id @n.published
+                @n.title @n.authorId @n.published
         		<br/>
         		@n.text
 
@@ -24,7 +24,7 @@
         }
     </ul>
                 
-    <p>Create news <a href="@routes.News.create">Create News</a></p>
+    <p>Create news <a href="@routes.News.newNews">Create News</a></p>
 
 }
 

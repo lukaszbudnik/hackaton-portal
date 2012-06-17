@@ -12,7 +12,7 @@
         @inputText(newsForm("text"))
         
         
-        @select(newsForm("author_id"), users.map{ u =>
+        @select(newsForm("authorId"), users.map{ u =>
         	u.id.toString -> u.name
         },
         '_label -> "Choose User (*)")
