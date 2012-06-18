@@ -17,5 +17,4 @@ object Application extends Controller {
   def contact = Action {
     Ok(views.html.contact(Messages("contact.title")))
   }
-  
 }
