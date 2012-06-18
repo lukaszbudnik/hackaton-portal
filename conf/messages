@@ -5,8 +5,20 @@ navigation.news = News
 navigation.about = About
 navigation.contact = Contact
 
+global.learnMore = Learn more »
+global.viewDetails = View details »
+
 home.welcome = Welcome to hackaton.pl portal!
 home.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
+
+home.news1.title = Follow us!
+home.news1.text = Follow us on Twitter, like us on Facebox, +1'd us on G+.
+
+home.news2.title = Join our development team
+home.news2.text = hackaton-portal is an open-source project. Join us and help us developing this platform.
+
+home.news3.title = Become a sponsor
+home.news3.text = If you wish to become a sponsor do not hesitate to contact us. A full list of our sponsors is here.
 
 about.title = About Hackathons
 about.idea.title = About Hackathons
