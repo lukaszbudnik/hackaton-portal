@@ -10,4 +10,12 @@ object Application extends Controller {
     Ok(views.html.index(Messages("home.welcome")))
   }
   
+  def about = Action {
+    Ok(views.html.about(Messages("about.title")))
+  }
+  
+  def contact = Action {
+    Ok(views.html.contact(Messages("contact.title")))
+  }
+  
 }

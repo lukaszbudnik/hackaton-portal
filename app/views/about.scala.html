@@ -1,0 +1,24 @@
+@(message: String)
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@main(message) {
+
+	<div class="container">
+    
+	    <div class="page-header">
+	    <h1>@Messages("about.idea.title")</h1>
+		<br/>
+		@Messages("about.idea.text")
+	    </div>
+
+		<div class="page-header">
+	    <h1>@Messages("about.platform.title")</h1>
+		<br/>
+		@Messages("about.platform.text")
+	    </div>
+  
+    </div>
+}
+
