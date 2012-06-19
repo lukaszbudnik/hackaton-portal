@@ -1,64 +1,53 @@
 package controllers
 
-import java.util.Date
 import org.squeryl.PrimitiveTypeMode._
-import org.squeryl.Schema
 import play.api.mvc._
-import play.api._
 import model.Model
 import play.api.data._
 import play.api.data.Forms._
-import scala.collection.mutable.ListBuffer
 
 object News extends Controller {
 
   val newsForm = Form(
     mapping(
-      "title" -> nonEmptyText,
-      "text" -> nonEmptyText,
-      "authorId" -> play.api.data.Forms.longNumber,
-      "published" -> date("dd/MM/yyyy"))(model.News.apply)(model.News.unapply))
+      "title"     -> nonEmptyText,
+      "text"      -> nonEmptyText,
+      "labels"    -> nonEmptyText,
+      "authorId"  -> longNumber,
+      "published" -> date("dd/MM/yyyy")
+    )(model.News.apply)(model.News.unapply)
+  )
 
   def index = Action { implicit request =>
-    var newsList: List[model.News] = null
-
     transaction {
-      newsList = Model.news.seq.toList
+      val users:Map[Long, model.User] = Model.users.toList.map({ u => (u.id, u) }).toMap
+      Ok(views.html.news.index(Model.news.toList, users))
     }
-
-    Ok(views.html.news.index(newsList))
   }
   
-  def view(id: Long) = TODO
-
-  def newNews = Action { implicit request =>
-    var users: List[model.User] = null
-
+  def view(id: Long) = Action { implicit request =>
     transaction {
-      users = Model.users.seq.toList
+      val users:Map[Long, model.User] = Model.users.toList.map({ u => (u.id, u) }).toMap
+      Ok(views.html.news.news(Model.news.lookup(id), users))
     }
-
-    Ok(views.html.news.newNews(newsForm, users))
   }
 
-  def create = Action {
-    implicit request =>
-      newsForm.bindFromRequest.fold(
-        errors => {
-          var users: List[model.User] = null
+  def newNews = Action { implicit request =>
+    transaction {
+      Ok(views.html.news.newNews(newsForm, Model.users.toList))
+    }
+  }
 
-          transaction {
-            users = Model.users.seq.toList
-          }
-          
-          BadRequest(views.html.news.newNews(errors, users))
-        },
-        news => {
-          transaction {
-            Model.news.insert(news)
-          }
-          Redirect(routes.News.index).flashing("status" -> "News added")
-        })
+  def create = Action { implicit request =>
+    newsForm.bindFromRequest.fold(
+      errors =>  transaction {
+        BadRequest(views.html.news.newNews(errors, Model.users.toList))
+      },
+      news => transaction {
+        Model.news.insert(news)
+        Redirect(routes.News.index).flashing("status" -> "News added")
+      }
+    )
   }
   
   def edit(id: Long) = TODO
@@ -66,11 +55,7 @@ object News extends Controller {
   def update(id: Long) = TODO
 
   def delete(id: Long) = Action {
-
-    transaction {
-      Model.news.deleteWhere(n => n.id === id)
-    }
-
+    inTransaction(Model.news.deleteWhere(n => n.id === id))
     Redirect(routes.News.index).flashing("status" -> "News deleted")
   }
 

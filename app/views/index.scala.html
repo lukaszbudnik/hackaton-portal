@@ -1,13 +1,17 @@
-@(message: String)
+@(title: String = Messages("home.welcome"))
 
+<<<<<<< HEAD
 @import tags._
 
 @main(message) {
+=======
+@main(title) {
+>>>>>>> 106763cc56f0f0148410f013a08a06d74f5f3498
     
 	<div class="container">
 	
       <div class="hero-unit">
-        <h1>@message</h1>
+        <h1>@title</h1>
         <p>@Messages("home.text")</p>
         <p><a href="@routes.Application.about" class="btn btn-primary btn-large">@Messages("global.learnMore")</a></p>
       </div>
@@ -37,7 +41,7 @@
         	@googlePlus("http://hackaton.pl")
         	@facebookLike("http://hackaton.pl")
         </div>
-        <p>&copy; Hackaton.pl 2012</p>
+        <p>&copy; @Messages("brand") @Messages("years")</p>
       </footer>
 
     </div> <!-- /container -->

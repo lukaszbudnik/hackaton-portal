@@ -5,7 +5,7 @@ import org.squeryl.Schema
 import org.squeryl.KeyedEntity
 import org.squeryl.annotations.Column
 
-case class News(title: String, text: String, @Column("author_id") authorId: Long, published: Date) extends KeyedEntity[Long] {
+case class News(title: String, text: String, labels: String, @Column("author_id") authorId: Long, published: Date) extends KeyedEntity[Long] {
   val id: Long = 0L
 }
 
@@ -17,8 +17,12 @@ object Model extends Schema {
   val news = table[News]
   val users = table[User]("Users")
   
-  def lookupNews(id: Long): News = {
-    news.lookup(id).get
+  def lookupNews(id: Long): Option[News] = {
+    news.lookup(id)
+  }
+  
+  def allNews(): Iterable[News] = {
+    news.toList
   }
   
 }

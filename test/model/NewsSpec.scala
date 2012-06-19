@@ -5,6 +5,7 @@ import org.squeryl.PrimitiveTypeMode.{transaction, from, select, where}
 import play.api.test.FakeApplication
 import play.api.test.Helpers.{running,inMemoryDatabase}
 import java.util.Date
+import org.specs2.internal.scalaz.Order
 
 class NewsSpec extends Specification {
 
@@ -12,7 +13,7 @@ class NewsSpec extends Specification {
     "be insertable" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val news: News = new News("title", "text", 1L, new Date())
+          val news: News = new News("title", "text", "label1, label2", 1L, new Date())
           Model.news.insert(news)
           news.id must equalTo(1)
         }
@@ -22,11 +23,23 @@ class NewsSpec extends Specification {
     "be retrivable by id" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          var news: News = new News("title", "text", 1L, new Date())
+          val news: News = new News("title", "text", "label1, label2", 1L, new Date())
           Model.news.insert(news)
           
-          news = Model.lookupNews(news.id)
+          val newsDb: Option[News] = Model.lookupNews(news.id)
+          news.isPersisted must beTrue
           news must not beNull
+        }
+      }
+    }
+    "be retrivable in bulk" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        transaction {
+          Model.news.insert(new News("title", "text", "label1, label2", 1L, new Date()))
+          Model.news.insert(new News("title", "text", "label1, label2", 1L, new Date()))
+          
+          val newsList: Iterable[News] = Model.allNews
+          newsList must not beNull
         }
       }
     }
