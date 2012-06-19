@@ -1,5 +1,7 @@
 @(message: String)
 
+@import tags._
+
 @main(message) {
     
 	<div class="container">
@@ -31,6 +33,10 @@
       <hr>
 
       <footer>
+        <div class="social">
+        	@googlePlus("http://hackaton.pl")
+        	@facebookLike("http://hackaton.pl")
+        </div>
         <p>&copy; Hackaton.pl 2012</p>
       </footer>
 
