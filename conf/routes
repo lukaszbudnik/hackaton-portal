@@ -12,14 +12,14 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 # News routes
 # Create
-GET     /news/new                   controllers.News.newNews
-POST    /news                       controllers.News.create
+GET     /news/new                   controllers.News.create
+POST    /news                       controllers.News.save
 # Retrieve
 GET     /news                       controllers.News.index
-GET     /news/view/:id              controllers.News.view(id: Long)
+GET     /news/:id                   controllers.News.view(id: Long)
 # Update
-GET     /news/edit/:id              controllers.News.edit(id: Long)
-POST    /news/update/:id            controllers.News.update(id: Long)
+GET     /news/:id/edit              controllers.News.edit(id: Long)
+POST    /news/:id                   controllers.News.update(id: Long)
 # Delete
-POST    /news/delete/:id            controllers.News.delete(id: Long)
+POST    /news/:id/delete            controllers.News.delete(id: Long)
 

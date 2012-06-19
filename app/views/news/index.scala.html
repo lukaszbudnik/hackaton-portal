@@ -1,4 +1,4 @@
-@(news: Iterable[model.News], users: Map[Long,model.User], title: String = Messages("news.title"))(implicit flash: Flash, request: Request[AnyContent])
+@(news: Iterable[model.News], users: Map[Long,String], title: String = Messages("news.title"))(implicit flash: Flash, request: Request[AnyContent])
 
 @import helper._
 @import tags._
@@ -22,7 +22,7 @@
             <div class="page-header">
 	    		<h2>@n.title</h2>
 	    		<p>@Html(n.text.split("<!--more-->").head)...</p>
-	    		<p>@users(n.id).name @n.published</p>
+	    		<p>@users(n.authorId) @n.published</p>
 	    		<p>@Messages("news.labels") 
 				@for(l <- n.labels.split(",")) {
 				  <span class="label">@l</span>
@@ -33,7 +33,7 @@
         }
                 
 	    	<div class="form-actions">
-	    		<a class="btn btn-success" href="@routes.News.newNews">@Messages("news.addNews")</a>
+	    		<a class="btn btn-success" href="@routes.News.create">@Messages("news.addNews")</a>
 	        </div>
     	
 	      <footer>

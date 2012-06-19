@@ -1,4 +1,4 @@
-@(news: Option[model.News], users: Map[Long,model.User], title: String = Messages("news.title"))
+@(news: Option[model.News], users: Map[Long,String], title: String = Messages("news.title"))
 
 @import helper._
 
@@ -13,7 +13,7 @@
     	} else {
 		    <h2>@news.get.title</h2>
 			<p>@Html(news.get.text)</p>
-			<p>@users(news.get.authorId).name @news.get.published</p>
+			<p>@users(news.get.authorId) @news.get.published</p>
 			<p>@Messages("news.labels") 
 			@for(l <- news.get.labels.split(",")) {
 			  <span class="label">@l</span>

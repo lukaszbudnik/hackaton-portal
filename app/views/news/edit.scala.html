@@ -1,0 +1,34 @@
+@(id: Long, newsForm: Form[model.News], users: List[model.User], title: String = Messages("newNews.title"))
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@main(title) {
+
+	<div class="container">
+    
+    <h2>@title</h2>
+  
+    @form(routes.News.update(id)) {
+        
+        @inputText(newsForm("title")) 
+        @inputText(newsForm("text"))
+        
+        
+        @select(newsForm("authorId"), users.map{ u =>
+        	u.id.toString -> u.name
+        },
+        '_label -> "Choose User")
+        
+        @inputText(newsForm("published"))
+        
+        <div class="form-actions">
+	        <button type="submit" class="btn btn-primary">@Messages("newNews.addNews")</button>
+	        <a href="@routes.News.index" class="btn">@Messages("global.cancel")</a>
+      	</div>
+        
+    }
+    
+    </div>
+}
+

@@ -9,10 +9,11 @@
     
     <h2>@title</h2>
   
-    @form(routes.News.create) {
+    @form(routes.News.save) {
         
         @inputText(newsForm("title")) 
         @inputText(newsForm("text"))
+        @inputText(newsForm("labels"))
         
         
         @select(newsForm("authorId"), users.map{ u =>

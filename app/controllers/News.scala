@@ -20,28 +20,28 @@ object News extends Controller {
 
   def index = Action { implicit request =>
     transaction {
-      val users:Map[Long, model.User] = Model.users.toList.map({ u => (u.id, u) }).toMap
+      val users:Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
       Ok(views.html.news.index(Model.news.toList, users))
     }
   }
   
   def view(id: Long) = Action { implicit request =>
     transaction {
-      val users:Map[Long, model.User] = Model.users.toList.map({ u => (u.id, u) }).toMap
-      Ok(views.html.news.news(Model.news.lookup(id), users))
-    }
-  }
-
-  def newNews = Action { implicit request =>
-    transaction {
-      Ok(views.html.news.newNews(newsForm, Model.users.toList))
+      val users:Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
+      Ok(views.html.news.view(Model.news.lookup(id), users))
     }
   }
 
   def create = Action { implicit request =>
+    transaction {
+      Ok(views.html.news.create(newsForm, Model.users.toList))
+    }
+  }
+
+  def save = Action { implicit request =>
     newsForm.bindFromRequest.fold(
       errors =>  transaction {
-        BadRequest(views.html.news.newNews(errors, Model.users.toList))
+        BadRequest(views.html.news.create(errors, Model.users.toList))
       },
       news => transaction {
         Model.news.insert(news)
@@ -55,7 +55,9 @@ object News extends Controller {
   def update(id: Long) = TODO
 
   def delete(id: Long) = Action {
-    inTransaction(Model.news.deleteWhere(n => n.id === id))
+    transaction {
+      Model.news.deleteWhere(n => n.id === id)
+    }
     Redirect(routes.News.index).flashing("status" -> "News deleted")
   }
 
