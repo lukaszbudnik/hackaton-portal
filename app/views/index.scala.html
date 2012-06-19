@@ -1,11 +1,11 @@
-@(message: String)
+@(title: String = Messages("home.welcome"))
 
-@main(message) {
+@main(title) {
     
 	<div class="container">
 	
       <div class="hero-unit">
-        <h1>@message</h1>
+        <h1>@title</h1>
         <p>@Messages("home.text")</p>
         <p><a href="@routes.Application.about" class="btn btn-primary btn-large">@Messages("global.learnMore")</a></p>
       </div>
@@ -31,7 +31,7 @@
       <hr>
 
       <footer>
-        <p>&copy; Hackaton.pl 2012</p>
+        <p>&copy; @Messages("brand") @Messages("years")</p>
       </footer>
 
     </div> <!-- /container -->

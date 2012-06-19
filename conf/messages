@@ -1,4 +1,5 @@
 brand = hackaton.pl
+years = 2012
 
 navigation.home = Home
 navigation.news = News
@@ -7,6 +8,10 @@ navigation.contact = Contact
 
 global.learnMore = Learn more »
 global.viewDetails = View details »
+global.readMore = Read more »
+global.delete = Delete
+global.cancel = Cancel
+global.edit = Edit
 
 home.welcome = Welcome to hackaton.pl portal!
 home.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
@@ -29,3 +34,10 @@ about.platform.text = Hackton-portal (a platform which powers this site) is an o
 
 contact.title = Contact
 contact.text = For any queries regarding the hackaton.pl or hackaton-portal please contact Łukasz Budnik at l.budnik@kainos.com. If you wish to ask about a specific hackathon please go to its home page and see contact details.
+
+news.title = News
+news.labels = Labels: 
+news.notFound = News not found
+
+newNews.title = Add a news
+newNews.addNews = Add

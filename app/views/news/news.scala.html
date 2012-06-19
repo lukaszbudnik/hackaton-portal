@@ -1,0 +1,36 @@
+@(news: Option[model.News], users: Map[Long,model.User], title: String = Messages("news.title"))
+
+@import helper._
+
+@main(title) {
+    
+    <div class="container">
+    
+		<div class="page-header">
+
+    	@if(news.isEmpty) {
+		    <h1>@Messages("news.notFound")</h1>
+    	} else {
+		    <h2>@news.get.title</h2>
+			<p>@Html(news.get.text)</p>
+			<p>@users(news.get.authorId).name @news.get.published</p>
+			<p>@Messages("news.labels") 
+			@for(l <- news.get.labels.split(",")) {
+			  <span class="label">@l</span>
+			}
+			</p>
+			<div class="form-actions">
+	    		@form(routes.News.delete(news.get.id)) {
+		    		<a class="btn btn-success" href="@routes.News.edit(news.get.id)">@Messages("global.edit")</a>
+	                <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+	            }
+            </div>
+    	}
+    	
+	    </div>
+    
+  
+    </div>
+
+}
+

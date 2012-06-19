@@ -96,6 +96,7 @@ CREATE TABLE news (
     id integer NOT NULL DEFAULT nextval('news_id_seq'),
     title varchar(255),
     text text,
+    labels text,
     published timestamp,
     
     author_id integer NOT NULL,

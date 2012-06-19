@@ -7,14 +7,14 @@ import play.api.i18n._
 object Application extends Controller {
   
   def index = Action {
-    Ok(views.html.index(Messages("home.welcome")))
+    Ok(views.html.index())
   }
   
   def about = Action {
-    Ok(views.html.about(Messages("about.title")))
+    Ok(views.html.about())
   }
   
   def contact = Action {
-    Ok(views.html.contact(Messages("contact.title")))
+    Ok(views.html.contact())
   }
 }

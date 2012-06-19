@@ -12,18 +12,25 @@ object News extends Controller {
     mapping(
       "title"     -> nonEmptyText,
       "text"      -> nonEmptyText,
-      "authorId"  -> play.api.data.Forms.longNumber,
+      "labels"    -> nonEmptyText,
+      "authorId"  -> longNumber,
       "published" -> date("dd/MM/yyyy")
     )(model.News.apply)(model.News.unapply)
   )
 
   def index = Action { implicit request =>
     transaction {
-      Ok(views.html.news.index(Model.news.toList))
+      val users:Map[Long, model.User] = Model.users.toList.map({ u => (u.id, u) }).toMap
+      Ok(views.html.news.index(Model.news.toList, users))
     }
   }
   
-  def view(id: Long) = TODO
+  def view(id: Long) = Action { implicit request =>
+    transaction {
+      val users:Map[Long, model.User] = Model.users.toList.map({ u => (u.id, u) }).toMap
+      Ok(views.html.news.news(Model.news.lookup(id), users))
+    }
+  }
 
   def newNews = Action { implicit request =>
     transaction {
