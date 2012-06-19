@@ -1,12 +1,8 @@
-@(title: String = Messages("home.welcome"))
+@(title: String = Messages("home.welcome"))(implicit request: Request[AnyContent])
 
-<<<<<<< HEAD
 @import tags._
 
-@main(message) {
-=======
 @main(title) {
->>>>>>> 106763cc56f0f0148410f013a08a06d74f5f3498
     
 	<div class="container">
 	
@@ -34,12 +30,12 @@
         </div>
       </div>
 
-      <hr>
+      <hr />
 
       <footer>
         <div class="social">
-        	@googlePlus("http://hackaton.pl")
-        	@facebookLike("http://hackaton.pl")
+        	@googlePlus(request.uri)
+        	@facebookLike(request.uri)
         </div>
         <p>&copy; @Messages("brand") @Messages("years")</p>
       </footer>

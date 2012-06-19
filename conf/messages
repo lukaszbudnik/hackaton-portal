@@ -38,6 +38,7 @@ contact.text = For any queries regarding the hackaton.pl or hackaton-portal plea
 news.title = News
 news.labels = Labels: 
 news.notFound = News not found
+news.addNews = Add a news
 
 newNews.title = Add a news
 newNews.addNews = Add

@@ -1,6 +1,7 @@
-@(news: Iterable[model.News], users: Map[Long,model.User], title: String = Messages("news.title"))(implicit flash: Flash)
+@(news: Iterable[model.News], users: Map[Long,model.User], title: String = Messages("news.title"))(implicit flash: Flash, request: Request[AnyContent])
 
 @import helper._
+@import tags._
 
 @main(title) {
     
@@ -31,8 +32,18 @@
     		</div>
         }
                 
-    	<p><a href="@routes.News.newNews">Create News</a></p>
-    
+	    	<div class="form-actions">
+	    		<a class="btn btn-success" href="@routes.News.newNews">@Messages("news.addNews")</a>
+	        </div>
+    	
+	      <footer>
+	        <div class="social">
+	        	@googlePlus(request.uri)
+	        	@facebookLike(request.uri)
+	        </div>
+	        <p>&copy; @Messages("brand") @Messages("years")</p>
+	      </footer>
+    	
     </div>
 
 }
