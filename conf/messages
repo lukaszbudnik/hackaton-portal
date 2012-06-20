@@ -42,3 +42,6 @@ news.addNews = Add a news
 
 newNews.title = Add a news
 newNews.addNews = Add
+
+social.twitter.share = Share
+social.twitter.follow = Follow

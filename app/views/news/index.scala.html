@@ -6,44 +6,49 @@
 @main(title) {
     
     <div class="container">
-    
-	    <div class="page-header">
-	    <h1>@title</h1>
-	    </div>
-  	
-		@flash.get("status").map { status =>
-		   <div class="alert alert-success">
-		   	<button type="button" class="close" data-dismiss="alert">×</button>
-	       	<strong>@status</strong>
-	       </div>
-	    }
-
-        @news.map { n =>
-            <div class="page-header">
-	    		<h2>@n.title</h2>
-	    		<p>@Html(n.text.split("<!--more-->").head)...</p>
-	    		<p>@users(n.authorId) @n.published</p>
-	    		<p>@Messages("news.labels") 
-				@for(l <- n.labels.split(",")) {
-				  <span class="label">@l</span>
-				}
-				</p>
-	    		<p><a class="btn" href="@routes.News.view(n.id)">@Messages("global.readMore")</a></p>
-    		</div>
-        }
-                
-	    	<div class="form-actions">
-	    		<a class="btn btn-success" href="@routes.News.create">@Messages("news.addNews")</a>
-	        </div>
-    	
-	      <footer>
-	        <div class="social">
-	        	@googlePlus(request.uri)
-	        	@facebookLike(request.uri)
-	        </div>
-	        <p>&copy; @Messages("brand") @Messages("years")</p>
-	      </footer>
-    	
+    	<div class="row">
+	    	<div class="span9">
+			    <div class="page-header">
+			    	<h1>@title</h1>
+			    </div>
+	  	
+				@flash.get("status").map { status =>
+				   <div class="alert alert-success">
+				   	<button type="button" class="close" data-dismiss="alert">×</button>
+			       	<strong>@status</strong>
+			       </div>
+			    }
+		
+		        @news.map { n =>
+		            <div class="page-header">
+			    		<h2>@n.title</h2>
+			    		<p>@Html(n.text.split("<!--more-->").head)...</p>
+			    		<p>@users(n.authorId) @n.published</p>
+			    		<p>@Messages("news.labels") 
+						@for(l <- n.labels.split(",")) {
+						  <span class="label">@l</span>
+						}
+						</p>
+			    		<p><a class="btn" href="@routes.News.view(n.id)">@Messages("global.readMore")</a></p>
+		    		</div>
+		        }
+		                
+			    	<div class="form-actions">
+			    		<a class="btn btn-success" href="@routes.News.create">@Messages("news.addNews")</a>
+			        </div>
+		    	
+			      <footer>
+			        <div class="social">
+			        	@googlePlus(request.uri)
+			        	@facebookLike(request.uri)
+			        </div>
+			        <p>&copy; @Messages("brand") @Messages("years")</p>
+			      </footer>
+			    </div>
+		    	<div class="span3">
+		    		@twitterStream()
+		    	</div>
+	    	</div>
     </div>
 
 }
