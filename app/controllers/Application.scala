@@ -17,4 +17,8 @@ object Application extends Controller {
   def contact = Action {
     Ok(views.html.contact())
   }
+  
+  def sponsors = Action {
+    Ok(views.html.sponsors())
+  }
 }

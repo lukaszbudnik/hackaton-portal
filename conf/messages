@@ -5,6 +5,7 @@ navigation.home = Home
 navigation.news = News
 navigation.about = About
 navigation.contact = Contact
+navigation.sponsors = Sponsors
 
 global.learnMore = Learn more »
 global.viewDetails = View details »
@@ -34,6 +35,9 @@ about.platform.text = Hackton-portal (a platform which powers this site) is an o
 
 contact.title = Contact
 contact.text = For any queries regarding the hackaton.pl or hackaton-portal please contact Łukasz Budnik at l.budnik@kainos.com. If you wish to ask about a specific hackathon please go to its home page and see contact details.
+
+sponsors.title = Our Sponsors
+sponsors.text = We'd like to thank the following companies and organisations for supporting Hackaton.pl portal. Thanks!
 
 news.title = News
 news.labels = Labels: 

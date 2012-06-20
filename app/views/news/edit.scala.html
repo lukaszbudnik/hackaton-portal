@@ -12,7 +12,7 @@
     @form(routes.News.update(id)) {
         
         @inputText(newsForm("title")) 
-        @inputText(newsForm("text"))
+        @textarea(newsForm("text"))
         @inputText(newsForm("labels"))
         
         @select(newsForm("authorId"), users.map{ u =>
