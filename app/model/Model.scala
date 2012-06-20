@@ -16,13 +16,17 @@ case class User(name: String, email: String, @Column("github_username") githubUs
 object Model extends Schema {
   val news = table[News]
   val users = table[User]("Users")
-  
+
   def lookupNews(id: Long): Option[News] = {
     news.lookup(id)
   }
-  
+
   def allNews(): Iterable[News] = {
     news.toList
   }
-  
+
+  def deleteAllNews() = {
+    news.deleteWhere(n => n.id gt 0L)
+  }
+
 }
