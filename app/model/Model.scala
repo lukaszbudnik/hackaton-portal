@@ -46,4 +46,8 @@ object Model extends Schema {
   def allProblems(): Iterable[Problem] = {
     problems.toList
   }
+  
+  def deleteAllProblems() = {
+    problems.deleteWhere(p => p.id gt 0L)
+  }
 }

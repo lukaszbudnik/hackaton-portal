@@ -53,6 +53,11 @@ newNews.title = Add a news
 newNews.addNews = Add
 
 problems.addProblem = Add a problem
+problems.added = Problem added
+problems.updated = Problem updated
+problems.deleted = Problem deleted
+problem.editProblem = Edit
+newProblem.title = Add a problem
 newProblem.addProblem = Add a problem
 social.twitter.share = Share
 social.twitter.follow = Follow
