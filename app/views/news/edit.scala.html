@@ -13,7 +13,7 @@
         
         @inputText(newsForm("title")) 
         @inputText(newsForm("text"))
-        
+        @inputText(newsForm("labels"))
         
         @select(newsForm("authorId"), users.map{ u =>
         	u.id.toString -> u.name

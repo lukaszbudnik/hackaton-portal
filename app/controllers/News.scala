@@ -45,20 +45,48 @@ object News extends Controller {
       },
       news => transaction {
         Model.news.insert(news)
-        Redirect(routes.News.index).flashing("status" -> "News added")
+        Redirect(routes.News.index).flashing("status" -> "newsInserted",
+        									 "title" -> news.title)
       }
     )
   }
   
-  def edit(id: Long) = TODO
+  def edit(id: Long) = Action { implicit request =>
+    transaction {
+      Model.news.lookup(id).map { news =>
+        Ok(views.html.news.edit(id, newsForm.fill(news), Model.users.toList))
+      }.get
+      //.getOrElse(NotFound)
+    }
+  }
   
-  def update(id: Long) = TODO
+  def update(id: Long) = Action { implicit request =>
+    newsForm.bindFromRequest.fold(
+      errors =>  transaction {
+        BadRequest(views.html.news.edit(id, errors, Model.users.toList))
+      },
+      news => transaction {
+        Model.news.update(n =>
+          where(n.id === id)
+          set(
+              n.title := news.title,
+              n.text := news.text,
+              n.labels := news.labels,
+              n.authorId := news.authorId,
+              n.published := news.published
+          )
+		)
+        Redirect(routes.News.index).flashing("status" -> "newsUpdated",
+        									 "title" -> news.title)
+      }
+    )
+  }
 
   def delete(id: Long) = Action {
     transaction {
       Model.news.deleteWhere(n => n.id === id)
     }
-    Redirect(routes.News.index).flashing("status" -> "News deleted")
+    Redirect(routes.News.index).flashing("status" -> "newsDeleted")
   }
 
 }

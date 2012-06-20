@@ -13,7 +13,7 @@ class NewsSpec extends Specification {
     "be insertable" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val news: News = new News("title", "text", "label1, label2", 1L, new Date())
+          val news: News = new News(0L, "title", "text", "label1, label2", 1L, new Date())
           Model.news.insert(news)
           news.id must equalTo(1)
         }
@@ -23,7 +23,7 @@ class NewsSpec extends Specification {
     "be retrivable by id" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val news: News = new News("title", "text", "label1, label2", 1L, new Date())
+          val news: News = new News(0L, "title", "text", "label1, label2", 1L, new Date())
           Model.news.insert(news)
           
           val newsDb: Option[News] = Model.lookupNews(news.id)
@@ -35,8 +35,8 @@ class NewsSpec extends Specification {
     "be retrivable in bulk" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          Model.news.insert(new News("title", "text", "label1, label2", 1L, new Date()))
-          Model.news.insert(new News("title", "text", "label1, label2", 1L, new Date()))
+          Model.news.insert(new News(0L, "title", "text", "label1, label2", 1L, new Date()))
+          Model.news.insert(new News(0L, "title", "text", "label1, label2", 1L, new Date()))
           
           val newsList: Iterable[News] = Model.allNews
           newsList must not beNull

@@ -40,5 +40,9 @@ news.labels = Labels:
 news.notFound = News not found
 news.addNews = Add a news
 
+news.status.newsInserted = News %s successfully added
+news.status.newsUpdated = News %s successfully updated
+news.status.newsDeleted = News deleted
+
 newNews.title = Add a news
 newNews.addNews = Add

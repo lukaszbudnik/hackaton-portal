@@ -12,10 +12,17 @@
 	    </div>
   	
 		@flash.get("status").map { status =>
-		   <div class="alert alert-success">
-		   	<button type="button" class="close" data-dismiss="alert">×</button>
-	       	<strong>@status</strong>
-	       </div>
+			@flash.get("title").map { title =>
+			   <div class="alert alert-success">
+			   	<button type="button" class="close" data-dismiss="alert">×</button>
+		       	<strong>@Messages("news.status." + status).format(title)</strong>
+		       </div>
+	       }.getOrElse {
+	       		<div class="alert alert-success">
+			   	<button type="button" class="close" data-dismiss="alert">×</button>
+		       	<strong>@Messages("news.status." + status)</strong>
+		       </div>
+	       }
 	    }
 
         @news.map { n =>
