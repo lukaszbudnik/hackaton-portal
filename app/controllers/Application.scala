@@ -4,10 +4,10 @@ import play.api._
 import play.api.mvc._
 import play.api.i18n._
 
-object Application extends Controller {
+object Application extends Controller with securesocial.core.SecureSocial {
   
-  def index = Action { implicit request =>
-    Ok(views.html.index())
+  def index = UserAwareAction { implicit request =>
+	Ok(views.html.index())
   }
   
   def about = Action {

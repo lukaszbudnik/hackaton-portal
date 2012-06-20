@@ -13,8 +13,12 @@ object ApplicationBuild extends Build {
       "postgresql" % "postgresql" % "9.1-901.jdbc4"
     )
 
+    val secureSocial = PlayProject(
+        appName + "-securesocial", appVersion, mainLang = SCALA, path = file("modules/securesocial")
+    )
+    
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
       // Add your own project settings here      
-    )
+    ).dependsOn(secureSocial).aggregate(secureSocial)
 
 }
