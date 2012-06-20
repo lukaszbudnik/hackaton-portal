@@ -7,10 +7,12 @@
     
     <div class="container">
     
-	    <div class="page-header">
-	    <h1>@title</h1>
-	    </div>
-  	
+    	<div class="row">
+    	<div class="span9">
+		    <div class="page-header">
+		    	<h1>@title</h1>
+		    </div>
+    
 		@flash.get("status").map { status =>
 			@flash.get("title").map { title =>
 			   <div class="alert alert-success">
@@ -51,7 +53,12 @@
 	        <p>&copy; @Messages("brand") @Messages("years")</p>
 	      </footer>
     	
-    </div>
-
+	      </div>
+	      
+	    	<div class="span3">
+	    		@twitterStream()
+	    	</div>
+    	</div>
+    	</div>
 }
 

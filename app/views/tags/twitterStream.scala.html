@@ -1,0 +1,30 @@
+@(twitterFeed: String = "hackaton_pl")
+
+<script charset="utf-8" src="http://widgets.twimg.com/j/2/widget.js"></script>
+<script>
+new TWTR.Widget({
+  version: 2,
+  type: 'profile',
+  rpp: 4,
+  interval: 30000,
+  width: 'auto',
+  height: 400,
+  theme: {
+    shell: {
+      background: '#333333',
+      color: '#899999'
+    },
+    tweets: {
+      background: '#ffffff',
+      color: '#333333',
+      links: '#0081cc'
+    }
+  },
+  features: {
+    scrollbar: false,
+    loop: false,
+    live: true,
+    behavior: 'default'
+  }
+}).render().setUser('@twitterFeed').start();
+</script>

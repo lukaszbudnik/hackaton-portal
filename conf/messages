@@ -46,3 +46,6 @@ news.status.newsDeleted = News deleted
 
 newNews.title = Add a news
 newNews.addNews = Add
+
+social.twitter.share = Share
+social.twitter.follow = Follow
