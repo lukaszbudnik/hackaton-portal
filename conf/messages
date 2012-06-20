@@ -3,6 +3,7 @@ years = 2012
 
 navigation.home = Home
 navigation.news = News
+navigation.problems = Problems
 navigation.about = About
 navigation.contact = Contact
 navigation.sponsors = Sponsors
@@ -51,5 +52,7 @@ news.status.newsDeleted = News deleted
 newNews.title = Add a news
 newNews.addNews = Add
 
+problems.addProblem = Add a problem
+newProblem.addProblem = Add a problem
 social.twitter.share = Share
 social.twitter.follow = Follow

@@ -1,0 +1,42 @@
+@(problems: Iterable[model.Problem], users: Map[Long,String], title: String = Messages("home.welcome"))(implicit flash: Flash, request: Request[AnyContent])
+
+@import helper._
+@import tags._
+
+@main(title) {
+	<div class="container">
+  
+    <div class="page-header">
+    <h1>@title</h1>
+    </div>
+	
+	@flash.get("status").map { status =>
+	   <div class="alert alert-success">
+	   	<button type="button" class="close" data-dismiss="alert">×</button>
+       	<strong>@status</strong>
+       </div>
+    }
+
+      @problems.map { problem =>
+          <div class="page-header">
+    		<h2>@problem.name</h2>
+    		<p></p>
+    		<p>@users(problem.submitterId)</p>
+    		<p><a class="btn" href="@routes.Problem.view(problem.id)">@Messages("global.readMore")</a></p>
+  		</div>
+      }
+              
+    	<div class="form-actions">
+    		<a class="btn btn-success" href="@routes.Problem.create">@Messages("problems.addProblem")</a>
+        </div>
+  	
+      <footer>
+        <div class="social">
+        	@googlePlus(request.uri)
+        	@facebookLike(request.uri)
+        </div>
+        <p>&copy; @Messages("brand") @Messages("years")</p>
+      </footer>
+  	
+  </div>
+}

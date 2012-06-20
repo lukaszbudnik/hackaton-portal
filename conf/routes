@@ -24,3 +24,17 @@ POST    /news/:id                   controllers.News.update(id: Long)
 # Delete
 POST    /news/:id/delete            controllers.News.delete(id: Long)
 
+# Problems routes
+# Create
+GET 		/problems/new								controllers.Problem.create
+POST		/problems										controllers.Problem.save
+
+# Retrieve
+GET 		/problems										controllers.Problem.index
+GET			/problems/:id								controllers.Problem.view(id: Long)
+
+# Update
+GET			/problems/:id/edit					controllers.Problem.edit(id: Long)
+
+# Delete
+POST		/problems/:id/delete				controllers.Problem.delete(id: Long)
