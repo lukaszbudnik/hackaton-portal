@@ -18,13 +18,16 @@
         function addMarkers() {
             $.getJSON('/hackathons.json',
                 function(data) {
+                	var latlngbounds = new google.maps.LatLngBounds( );
                     $.each(data, function(key, val) {
                         var latLng = new google.maps.LatLng(val.location[0].latitude, val.location[0].longitude);
                         var marker = new google.maps.Marker({
                             position: latLng,
                             map: map
                         });
+                        latlngbounds.extend(latLng);
                     });
+				    map.fitBounds( latlngbounds );
             });
         }
 
@@ -51,7 +54,7 @@
 		@Html(Messages("about.platform.text"))
 	    </div>
 
-        <div id="map-canvas" style="width: 500px; height: 400px">
+        <div id="map-canvas" style="width: 900px; height: 600px;">
 
         </div>
     </div>

@@ -27,10 +27,4 @@ object Application extends Controller with securesocial.core.SecureSocial {
     Ok(views.html.sponsors())
   }
 
-  def hackathonsJson = Action {
-    transaction {
-      val hackathons = Model.hackathons.toList
-      Ok(com.codahale.jerkson.Json.generate(hackathons)).as("application/json")
-    }
-  }
 }
