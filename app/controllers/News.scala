@@ -6,7 +6,7 @@ import model.Model
 import play.api.data._
 import play.api.data.Forms._
 
-object News extends Controller {
+object News extends Controller with securesocial.core.SecureSocial {
 
   val newsForm = Form(
     mapping(
@@ -18,7 +18,7 @@ object News extends Controller {
     )(model.News.apply)(model.News.unapply)
   )
 
-  def index = Action { implicit request =>
+  def index = SecuredAction() { implicit request =>
     transaction {
       val users:Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
       Ok(views.html.news.index(Model.news.toList, users))
