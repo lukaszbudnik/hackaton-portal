@@ -14,7 +14,7 @@ class NewsSpec extends Specification {
   "News model" should {
     "be insertable" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        inTransaction {
+        transaction {
           val news: News = new News("title", "text", "label1, label2", 1L, new Date())
           Model.news.insert(news)
           
