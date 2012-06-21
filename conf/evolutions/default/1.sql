@@ -107,26 +107,26 @@ CREATE TABLE news (
  
 # --- !Downs
 
-DROP TABLE hackathons;
+DROP TABLE hackathons CASCADE;
 DROP SEQUENCE hackathons_id_seq;
 
-DROP TABLE locations;
+DROP TABLE locations CASCADE;
 DROP SEQUENCE location_id_seq;
 
-DROP TABLE problems;
+DROP TABLE problems CASCADE;
 DROP SEQUENCE problem_id_seq;
 
-DROP TABLE teams;
+DROP TABLE teams CASCADE;
 DROP SEQUENCE team_id_seq;
 
-DROP TABLE users;
+DROP TABLE users CASCADE;
 DROP SEQUENCE user_id_seq;
 
-DROP TABLE user_roles;
+DROP TABLE user_roles CASCADE;
 DROP SEQUENCE user_role_id_seq;
 
-DROP TABLE roles;
+DROP TABLE roles CASCADE;
 DROP SEQUENCE role_id_seq;
 
-DROP TABLE news;
+DROP TABLE news CASCADE;
 DROP SEQUENCE news_id_seq;

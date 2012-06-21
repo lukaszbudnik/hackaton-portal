@@ -35,10 +35,10 @@ case class Location(country: String,
 
 object Model extends Schema {
   val news = table[News]
-  val problems = table[Problem]("Problems")
-  val users = table[User]("Users")
-  val hackathons = table[Hackathon]("Hackathons")
-  val locations = table[Location]("Locations")
+  val problems = table[Problem]("problems")
+  val users = table[User]("users")
+  val hackathons = table[Hackathon]("hackathons")
+  val locations = table[Location]("locations")
   
   val locationToHackathons = oneToManyRelation(locations, hackathons).via((l, h) => l.id === h.locationId)
 
