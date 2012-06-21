@@ -14,7 +14,6 @@ class NewsSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))) {
 	      val result = controllers.News.index(FakeRequest())
 	      
-		  println(result)
 	      status(result) must equalTo(SEE_OTHER)
 	      
 	      redirectLocation(result) must beSome.which(_ == "/login")
