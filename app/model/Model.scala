@@ -1,5 +1,6 @@
 package model
 import java.util.Date
+import org.squeryl.dsl._
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.Schema
 import org.squeryl.KeyedEntity
@@ -19,6 +20,17 @@ case class Problem(name: String, description: String, @Column("submitter_id") su
 
 case class Hackathon(subject: String, status: String, @Column("submitter_id") submitterId: Long, @Column("location_id") locationId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
+  lazy val location: ManyToOne[Location] = Model.locationToHackathons.right(this)
+}
+
+case class Location(country: String,
+                    city: String,
+                    @Column("postal_code") postalCode: String,
+                    @Column("full_address") fullAddress: String,
+                    name: String,
+                    latitude: Double,
+                    longitude: Double) extends KeyedEntity[Long] {
+  val id: Long = 0L
 }
 
 object Model extends Schema {
@@ -26,6 +38,9 @@ object Model extends Schema {
   val problems = table[Problem]("Problems")
   val users = table[User]("Users")
   val hackathons = table[Hackathon]("Hackathons")
+  val locations = table[Location]("Locations")
+  
+  val locationToHackathons = oneToManyRelation(locations, hackathons).via((l, h) => l.id === h.locationId)
 
   def lookupNews(id: Long): Option[News] = {
     news.lookup(id)

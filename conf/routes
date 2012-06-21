@@ -24,6 +24,7 @@ POST    /news/:id                   controllers.News.update(id: Long)
 # Delete
 POST    /news/:id/delete            controllers.News.delete(id: Long)
 
+GET     /hackathons.json             controllers.Application.hackathonsJson
 # Problems routes
 # Create
 GET 		/problems/new								controllers.Problem.create

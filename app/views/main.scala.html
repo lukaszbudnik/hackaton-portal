@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String, scripts: Html = Html(""))(content: Html)
 
 <!DOCTYPE html>
 
@@ -24,7 +24,7 @@
     	<!--[if lt IE 9]>
       	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     	<![endif]-->
-
+        @scripts
     </head>
     <body>
 
