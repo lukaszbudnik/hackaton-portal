@@ -1,10 +1,11 @@
 package controllers
 
 import org.squeryl.PrimitiveTypeMode._
-import play.api.mvc._
+
 import model.Model
-import play.api.data._
 import play.api.data.Forms._
+import play.api.data._
+import play.api.mvc._
 
 object News extends Controller with securesocial.core.SecureSocial {
 
@@ -20,15 +21,13 @@ object News extends Controller with securesocial.core.SecureSocial {
 
   def index = SecuredAction() { implicit request =>
     transaction {
-      val users:Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
-      Ok(views.html.news.index(Model.news.toList, users))
+      Ok(views.html.news.index(Model.allNewsSortedByDateDesc.toList))
     }
   }
   
   def view(id: Long) = Action { implicit request =>
     transaction {
-      val users:Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
-      Ok(views.html.news.view(Model.news.lookup(id), users))
+      Ok(views.html.news.view(Model.news.lookup(id)))
     }
   }
 
@@ -46,7 +45,7 @@ object News extends Controller with securesocial.core.SecureSocial {
       news => transaction {
         Model.news.insert(news)
         Redirect(routes.News.index).flashing("status" -> "newsInserted",
-        									 "title" -> news.title)
+        									 "title" ->(news.title))
       }
     )
   }
@@ -56,7 +55,6 @@ object News extends Controller with securesocial.core.SecureSocial {
       Model.news.lookup(id).map { news =>
         Ok(views.html.news.edit(id, newsForm.fill(news), Model.users.toList))
       }.get
-      //.getOrElse(NotFound)
     }
   }
   

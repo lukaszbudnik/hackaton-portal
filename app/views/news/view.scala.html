@@ -1,4 +1,4 @@
-@(news: Option[model.News], users: Map[Long,String], title: String = Messages("news.title"))
+@(news: Option[model.News], title: String = Messages("news.title"))
 
 @import helper._
 
@@ -8,23 +8,23 @@
     
 		<div class="page-header">
 
-    	@if(news.isEmpty) {
-		    <h1>@Messages("news.notFound")</h1>
-    	} else {
-		    <h2>@news.get.title</h2>
-			<p>@Html(news.get.text)</p>
-			<p>@users(news.get.authorId) @news.get.published</p>
+    	@news.map { n =>
+		    <h2>@n.title</h2>
+			<p>@Html(n.text)</p>
+			<p>@n.author.head.name @n.published</p>
 			<p>@Messages("news.labels") 
-			@for(l <- news.get.labels.split(",")) {
+			@for(l <- n.labels.split(",")) {
 			  <span class="label">@l</span>
 			}
 			</p>
 			<div class="form-actions">
-	    		@form(routes.News.delete(news.get.id)) {
-		    		<a class="btn btn-success" href="@routes.News.edit(news.get.id)">@Messages("global.edit")</a>
+	    		@form(routes.News.delete(n.id)) {
+		    		<a class="btn btn-success" href="@routes.News.edit(n.id)">@Messages("global.edit")</a>
 	                <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
 	            }
             </div>
+    	}.getOrElse {
+    		<h1>@Messages("news.notFound")</h1>
     	}
     	
 	    </div>

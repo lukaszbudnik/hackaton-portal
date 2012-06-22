@@ -8,10 +8,12 @@ import org.squeryl.annotations.Column
 
 case class News(title: String, text: String, labels: String, @Column("author_id") authorId: Long, published: Date) extends KeyedEntity[Long] {
   val id: Long = 0L
+  lazy val author: ManyToOne[User] = Model.authorToNews.right(this)
 }
 
 case class User(name: String, email: String, @Column("github_username") githubUsername: String, @Column("open_id") openId: String) extends KeyedEntity[Long] {
   val id: Long = 0L
+  lazy val news: OneToMany[News] = Model.authorToNews.left(this)
 }
 
 case class Problem(name: String, description: String, @Column("submitter_id") submitterId: Long, @Column("hackathon_id") hackathonId: Long) extends KeyedEntity[Long] {
@@ -33,6 +35,12 @@ case class Location(country: String,
   val id: Long = 0L
 }
 
+object OrderByDirection extends Enumeration {
+  type Direction = Value
+  val Asc = Value("Asc")
+  val Desc = Value("Desc")
+}
+
 object Model extends Schema {
   val news = table[News]
   val problems = table[Problem]("problems")
@@ -41,6 +49,7 @@ object Model extends Schema {
   val locations = table[Location]("locations")
   
   val locationToHackathons = oneToManyRelation(locations, hackathons).via((l, h) => l.id === h.locationId)
+  val authorToNews = oneToManyRelation(users, news).via((u, n) => u.id === n.authorId)
 
   def lookupNews(id: Long): Option[News] = {
     news.lookup(id)
@@ -54,6 +63,13 @@ object Model extends Schema {
     news.deleteWhere(n => n.id gt 0L)
   }
   
+  def allNewsSortedByDateDesc(): Iterable[News] = {
+	from (Model.news)(n =>
+        select(n)
+        orderBy(n.published desc)
+    )
+  }
+  
   def lookupProblem(id: Long): Option[Problem] = {
     problems.lookup(id)
   }
@@ -64,5 +80,9 @@ object Model extends Schema {
   
   def deleteAllProblems() = {
     problems.deleteWhere(p => p.id gt 0L)
+  }
+  
+  def lookupHackathon(id: Long): Option[Hackathon] = {
+    hackathons.lookup(id)
   }
 }

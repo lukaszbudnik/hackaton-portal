@@ -1,10 +1,11 @@
 import org.squeryl.adapters.{H2Adapter, PostgreSqlAdapter}
 import org.squeryl.internals.DatabaseAdapter
 import org.squeryl.{Session, SessionFactory}
+import org.squeryl.PrimitiveTypeMode._
 import play.api.db.DB
 import play.api.GlobalSettings
-
 import play.api.Application
+import play.api.mvc.RequestHeader
 
 object Global extends GlobalSettings {
 
@@ -16,10 +17,6 @@ object Global extends GlobalSettings {
     }
   }
 
-  def getSession(adapter:DatabaseAdapter, app: Application) = {
-    val session:Session = Session.create(DB.getConnection()(app), adapter)
-    session.bindToCurrentThread
-    session
-  } 
+  def getSession(adapter:DatabaseAdapter, app: Application) =  Session.create(DB.getConnection()(app), adapter)
 
 }
