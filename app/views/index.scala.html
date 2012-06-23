@@ -1,13 +1,13 @@
-@(title: String = Messages("home.welcome"))(implicit request: Request[AnyContent])
+@(user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
 
 @import tags._
 
-@main(title) {
+@main(Messages("home.welcome"), user) {
     
 	<div class="container">
 	
       <div class="hero-unit">
-        <h1>@title</h1>
+        <h1>@Messages("home.welcome")</h1>
         <p>@Messages("home.text")</p>
         <p><a href="@routes.Application.about" class="btn btn-primary btn-large">@Messages("global.learnMore")</a></p>
       </div>

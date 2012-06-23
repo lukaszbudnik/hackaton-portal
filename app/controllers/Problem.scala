@@ -7,7 +7,7 @@ import play.api.data._
 import play.api.data.Forms._
 
 
-object Problem extends Controller {
+object Problem extends Controller with securesocial.core.SecureSocial {
     
     val problemForm = Form(
         mapping(
@@ -18,31 +18,31 @@ object Problem extends Controller {
         )(model.Problem.apply)(model.Problem.unapply)
       )
     
-    def index = Action { implicit request =>
+    def index = UserAwareAction { implicit request =>
       transaction {
         val users:Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
-        Ok(views.html.problems.index(Model.problems.toList, users))
+        Ok(views.html.problems.index(Model.problems.toList, users, request.user))
       }
         
     }
-    
-    def view(id: Long) = Action { implicit request =>
+
+    def view(id: Long) = UserAwareAction { implicit request =>
       transaction {
         val users:Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
-        Ok(views.html.problems.view(Model.problems.lookup(id), users))
+        Ok(views.html.problems.view(Model.problems.lookup(id), users, request.user))
       }
     }
     
-    def create = Action { implicit request =>
+    def create = SecuredAction() { implicit request =>
       transaction {
-        Ok(views.html.problems.create(problemForm, Model.users.toList, Model.hackathons.toList))
+        Ok(views.html.problems.create(problemForm, Model.users.toList, Model.hackathons.toList, request.user))
       }
     }
     
-    def save = Action { implicit request =>
+    def save = SecuredAction() { implicit request =>
       problemForm.bindFromRequest.fold(
         errors =>  transaction {
-          BadRequest(views.html.problems.create(errors, Model.users.toList, Model.hackathons.toList))
+          BadRequest(views.html.problems.create(errors, Model.users.toList, Model.hackathons.toList, request.user))
         },
         problem => transaction {
           Model.problems.insert(problem)
@@ -51,19 +51,19 @@ object Problem extends Controller {
       )
     }
     
-    def edit(id: Long) = Action { implicit request =>
+    def edit(id: Long) = SecuredAction() { implicit request =>
       transaction {
         Model.lookupProblem(id).map { problem =>
-          Ok(views.html.problems.edit(id, problemForm.fill(problem), Model.users.toList, Model.hackathons.toList))
+          Ok(views.html.problems.edit(id, problemForm.fill(problem), Model.users.toList, Model.hackathons.toList, request.user))
         }.get
       }
       
     }
     
-    def update(id: Long) = Action { implicit request =>
+    def update(id: Long) = SecuredAction() { implicit request =>
       problemForm.bindFromRequest.fold(
         errors =>  transaction {
-          BadRequest(views.html.problems.edit(id, errors, Model.users.toList, Model.hackathons.toList))
+          BadRequest(views.html.problems.edit(id, errors, Model.users.toList, Model.hackathons.toList, request.user))
         },
         problem => transaction {
           Model.problems.update(p =>
@@ -82,7 +82,7 @@ object Problem extends Controller {
       
     }
     
-    def delete(id: Long) = Action { implicit request => 
+    def delete(id: Long) = SecuredAction() { implicit request => 
         transaction {
           Model.problems.deleteWhere(p => p.id === id)
         }

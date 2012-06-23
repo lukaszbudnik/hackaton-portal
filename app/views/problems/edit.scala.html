@@ -1,13 +1,13 @@
-@(id: Long, problemForm: Form[model.Problem], users: List[model.User], hackathons: List[model.Hackathon], title: String = Messages("newProblem.title"))
+@(id: Long, problemForm: Form[model.Problem], users: List[model.User], hackathons: List[model.Hackathon], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
 
 @import helper._
 @import helper.twitterBootstrap._
 
-@main(title) {
+@main(Messages("newProblem.title"), Some(user)) {
 
 	<div class="container">
     
-    <h2>@title</h2>
+    <h2>@Messages("newProblem.title")</h2>
   
     @form(routes.Problem.update(id)) {
         

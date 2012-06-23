@@ -19,49 +19,49 @@ object News extends Controller with securesocial.core.SecureSocial {
     )(model.News.apply)(model.News.unapply)
   )
 
-  def index = SecuredAction() { implicit request =>
+  def index = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.news.index(Model.allNewsSortedByDateDesc.toList))
+      Ok(views.html.news.index(Model.allNewsSortedByDateDesc.toList, request.user))
     }
   }
   
-  def view(id: Long) = Action { implicit request =>
+  def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.news.view(Model.news.lookup(id)))
+      Ok(views.html.news.view(Model.news.lookup(id), request.user))
     }
   }
 
-  def create = Action { implicit request =>
+  def create = SecuredAction() { implicit request =>
     transaction {
-      Ok(views.html.news.create(newsForm, Model.users.toList))
+      Ok(views.html.news.create(newsForm, Model.users.toList, request.user))
     }
   }
 
-  def save = Action { implicit request =>
+  def save = SecuredAction() { implicit request =>
     newsForm.bindFromRequest.fold(
       errors =>  transaction {
-        BadRequest(views.html.news.create(errors, Model.users.toList))
+        BadRequest(views.html.news.create(errors, Model.users.toList, request.user))
       },
       news => transaction {
         Model.news.insert(news)
         Redirect(routes.News.index).flashing("status" -> "newsInserted",
-        									 "title" ->(news.title))
+        									 "title" -> news.title)
       }
     )
   }
   
-  def edit(id: Long) = Action { implicit request =>
+  def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
       Model.news.lookup(id).map { news =>
-        Ok(views.html.news.edit(id, newsForm.fill(news), Model.users.toList))
+        Ok(views.html.news.edit(id, newsForm.fill(news), Model.users.toList, request.user))
       }.get
     }
   }
   
-  def update(id: Long) = Action { implicit request =>
+  def update(id: Long) = SecuredAction() { implicit request =>
     newsForm.bindFromRequest.fold(
       errors =>  transaction {
-        BadRequest(views.html.news.edit(id, errors, Model.users.toList))
+        BadRequest(views.html.news.edit(id, errors, Model.users.toList, request.user))
       },
       news => transaction {
         Model.news.update(n =>
@@ -80,7 +80,7 @@ object News extends Controller with securesocial.core.SecureSocial {
     )
   }
 
-  def delete(id: Long) = Action {
+  def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
       Model.news.deleteWhere(n => n.id === id)
     }

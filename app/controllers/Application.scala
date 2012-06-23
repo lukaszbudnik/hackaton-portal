@@ -12,19 +12,23 @@ import org.squeryl.annotations.Column
 object Application extends Controller with securesocial.core.SecureSocial {
   
   def index = UserAwareAction { implicit request =>
-	Ok(views.html.index())
+	Ok(views.html.index(request.user))
   }
   
-  def about = Action {
-    Ok(views.html.about())
+  def about = UserAwareAction { implicit request =>
+    Ok(views.html.about(request.user))
   }
   
-  def contact = Action {
-    Ok(views.html.contact())
+  def contact = UserAwareAction { implicit request =>
+    Ok(views.html.contact(request.user))
   }
   
-  def sponsors = Action {
-    Ok(views.html.sponsors())
+  def sponsors = UserAwareAction { implicit request =>
+    Ok(views.html.sponsors(request.user))
+  }
+  
+  def profile = SecuredAction() { implicit request =>
+	Ok(views.html.profile(request.user))
   }
 
 }

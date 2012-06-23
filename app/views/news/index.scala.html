@@ -1,16 +1,16 @@
-@(news: Iterable[model.News], title: String = Messages("news.title"))(implicit flash: Flash, request: Request[AnyContent])
+@(news: Iterable[model.News], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
 @import helper._
 @import tags._
 
-@main(title) {
+@main(Messages("news.title"), user) {
     
     <div class="container">
     
     	<div class="row">
     	<div class="span9">
 		    <div class="page-header">
-		    	<h1>@title</h1>
+		    	<h1>@Messages("news.title")</h1>
 		    </div>
     
 		@flash.get("status").map { status =>

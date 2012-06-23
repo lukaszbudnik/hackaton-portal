@@ -1,13 +1,13 @@
-@(problems: Iterable[model.Problem], users: Map[Long,String], title: String = Messages("home.welcome"))(implicit flash: Flash, request: Request[AnyContent])
+@(problems: Iterable[model.Problem], users: Map[Long,String], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
 @import helper._
 @import tags._
 
-@main(title) {
+@main(Messages("home.welcome"), user) {
 	<div class="container">
   
     <div class="page-header">
-    <h1>@title</h1>
+    <h1>@Messages("home.welcome")</h1>
     </div>
 	
 	@flash.get("status").map { status =>

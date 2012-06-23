@@ -1,4 +1,5 @@
-@(title: String = Messages("about.title"))
+@(user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+
 @scripts = {
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript">
@@ -18,7 +19,7 @@
         function addMarkers() {
             $.getJSON('/hackathons.json',
                 function(data) {
-                	var latlngbounds = new google.maps.LatLngBounds( );
+                	var latlngbounds = new google.maps.LatLngBounds();
                     $.each(data, function(key, val) {
                         var latLng = new google.maps.LatLng(val.location[0].latitude, val.location[0].longitude);
                         var marker = new google.maps.Marker({
@@ -27,7 +28,7 @@
                         });
                         latlngbounds.extend(latLng);
                     });
-				    map.fitBounds( latlngbounds );
+				    map.fitBounds(latlngbounds);
             });
         }
 
@@ -38,7 +39,7 @@
 @import helper._
 @import helper.twitterBootstrap._
 
-@main(title, scripts) {
+@main(Messages("about.title"), user, scripts) {
 
 	<div class="container">
     

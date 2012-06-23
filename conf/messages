@@ -7,6 +7,7 @@ navigation.problems = Problems
 navigation.about = About
 navigation.contact = Contact
 navigation.sponsors = Sponsors
+navigation.login = Sign in
 
 global.learnMore = Learn more »
 global.viewDetails = View details »
@@ -39,6 +40,8 @@ contact.text = For any queries regarding the hackaton.pl or hackaton-portal plea
 
 sponsors.title = Our Sponsors
 sponsors.text = We'd like to thank the following companies and organisations for supporting Hackaton.pl portal. Thanks!
+
+profile.title = Your profile
 
 news.title = News
 news.labels = Labels: 
