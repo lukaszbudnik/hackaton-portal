@@ -58,7 +58,7 @@ class NewsSpec extends Specification {
       }
     }
 
-    "redirect to Login Page on POST /news/12" in {
+    "redirect to Login Page on POST /news/12 (controllers.News.update)" in {
       // application.secret is required for redirections!
       running(FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))) {
         val result = routeAndCall(FakeRequest(POST, "/news/12")).get
@@ -68,7 +68,7 @@ class NewsSpec extends Specification {
       }
     }
 
-    "redirect to Login Page on /news/12/delete" in {
+    "redirect to Login Page on POST /news/12/delete (controllers.News.delete)" in {
       // application.secret is required for redirections!
       running(FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))) {
         val result = routeAndCall(FakeRequest(POST, "/news/12/delete")).get
