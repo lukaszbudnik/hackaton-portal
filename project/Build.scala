@@ -1,11 +1,15 @@
 import sbt._
 import Keys._
 import PlayProject._
+import com.typesafe.sbteclipse.core.EclipsePlugin.EclipseKeys
 
 object ApplicationBuild extends Build {
 
     val appName         = "hackaton-portal"
     val appVersion      = "0.1-SNAPSHOT"
+
+    override def settings = super.settings ++ Seq(
+	EclipseKeys.skipParents in ThisBuild := false)
 
     val appDependencies = Seq(
       "org.squeryl" %% "squeryl" % "0.9.5-2",
@@ -20,5 +24,4 @@ object ApplicationBuild extends Build {
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
       // Add your own project settings here      
     ).dependsOn(secureSocial).aggregate(secureSocial)
-
 }
