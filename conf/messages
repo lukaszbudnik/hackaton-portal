@@ -70,9 +70,9 @@ teams.notFound = Team not found
 teams.view.title = Team
 teams.create.title = Add a team
 teams.edit.title = Edit a team
-teams.status.added = Team successfully added
-teams.status.updated = Team successfully updated
-teams.status.deleted = Team successfully deleted
+teams.status.added = Team %s successfully added
+teams.status.updated = Team %s successfully updated
+teams.status.deleted = Team deleted
 
 
 social.twitter.share = Share

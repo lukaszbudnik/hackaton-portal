@@ -43,7 +43,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
         },
         team => transaction {
           Model.teams.insert(team)
-          Redirect(routes.Team.index).flashing("status" -> "teams.status.added")
+          Redirect(routes.Team.index).flashing("status" -> "added", "title" -> team.name)
         }
       )
     }
@@ -69,8 +69,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
               t.creatorId := team.creatorId,
               t.hackathonId := team.hackathonId,
               t.problemId := team.problemId))
-        Redirect(routes.Team.index).flashing("status" -> "teams.status.updated",
-          "title" -> team.name)
+        Redirect(routes.Team.index).flashing("status" -> "updated", "title" -> team.name)
       })
   }
 
@@ -78,7 +77,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
     transaction {
       Model.teams.deleteWhere(t => t.id === id)
     }
-    Redirect(routes.Team.index).flashing("status" -> "teams.status.deleted")
+    Redirect(routes.Team.index).flashing("status" -> "deleted")
   }
 
 }
