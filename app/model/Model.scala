@@ -11,9 +11,17 @@ case class News(title: String, text: String, labels: String, @Column("author_id"
   lazy val author: ManyToOne[User] = Model.authorToNews.right(this)
 }
 
-case class User(name: String, email: String, @Column("github_username") githubUsername: String, @Column("open_id") openId: String) extends KeyedEntity[Long] {
+case class User(name: String, email: String, @Column("github_username") githubUsername: String, @Column("twitter_account") twitterAccount: String, @Column("avatar_url") avatarUrl: String, @Column("open_id") openId: String) extends KeyedEntity[Long] {
   val id: Long = 0L
-  lazy val news: OneToMany[News] = Model.authorToNews.left(this)
+  lazy val roles = Model.usersToRoles.left(this)
+}
+
+case class Role(name: String, description: String) extends KeyedEntity[Long] {
+  val id: Long = 0L
+}
+
+case class UserRole(@Column("user_id") userId: Long, @Column("role_id") roleId: Long) extends KeyedEntity[CompositeKey2[Long,Long]] {
+  def id = compositeKey(userId, roleId)
 }
 
 case class Problem(name: String, description: String, @Column("submitter_id") submitterId: Long, @Column("hackathon_id") hackathonId: Long) extends KeyedEntity[Long] {
@@ -35,28 +43,27 @@ case class Location(country: String,
   val id: Long = 0L
 }
 
-object OrderByDirection extends Enumeration {
-  type Direction = Value
-  val Asc = Value("Asc")
-  val Desc = Value("Desc")
-}
-
 object Model extends Schema {
   val news = table[News]
   val problems = table[Problem]("problems")
   val users = table[User]("users")
+  val roles = table[Role]("roles")
   val hackathons = table[Hackathon]("hackathons")
   val locations = table[Location]("locations")
   
   val locationToHackathons = oneToManyRelation(locations, hackathons).via((l, h) => l.id === h.locationId)
   val authorToNews = oneToManyRelation(users, news).via((u, n) => u.id === n.authorId)
 
+  val usersToRoles =
+    manyToManyRelation(users, roles, "users_roles").
+      via[UserRole](f = (u, r, ur) => (u.id ===(ur.userId), r.id === ur.roleId))
+
   def lookupNews(id: Long): Option[News] = {
     news.lookup(id)
   }
 
   def allNews(): Iterable[News] = {
-    news.toList
+    news.toIterable
   }
 
   def deleteAllNews() = {
@@ -64,7 +71,7 @@ object Model extends Schema {
   }
   
   def allNewsSortedByDateDesc(): Iterable[News] = {
-	from (Model.news)(n =>
+	from (news)(n =>
         select(n)
         orderBy(n.published desc)
     )
@@ -75,7 +82,7 @@ object Model extends Schema {
   }
   
   def allProblems(): Iterable[Problem] = {
-    problems.toList
+    problems.toIterable
   }
   
   def deleteAllProblems() = {
@@ -84,5 +91,17 @@ object Model extends Schema {
   
   def lookupHackathon(id: Long): Option[Hackathon] = {
     hackathons.lookup(id)
+  }
+
+  def lookupUser(id: Long) = {
+    users.lookup(id)
+  }
+  
+  def findUserByOpenId(openId: String): Option[User] = {
+    users.where(u => u.openId === openId).headOption
+  }
+  
+  def allRoles(): Iterable[Role] = {
+    roles.toIterable
   }
 }

@@ -23,7 +23,8 @@ CREATE TABLE roles (
 );
 
 CREATE SEQUENCE user_role_id_seq;
-CREATE TABLE user_roles (
+
+CREATE TABLE users_roles (
     id integer NOT NULL DEFAULT nextval('user_role_id_seq'),
     
     user_id integer NOT NULL,
@@ -122,7 +123,7 @@ DROP SEQUENCE team_id_seq;
 DROP TABLE users CASCADE;
 DROP SEQUENCE user_id_seq;
 
-DROP TABLE user_roles CASCADE;
+DROP TABLE users_roles CASCADE;
 DROP SEQUENCE user_role_id_seq;
 
 DROP TABLE roles CASCADE;
