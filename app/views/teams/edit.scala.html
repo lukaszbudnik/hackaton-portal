@@ -23,12 +23,11 @@
         },
         '_label -> "Choose Hackathon")
         
-        @*
         @select(teamForm("problemId"), problems.map{ p =>
         	p.id.toString -> p.name
         },
-        '_label -> "Choose Problem")
-        *@
+        '_label -> "Choose Problem",
+        '_default -> "None")
         
         <div class="form-actions">
 	        <button type="submit" class="btn btn-primary">@Messages("global.update")</button>
