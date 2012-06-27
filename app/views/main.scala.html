@@ -46,7 +46,7 @@
 			  <li class="@("active".when(nav == "sponsors"))"><a href="@routes.Application.sponsors">@Messages("navigation.sponsors")</a></li>
               <li class="@("active".when(nav == "contact"))"><a href="@routes.Application.contact">@Messages("navigation.contact")</a></li>
               @user.map { user =>
-                <li><a href="@routes.Application.profile">@user.displayName</a></li>
+                <li class="@("active".when(nav == "profile"))"><a href="@routes.Application.profile">@user.displayName</a></li>
               }.getOrElse {
                 <li><a href="@routes.Application.profile">@Messages("navigation.login")</a></li>
               }
