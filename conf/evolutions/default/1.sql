@@ -83,7 +83,7 @@ CREATE TABLE teams (
     
     creator_id integer NOT NULL,
     hackathon_id integer NOT NULL,
-    problem_id integer NOT NULL,
+    problem_id integer,
     
     FOREIGN KEY (creator_id) REFERENCES users(id),
     FOREIGN KEY (hackathon_id) REFERENCES hackathons(id),
