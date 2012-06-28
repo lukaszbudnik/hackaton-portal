@@ -1,0 +1,47 @@
+@(locations: Iterable[model.Location], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
+
+@import helper._
+@import tags._
+
+@main(Messages("locations.title"), user, nav = "locations") {
+<div class="container">
+  
+    <div class="page-header">
+    	<h1>@Messages("locations.title")</h1>
+    </div>
+	
+	@flash.get("status").map { status =>
+		@flash.get("title").map { title =>
+			<div class="alert alert-success">
+				<button type="button" class="close" data-dismiss="alert">×</button>
+		       	<strong>@Messages("locations.status." + status).format(title)</strong>
+			</div>
+		}.getOrElse {
+			<div class="alert alert-success">
+				<button type="button" class="close" data-dismiss="alert">×</button>
+		       	<strong>@Messages("locations.status." + status)</strong>
+			</div>
+		}
+	}
+
+	@locations.map { location =>
+		<div class="page-header">
+    		<h2>@location.name</h2>
+    		<p><a class="btn" href="@routes.Location.view(location.id)">@Messages("global.readMore")</a></p>
+  		</div>
+      }
+              
+    <div class="form-actions">
+    	<a class="btn btn-success" href="@routes.Location.create">@Messages("locations.addLocation")</a>
+	</div>
+  	
+	<footer>
+		<div class="social">
+			@googlePlus(request.uri)
+        	@facebookLike(request.uri)
+        </div>
+        <p>&copy; @Messages("brand") @Messages("years")</p>
+	</footer>
+  	
+</div>
+}

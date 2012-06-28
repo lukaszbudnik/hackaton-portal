@@ -1,0 +1,35 @@
+@(location: Option[model.Location], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+
+@import helper._
+
+@main(Messages("locations.view.title"), user, nav = "locations") {
+    
+    <div class="container">
+    
+		<div class="page-header">
+
+		@if(location.isEmpty) {
+		    <h1>@Messages("locations.notFound")</h1>
+    	} else {
+	    <h2>@location.get.name</h2>
+            <p>@location.get.country</p>
+            <p>@location.get.city</p>
+            <p>@location.get.postalCode</p>
+            <p>@location.get.fullAddress</p>
+            <p>Lat: @location.get.latitude </p>
+            <p>Long: @location.get.longitude </p>
+
+			<div class="form-actions">
+	    		@form(routes.Location.delete(location.get.id)) {
+		    		<a class="btn btn-success" href="@routes.Location.edit(location.get.id)">@Messages("global.edit")</a>
+	                <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+	        }
+            </div>
+    	}
+    	
+	    </div>
+  
+    </div>
+
+}
+
