@@ -3,11 +3,11 @@
 @import helper._
 @import tags._
 
-@main(Messages("home.welcome"), user) {
+@main(Messages("home.welcome"), user, nav = "problems") {
 	<div class="container">
   
     <div class="page-header">
-    <h1>@Messages("home.welcome")</h1>
+    <h1>@Messages("problems.title")</h1>
     </div>
 	
 	@flash.get("status").map { status =>

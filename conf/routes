@@ -40,17 +40,27 @@ POST    /news/:id/delete            controllers.News.delete(id: Long)
 # Create
 GET     /problems/new               controllers.Problem.create
 POST    /problems                   controllers.Problem.save
-
 # Retrieve
 GET     /problems                   controllers.Problem.index
 GET     /problems/:id               controllers.Problem.view(id: Long)
-
 # Update
 GET     /problems/:id/edit          controllers.Problem.edit(id: Long)
 POST    /problems/:id/update        controllers.Problem.update(id: Long)
-
 # Delete
 POST    /problems/:id/delete        controllers.Problem.delete(id: Long)
+
+# Problems routes
+# Create
+GET     /teams/new               	controllers.Team.create
+POST    /teams                   	controllers.Team.save
+# Retrieve
+GET     /teams                   	controllers.Team.index
+GET     /teams/:id               	controllers.Team.view(id: Long)
+# Update
+GET     /teams/:id/edit          	controllers.Team.edit(id: Long)
+POST    /teams/:id/update        	controllers.Team.update(id: Long)
+# Delete
+POST    /teams/:id/delete        	controllers.Team.delete(id: Long)
 
 # Hackathons routes
 GET     /hackathons.json            controllers.Hackathon.hackathonsJson
