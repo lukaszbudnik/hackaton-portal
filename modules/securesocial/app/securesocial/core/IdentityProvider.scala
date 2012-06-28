@@ -59,7 +59,7 @@ abstract class IdentityProvider(application: Application) extends Plugin {
 
   /**
    * Authenticates the user and fills the profile information. Returns either a User if all went
-   * ok or a Result that the controller sents to the browser (eg: in the case of OAuth for example
+   * ok or a Result that the controller sends to the browser (eg: in the case of OAuth for example
    * where the user needs to be redirected to the service provider)
    *
    * @param request

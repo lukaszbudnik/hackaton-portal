@@ -73,8 +73,9 @@ public abstract class BaseUserService extends securesocial.core.UserServicePlugi
      * @param user
      */
     @Override
-    public void save(securesocial.core.SocialUser user) {
+    public securesocial.core.SocialUser save(securesocial.core.SocialUser user) {
         doSave(SocialUser.fromScala(user));
+        return user;
     }
 
     /**
