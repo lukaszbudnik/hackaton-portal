@@ -84,7 +84,8 @@ public class SocialUser {
                 Scala.Option(avatarUrl),
                 AuthenticationMethod.toSala(authMethod),
                 optionalOAuth1Info(),
-                optionalOAuth2Info()
+                optionalOAuth2Info(),
+                Scala.emptySeq()
         );
     }
 
