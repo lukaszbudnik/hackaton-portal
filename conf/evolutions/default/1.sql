@@ -17,7 +17,6 @@ CREATE SEQUENCE role_id_seq;
 CREATE TABLE roles (
     id integer NOT NULL DEFAULT nextval('role_id_seq'),
     name varchar(255),
-    description text,
     
     PRIMARY KEY (id)
 );

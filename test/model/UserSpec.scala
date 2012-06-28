@@ -34,7 +34,7 @@ class UserSpec extends Specification {
         }
       }
     }
-    "be retrivable with roles" in {
+    "be associable and retrivable with roles" in {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
           transaction {
             val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!")
@@ -49,7 +49,7 @@ class UserSpec extends Specification {
             }
             
             val userDb: Option[User] = Model.lookupUser(user.id)
-
+            
             userDb.get.roles.seq.size must equalTo(roles.size)
           }
         }

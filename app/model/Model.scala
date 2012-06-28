@@ -16,7 +16,7 @@ case class User(name: String, email: String, @Column("github_username") githubUs
   lazy val roles = Model.usersToRoles.left(this)
 }
 
-case class Role(name: String, description: String) extends KeyedEntity[Long] {
+case class Role(name: String) extends KeyedEntity[Long] {
   val id: Long = 0L
 }
 
@@ -104,4 +104,9 @@ object Model extends Schema {
   def allRoles(): Iterable[Role] = {
     roles.toIterable
   }
+  
+  def findRoleByName(name: String): Option[Role] = {
+    roles.find(r => r.name == name)
+  }
+  
 }

@@ -13,6 +13,7 @@
         <li>User: @user</li>
         <li>Logged in from: @user.id.providerId</li>
         <li>Email: @user.email.map { email => @email }.getOrElse("Not Available")</li>
+        <li>Roles: @user.roles.mkString(",")</li>
         <li>Authentication method: @user.authMethod</li>
     </ul>
 
