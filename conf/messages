@@ -4,6 +4,7 @@ years = 2012
 navigation.home = Home
 navigation.news = News
 navigation.problems = Problems
+navigation.teams = Teams
 navigation.about = About
 navigation.contact = Contact
 navigation.sponsors = Sponsors
@@ -12,9 +13,11 @@ navigation.login = Sign in
 global.learnMore = Learn more »
 global.viewDetails = View details »
 global.readMore = Read more »
-global.delete = Delete
-global.cancel = Cancel
 global.edit = Edit
+global.delete = Delete
+global.update = Update
+global.cancel = Cancel
+
 
 home.welcome = Welcome to hackaton.pl portal!
 home.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
@@ -47,20 +50,30 @@ news.title = News
 news.labels = Labels: 
 news.notFound = News not found
 news.addNews = Add a news
-
 news.status.newsInserted = News %s successfully added
 news.status.newsUpdated = News %s successfully updated
 news.status.newsDeleted = News deleted
-
 newNews.title = Add a news
 newNews.addNews = Add
 
+problems.title = Problems
 problems.addProblem = Add a problem
 problems.added = Problem added
 problems.updated = Problem updated
 problems.deleted = Problem deleted
-problem.editProblem = Edit
 newProblem.title = Add a problem
 newProblem.addProblem = Add a problem
+
+teams.title = Teams
+teams.addTeam = Add a team
+teams.notFound = Team not found
+teams.view.title = Team
+teams.create.title = Add a team
+teams.edit.title = Edit a team
+teams.status.added = Team %s successfully added
+teams.status.updated = Team %s successfully updated
+teams.status.deleted = Team deleted
+
+
 social.twitter.share = Share
 social.twitter.follow = Follow

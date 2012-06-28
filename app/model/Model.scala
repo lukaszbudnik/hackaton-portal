@@ -43,6 +43,21 @@ case class Location(country: String,
   val id: Long = 0L
 }
 
+case class Team(name: String,
+				@Column("creator_id") creatorId: Long,
+				@Column("hackathon_id") hackathonId: Long,
+				@Column("problem_id") problemId: Option[Long]) extends KeyedEntity[Long] {
+  val id: Long = 0L
+  def this() = this("", 0, 0, Some(0L))
+
+}
+
+object OrderByDirection extends Enumeration {
+  type Direction = Value
+  val Asc = Value("Asc")
+  val Desc = Value("Desc")
+}
+
 object Model extends Schema {
   val news = table[News]
   val problems = table[Problem]("problems")
@@ -50,6 +65,7 @@ object Model extends Schema {
   val roles = table[Role]("roles")
   val hackathons = table[Hackathon]("hackathons")
   val locations = table[Location]("locations")
+  val teams = table[Team]("teams")
   
   val locationToHackathons = oneToManyRelation(locations, hackathons).via((l, h) => l.id === h.locationId)
   val authorToNews = oneToManyRelation(users, news).via((u, n) => u.id === n.authorId)
