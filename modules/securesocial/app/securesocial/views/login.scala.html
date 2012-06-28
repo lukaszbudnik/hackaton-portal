@@ -16,7 +16,7 @@
 
         <p>
             @for(p <- providers) {
-                @defining( "/images/providers/" + p.providerId + ".png") { imageUrl =>
+                @defining("images/providers/" + p.providerId + ".png") { imageUrl =>
                     <a href="@p.authenticationUrl"> <img src="@routes.Assets.at(imageUrl)"/></a>
                 }
             }

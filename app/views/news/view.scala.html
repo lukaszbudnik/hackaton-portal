@@ -2,7 +2,7 @@
 
 @import helper._
 
-@main(Messages("news.title"), user) {
+@main(Messages("news.title"), user, nav = "news") {
     
     <div class="container">
     
@@ -17,11 +17,13 @@
 			  <span class="label">@l</span>
 			}
 			</p>
+			@if(user) {
 			<div class="form-actions">
 	    		@form(routes.News.delete(n.id)) {
 		    		<a class="btn btn-success" href="@routes.News.edit(n.id)">@Messages("global.edit")</a>
 	                <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
 	            }
+            }
             </div>
     	}.getOrElse {
     		<h1>@Messages("news.notFound")</h1>

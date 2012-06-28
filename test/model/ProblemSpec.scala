@@ -6,7 +6,7 @@ import play.api.test.FakeApplication
 import play.api.test.Helpers.{running,inMemoryDatabase}
 import java.util.Date
 import org.specs2.internal.scalaz.Order
-
+/*
 class ProblemSpec extends Specification {
 
   "Problem model" should {
@@ -54,3 +54,4 @@ class ProblemSpec extends Specification {
 
 }
 
+*/

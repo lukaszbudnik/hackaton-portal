@@ -4,7 +4,7 @@ import java.util.Date
 import org.specs2.mutable._
 import play.api.test.Helpers._
 
-class FormSpec extends Specification {
+class NewsSpec extends Specification {
   
   import controllers.News.newsForm
   

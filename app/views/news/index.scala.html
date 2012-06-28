@@ -3,7 +3,7 @@
 @import helper._
 @import tags._
 
-@main(Messages("news.title"), user) {
+@main(Messages("news.title"), user, nav = "news") {
     
     <div class="container">
     
@@ -40,10 +40,12 @@
 	    		<p><a class="btn" href="@routes.News.view(n.id)">@Messages("global.readMore")</a></p>
     		</div>
         }
-                
+
+		@if(user) {                
 	    	<div class="form-actions">
 	    		<a class="btn btn-success" href="@routes.News.create">@Messages("news.addNews")</a>
 	        </div>
+        }
     	
 	      <footer>
 	        <div class="social">
