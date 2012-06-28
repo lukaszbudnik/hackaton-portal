@@ -1,8 +1,8 @@
 package service
 
-import play.api.{Logger, Application}
-import org.squeryl.PrimitiveTypeMode.{transaction, inTransaction}
-import securesocial.core.{UserServicePlugin, UserId, SocialUser}
+import play.api.{ Logger, Application }
+import org.squeryl.PrimitiveTypeMode.{ transaction, inTransaction }
+import securesocial.core.{ UserServicePlugin, UserId, SocialUser }
 import model.Model
 import model.User
 
@@ -20,15 +20,22 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
     val alreadyLoggedInSocialUser = find(socialUser.id)
 
     if (alreadyLoggedInSocialUser.isDefined) {
-      Logger.info("Already logged in updating users maps" + socialUser)
+      if (Logger.isDebugEnabled) {
+        Logger.debug("Already logged in updating users maps" + socialUser)
+      }
       users = users + (socialUser.id.id + socialUser.id.providerId -> socialUser)
       return socialUser
     }
 
     transaction {
-      val dbUser:User = Model.findUserByOpenId(socialUser.id.id + socialUser.id.providerId).getOrElse(addNewUserToDatabase(socialUser))
+      val dbUser: User = Model.findUserByOpenId(socialUser.id.id + socialUser.id.providerId).getOrElse(addNewUserToDatabase(socialUser))
 
       val roles = dbUser.roles.map { r => r.name }
+
+      if (Logger.isDebugEnabled) {
+        Logger.debug("Adding the following roles " + roles + " to user " + socialUser)
+      }
+
       val socialUserWithRoles = socialUser.copy(roles = roles)
 
       users = users + (socialUserWithRoles.id.id + socialUserWithRoles.id.providerId -> socialUserWithRoles)
@@ -37,22 +44,25 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
   }
 
   private def addNewUserToDatabase(socialUser: SocialUser): User = {
-      inTransaction {
-        Logger.info("trying to save/load: " + socialUser)
+    inTransaction {
 
-        Logger.info("adding new user!")
-        val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), "", "", socialUser.avatarUrl.getOrElse(""), socialUser.id.id + socialUser.id.providerId)
-        Logger.info("adding new user " + newUser)
-        Model.users.insert(newUser)
-        Logger.info("new id " + newUser.id)
-        
-        val userRole = Model.findRoleByName("user").get
-        
-        Logger.info("associating " + userRole + " with user " + newUser.id)
-        newUser.roles.associate(userRole)
-
-        newUser
+      if (Logger.isDebugEnabled) {
+        Logger.debug("Adding a new user for social user " + socialUser)
       }
+
+      val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), "", "", socialUser.avatarUrl.getOrElse(""), socialUser.id.id + socialUser.id.providerId)
+      Model.users.insert(newUser)
+
+      val userRole = Model.findRoleByName("user").get
+
+      if (Logger.isDebugEnabled) {
+        Logger.debug("Associating " + userRole + " with newly created user " + newUser.id + " for social user " + socialUser)
+      }
+      
+      newUser.roles.associate(userRole)
+
+      newUser
     }
+  }
 
 }
