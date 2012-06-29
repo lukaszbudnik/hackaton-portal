@@ -1,0 +1,32 @@
+@(hackathon: Option[model.Hackathon], users: Map[Long, String], locations: Map[Long, String], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+
+@import helper._
+
+@main(Messages("hackathons.view.title"), user, nav = "hackathons") {
+    
+    <div class="container">
+    
+		<div class="page-header">
+
+		@if(hackathon.isEmpty) {
+		    <h1>@Messages("hackathons.notFound")</h1>
+    	} else {
+	    <h2>@hackathon.get.subject</h2>
+            <p>@hackathon.get.status</p>
+            <p>@users(hackathon.get.submitterId)</p>
+            <p>@locations(hackathon.get.locationId)</p>
+
+			<div class="form-actions">
+	    		@form(routes.Hackathon.delete(hackathon.get.id)) {
+		    		<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.get.id)">@Messages("global.edit")</a>
+	                <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+	        }
+            </div>
+    	}
+    	
+	    </div>
+  
+    </div>
+
+}
+
