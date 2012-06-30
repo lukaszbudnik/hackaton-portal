@@ -49,7 +49,7 @@ POST    /problems/:id/update        controllers.Problem.update(id: Long)
 # Delete
 POST    /problems/:id/delete        controllers.Problem.delete(id: Long)
 
-# Problems routes
+# Teams routes
 # Create
 GET     /teams/new               	controllers.Team.create
 POST    /teams                   	controllers.Team.save
