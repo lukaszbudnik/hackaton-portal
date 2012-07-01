@@ -3,11 +3,11 @@
 @import helper._
 @import helper.twitterBootstrap._
 
-@main(Messages("newNews.title"), Some(user), nav = "news") {
+@main(Messages("news.edit.title"), Some(user), nav = "news") {
 
 	<div class="container">
     
-    <h2>@Messages("newNews.title")</h2>
+    <h2>@Messages("news.edit.title")</h2>
   
     @form(routes.News.update(id)) {
         
@@ -23,7 +23,7 @@
         @inputText(newsForm("published"))
         
         <div class="form-actions">
-	        <button type="submit" class="btn btn-primary">@Messages("newNews.addNews")</button>
+	        <button type="submit" class="btn btn-primary">@Messages("global.update")</button>
 	        <a href="@routes.News.index" class="btn">@Messages("global.cancel")</a>
       	</div>
         

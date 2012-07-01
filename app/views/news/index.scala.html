@@ -47,20 +47,13 @@
 	        </div>
         }
     	
-	      <footer>
-	        <div class="social">
-	        	@googlePlus(request.uri)
-	        	@facebookLike(request.uri)
-	        </div>
-	        <p>&copy; @Messages("brand") @Messages("years")</p>
-	      </footer>
+		@footer()
     	
-	      </div>
-	      
-	    	<div class="span3">
-	    		@twitterStream()
-	    	</div>
-    	</div>
-    	</div>
+		</div>
+	   
+	    <div class="span3">
+	    	@twitterStream()
+	    </div>
+    </div>
 }
 

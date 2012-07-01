@@ -36,17 +36,16 @@ object Team extends Controller with securesocial.core.SecureSocial {
     }
   }
 
-    def save = SecuredAction() { implicit request =>
-      teamForm.bindFromRequest.fold(
-        errors =>  transaction {
-          BadRequest(views.html.teams.create(errors, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
-        },
-        team => transaction {
-          Model.teams.insert(team)
-          Redirect(routes.Team.index).flashing("status" -> "added", "title" -> team.name)
-        }
-      )
-    }
+  def save = SecuredAction() { implicit request =>
+    teamForm.bindFromRequest.fold(
+      errors => transaction {
+        BadRequest(views.html.teams.create(errors, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
+      },
+      team => transaction {
+        Model.teams.insert(team)
+        Redirect(routes.Team.index).flashing("status" -> "added", "title" -> team.name)
+      })
+  }
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {

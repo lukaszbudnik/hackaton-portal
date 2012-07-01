@@ -7,33 +7,33 @@
 
 	<div class="container">
     
-    <h2>@Messages("teams.create.title")</h2>
+    	<h2>@Messages("teams.create.title")</h2>
   
-    @form(routes.Team.save) {
+    	@form(routes.Team.save) {
         
-        @inputText(teamForm("name")) 
+    		@inputText(teamForm("name")) 
         
-        @select(teamForm("creatorId"), users.map{ u =>
-        	u.id.toString -> u.name
-        },
-        '_label -> "Choose User")
+    		@select(teamForm("creatorId"), users.map{ u =>
+        		u.id.toString -> u.name
+    		},
+    		'_label -> "Choose User")
         
-		@select(teamForm("hackathonId"), hackathons.map{ h =>
-        	h.id.toString -> h.subject
-        },
-        '_label -> "Choose Hackathon")
+    		@select(teamForm("hackathonId"), hackathons.map{ h =>
+        		h.id.toString -> h.subject
+    		},
+    		'_label -> "Choose Hackathon")
+
+    		@select(teamForm("problemId"), problems.map{ p =>
+        		p.id.toString -> p.name
+    		},
+    		'_label -> "Choose Problem",
+    		'_default -> "None")
         
-        @select(teamForm("problemId"), problems.map{ p =>
-        	p.id.toString -> p.name
-        },
-        '_label -> "Choose Problem",
-        '_default -> "None")
-        
-        <div class="form-actions">
-	        <button type="submit" class="btn btn-primary">@Messages("teams.addTeam")</button>
-	        <a href="@routes.Team.index" class="btn">@Messages("global.cancel")</a>
-      	</div>
-    }
+    		<div class="form-actions">
+    			<button type="submit" class="btn btn-primary">@Messages("global.add")</button>
+    			<a href="@routes.Team.index" class="btn">@Messages("global.cancel")</a>
+    		</div>
+    	}
     
     </div>
 }

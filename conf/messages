@@ -16,8 +16,8 @@ global.readMore = Read more »
 global.edit = Edit
 global.delete = Delete
 global.update = Update
+global.add = Add
 global.cancel = Cancel
-
 
 home.welcome = Welcome to hackaton.pl portal!
 home.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
@@ -48,21 +48,24 @@ profile.title = Your profile
 
 news.title = News
 news.labels = Labels: 
-news.notFound = News not found
 news.addNews = Add a news
-news.status.newsInserted = News %s successfully added
-news.status.newsUpdated = News %s successfully updated
-news.status.newsDeleted = News deleted
-newNews.title = Add a news
-newNews.addNews = Add
+news.notFound = News not found
+news.view.title = News
+news.create.title = Add a news
+news.edit.title = Edit a news
+news.status.added = News %s successfully added
+news.status.updated = News %s successfully updated
+news.status.deleted = News deleted
 
 problems.title = Problems
 problems.addProblem = Add a problem
-problems.added = Problem added
-problems.updated = Problem updated
-problems.deleted = Problem deleted
-newProblem.title = Add a problem
-newProblem.addProblem = Add a problem
+problems.notFound = Problem not found
+problems.view.title = Problem
+problems.create.title = Add a problem
+problems.edit.title = Edit a problem
+problems.status.added = Problem %s successfully added
+problems.status.updated = Problem %s successfully updated
+problems.status.deleted = Problem deleted
 
 teams.title = Teams
 teams.addTeam = Add a team
@@ -73,7 +76,6 @@ teams.edit.title = Edit a team
 teams.status.added = Team %s successfully added
 teams.status.updated = Team %s successfully updated
 teams.status.deleted = Team deleted
-
 
 social.twitter.share = Share
 social.twitter.follow = Follow

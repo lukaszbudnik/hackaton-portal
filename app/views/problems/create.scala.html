@@ -3,33 +3,32 @@
 @import helper._
 @import helper.twitterBootstrap._
 
-@main(Messages("newProblem.title"), Some(user), nav = "problems") {
+@main(Messages("problems.create.title"), Some(user), nav = "problems") {
 
 	<div class="container">
     
-    <h2>@Messages("newProblem.title")</h2>
+    	<h2>@Messages("problems.create.title")</h2>
   
-    @form(routes.Problem.save) {
+    	@form(routes.Problem.save) {
         
-        @inputText(problemForm("name")) 
-        @inputText(problemForm("description"))
+    		@inputText(problemForm("name")) 
+    		@inputText(problemForm("description"))
         
-        @select(problemForm("submitterId"), users.map{ u =>
-        	u.id.toString -> u.name
-        },
-        '_label -> "Choose User")
+    		@select(problemForm("submitterId"), users.map{ u =>
+    			u.id.toString -> u.name
+    		},
+    		'_label -> "Choose User")
         
-				@select(problemForm("hackathonId"), hackathons.map{ h =>
-        	h.id.toString -> h.subject
-        },
-        '_label -> "Choose Hackathon")
+			@select(problemForm("hackathonId"), hackathons.map{ h =>
+        		h.id.toString -> h.subject
+			},
+			'_label -> "Choose Hackathon")
         
-        <div class="form-actions">
-	        <button type="submit" class="btn btn-primary">@Messages("newProblem.addProblem")</button>
-	        <a href="@routes.Problem.index" class="btn">@Messages("global.cancel")</a>
-      	</div>
-        
-    }
+    		<div class="form-actions">
+    			<button type="submit" class="btn btn-primary">@Messages("global.add")</button>
+    			<a href="@routes.Problem.index" class="btn">@Messages("global.cancel")</a>
+    		</div>
+    	}
     
     </div>
 }

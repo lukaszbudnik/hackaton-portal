@@ -1,42 +1,43 @@
 @(problems: Iterable[model.Problem], users: Map[Long,String], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
 @import helper._
-@import tags._
 
-@main(Messages("home.welcome"), user, nav = "problems") {
-	<div class="container">
+@main(Messages("problems.title"), user, nav = "problems") {
+
+  <div class="container">
   
-    <div class="page-header">
-    <h1>@Messages("problems.title")</h1>
-    </div>
+    	<div class="page-header">
+    		<h1>@Messages("problems.title")</h1>
+    	</div>
 	
-	@flash.get("status").map { status =>
-	   <div class="alert alert-success">
-	   	<button type="button" class="close" data-dismiss="alert">×</button>
-       	<strong>@Messages(status)</strong>
-       </div>
-    }
+		@flash.get("status").map { status =>
+			@flash.get("title").map { title =>
+			   <div class="alert alert-success">
+			   	<button type="button" class="close" data-dismiss="alert">×</button>
+		       	<strong>@Messages("problems.status." + status).format(title)</strong>
+		       </div>
+	       }.getOrElse {
+	       		<div class="alert alert-success">
+			   	<button type="button" class="close" data-dismiss="alert">×</button>
+		       	<strong>@Messages("problems.status." + status)</strong>
+		       </div>
+	       }
+	    }
 
-      @problems.map { problem =>
-          <div class="page-header">
-    		<h2>@problem.name</h2>
-    		<p></p>
-    		<p>@users(problem.submitterId)</p>
-    		<p><a class="btn" href="@routes.Problem.view(problem.id)">@Messages("global.readMore")</a></p>
-  		</div>
-      }
+		@problems.map { problem =>
+          	<div class="page-header">
+    			<h2>@problem.name</h2>
+    			<p></p>
+    			<p>@users(problem.submitterId)</p>
+    			<p><a class="btn" href="@routes.Problem.view(problem.id)">@Messages("global.readMore")</a></p>
+  			</div>
+		}
               
     	<div class="form-actions">
     		<a class="btn btn-success" href="@routes.Problem.create">@Messages("problems.addProblem")</a>
         </div>
-  	
-      <footer>
-        <div class="social">
-        	@googlePlus(request.uri)
-        	@facebookLike(request.uri)
-        </div>
-        <p>&copy; @Messages("brand") @Messages("years")</p>
-      </footer>
+
+		@footer()
   	
   </div>
 }

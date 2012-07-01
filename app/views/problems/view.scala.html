@@ -2,7 +2,7 @@
 
 @import helper._
 
-@main(Messages("news.title"), user, nav = "problems") {
+@main(Messages("problems.view.title"), user, nav = "problems") {
     
     <div class="container">
     
@@ -11,7 +11,7 @@
 		@if(problem.isEmpty) {
 		    <h1>@Messages("problems.notFound")</h1>
     	} else {
-	    <h2>@problem.get.name</h2>
+    		<h2>@problem.get.name</h2>
 			<p>@users(problem.get.submitterId)</p>
 			<p>@problem.get.description</p>
 
@@ -24,8 +24,7 @@
     	}
     	
 	    </div>
-    
-  
+
     </div>
 
 }
