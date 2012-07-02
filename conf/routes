@@ -49,7 +49,7 @@ POST    /problems/:id/update        controllers.Problem.update(id: Long)
 # Delete
 POST    /problems/:id/delete        controllers.Problem.delete(id: Long)
 
-# Problems routes
+# Teams routes
 # Create
 GET     /teams/new               	controllers.Team.create
 POST    /teams                   	controllers.Team.save
@@ -76,4 +76,16 @@ POST    /locations/:id/update       controllers.Location.update(id: Long)
 POST    /locations/:id/delete       controllers.Location.delete(id: Long)
 
 # Hackathons routes
+# Create
+GET     /hackathons/new              controllers.Hackathon.create
+POST    /hackathons                  controllers.Hackathon.save
+# Retrieve
+GET     /hackathons                  controllers.Hackathon.index
+GET     /hackathons/:id              controllers.Hackathon.view(id: Long)
+# Update
+GET     /hackathons/:id/edit         controllers.Hackathon.edit(id: Long)
+POST    /hackathons/:id/update       controllers.Hackathon.update(id: Long)
+# Delete
+POST    /hackathons/:id/delete       controllers.Hackathon.delete(id: Long)
+
 GET     /hackathons.json            controllers.Hackathon.hackathonsJson
