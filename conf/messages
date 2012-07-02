@@ -50,11 +50,12 @@ news.title = News
 news.labels = Labels: 
 news.notFound = News not found
 news.addNews = Add a news
-news.status.newsInserted = News %s successfully added
-news.status.newsUpdated = News %s successfully updated
-news.status.newsDeleted = News deleted
-newNews.title = Add a news
-newNews.addNews = Add
+news.status.added = News %s successfully added
+news.status.updated = News %s successfully updated
+news.status.deleted = News deleted
+news.create.title = Add a news
+news.edit.title = Edit news
+news.publish = Publish
 
 problems.title = Problems
 problems.addProblem = Add a problem
@@ -74,6 +75,8 @@ teams.status.added = Team %s successfully added
 teams.status.updated = Team %s successfully updated
 teams.status.deleted = Team deleted
 
-
 social.twitter.share = Share
 social.twitter.follow = Follow
+
+securityAbuse.title = Security Abuse Detected
+securityAbuse.text = We have detected security abuse. Please refrain from such actions in future as we may draw consequences next time.

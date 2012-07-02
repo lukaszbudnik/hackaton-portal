@@ -44,7 +44,7 @@ object News extends Controller with securesocial.core.SecureSocial {
       },
       news => transaction {
         Model.news.insert(news)
-        Redirect(routes.News.index).flashing("status" -> "newsInserted",
+        Redirect(routes.News.index).flashing("status" -> "added",
         									 "title" -> news.title)
       }
     )
@@ -74,7 +74,7 @@ object News extends Controller with securesocial.core.SecureSocial {
               n.published := news.published
           )
 		)
-        Redirect(routes.News.index).flashing("status" -> "newsUpdated",
+        Redirect(routes.News.index).flashing("status" -> "updated",
         									 "title" -> news.title)
       }
     )
@@ -84,7 +84,7 @@ object News extends Controller with securesocial.core.SecureSocial {
     transaction {
       Model.news.deleteWhere(n => n.id === id)
     }
-    Redirect(routes.News.index).flashing("status" -> "newsDeleted")
+    Redirect(routes.News.index).flashing("status" -> "deleted")
   }
 
 }
