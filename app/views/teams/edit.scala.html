@@ -1,40 +1,13 @@
 @(id: Long, teamForm: Form[model.Team], users: List[model.User], hackathons: List[model.Hackathon], problems: List[model.Problem], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
 
-@import helper._
-@import helper.twitterBootstrap._
-
 @main(Messages("teams.edit.title"), Some(user), nav = "teams") {
 
 	<div class="container">
     
     	<h2>@Messages("teams.edit.title")</h2>
   
-    	@form(routes.Team.update(id)) {
-        
-    		@inputText(teamForm("name")) 
-        
-    		@select(teamForm("creatorId"), users.map{ u =>
-    			u.id.toString -> u.name
-    		},
-    		'_label -> "Choose User")
-        
-    		@select(teamForm("hackathonId"), hackathons.map{ h =>
-        		h.id.toString -> h.subject
-    		},
-    		'_label -> "Choose Hackathon")
-        
-    		@select(teamForm("problemId"), problems.map{ p =>
-        		p.id.toString -> p.name
-    		},
-    		'_label -> "Choose Problem",
-    		'_default -> "None")
-        
-    		<div class="form-actions">
-    			<button type="submit" class="btn btn-primary">@Messages("global.update")</button>
-	        	<a href="@routes.Team.index" class="btn">@Messages("global.cancel")</a>
-    		</div> 
-    	}
-    
+		@teams.teamForm(routes.Team.update(id), "global.update", teamForm, users, hackathons, problems)
+
     </div>
 }
 

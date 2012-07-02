@@ -13,11 +13,12 @@ navigation.login = Sign in
 global.learnMore = Learn more »
 global.viewDetails = View details »
 global.readMore = Read more »
-global.edit = Edit
-global.delete = Delete
-global.update = Update
 global.add = Add
+global.edit = Edit
+global.update = Update
+global.delete = Delete
 global.cancel = Cancel
+global.none = None
 
 home.welcome = Welcome to hackaton.pl portal!
 home.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
