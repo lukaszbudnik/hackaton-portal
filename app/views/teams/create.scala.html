@@ -2,12 +2,18 @@
 
 @main(Messages("teams.create.title"), Some(user), nav = "teams") {
 
-	<div class="container">
+  	<div class="container">
+	
+		<div class="content">
+                
+			<div class="page-header">
+				<h2>@Messages("teams.create.title")</h2>
+          	</div>
 
-		<h2>@Messages("teams.create.title")</h2>
+			@teams.teamForm(routes.Team.save, "global.add", teamForm, users, hackathons, problems)
 
-		@teams.teamForm(routes.Team.save, "global.add", teamForm, users, hackathons, problems)
-
+		</div>
+	
 	</div>
 }
 

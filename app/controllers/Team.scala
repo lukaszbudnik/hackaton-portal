@@ -3,15 +3,16 @@ package controllers
 import org.squeryl.PrimitiveTypeMode._
 
 import model.Model
-import play.api.data.Forms._
-import play.api.data._
 import play.api.mvc._
+import play.api.data._
+import play.api.data.Forms._
+import play.api.data.validation.Constraints._
 
 object Team extends Controller with securesocial.core.SecureSocial {
 
   val teamForm = Form(
     mapping(
-      "name" -> nonEmptyText,
+      "name" -> text.verifying("teams.name.error", !_.isEmpty()),
       "creatorId" -> longNumber,
       "hackathonId" -> longNumber,
       "problemId" -> optional(longNumber))(model.Team.apply)(model.Team.unapply))
