@@ -1,5 +1,6 @@
 @(newsForm: Form[model.News], users: List[model.User], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
 
+<<<<<<< HEAD
 @import helper._
 @import helper.twitterBootstrap._
 
@@ -26,6 +27,15 @@
     			<a href="@routes.News.index" class="btn">@Messages("global.cancel")</a>
     		</div>
     	}
+=======
+@main(Messages("news.create.title"), Some(user), nav = "news") {
+
+	<div class="container">
+    
+    <h2>@Messages("news.create.title")</h2>
+  
+    @news.newsForm(routes.News.save, newsForm, users)
+>>>>>>> master
     
     </div>
 }

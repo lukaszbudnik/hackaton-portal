@@ -8,27 +8,9 @@
 	<div class="container">
     
     <h2>@Messages("news.edit.title")</h2>
-  
-    @form(routes.News.update(id)) {
-        
-        @inputText(newsForm("title")) 
-        @textarea(newsForm("text"))
-        @inputText(newsForm("labels"))
-        
-        @select(newsForm("authorId"), users.map{ u =>
-        	u.id.toString -> u.name
-        },
-        '_label -> "Choose User")
-        
-        @inputText(newsForm("published"))
-        
-        <div class="form-actions">
-	        <button type="submit" class="btn btn-primary">@Messages("global.update")</button>
-	        <a href="@routes.News.index" class="btn">@Messages("global.cancel")</a>
-      	</div>
-        
-    }
-    
+
+	@news.newsForm(routes.News.update(id), newsForm, users)
+
     </div>
 }
 

@@ -1,0 +1,24 @@
+@(action: play.api.mvc.Call, newsForm: Form[model.News], users: List[model.User])
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@form(action) {
+        
+    @inputText(newsForm("title")) 
+    @textarea(newsForm("text"))
+    @inputText(newsForm("labels"))
+    
+    @select(newsForm("authorId"), users.map{ u =>
+    	u.id.toString -> u.name
+    },
+    '_label -> "Choose User")
+    
+    @inputText(newsForm("published"))
+    
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">@Messages("news.publish")</button>
+        <a href="@routes.News.index" class="btn">@Messages("global.cancel")</a>
+    </div>
+    
+}

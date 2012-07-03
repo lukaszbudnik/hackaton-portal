@@ -53,10 +53,11 @@ news.addNews = Add a news
 news.notFound = News not found
 news.view.title = News
 news.create.title = Add a news
-news.edit.title = Edit a news
+news.edit.title = Edit news
 news.status.added = News %s successfully added
 news.status.updated = News %s successfully updated
 news.status.deleted = News deleted
+news.publish = Publish
 
 problems.title = Problems
 problems.addProblem = Add a problem
@@ -85,3 +86,6 @@ teams.status.deleted = Team deleted
 
 social.twitter.share = Share
 social.twitter.follow = Follow
+
+securityAbuse.title = Security Abuse Detected
+securityAbuse.text = We have detected security abuse. Please refrain from such actions in future as we may draw consequences next time.
