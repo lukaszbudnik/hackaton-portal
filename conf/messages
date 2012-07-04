@@ -79,4 +79,4 @@ social.twitter.share = Share
 social.twitter.follow = Follow
 
 securityAbuse.title = Security Abuse Detected
-securityAbuse.text = We have detected security abuse. Please refrain from such actions in future as we may draw consequences next time.
+securityAbuse.text = Dear <strong>{0}</strong>! We have detected a security abuse. Please refrain from such actions in future as we may draw consequences next time.
