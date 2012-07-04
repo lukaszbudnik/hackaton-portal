@@ -5,12 +5,19 @@
 
 @main(Messages("problems.edit.title"), Some(user), nav = "problems") {
 
-	<div class="container">
-    
-    	<h2>@Messages("problems.edit.title")</h2>
-  
-    @problems.problemForm(routes.Problem.update(id), problemForm, users, hackathons)
-    
-    </div>
+      <div class="container">
+	
+		<div class="content">
+                
+			<div class="page-header">
+				<h2>@Messages("problems.edit.title")</h2>
+          	</div>
+
+			@problems.problemForm(routes.Problem.update(id), problemForm, users, hackathons)
+                
+		</div>
+	
+	</div>
+
 }
 

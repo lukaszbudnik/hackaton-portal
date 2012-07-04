@@ -4,13 +4,20 @@
 @import helper.twitterBootstrap._
 
 @main(Messages("problems.create.title"), Some(user), nav = "problems") {
-
-	<div class="container">
-    
-    	<h2>@Messages("problems.create.title")</h2>
   
-    @problems.problemForm(routes.Problem.save, problemForm, users, hackathons)
-    
-    </div>
+	<div class="container">
+	
+		<div class="content">
+                
+			<div class="page-header">
+				<h2>@Messages("problems.create.title")</h2>
+          	</div>
+
+			@problems.problemForm(routes.Problem.save, problemForm, users, hackathons)
+                
+		</div>
+	
+	</div>
+
 }
 

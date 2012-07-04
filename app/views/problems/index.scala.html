@@ -27,8 +27,7 @@
 		@problems.map { problem =>
           	<div class="page-header">
     			<h2>@problem.name</h2>
-    			<p></p>
-    			<p>@users(problem.submitterId)</p>
+    			<p>@Messages("problems.submitter.label"): @users(problem.submitterId)</p>
     			<p><a class="btn" href="@routes.Problem.view(problem.id)">@Messages("global.readMore")</a></p>
   			</div>
 		}
