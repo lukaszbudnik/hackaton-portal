@@ -1,6 +1,8 @@
 brand = hackaton.pl
 years = 2012
 
+error.date = Wrong date
+
 navigation.home = Home
 navigation.news = News
 navigation.problems = Problems
@@ -20,8 +22,6 @@ global.update = Update
 global.delete = Delete
 global.cancel = Cancel
 global.none = None
-
-error.date = Wrong date
 
 home.welcome = Welcome to hackaton.pl portal!
 home.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
@@ -52,6 +52,7 @@ profile.title = Your profile
 
 news.title = News
 news.addNews = Add a news
+news.publish = Publish
 news.notFound = News not found
 news.title.label = Title
 news.text.label = Text
@@ -64,7 +65,36 @@ news.edit.title = Edit news
 news.status.added = News %s successfully added
 news.status.updated = News %s successfully updated
 news.status.deleted = News deleted
-news.publish = Publish
+
+hackathons.title = Hackathons
+hackathons.addHackathon = Add a hackathon
+hackathons.notFound = Hackathon not found
+hackathons.subject.label = Subject
+hackathons.status.label = Status
+hackathons.submitter.label = Submitter
+hackathons.location.label = Location
+hackathons.view.title = Hackathon
+hackathons.create.title = Add a hackathon
+hackathons.edit.title = Edit hackathon
+hackathons.status.added = Hackathon %s successfully added
+hackathons.status.updated = Hackathon %s successfully updated
+hackathons.status.deleted = Hackathon deleted
+
+locations.title = Locations
+locations.addLocation = Add a location
+locations.name.label = Location name
+locations.country.label = Country
+locations.city.label = City
+locations.postalCode.label = Postal code
+locations.fullAddress.label = Address
+locations.latitude.label = Lat
+locations.longitude.label = Long 
+locations.view.title = Location
+locations.create.title = Add a location
+locations.edit.title = Edit location
+locations.status.added = Location %s successfully added
+locations.status.updated = Location %s successfully updated
+locations.status.deleted = Location deleted
 
 problems.title = Problems
 problems.addProblem = Add a problem

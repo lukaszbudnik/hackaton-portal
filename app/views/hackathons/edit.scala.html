@@ -1,37 +1,7 @@
 @(id: Long, hackathonForm: Form[model.Hackathon], users: List[model.User], locations: List[model.Location], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
 
-@import helper._
-@import helper.twitterBootstrap._
+@main2("hackathons.edit.title", "hackathons", Some(user)) {
 
-@main(Messages("hackathons.edit.title"), Some(user), nav = "locations") {
+  @hackathons.hackathonForm(routes.Hackathon.update(id), hackathonForm, users, locations)
 
-	<div class="container">
-    
-    <h2>@Messages("hackathons.edit.title")</h2>
-  
-    @form(routes.Hackathon.update(id)) {
-
-        @inputText(hackathonForm("subject"))
-
-        @inputText(hackathonForm("status"))
-
-        @select(hackathonForm("submitterId"), users.map{ u =>
-        u.id.toString -> u.name
-        },
-        '_label -> "Choose User")
-
-        @select(hackathonForm("locationId"), locations.map{ l =>
-        l.id.toString -> l.name
-        },
-        '_label -> "Choose location")
-        
-        <div class="form-actions">
-	        <button type="submit" class="btn btn-primary">@Messages("global.update")</button>
-	        <a href="@routes.Hackathon.index" class="btn">@Messages("global.cancel")</a>
-      	</div>
-        
-    }
-    
-    </div>
 }
-
