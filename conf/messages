@@ -1,6 +1,8 @@
 brand = hackaton.pl
 years = 2012
 
+error.date = Wrong date
+
 navigation.home = Home
 navigation.news = News
 navigation.problems = Problems
@@ -20,8 +22,6 @@ global.update = Update
 global.delete = Delete
 global.cancel = Cancel
 global.none = None
-
-error.date = Wrong date
 
 home.welcome = Welcome to hackaton.pl portal!
 home.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
@@ -52,6 +52,7 @@ profile.title = Your profile
 
 news.title = News
 news.addNews = Add a news
+news.publish = Publish
 news.notFound = News not found
 news.title.label = Title
 news.text.label = Text
@@ -64,7 +65,6 @@ news.edit.title = Edit news
 news.status.added = News %s successfully added
 news.status.updated = News %s successfully updated
 news.status.deleted = News deleted
-news.publish = Publish
 
 problems.title = Problems
 problems.addProblem = Add a problem
