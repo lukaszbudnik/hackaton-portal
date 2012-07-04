@@ -1,60 +1,54 @@
+about.idea.text      = Hackatony to charytatywne imprezy na których programiści, konsultanci, menadżerowie wspólnie z przedstawicielami organizacji rządowych, pozarządowych, charytatywnych, służby zdrowia spotykają się razem aby w swoim wolnym czasie spróbować rozwiązać problemy za pomocą dedykowanego oprogramowania. Hackatony zazwyczaj trwają dwa dni (i nierzadko dwie noce). A wszystko to za darmo z głębokiego przekonania, że czasami warto zrobić coś bezinteresownie dla drugiego człowieka!
+about.idea.title     = O hackatonach
+about.platform.text  = Hackton.pl wykorzystuje platformę hackaton-portal. Jest to platforma do organizowania i zarządzania hackatonami stworzona przez grupę entuzjastów. hackaton-portal to inicjatywa open-source i jest dystrybuowana na zasadach licencji Apache License 2.0 czyli każdy może dowolnie wykorzystywać ją i modyfikować. Dlatego też zachęcamy wszystkich do stworzenia własnego forka i współpracy nad tworzeniem kolejnych wersji portalu. Oficjalny link do naszego repozytorium to: <a href="http://github.com/lukasz-budnik/hackathon-portal" target="_blank">hackathon-portal</a>.
+about.platform.title = O platformie hackton-portal
+about.title          = O hackatonach
+
 brand = hackaton.pl
 years = 2012
 
-navigation.home = Domek!
-navigation.news = Wiadomosci
-navigation.problems = Problemy
-navigation.teams = Teams
-navigation.about = About
-navigation.contact = Contact
-navigation.sponsors = Sponsors
-navigation.login = Sign in
+contact.text  = W razie jakichkolwiek pytań dotyczących hackaton.pl lub platformy hackaton-portal, prosimy o kontakt z  <a href="mail:lukasz.budnik@gmail.com">Łukaszem Budnikem</a>.<br/>W razie jakichkolwiek pytań dotyczących konkretnego hackatonu należy przejść do konkretnego hackatony gdzie podane są dane kontaktowe organizatora.
+contact.title = Kontakt
 
-global.learnMore = Learn more »
-global.viewDetails = View details »
-global.readMore = Read more »
-global.edit = Edit
-global.delete = Delete
-global.update = Update
-global.cancel = Cancel
+global.cancel      = Anuluj
+global.delete      = Usuń
+global.edit        = Edytuj
+global.learnMore   = Dowiedz się więcej »
+global.readMore    = Czytaj więcej »
+global.update      = Zapisz
+global.viewDetails = Zobacz szczegóły »
 
-
-home.welcome = Welcome to hackaton.pl portal!
-home.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
-
-home.news1.title = Follow us!
-home.news1.text = Follow us on Twitter, like us on Facebox, +1'd us on G+.
-
-home.news2.title = Join our development team
-home.news2.text = hackaton-portal is an open-source project. Join us and help us developing this platform.
-
+home.news1.text  = Tweetnij o nas, śledź nas, lub nas, daj nam +1! Pomoż nam wypromować ideę hackatonów w Polsce!
+home.news1.title = Śledź nas!
+home.news2.text  = Strona hackaton.pl oraz platforma hackaton-portal są tworzone przez entuzjastów dla entuzjastów. Chętnych rąk do pracy nigdy nie jest za mało, dowiedź się więcej jak możesz nam pomóc.
+home.news2.title = Dołącz do naszego zespołu
+home.news3.text  = If you wish to become a sponsor do not hesitate to contact us. A full list of our sponsors is here.
 home.news3.title = Become a sponsor
-home.news3.text = If you wish to become a sponsor do not hesitate to contact us. A full list of our sponsors is here.
 
-about.title = About Hackathons
-about.idea.title = About Hackathons
-about.idea.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
- 
-about.platform.title = About hackton-portal
-about.platform.text = Hackton-portal (a platform which powers this site) is an open-source project licensed under Apache License 2.0. Feel free to fork and contribute using GitHub: <a href="http://github.com/lukasz-budnik/hackathon-portal" target="_blank">hackathon-portal</a>.
+home.text        = Hackatony to charytatywne imprezy na których programiści, konsultanci menadżerowie wspólnie z przedstawicielami organizacji rządowych, pozarządowych, charytatywnych, służby zdrowia spotykają się razem aby w swoim wolnym czasie spróbować rozwiązać problemy za pomocą dedykowanego oprogramowania. Hackatony zazwyczaj trwają dwa dni (i nierzadko dwie noce). A wszystko to za darmo z głębokiego przekonania, że czasami warto zrobić coś bezinteresownie dla drugiego człowieka!
+home.welcome     = Witamy na stronie hackaton.pl!
 
-contact.title = Contact
-contact.text = For any queries regarding the hackaton.pl or hackaton-portal please contact Łukasz Budnik at l.budnik@kainos.com. If you wish to ask about a specific hackathon please go to its home page and see contact details.
+navigation.about    = O hackatonach
+navigation.contact  = Kontakt
+navigation.home     = Strona główna
+navigation.login    = Zaloguj się
+navigation.news     = Wiadomości
+navigation.problems = Problemy
+navigation.sponsors = Sponsorzy
+navigation.teams    = Zespoły
 
-sponsors.title = Our Sponsors
-sponsors.text = We'd like to thank the following companies and organisations for supporting Hackaton.pl portal. Thanks!
+profile.title = Twoje konto
 
-profile.title = Your profile
-
-news.title = News
-news.labels = Labels: 
-news.notFound = News not found
-news.addNews = Add a news
-news.status.newsInserted = News %s successfully added
-news.status.newsUpdated = News %s successfully updated
-news.status.newsDeleted = News deleted
-newNews.title = Add a news
-newNews.addNews = Add
+news.title = Wiadomości
+news.labels = Tagi: 
+news.notFound = Wiadomość nie znaleziona
+news.addNews = Dodaj wiadomość
+news.status.added = Wiadomość '%s' dodana
+news.status.updated = Wiadomość '%s' zaktualizowana
+news.status.deleted = Wiadomość usunięta
+news.create.title = Dodaj wiadomość
+news.edit.title = Edytuj wiadomość
+news.publish = Opublikuj
 
 problems.title = Problems
 problems.addProblem = Add a problem
@@ -74,6 +68,8 @@ teams.status.added = Team %s successfully added
 teams.status.updated = Team %s successfully updated
 teams.status.deleted = Team deleted
 
-
 social.twitter.share = Share
 social.twitter.follow = Follow
+
+securityAbuse.title = Security Abuse Detected
+securityAbuse.text = We have detected security abuse. Please refrain from such actions in future as we may draw consequences next time.
