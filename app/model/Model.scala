@@ -28,9 +28,11 @@ case class Problem(name: String, description: String, @Column("submitter_id") su
   val id: Long = 0L
 }
 
-case class Hackathon(subject: String, status: String, @Column("submitter_id") submitterId: Long, @Column("location_id") locationId: Long) extends KeyedEntity[Long] {
+case class Hackathon(subject: String, status: HackathonStatus.Value, @Column("submitter_id") submitterId: Long, @Column("location_id") locationId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
   lazy val location: ManyToOne[Location] = Model.locationToHackathons.right(this)
+
+  def this() = this("", HackathonStatus.Planning, 1, 1)
 }
 
 case class Location(country: String,
@@ -56,6 +58,12 @@ object OrderByDirection extends Enumeration {
   type Direction = Value
   val Asc = Value("Asc")
   val Desc = Value("Desc")
+}
+
+object HackathonStatus extends Enumeration {
+  val Planning = Value(1, "Planning")
+  val InProgress = Value(2, "InProgress")
+  val Finished = Value(3, "Finished")
 }
 
 object Model extends Schema {

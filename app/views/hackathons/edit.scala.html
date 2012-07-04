@@ -13,7 +13,9 @@
 
         @inputText(hackathonForm("subject"))
 
-        @inputText(hackathonForm("status"))
+        @select(hackathonForm("status"), model.HackathonStatus.values.map{ s =>
+        s.toString -> s.toString}.toSeq,
+        '_label -> "Choose status")
 
         @select(hackathonForm("submitterId"), users.map{ u =>
         u.id.toString -> u.name

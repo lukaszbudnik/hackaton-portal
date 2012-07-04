@@ -5,11 +5,12 @@ import data.Form
 import data.Forms._
 import play.api.mvc._
 import play.api.i18n._
-import model.Model
+import model._
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.Schema
 import org.squeryl.KeyedEntity
 import org.squeryl.annotations.Column
+import helpers.Forms._
 
 object Hackathon extends Controller with securesocial.core.SecureSocial {
 
@@ -23,7 +24,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
   val hackathonForm = Form(
     mapping(
       "subject" -> nonEmptyText,
-      "status" -> nonEmptyText,
+      "status" -> enum(HackathonStatus),
       "submitterId" -> longNumber,
       "locationId" -> longNumber)(model.Hackathon.apply)(model.Hackathon.unapply))
 
