@@ -21,6 +21,8 @@ global.delete = Delete
 global.cancel = Cancel
 global.none = None
 
+error.date = Wrong date
+
 home.welcome = Welcome to hackaton.pl portal!
 home.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
 
@@ -49,9 +51,13 @@ sponsors.text = We'd like to thank the following companies and organisations for
 profile.title = Your profile
 
 news.title = News
-news.labels = Labels: 
 news.addNews = Add a news
 news.notFound = News not found
+news.title.label = Title
+news.text.label = Text
+news.labels.label = Tags
+news.author.label = Author
+news.published.label = Published
 news.view.title = News
 news.create.title = Add a news
 news.edit.title = Edit news

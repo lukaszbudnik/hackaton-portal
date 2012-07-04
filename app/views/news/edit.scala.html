@@ -1,16 +1,7 @@
 @(id: Long, newsForm: Form[model.News], users: List[model.User], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
 
-@import helper._
-@import helper.twitterBootstrap._
+@main2("news.edit.title", "news", Some(user)) {
 
-@main(Messages("news.edit.title"), Some(user), nav = "news") {
+  @news.newsForm(routes.News.update(id), newsForm, users)
 
-	<div class="container">
-    
-    <h2>@Messages("news.edit.title")</h2>
-
-	@news.newsForm(routes.News.update(id), newsForm, users)
-
-    </div>
 }
-

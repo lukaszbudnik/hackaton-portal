@@ -11,22 +11,22 @@
     	@news.map { n =>
 		    <h2>@n.title</h2>
 			<p>@Html(n.text)</p>
-			<p>@n.author.head.name @n.published</p>
-			<p>@Messages("news.labels") 
-			@for(l <- n.labels.split(",")) {
-			  <span class="label">@l</span>
-			}
+			<p>@Messages("news.author.label"): @n.author.head.name @Messages("news.published.label"): @n.published</p>
+			<p>@Messages("news.labels.label"):
+				@for(l <- n.labels.split(",")) {
+				<span class="label">@l</span>
+				}
 			</p>
 			@if(user) {
 			<div class="form-actions">
 	    		@form(routes.News.delete(n.id)) {
-		    		<a class="btn btn-success" href="@routes.News.edit(n.id)">@Messages("global.edit")</a>
-	                <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+		    	<a class="btn btn-success" href="@routes.News.edit(n.id)">@Messages("global.edit")</a>
+	            <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
 	            }
             }
             </div>
-    	}.getOrElse {
-    		<h1>@Messages("news.notFound")</h1>
+		}.getOrElse {
+    		<h2>@Messages("news.notFound")</h2>
     	}
     	
 	    </div>

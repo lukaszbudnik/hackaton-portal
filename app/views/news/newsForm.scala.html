@@ -3,22 +3,43 @@
 @import helper._
 @import helper.twitterBootstrap._
 
-@form(action) {
-        
-    @inputText(newsForm("title")) 
-    @textarea(newsForm("text"))
-    @inputText(newsForm("labels"))
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
+
+@form(action, 'class -> "form-horizontal") {
+  
+  	@inputText(
+	    newsForm("title"),
+	    '_label -> Messages("news.title.label"),
+	    '_showConstraints -> false
+	)
+	
+	@textarea(
+	    newsForm("text"),
+	    '_label -> Messages("news.text.label"),
+	    '_showConstraints -> false
+	)
+	
+    @inputText(
+	    newsForm("labels"),
+	    '_label -> Messages("news.labels.label"),
+	    '_showConstraints -> false
+	)    
+
+    @select(
+        newsForm("authorId"),
+        users.map{ u => u.id.toString -> u.name },
+        '_label -> Messages("news.author.label"),
+        '_showConstraints -> false
+    )
     
-    @select(newsForm("authorId"), users.map{ u =>
-    	u.id.toString -> u.name
-    },
-    '_label -> "Choose User")
-    
-    @inputText(newsForm("published"))
+  	@inputDate(
+	    newsForm("published"),
+	    '_label -> Messages("news.published.label"),
+	    '_showConstraints -> false
+	)   
     
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">@Messages("news.publish")</button>
         <a href="@routes.News.index" class="btn">@Messages("global.cancel")</a>
     </div>
-    
 }

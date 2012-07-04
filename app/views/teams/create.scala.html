@@ -1,19 +1,7 @@
 @(teamForm: Form[model.Team], users: List[model.User], hackathons: List[model.Hackathon], problems: List[model.Problem],user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
 
-@main(Messages("teams.create.title"), Some(user), nav = "teams") {
+@main2("teams.create.title", "teams", Some(user)) {
 
-  	<div class="container">
-	
-		<div class="content">
-                
-			<div class="page-header">
-				<h2>@Messages("teams.create.title")</h2>
-          	</div>
+  @teams.teamForm(routes.Team.save, "global.add", teamForm, users, hackathons, problems)
 
-			@teams.teamForm(routes.Team.save, "global.add", teamForm, users, hackathons, problems)
-
-		</div>
-	
-	</div>
 }
-

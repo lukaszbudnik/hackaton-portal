@@ -1,23 +1,7 @@
 @(id: Long, problemForm: Form[model.Problem], users: List[model.User], hackathons: List[model.Hackathon], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
 
-@import helper._
-@import helper.twitterBootstrap._
+@main2("problems.edit.title", "problems", Some(user)) {
 
-@main(Messages("problems.edit.title"), Some(user), nav = "problems") {
-
-      <div class="container">
-	
-		<div class="content">
-                
-			<div class="page-header">
-				<h2>@Messages("problems.edit.title")</h2>
-          	</div>
-
-			@problems.problemForm(routes.Problem.update(id), problemForm, users, hackathons)
-                
-		</div>
-	
-	</div>
+  @problems.problemForm(routes.Problem.update(id), problemForm, users, hackathons)
 
 }
-
