@@ -31,8 +31,8 @@
             <div class="page-header">
 	    		<h2>@n.title</h2>
 	    		<p>@Html(n.text.split("<!--more-->").head)...</p>
-	    		<p>@n.author.head.name @n.published</p>
-	    		<p>@Messages("news.labels") 
+	    		<p>@Messages("news.author.label"): @n.author.head.name @Messages("news.published.label"): @n.published</p>
+	    		<p>@Messages("news.labels.label"):
 				@for(l <- n.labels.split(",")) {
 				  <span class="label">@l</span>
 				}
@@ -47,20 +47,13 @@
 	        </div>
         }
     	
-	      <footer>
-	        <div class="social">
-	        	@googlePlus(request.uri)
-	        	@facebookLike(request.uri)
-	        </div>
-	        <p>&copy; @Messages("brand") @Messages("years")</p>
-	      </footer>
+		@footer()
     	
-	      </div>
-	      
-	    	<div class="span3">
-	    		@twitterStream()
-	    	</div>
-    	</div>
-    	</div>
+		</div>
+	   
+	    <div class="span3">
+	    	@twitterStream()
+	    </div>
+    </div>
 }
 

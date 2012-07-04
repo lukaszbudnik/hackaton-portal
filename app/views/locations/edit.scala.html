@@ -1,37 +1,7 @@
 @(id: Long, locationForm: Form[model.Location], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
 
-@import helper._
-@import helper.twitterBootstrap._
+@main2("locations.edit.title", "locations", Some(user)) {
 
-@main(Messages("locations.edit.title"), Some(user), nav = "locations") {
+  @locations.locationForm(routes.Location.update(id), locationForm)
 
-	<div class="container">
-    
-    <h2>@Messages("locations.edit.title")</h2>
-  
-    @form(routes.Location.update(id)) {
-
-        @inputText(locationForm("name"))
-
-        @inputText(locationForm("country"))
-
-        @inputText(locationForm("city"))
-
-        @inputText(locationForm("postalCode"))
-
-        @inputText(locationForm("fullAddress"))
-
-        @inputText(locationForm("latitude"))
-
-        @inputText(locationForm("longitude"))
-        
-        <div class="form-actions">
-	        <button type="submit" class="btn btn-primary">@Messages("global.update")</button>
-	        <a href="@routes.Location.index" class="btn">@Messages("global.cancel")</a>
-      	</div>
-        
-    }
-    
-    </div>
 }
-
