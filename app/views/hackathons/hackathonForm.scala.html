@@ -1,0 +1,42 @@
+@(action: play.api.mvc.Call, hackathonForm: Form[model.Hackathon], users: List[model.User], locations: List[model.Location])
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
+
+@form(action, 'class -> "form-horizontal") {
+
+	@inputText(
+	    hackathonForm("subject"),
+	    '_label -> Messages("hackathons.subject.label"),
+	    '_showConstraints -> false
+	)
+
+	@select(
+	    hackathonForm("status"),
+	    model.HackathonStatus.values.map{ s => s.toString -> s.toString}.toSeq,
+	    '_label -> Messages("hackathons.status.label"),
+	    '_showConstraints -> false
+	)
+        
+	@select(
+	    hackathonForm("submitterId"),
+	    users.map{ u => u.id.toString -> u.name },
+	    '_label -> Messages("hackathons.submitter.label"),
+		'_showConstraints -> false
+	)
+	
+	@select(
+	    hackathonForm("locationId"),
+	    locations.map{ l => l.id.toString -> l.name },
+        '_label -> Messages("hackathons.location.label"),
+	    '_showConstraints -> false
+    )
+	
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">@Messages("global.submit")</button>
+        <a href="@routes.Hackathon.index" class="btn">@Messages("global.cancel")</a>
+  	</div>
+        
+}

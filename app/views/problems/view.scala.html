@@ -2,31 +2,40 @@
 
 @import helper._
 
-@main(Messages("news.title"), user, nav = "problems") {
-    
-    <div class="container">
-    
-		<div class="page-header">
-
-		@if(problem.isEmpty) {
-		    <h1>@Messages("problems.notFound")</h1>
-    	} else {
-	    <h2>@problem.get.name</h2>
-			<p>@users(problem.get.submitterId)</p>
-			<p>@problem.get.description</p>
-
-			<div class="form-actions">
-	    		@form(routes.Problem.delete(problem.get.id)) {
-		    		<a class="btn btn-success" href="@routes.Problem.edit(problem.get.id)">@Messages("global.edit")</a>
-	                <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-	        }
-            </div>
-    	}
-    	
-	    </div>
-    
+@main(Messages("problems.view.title"), user, nav = "problems") {
   
-    </div>
+	<div class="container">
+	
+		<div class="content">
+                
+			<div class="page-header">
+				@if(problem.isEmpty) {
+				<h2>@Messages("problems.notFound")</h2>
+				} else {
+				<h2>@problem.get.name</h2>
+				}
+    	   	</div>
+
+		    @if(!problem.isEmpty) {
+		    <div class="row">
+		    	<div class="span12">
+		    		<p>@Messages("problems.description.label"): @problem.get.description</p>
+		    		<p>@Messages("problems.hackathon.label"): </p>
+		    		<p>@Messages("problems.submitter.label"): @users(problem.get.submitterId)</p>
+
+		    		<div class="form-actions">
+	    				@form(routes.Problem.delete(problem.get.id)) {
+	    				<a class="btn btn-success" href="@routes.Problem.edit(problem.get.id)">@Messages("global.edit")</a>
+	    				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+	    				}
+	    			</div>
+		    	</div>
+		   	</div>
+		    }
+
+		</div>
+	
+	</div>
 
 }
 

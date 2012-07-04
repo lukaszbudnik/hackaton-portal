@@ -11,20 +11,18 @@ object News extends Controller with securesocial.core.SecureSocial {
 
   val newsForm = Form(
     mapping(
-      "title"     -> nonEmptyText,
-      "text"      -> nonEmptyText,
-      "labels"    -> nonEmptyText,
-      "authorId"  -> longNumber,
-      "published" -> date("dd/MM/yyyy")
-    )(model.News.apply)(model.News.unapply)
-  )
+      "title" -> nonEmptyText,
+      "text" -> nonEmptyText,
+      "labels" -> nonEmptyText,
+      "authorId" -> longNumber,
+      "published" -> date("dd/MM/yyyy"))(model.News.apply)(model.News.unapply))
 
   def index = UserAwareAction { implicit request =>
     transaction {
       Ok(views.html.news.index(Model.allNewsSortedByDateDesc.toList, request.user))
     }
   }
-  
+
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
       Ok(views.html.news.view(Model.news.lookup(id), request.user))
@@ -39,17 +37,15 @@ object News extends Controller with securesocial.core.SecureSocial {
 
   def save = SecuredAction() { implicit request =>
     newsForm.bindFromRequest.fold(
-      errors =>  transaction {
+      errors => transaction {
         BadRequest(views.html.news.create(errors, Model.users.toList, request.user))
       },
       news => transaction {
         Model.news.insert(news)
-        Redirect(routes.News.index).flashing("status" -> "added",
-        									 "title" -> news.title)
-      }
-    )
+        Redirect(routes.News.index).flashing("status" -> "added", "title" -> news.title)
+      })
   }
-  
+
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
       Model.news.lookup(id).map { news =>
@@ -57,27 +53,23 @@ object News extends Controller with securesocial.core.SecureSocial {
       }.get
     }
   }
-  
+
   def update(id: Long) = SecuredAction() { implicit request =>
     newsForm.bindFromRequest.fold(
-      errors =>  transaction {
+      errors => transaction {
         BadRequest(views.html.news.edit(id, errors, Model.users.toList, request.user))
       },
       news => transaction {
         Model.news.update(n =>
           where(n.id === id)
-          set(
+            set (
               n.title := news.title,
               n.text := news.text,
               n.labels := news.labels,
               n.authorId := news.authorId,
-              n.published := news.published
-          )
-		)
-        Redirect(routes.News.index).flashing("status" -> "updated",
-        									 "title" -> news.title)
-      }
-    )
+              n.published := news.published))
+        Redirect(routes.News.index).flashing("status" -> "updated", "title" -> news.title)
+      })
   }
 
   def delete(id: Long) = SecuredAction() { implicit request =>
