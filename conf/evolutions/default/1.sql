@@ -119,11 +119,11 @@ DROP SEQUENCE problem_id_seq;
 DROP TABLE teams CASCADE;
 DROP SEQUENCE team_id_seq;
 
-DROP TABLE users CASCADE;
-DROP SEQUENCE user_id_seq;
-
 DROP TABLE users_roles CASCADE;
 DROP SEQUENCE user_role_id_seq;
+
+DROP TABLE users CASCADE;
+DROP SEQUENCE user_id_seq;
 
 DROP TABLE roles CASCADE;
 DROP SEQUENCE role_id_seq;

@@ -124,6 +124,8 @@ teams.edit.title = Edit team
 teams.status.added = Team %s successfully added
 teams.status.updated = Team %s successfully updated
 teams.status.deleted = Team deleted
+teams.members.label = Team members
+teams.members.empty_label = No team members yet!
 
 social.twitter.share = Share
 social.twitter.follow = Follow
