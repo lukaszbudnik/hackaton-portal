@@ -3,7 +3,7 @@
 
 # --- !Ups 
 
-insert into users (name, email, github_username, open_id) values ('Łukasz Budnik','email', 'lukasz-budnik', '108382012254355503021google');
+insert into users (name, email, github_username, open_id) values ('Lukasz Budnik','email', 'lukasz-budnik', '108382012254355503021google');
 insert into users (name, email, github_username, open_id) values ('test','email', 'test', 'open_id_test');
 
 insert into roles (name) values ('admin');
