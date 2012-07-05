@@ -36,7 +36,7 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
         Logger.debug("Adding the following roles " + roles + " to user " + socialUser)
       }
 
-      val socialUserWithRoles = socialUser.copy(roles = roles)
+      val socialUserWithRoles = socialUser.copy(hackathonUserId = dbUser.id, roles = roles)
 
       users = users + (socialUserWithRoles.id.id + socialUserWithRoles.id.providerId -> socialUserWithRoles)
       socialUserWithRoles

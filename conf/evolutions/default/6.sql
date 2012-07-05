@@ -17,7 +17,6 @@ CREATE TABLE prizes (
     PRIMARY KEY (id)
 );
 
-
 # --- !Downs
 
 DROP TABLE prizes CASCADE;
