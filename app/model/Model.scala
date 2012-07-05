@@ -29,7 +29,12 @@ case class Problem(name: String, description: String, @Column("submitter_id") su
   val id: Long = 0L
 }
 
-case class Prize(name: String, description: String, @Column("prize_order") order: String, @Column("hackathon_id") hackathonId: Long) extends KeyedEntity[Long] {
+case class Prize(name: String, 
+				 description: String, 
+				 @Column("prize_order") order: Int,
+				 @Column("founder_name") founderName: Option[String],
+				 @Column("founder_web_page") founderWebPage: Option[String],
+				 @Column("hackathon_id") hackathonId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
 }
 
@@ -141,6 +146,13 @@ object Model extends Schema {
   
   def allPrizes(): Iterable[Prize] = {
     prizes.toIterable		  
+  }
+  
+  def allPrizesOrdered(): Iterable[Prize] = {
+	from (prizes)(p =>
+	  select(p)
+	  orderBy(p.order asc)
+    )
   }
   
   def lookupPrize(id: Long): Option[Prize] = {

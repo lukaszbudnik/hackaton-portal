@@ -14,8 +14,20 @@
     	
 	    <h2>@prize.get.name</h2>
 		<p>@prize.get.description</p>
-		<p>@prize.get.order</p>
-
+		
+		@if(!prize.get.founderName.isEmpty) {
+			<h3>Founded by 
+			
+			@if(!prize.get.founderWebPage.isEmpty) {
+				<a href="@prize.get.founderWebPage">@prize.get.founderName</a>
+			} else {
+				@prize.get.founderName
+			}
+			
+			</h3>
+		}
+		
+		<p></p>
 
 			<div class="form-actions">
 	    		@form(routes.Prize.delete(prize.get.id)) {
