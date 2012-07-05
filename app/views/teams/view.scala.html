@@ -1,4 +1,4 @@
-@(team: Option[model.Team], teamMembers: Iterable[model.User], users: Map[Long, String], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+@(team: Option[model.Team], teamMembers: Iterable[model.User], users: Map[Long, String], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
 @import helper._
 
@@ -16,6 +16,13 @@
 				}
     	   	</div>
 
+			@flash.get("status").map { status =>
+				<div class="alert alert-success">
+					<button type="button" class="close" data-dismiss="alert">×</button>
+		       		<strong>@Messages("teams.status." + status)</strong>
+				</div>
+			}
+
 		    @if(!team.isEmpty) {
 		    <div class="row">
 		    	<div class="span12">
@@ -26,7 +33,7 @@
 					@if(!teamMembers.isEmpty) {
 						<h2>@Messages("teams.members.label")</h2>
 					} else {
-						<h2>@Messages("teams.members.empty_label")</h2>
+						<h2>@Messages("teams.noMembers")</h2>
 					}
 					
 					<ul>
@@ -37,9 +44,10 @@
 
 		   			<div class="form-actions">
 		    			@form(routes.Team.delete(team.get.id)) {
+		    			<a class="btn btn-warning" href="@routes.Team.join(team.get.id)">@Messages("teams.join")</a>  
 		    			<a class="btn btn-success" href="@routes.Team.edit(team.get.id)">@Messages("global.edit")</a>
 		   				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-		   				}
+		    			}
 		   			</div>
 		    	</div>
 		   	</div>

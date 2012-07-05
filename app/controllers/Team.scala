@@ -80,5 +80,9 @@ object Team extends Controller with securesocial.core.SecureSocial {
     }
     Redirect(routes.Team.index).flashing("status" -> "deleted")
   }
+  
+  def join(id: Long) = SecuredAction() { implicit request =>
+    Redirect(routes.Team.view(id)).flashing("status" -> "joined")
+  }
 
 }
