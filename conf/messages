@@ -7,6 +7,7 @@ navigation.problems = Problems
 navigation.teams = Teams
 navigation.about = About
 navigation.contact = Contact
+navigation.prizes = Prizes
 navigation.sponsors = Sponsors
 navigation.login = Sign in
 
@@ -14,6 +15,7 @@ global.learnMore = Learn more »
 global.viewDetails = View details »
 global.readMore = Read more »
 global.edit = Edit
+global.create = Create
 global.delete = Delete
 global.update = Update
 global.cancel = Cancel
@@ -74,6 +76,14 @@ teams.edit.title = Edit a team
 teams.status.added = Team %s successfully added
 teams.status.updated = Team %s successfully updated
 teams.status.deleted = Team deleted
+
+prizes.title = Prizes
+prizes.addPrize = Add a prize
+prizes.added = Prize added
+prizes.updated = Prize updated
+prizes.deleted = Prize deleted
+newPrize.title = Add a prize
+newPrize.addProblem = Add a prize
 
 social.twitter.share = Share
 social.twitter.follow = Follow

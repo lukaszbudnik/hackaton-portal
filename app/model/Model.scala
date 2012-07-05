@@ -28,6 +28,10 @@ case class Problem(name: String, description: String, @Column("submitter_id") su
   val id: Long = 0L
 }
 
+case class Prize(name: String, description: String, @Column("prize_order") order: String, @Column("hackathon_id") hackathonId: Long) extends KeyedEntity[Long] {
+  val id: Long = 0L
+}
+
 case class Hackathon(subject: String, status: HackathonStatus.Value, @Column("submitter_id") submitterId: Long, @Column("location_id") locationId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
   lazy val location: ManyToOne[Location] = Model.locationToHackathons.right(this)
@@ -67,8 +71,10 @@ object HackathonStatus extends Enumeration {
 }
 
 object Model extends Schema {
+  
   val news = table[News]
   val problems = table[Problem]("problems")
+  val prizes = table[Prize]("prizes")
   val users = table[User]("users")
   val roles = table[Role]("roles")
   val hackathons = table[Hackathon]("hackathons")
@@ -121,6 +127,14 @@ object Model extends Schema {
     users.lookup(id)
   }
   
+  def allPrizes(): Iterable[Prize] = {
+    prizes.toIterable		  
+  }
+  
+  def lookupPrize(id: Long): Option[Prize] = {
+    prizes.lookup(id)
+  }
+    
   def findUserByOpenId(openId: String): Option[User] = {
     users.where(u => u.openId === openId).headOption
   }
