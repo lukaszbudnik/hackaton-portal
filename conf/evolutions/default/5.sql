@@ -2,20 +2,6 @@
  
 # --- !Ups
 
-CREATE SEQUENCE prize_id_seq;
-
-CREATE TABLE prizes (
-    id integer NOT NULL DEFAULT nextval('prize_id_seq'),
-    name varchar(255),
-    description text,
-    prize_order varchar(128),
-    
-    hackathon_id integer NOT NULL,
-    
-    FOREIGN KEY (hackathon_id) REFERENCES hackathons(id),
-    PRIMARY KEY (id)
-);
-
 CREATE SEQUENCE user_team_id_seq;
 
 CREATE TABLE users_teams (
@@ -31,9 +17,6 @@ CREATE TABLE users_teams (
 
 
 # --- !Downs
-
-DROP TABLE prizes CASCADE;
-DROP SEQUENCE prize_id_seq;
 
 DROP TABLE users_teams;
 DROP SEQUENCE user_team_id_seq;

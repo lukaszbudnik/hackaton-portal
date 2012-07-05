@@ -11,7 +11,7 @@ object Prize extends Controller with securesocial.core.SecureSocial {
   
   def index = UserAwareAction { implicit request =>
   	transaction {
-  	  Ok(views.html.prizes.index(Model.prizes.toList, request.user)) 
+  	  Ok(views.html.prizes.index(Model.allPrizesOrdered().toList, request.user)) 
   	}
   }
   
@@ -23,10 +23,12 @@ object Prize extends Controller with securesocial.core.SecureSocial {
   
   val prizeForm = Form(
       mapping(
-          "name" 		-> nonEmptyText,
-          "description"	-> nonEmptyText,
-          "order"  		-> nonEmptyText,
-          "hackathonId" -> longNumber
+          "name" 			-> nonEmptyText,
+          "description"		-> nonEmptyText,
+          "order"  			-> number,
+          "founderName"    	-> optional(nonEmptyText),
+          "founderWebPage"	-> optional(nonEmptyText),
+          "hackathonId" 	-> longNumber
       )(model.Prize.apply)(model.Prize.unapply)
   )
   
@@ -67,7 +69,9 @@ object Prize extends Controller with securesocial.core.SecureSocial {
                 p.name := prize.name,
                 p.description := prize.description,
                 p.order := prize.order,
-                p.hackathonId := prize.hackathonId
+                p.hackathonId := prize.hackathonId,
+                p.founderName := prize.founderName,
+                p.founderWebPage := prize.founderWebPage
             )
           )
           Redirect(routes.Prize.index)

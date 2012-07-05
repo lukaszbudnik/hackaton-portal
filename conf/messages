@@ -138,6 +138,13 @@ prizes.deleted = Prize deleted
 newPrize.title = Add a prize
 newPrize.addProblem = Add a prize
 
+prizes.name.label = Prize name
+prizes.description.label = Description
+prizes.order.label = Define prize order
+prizes.founderName.label = Prize founder (optional)
+prizes.founderWebPage.label = Prize founder web page address (optional)
+prizes.hackathon.label = Choose hackathon 
+
 social.twitter.share = Share
 social.twitter.follow = Follow
 

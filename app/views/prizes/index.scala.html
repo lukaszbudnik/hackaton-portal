@@ -19,8 +19,20 @@
 
     @prizes.map { prize =>
 		<div class="page-header">
-			<h2>@prize.name (@prize.order)</h2>
-			<h3>@prize.description</h3>
+			<h2>@prize.name</h2>
+			<p>@prize.description</p>
+			
+			@if(!prize.founderName.isEmpty) {
+				<h3>Founded by 
+				@if(!prize.founderWebPage.isEmpty) {
+					<a href="@prize.founderWebPage" target="_blank">@prize.founderName</a>
+				} else {
+					@prize.founderName
+				}
+				</h3>
+			}
+			
+			<p></p>
 			<p><a class="btn" href="@routes.Prize.view(prize.id)">@Messages("global.readMore")</a></p>
 			<p></p>
 		</div>
