@@ -1,0 +1,15 @@
+@(id: Long, prizeForm: Form[model.Prize], hackathons: List[model.Hackathon], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@main(Messages("newPrize.title"), Some(user), nav = "prizes") {
+
+	<div class="container">
+    
+    <h2>@Messages("newPrize.title")</h2>
+    
+    @prizes.prizeForm(routes.Prize.update(id), Messages("global.update"), prizeForm, hackathons)
+    
+    </div>
+}

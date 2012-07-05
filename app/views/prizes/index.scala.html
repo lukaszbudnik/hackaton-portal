@@ -1,0 +1,42 @@
+@(prizes: Iterable[model.Prize], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
+
+@import helper._
+@import tags._
+
+@main(Messages("home.welcome"), user, nav = "prizes") {
+	<div class="container">
+  
+    <div class="page-header">
+    <h1>@Messages("prizes.title")</h1>
+    </div>
+	
+	@flash.get("status").map { status =>
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert">×</button>
+       		<strong>@Messages(status)</strong>
+		</div>
+    }
+
+    @prizes.map { prize =>
+		<div class="page-header">
+			<h2>@prize.name (@prize.order)</h2>
+			<h3>@prize.description</h3>
+			<p><a class="btn" href="@routes.Prize.view(prize.id)">@Messages("global.readMore")</a></p>
+			<p></p>
+		</div>
+    }
+	
+	<div class="form-actions">
+		<a class="btn btn-success" href="@routes.Prize.create">@Messages("prizes.addPrize")</a>
+	</div>
+        
+      <footer>
+        <div class="social">
+        	@googlePlus(request.uri)
+        	@facebookLike(request.uri)
+        </div>
+        <p>&copy; @Messages("brand") @Messages("years")</p>
+      </footer>
+  	
+  </div>
+}

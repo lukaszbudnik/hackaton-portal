@@ -27,7 +27,8 @@ object Team extends Controller with securesocial.core.SecureSocial {
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
       val users: Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
-      Ok(views.html.teams.view(Model.teams.lookup(id), users, request.user))
+      val teamMembers = Model.allUsersForTeam(id).toIterable
+      Ok(views.html.teams.view(Model.teams.lookup(id), teamMembers, users, request.user))
     }
   }
 

@@ -9,6 +9,7 @@ navigation.problems = Problems
 navigation.teams = Teams
 navigation.about = About
 navigation.contact = Contact
+navigation.prizes = Prizes
 navigation.sponsors = Sponsors
 navigation.login = Sign in
 
@@ -18,9 +19,9 @@ global.readMore = Read more »
 global.submit = Submit
 global.add = Add
 global.edit = Edit
-global.update = Update
+global.create = Create
 global.delete = Delete
-global.cancel = Cancel
+global.update = Update
 global.none = None
 
 home.welcome = Welcome to hackaton.pl portal!
@@ -124,6 +125,16 @@ teams.edit.title = Edit team
 teams.status.added = Team %s successfully added
 teams.status.updated = Team %s successfully updated
 teams.status.deleted = Team deleted
+teams.members.label = Team members
+teams.members.empty_label = No team members yet!
+
+prizes.title = Prizes
+prizes.addPrize = Add a prize
+prizes.added = Prize added
+prizes.updated = Prize updated
+prizes.deleted = Prize deleted
+newPrize.title = Add a prize
+newPrize.addProblem = Add a prize
 
 social.twitter.share = Share
 social.twitter.follow = Follow

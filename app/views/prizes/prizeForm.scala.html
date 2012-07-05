@@ -1,0 +1,23 @@
+@(action: play.api.mvc.Call, btnMessage: String, prizeForm: Form[model.Prize], hackathons: List[model.Hackathon])
+
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@form(action) {
+        
+    @inputText(prizeForm("name")) 
+    @inputText(prizeForm("description"))
+    @inputText(prizeForm("order"))
+        
+	@select(prizeForm("hackathonId"), hackathons.map{ h =>
+		h.id.toString -> h.subject
+    },
+    '_label -> "Choose Hackathon")
+    
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">@btnMessage</button>
+        <a href="@routes.Prize.index" class="btn">@Messages("global.cancel")</a>
+  	</div>
+        
+}
