@@ -1,30 +1,52 @@
-@(team: Option[model.Team], users: Map[Long, String], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+@(team: Option[model.Team], teamMembers: Iterable[model.User], users: Map[Long, String], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
 
 @import helper._
 
 @main(Messages("teams.view.title"), user, nav = "teams") {
-    
+
     <div class="container">
-    
-		<div class="page-header">
+	
+		<div class="content">
+                
+			<div class="page-header">
+				@if(team.isEmpty) {
+				<h2>@Messages("teams.notFound")</h2>
+				} else {
+				<h2>@team.get.name</h2>
+				}
+    	   	</div>
 
-		@if(team.isEmpty) {
-		    <h1>@Messages("teams.notFound")</h1>
-    	} else {
-	    <h2>@team.get.name</h2>
-			<p>@users(team.get.creatorId)</p>
+		    @if(!team.isEmpty) {
+		    <div class="row">
+		    	<div class="span12">
+		   			<p>@Messages("teams.problem.label"): </p>
+		    		<p>@Messages("teams.hackathon.label"): </p>
+		    		<p>@Messages("teams.creator.label"): @users(team.get.creatorId)</p>
 
-			<div class="form-actions">
-	    		@form(routes.Team.delete(team.get.id)) {
-		    		<a class="btn btn-success" href="@routes.Team.edit(team.get.id)">@Messages("global.edit")</a>
-	                <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-	        }
-            </div>
-    	}
-    	
-	    </div>
-  
-    </div>
+					@if(!teamMembers.isEmpty) {
+						<h2>@Messages("teams.members.label")</h2>
+					} else {
+						<h2>@Messages("teams.members.empty_label")</h2>
+					}
+					
+					<ul>
+					@teamMembers.map { teamMember =>
+						<li>@teamMember.name</li>
+					}
+					</ul>
 
+		   			<div class="form-actions">
+		    			@form(routes.Team.delete(team.get.id)) {
+		    			<a class="btn btn-success" href="@routes.Team.edit(team.get.id)">@Messages("global.edit")</a>
+		   				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+		   				}
+		   			</div>
+		    	</div>
+		   	</div>
+		    }
+
+		</div>
+	
+	</div>
 }
 

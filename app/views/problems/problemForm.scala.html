@@ -1,26 +1,40 @@
 @(action: play.api.mvc.Call, problemForm: Form[model.Problem], users: List[model.User], hackathons: List[model.Hackathon])
 
-
 @import helper._
 @import helper.twitterBootstrap._
 
-@form(action) {
-        
-    @inputText(problemForm("name")) 
-    @inputText(problemForm("description"))
-    
-    @select(problemForm("submitterId"), users.map{ u =>
-    	u.id.toString -> u.name
-    },
-    '_label -> "Choose User")
-    
-			@select(problemForm("hackathonId"), hackathons.map{ h =>
-    	h.id.toString -> h.subject
-    },
-    '_label -> "Choose Hackathon")
-    
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
+
+@form(action, 'class -> "form-horizontal") {
+
+	@inputText(
+	    problemForm("name"),
+	    '_label -> Messages("problems.name.label"),
+	    '_showConstraints -> false
+	)
+	
+	@inputText(
+	    problemForm("description"),
+	    '_label -> Messages("problems.description.label"),
+	    '_showConstraints -> false
+	)
+   
+	@select(
+		problemForm("hackathonId"),
+		hackathons.map{ h => h.id.toString -> h.subject },
+		'_label -> Messages("problems.hackathon.label"),
+		'_showConstraints -> false
+	)
+	
+	@select(
+		problemForm("submitterId"),
+		users.map{ p => p.id.toString -> p.name },
+		'_label -> Messages("problems.submitter.label"),
+		'_showConstraints -> false
+	)
+	
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">@Messages("global.edit")</button>
+        <button type="submit" class="btn btn-primary">@Messages("global.submit")</button>
         <a href="@routes.Problem.index" class="btn">@Messages("global.cancel")</a>
   	</div>
         

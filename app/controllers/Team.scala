@@ -3,15 +3,16 @@ package controllers
 import org.squeryl.PrimitiveTypeMode._
 
 import model.Model
-import play.api.data.Forms._
-import play.api.data._
 import play.api.mvc._
+import play.api.data._
+import play.api.data.Forms._
+import play.api.data.validation.Constraints._
 
 object Team extends Controller with securesocial.core.SecureSocial {
 
   val teamForm = Form(
     mapping(
-      "name" -> nonEmptyText,
+      "name" -> text.verifying("teams.name.error", !_.isEmpty()),
       "creatorId" -> longNumber,
       "hackathonId" -> longNumber,
       "problemId" -> optional(longNumber))(model.Team.apply)(model.Team.unapply))
@@ -26,7 +27,8 @@ object Team extends Controller with securesocial.core.SecureSocial {
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
       val users: Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
-      Ok(views.html.teams.view(Model.teams.lookup(id), users, request.user))
+      val teamMembers = Model.allUsersForTeam(id).toIterable
+      Ok(views.html.teams.view(Model.teams.lookup(id), teamMembers, users, request.user))
     }
   }
 
@@ -36,17 +38,16 @@ object Team extends Controller with securesocial.core.SecureSocial {
     }
   }
 
-    def save = SecuredAction() { implicit request =>
-      teamForm.bindFromRequest.fold(
-        errors =>  transaction {
-          BadRequest(views.html.teams.create(errors, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
-        },
-        team => transaction {
-          Model.teams.insert(team)
-          Redirect(routes.Team.index).flashing("status" -> "added", "title" -> team.name)
-        }
-      )
-    }
+  def save = SecuredAction() { implicit request =>
+    teamForm.bindFromRequest.fold(
+      errors => transaction {
+        BadRequest(views.html.teams.create(errors, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
+      },
+      team => transaction {
+        Model.teams.insert(team)
+        Redirect(routes.Team.index).flashing("status" -> "added", "title" -> team.name)
+      })
+  }
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {

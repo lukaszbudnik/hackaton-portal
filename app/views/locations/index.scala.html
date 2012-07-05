@@ -35,13 +35,7 @@
     	<a class="btn btn-success" href="@routes.Location.create">@Messages("locations.addLocation")</a>
 	</div>
   	
-	<footer>
-		<div class="social">
-			@googlePlus(request.uri)
-        	@facebookLike(request.uri)
-        </div>
-        <p>&copy; @Messages("brand") @Messages("years")</p>
-	</footer>
+	@footer()
   	
 </div>
 }

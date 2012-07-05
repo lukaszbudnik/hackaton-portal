@@ -14,6 +14,7 @@ case class News(title: String, text: String, labels: String, @Column("author_id"
 case class User(name: String, email: String, @Column("github_username") githubUsername: String, @Column("twitter_account") twitterAccount: String, @Column("avatar_url") avatarUrl: String, @Column("open_id") openId: String) extends KeyedEntity[Long] {
   val id: Long = 0L
   lazy val roles = Model.usersToRoles.left(this)
+  lazy val teams = Model.usersToTeams.left(this)
 }
 
 case class Role(name: String) extends KeyedEntity[Long] {
@@ -55,7 +56,14 @@ case class Team(name: String,
 				@Column("problem_id") problemId: Option[Long]) extends KeyedEntity[Long] {
   val id: Long = 0L
   def this() = this("", 0, 0, Some(0L))
+  
+  // Mapping to users for this team
+  lazy val users = Model.usersToTeams.right(this)
 
+}
+
+case class UserTeam(@Column("user_id") userId: Long, @Column("team_id") teamId: Long) extends KeyedEntity[CompositeKey2[Long, Long]] {
+  def id = compositeKey(userId, teamId)
 }
 
 object OrderByDirection extends Enumeration {
@@ -86,7 +94,11 @@ object Model extends Schema {
 
   val usersToRoles =
     manyToManyRelation(users, roles, "users_roles").
-      via[UserRole](f = (u, r, ur) => (u.id ===(ur.userId), r.id === ur.roleId))
+      via[UserRole](f = (u, r, ur) => (u.id === ur.userId, r.id === ur.roleId))
+      
+  val usersToTeams =
+    manyToManyRelation(users, teams, "users_teams").
+      via[UserTeam](f = (u, t, ut) => (u.id === ut.userId, t.id === ut.teamId))
 
   def lookupNews(id: Long): Option[News] = {
     news.lookup(id)
@@ -145,6 +157,14 @@ object Model extends Schema {
   
   def findRoleByName(name: String): Option[Role] = {
     roles.find(r => r.name == name)
+  }
+  
+  def lookupTeam(id: Long): Option[Team] = {
+    teams.lookup(id)
+  }
+  
+  def allUsersForTeam(id : Long) = {
+    lookupTeam(id).get.users
   }
   
 }

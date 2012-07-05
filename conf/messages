@@ -1,6 +1,8 @@
 brand = hackaton.pl
 years = 2012
 
+error.date = Wrong date
+
 navigation.home = Home
 navigation.news = News
 navigation.problems = Problems
@@ -14,12 +16,13 @@ navigation.login = Sign in
 global.learnMore = Learn more »
 global.viewDetails = View details »
 global.readMore = Read more »
+global.submit = Submit
+global.add = Add
 global.edit = Edit
 global.create = Create
 global.delete = Delete
 global.update = Update
-global.cancel = Cancel
-
+global.none = None
 
 home.welcome = Welcome to hackaton.pl portal!
 home.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
@@ -49,33 +52,81 @@ sponsors.text = We'd like to thank the following companies and organisations for
 profile.title = Your profile
 
 news.title = News
-news.labels = Labels: 
-news.notFound = News not found
 news.addNews = Add a news
+news.publish = Publish
+news.notFound = News not found
+news.title.label = Title
+news.text.label = Text
+news.labels.label = Tags
+news.author.label = Author
+news.published.label = Published
+news.view.title = News
+news.create.title = Add a news
+news.edit.title = Edit news
 news.status.added = News %s successfully added
 news.status.updated = News %s successfully updated
 news.status.deleted = News deleted
-news.create.title = Add a news
-news.edit.title = Edit news
-news.publish = Publish
+
+hackathons.title = Hackathons
+hackathons.addHackathon = Add a hackathon
+hackathons.notFound = Hackathon not found
+hackathons.subject.label = Subject
+hackathons.status.label = Status
+hackathons.submitter.label = Submitter
+hackathons.location.label = Location
+hackathons.view.title = Hackathon
+hackathons.create.title = Add a hackathon
+hackathons.edit.title = Edit hackathon
+hackathons.status.added = Hackathon %s successfully added
+hackathons.status.updated = Hackathon %s successfully updated
+hackathons.status.deleted = Hackathon deleted
+
+locations.title = Locations
+locations.addLocation = Add a location
+locations.name.label = Location name
+locations.country.label = Country
+locations.city.label = City
+locations.postalCode.label = Postal code
+locations.fullAddress.label = Address
+locations.latitude.label = Lat
+locations.longitude.label = Long 
+locations.view.title = Location
+locations.create.title = Add a location
+locations.edit.title = Edit location
+locations.status.added = Location %s successfully added
+locations.status.updated = Location %s successfully updated
+locations.status.deleted = Location deleted
 
 problems.title = Problems
 problems.addProblem = Add a problem
-problems.added = Problem added
-problems.updated = Problem updated
-problems.deleted = Problem deleted
-newProblem.title = Add a problem
-newProblem.addProblem = Add a problem
+problems.notFound = Problem not found
+problems.name.label = Problem name
+problems.description.label = Description
+problems.submitter.label = Submitter
+problems.hackathon.label = Hackthon
+problems.view.title = Problem
+problems.create.title = Add a problem
+problems.edit.title = Edit problem
+problems.status.added = Problem %s successfully added
+problems.status.updated = Problem %s successfully updated
+problems.status.deleted = Problem deleted
 
 teams.title = Teams
 teams.addTeam = Add a team
 teams.notFound = Team not found
+teams.name.label = Team name
+teams.name.error = Name is required
+teams.creator.label = Creator
+teams.hackathon.label = Hackthon
+teams.problem.label = Problem
 teams.view.title = Team
 teams.create.title = Add a team
-teams.edit.title = Edit a team
+teams.edit.title = Edit team
 teams.status.added = Team %s successfully added
 teams.status.updated = Team %s successfully updated
 teams.status.deleted = Team deleted
+teams.members.label = Team members
+teams.members.empty_label = No team members yet!
 
 prizes.title = Prizes
 prizes.addPrize = Add a prize
@@ -89,4 +140,4 @@ social.twitter.share = Share
 social.twitter.follow = Follow
 
 securityAbuse.title = Security Abuse Detected
-securityAbuse.text = We have detected security abuse. Please refrain from such actions in future as we may draw consequences next time.
+securityAbuse.text = Dear <strong>{0}</strong>! We have detected a security abuse. Please refrain from such actions in future as we may draw consequences next time.

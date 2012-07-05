@@ -2,10 +2,11 @@ import org.squeryl.adapters.{H2Adapter, PostgreSqlAdapter}
 import org.squeryl.internals.DatabaseAdapter
 import org.squeryl.{Session, SessionFactory}
 import org.squeryl.PrimitiveTypeMode._
+import play.api._
 import play.api.db.DB
-import play.api.GlobalSettings
-import play.api.Application
-import play.api.mvc.RequestHeader
+import play.api.mvc._
+import play.api.mvc.Results._
+import core.SecurityAbuseException
 
 object Global extends GlobalSettings {
 
@@ -17,6 +18,22 @@ object Global extends GlobalSettings {
     }
   }
 
-  def getSession(adapter:DatabaseAdapter, app: Application) =  Session.create(DB.getConnection()(app), adapter)
+  
+  override def onError(request: RequestHeader, ex: Throwable): Result = {
+    ex.getCause() match {
+      case e: SecurityAbuseException => Forbidden(views.html.errors.securityAbuse(e))
+      case _ => InternalServerError(Play.maybeApplication.map {
+		      case app if app.mode == Mode.Dev => views.html.defaultpages.devError.f
+		      case app => views.html.defaultpages.error.f
+		      }.getOrElse(views.html.defaultpages.devError.f) {
+		    	  ex match {
+		    	  case e: PlayException.UsefulException => e
+		    	  case e => UnexpectedException(unexpected = Some(e))
+		    	  }
+		      })
+    }
+  }
+
+  private def getSession(adapter: DatabaseAdapter, app: Application) = Session.create(DB.getConnection()(app), adapter)
 
 }

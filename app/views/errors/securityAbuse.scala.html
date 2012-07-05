@@ -1,0 +1,15 @@
+@(ex: core.SecurityAbuseException)
+
+@error(Messages("securityAbuse.title"), Some(ex.socialUser)) {
+
+	<div class="container">
+    
+	    <div class="page-header">
+	    <h1>@Messages("securityAbuse.title")</h1>
+		<br/>
+		@Html(Messages("securityAbuse.text", ex.socialUser.displayName))
+	    </div>
+
+    </div>
+
+}

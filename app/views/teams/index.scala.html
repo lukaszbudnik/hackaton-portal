@@ -1,49 +1,45 @@
 @(teams: Iterable[model.Team], users: Map[Long,String], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
 @import helper._
-@import tags._
 
 @main(Messages("teams.title"), user, nav = "teams") {
-<div class="container">
-  
-    <div class="page-header">
-    	<h1>@Messages("teams.title")</h1>
-    </div>
-	
-	@flash.get("status").map { status =>
-		@flash.get("title").map { title =>
-			<div class="alert alert-success">
-				<button type="button" class="close" data-dismiss="alert">×</button>
-		       	<strong>@Messages("teams.status." + status).format(title)</strong>
-			</div>
-		}.getOrElse {
-			<div class="alert alert-success">
-				<button type="button" class="close" data-dismiss="alert">×</button>
-		       	<strong>@Messages("teams.status." + status)</strong>
-			</div>
-		}
-	}
 
-	@teams.map { team =>
-		<div class="page-header">
-    		<h2>@team.name</h2>
-    		<p></p>
-    		<p>@users(team.creatorId)</p>
-    		<p><a class="btn" href="@routes.Team.view(team.id)">@Messages("global.readMore")</a></p>
-  		</div>
-      }
+   <div class="container">
+		
+		<div class="content">
+                
+    		<div class="page-header">
+    			<h1>@Messages("teams.title")</h1>
+    		</div>
+	
+			@flash.get("status").map { status =>
+				@flash.get("title").map { title =>
+					<div class="alert alert-success">
+						<button type="button" class="close" data-dismiss="alert">×</button>
+		       			<strong>@Messages("teams.status." + status).format(title)</strong>
+					</div>
+				}.getOrElse {
+					<div class="alert alert-success">
+						<button type="button" class="close" data-dismiss="alert">×</button>
+		       			<strong>@Messages("teams.status." + status)</strong>
+					</div>
+				}
+			}
+
+			@teams.map { team =>
+			<div class="page-header">
+				<h2>@team.name</h2>
+   				<p>@Messages("teams.creator.label"): @users(team.creatorId)</p>
+    			<p><a class="btn" href="@routes.Team.view(team.id)">@Messages("global.readMore")</a></p>
+  			</div>
+			}
               
-    <div class="form-actions">
-    	<a class="btn btn-success" href="@routes.Team.create">@Messages("teams.addTeam")</a>
+			<div class="form-actions">
+    			<a class="btn btn-success" href="@routes.Team.create">@Messages("teams.addTeam")</a>
+			</div>
+  	
+			@footer()
+
+		</div>
 	</div>
-  	
-	<footer>
-		<div class="social">
-			@googlePlus(request.uri)
-        	@facebookLike(request.uri)
-        </div>
-        <p>&copy; @Messages("brand") @Messages("years")</p>
-	</footer>
-  	
-</div>
 }
