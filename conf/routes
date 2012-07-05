@@ -90,4 +90,17 @@ POST    /hackathons/:id/update       controllers.Hackathon.update(id: Long)
 # Delete
 POST    /hackathons/:id/delete       controllers.Hackathon.delete(id: Long)
 
+# Prizes routes
+# Create
+GET     /prizes/new					controllers.Prize.create
+POST    /prizes                   	controllers.Prize.save
+# Retrieve
+GET     /prizes                   	controllers.Prize.index
+GET     /prizes/:id                 controllers.Prize.view(id: Long)
+# Update
+GET     /prizes/:id/edit          	controllers.Prize.edit(id: Long)
+POST    /prizes/:id/update        	controllers.Prize.update(id: Long)
+# Delete
+POST    /prizes/:id/delete        	controllers.Prize.delete(id: Long)
+
 GET     /hackathons.json            controllers.Hackathon.hackathonsJson

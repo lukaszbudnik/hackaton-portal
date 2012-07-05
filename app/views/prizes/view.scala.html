@@ -1,0 +1,34 @@
+@(prize: Option[model.Prize], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+
+@import helper._
+
+@main(Messages("news.title"), user, nav = "prizes") {
+    
+    <div class="container">
+    
+		<div class="page-header">
+
+		@if(prize.isEmpty) {
+		    <h1>@Messages("prize.notFound")</h1>
+    	} else {
+    	
+	    <h2>@prize.get.name</h2>
+		<p>@prize.get.description</p>
+		<p>@prize.get.order</p>
+
+
+			<div class="form-actions">
+	    		@form(routes.Prize.delete(prize.get.id)) {
+		    		<a class="btn btn-success" href="@routes.Prize.edit(prize.get.id)">@Messages("global.edit")</a>
+	                <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+	        }
+            </div>
+
+    	}
+    	
+	    </div>
+    
+  
+    </div>
+
+}

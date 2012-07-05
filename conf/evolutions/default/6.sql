@@ -28,7 +28,13 @@ insert into teams (name, creator_id, hackathon_id) values ('Team 2.', 2, 1);
 insert into users_teams (user_id, team_id) values (1, 1);
 insert into users_teams (user_id, team_id) values (2, 1);
 
+insert into prizes (name, description, prize_order, hackathon_id) values ('Prize 1', 'Fantastic prize', '1st place', 1);
+insert into prizes (name, description, prize_order, hackathon_id) values ('Prize 2', 'Awesome prize', '2nd place', 1);
+insert into prizes (name, description, prize_order, hackathon_id) values ('Prize 3', 'Cool prize', '3rd place', 1);
+
 # --- !Downs
+
+delete from prizes;
 
 delete from users_roles;
 
@@ -41,7 +47,7 @@ delete from problems;
 delete from hackathons;
 
 delete from locations;
-    
+
 delete from news;
     
 delete from users;

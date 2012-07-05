@@ -56,6 +56,13 @@ case class Hackathon(subject: String,
   def this() = this("", HackathonStatus.Planning, 1, 1)
 }
 
+case class Prize(name: String,
+				 description: String,
+				 @Column("prize_order") order: String,
+				 @Column("hackathon_id") hackathonId: Long) extends KeyedEntity[Long] {
+  val id: Long = 0L
+}
+
 case class Location(country: String,
                     city: String,
                     @Column("postal_code") postalCode: String,
@@ -96,8 +103,10 @@ object HackathonStatus extends Enumeration {
 }
 
 object Model extends Schema {
+  
   val news = table[News]
   val problems = table[Problem]("problems")
+  val prizes = table[Prize]("prizes")
   val users = table[User]("users")
   val roles = table[Role]("roles")
   val hackathons = table[Hackathon]("hackathons")
@@ -160,6 +169,14 @@ object Model extends Schema {
     users.lookup(id)
   }
   
+  def allPrizes(): Iterable[Prize] = {
+    prizes.toIterable		  
+  }
+  
+  def lookupPrize(id: Long): Option[Prize] = {
+    prizes.lookup(id)
+  }
+    
   def findUserByOpenId(openId: String): Option[User] = {
     users.where(u => u.openId === openId).headOption
   }
