@@ -19,16 +19,13 @@ object Team extends Controller with securesocial.core.SecureSocial {
 
   def index = UserAwareAction { implicit request =>
     transaction {
-      val users: Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
-      Ok(views.html.teams.index(Model.teams.toList, users, request.user))
+      Ok(views.html.teams.index(Model.teams.toList, request.user))
     }
   }
 
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
-      val users: Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
-      val teamMembers = Model.allUsersForTeam(id).toIterable
-      Ok(views.html.teams.view(Model.teams.lookup(id), teamMembers, users, request.user))
+      Ok(views.html.teams.view(Model.teams.lookup(id), request.user))
     }
   }
 
