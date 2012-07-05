@@ -1,7 +1,7 @@
 @(team: Option[model.Team], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
 @import helper._
-		    		
+
 @main(Messages("teams.view.title"), user, nav = "teams") {
 
     <div class="container">
@@ -47,9 +47,18 @@
 					
 		   			<div class="form-actions">
 		    			@form(routes.Team.delete(team.get.id)) {
-		    			<a class="btn btn-warning" href="@routes.Team.join(team.get.id)">@Messages("teams.join")</a>
+
+		    			@if(!user && team.get.hasMember(user.get.hackathonUserId)){
+		    			<a class="btn btn-warning" href="@routes.Team.disconnect(team.get.id)">@Messages("teams.disconnect")</a>		    			  
+		    			} else {
+		    			<a class="btn btn-warning" href="@routes.Team.join(team.get.id)">@Messages("teams.join")</a>  
+		    			}
+		    			
+		    			@if(!user && team.get.creatorId == user.get.hackathonUserId){
 		    			<a class="btn btn-success" href="@routes.Team.edit(team.get.id)">@Messages("global.edit")</a>
 		   				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+		    			}
+		    			
 		    			}
 		   			</div>
 		    	</div>

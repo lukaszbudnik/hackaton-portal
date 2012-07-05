@@ -85,6 +85,12 @@ case class Team(name: String,
   lazy val problem = Model.problemToTeams.right(this);
   lazy val users = Model.usersToTeams.right(this)
   def this() = this("", 0, 0, Some(0L))
+  def hasMember(userId: Long) : Boolean = {
+    users.map{
+      u => if(u.id == userId) return true
+    }
+    false
+  }
 }
 
 case class UserTeam(@Column("user_id") userId: Long,
@@ -131,7 +137,7 @@ object Model extends Schema {
   val usersToTeams =
     manyToManyRelation(users, teams, "users_teams").
       via[UserTeam](f = (u, t, ut) => (u.id === ut.userId, t.id === ut.teamId))
-
+      
   def lookupNews(id: Long): Option[News] = {
     news.lookup(id)
   }

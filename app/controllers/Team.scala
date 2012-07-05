@@ -41,7 +41,10 @@ object Team extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.teams.create(errors, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
       },
       team => transaction {
+        // insert team
         Model.teams.insert(team)
+        // add creator as a member
+        team.users.associate(team.creator.head)
         Redirect(routes.Team.index).flashing("status" -> "added", "title" -> team.name)
       })
   }
@@ -79,7 +82,22 @@ object Team extends Controller with securesocial.core.SecureSocial {
   }
   
   def join(id: Long) = SecuredAction() { implicit request =>
-    Redirect(routes.Team.view(id)).flashing("status" -> "joined")
+  	transaction {
+  	  val user = Model.users.lookup(request.user.hackathonUserId)
+  	  Model.teams.lookup(id).map{
+  	    t => if(!t.users.toSet.contains(user.get)){
+  	      t.users.associate(user.get)
+  	    }
+  	  }
+  	  Redirect(routes.Team.view(id)).flashing("status" -> "joined")
+    }  
   }
-
+  
+  def disconnect(id: Long) = SecuredAction() { implicit request =>
+    transaction {
+  	  val user = Model.users.lookup(request.user.hackathonUserId)
+  	  Model.teams.lookup(id).map{ t => t.users.dissociate(user.get) }
+  	  Redirect(routes.Team.view(id)).flashing("status" -> "disconnected")
+    }  
+  }
 }
