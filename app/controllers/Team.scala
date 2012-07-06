@@ -3,10 +3,10 @@ package controllers
 import org.squeryl.PrimitiveTypeMode._
 
 import model.Model
-import play.api.mvc._
-import play.api.data._
 import play.api.data.Forms._
 import play.api.data.validation.Constraints._
+import play.api.data._
+import play.api.mvc._
 
 object Team extends Controller with securesocial.core.SecureSocial {
 
@@ -52,8 +52,12 @@ object Team extends Controller with securesocial.core.SecureSocial {
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
       Model.teams.lookup(id).map { team =>
-        Ok(views.html.teams.edit(id, teamForm.fill(team), Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
-      }.get
+        helpers.Security.verifyIfAllowed(team.creatorId == request.user.hackathonUserId)(request.user)
+        Ok(views.html.teams.edit(id, teamForm.fill(team), Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))  
+      }.getOrElse{
+        // no team found
+        Redirect(routes.Team.view(id)).flashing()
+      }
     }
   }
 
@@ -63,6 +67,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.teams.edit(id, errors, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
       },
       team => transaction {
+    	helpers.Security.verifyIfAllowed(team.creatorId == request.user.hackathonUserId)(request.user)
         Model.teams.update(t =>
           where(t.id === id)
             set (
