@@ -1,4 +1,4 @@
-@(team: Option[model.Team], teamMembers: Iterable[model.User], users: Map[Long, String], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+@(team: Option[model.Team], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
 @import helper._
 
@@ -16,30 +16,50 @@
 				}
     	   	</div>
 
+			@flash.get("status").map { status =>
+				<div class="alert alert-success">
+					<button type="button" class="close" data-dismiss="alert">×</button>
+		       		<strong>@Messages("teams.status." + status)</strong>
+				</div>
+			}
+
 		    @if(!team.isEmpty) {
 		    <div class="row">
 		    	<div class="span12">
-		   			<p>@Messages("teams.problem.label"): </p>
-		    		<p>@Messages("teams.hackathon.label"): </p>
-		    		<p>@Messages("teams.creator.label"): @users(team.get.creatorId)</p>
+		    		@if(team.get.problem.isEmpty){
+		    		<p>@Messages("teams.problem.label"): @Messages("global.none")</p>
+		    		} else {
+		    		<p>@Messages("teams.problem.label"): @team.get.problem.head.name</p>  
+		    		}
+		    		<p>@Messages("teams.hackathon.label"): @team.get.hackathon.head.subject</p>
+		    		<p>@Messages("teams.creator.label"): @team.get.creator.head.name</p>
 
-					@if(!teamMembers.isEmpty) {
-						<h2>@Messages("teams.members.label")</h2>
-					} else {
-						<h2>@Messages("teams.members.empty_label")</h2>
+					@if(team.get.users.isEmpty) {
+						<h3>@Messages("teams.noMembers")</h3>
+					} else {  
+						<h3>@Messages("teams.members.label")</h3>
+						<ul>
+							@team.get.users.map { teamMember =>
+							<li>@teamMember.name</li>
+							}
+						</ul>			  
 					}
 					
-					<ul>
-					@teamMembers.map { teamMember =>
-						<li>@teamMember.name</li>
-					}
-					</ul>
-
 		   			<div class="form-actions">
 		    			@form(routes.Team.delete(team.get.id)) {
+
+		    			@if(!user.isEmpty && team.get.hasMember(user.get.hackathonUserId)){
+		    			<a class="btn btn-warning" href="@routes.Team.disconnect(team.get.id)">@Messages("teams.disconnect")</a>		    			  
+		    			} else {
+		    			<a class="btn btn-warning" href="@routes.Team.join(team.get.id)">@Messages("teams.join")</a>  
+		    			}
+		    			
+		    			@if(!user.isEmpty && team.get.creatorId == user.get.hackathonUserId){
 		    			<a class="btn btn-success" href="@routes.Team.edit(team.get.id)">@Messages("global.edit")</a>
 		   				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-		   				}
+		    			}
+		    			
+		    			}
 		   			</div>
 		    	</div>
 		   	</div>

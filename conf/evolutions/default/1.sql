@@ -31,6 +31,7 @@ CREATE TABLE users_roles (
     
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (role_id) REFERENCES roles(id),
+    UNIQUE (user_id, role_id),
     PRIMARY KEY (id)
 );
 

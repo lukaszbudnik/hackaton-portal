@@ -12,6 +12,7 @@ CREATE TABLE users_teams (
     
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (team_id) REFERENCES teams(id),
+    UNIQUE (user_id, team_id),
     PRIMARY KEY (id)
 );
 

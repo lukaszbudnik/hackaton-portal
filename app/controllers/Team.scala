@@ -19,16 +19,13 @@ object Team extends Controller with securesocial.core.SecureSocial {
 
   def index = UserAwareAction { implicit request =>
     transaction {
-      val users: Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
-      Ok(views.html.teams.index(Model.teams.toList, users, request.user))
+      Ok(views.html.teams.index(Model.teams.toList, request.user))
     }
   }
 
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
-      val users: Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
-      val teamMembers = Model.allUsersForTeam(id).toIterable
-      Ok(views.html.teams.view(Model.teams.lookup(id), teamMembers, users, request.user))
+      Ok(views.html.teams.view(Model.teams.lookup(id), request.user))
     }
   }
 
@@ -44,7 +41,10 @@ object Team extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.teams.create(errors, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
       },
       team => transaction {
+        // insert team
         Model.teams.insert(team)
+        // add creator as a member
+        team.users.associate(team.creator.head)
         Redirect(routes.Team.index).flashing("status" -> "added", "title" -> team.name)
       })
   }
@@ -80,5 +80,24 @@ object Team extends Controller with securesocial.core.SecureSocial {
     }
     Redirect(routes.Team.index).flashing("status" -> "deleted")
   }
-
+  
+  def join(id: Long) = SecuredAction() { implicit request =>
+  	transaction {
+  	  val user = Model.users.lookup(request.user.hackathonUserId)
+  	  Model.teams.lookup(id).map{
+  	    t => if(!t.users.toSet.contains(user.get)){
+  	      t.users.associate(user.get)
+  	    }
+  	  }
+  	  Redirect(routes.Team.view(id)).flashing("status" -> "joined")
+    }  
+  }
+  
+  def disconnect(id: Long) = SecuredAction() { implicit request =>
+    transaction {
+  	  val user = Model.users.lookup(request.user.hackathonUserId)
+  	  Model.teams.lookup(id).map{ t => t.users.dissociate(user.get) }
+  	  Redirect(routes.Team.view(id)).flashing("status" -> "disconnected")
+    }  
+  }
 }

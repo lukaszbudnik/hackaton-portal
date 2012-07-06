@@ -60,6 +60,9 @@ GET     /teams/:id/edit          	controllers.Team.edit(id: Long)
 POST    /teams/:id/update        	controllers.Team.update(id: Long)
 # Delete
 POST    /teams/:id/delete        	controllers.Team.delete(id: Long)
+# Join
+GET    	/teams/:id/join				controllers.Team.join(id: Long)
+GET    	/teams/:id/disconnect		controllers.Team.disconnect(id: Long)
 
 # Locations routes
 # Create
