@@ -32,13 +32,6 @@ class ApplicationSpec extends Specification {
       contentAsString(result) must contain(Messages("contact.title"))      
     }
     
-    "show sponsors page" in {
-      val result = controllers.Application.sponsors(FakeRequest())
-      
-      status(result) must equalTo(OK)
-      contentAsString(result) must contain(Messages("sponsors.title"))      
-    }
-    
   }
   
 }

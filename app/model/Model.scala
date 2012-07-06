@@ -38,6 +38,20 @@ case class Prize(name: String,
   val id: Long = 0L
 }
 
+case class Sponsor(name: String, 
+				 description: String,
+				 website: String,
+				 @Column("sponsor_order") order: Int,
+				 @Column("is_general_sponsor") isGeneralSponsor: Boolean) extends KeyedEntity[Long] {
+  val id: Long = 0L
+}
+
+case class HackathonSponsor(@Column("hackathon_id") hackathonId: Long,
+							@Column("sponsor_id") sponsorId: Long,
+							@Column("sponsor_order") order: Int) extends KeyedEntity[CompositeKey2[Long,Long]] {
+  def id = compositeKey(hackathonId, sponsorId)
+}
+
 case class Hackathon(subject: String, status: HackathonStatus.Value, @Column("submitter_id") submitterId: Long, @Column("location_id") locationId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
   lazy val location: ManyToOne[Location] = Model.locationToHackathons.right(this)
@@ -91,10 +105,16 @@ object Model extends Schema {
   val users = table[User]("users")
   val roles = table[Role]("roles")
   val hackathons = table[Hackathon]("hackathons")
+  val sponsors = table[Sponsor]("sponsors")
   val locations = table[Location]("locations")
   val teams = table[Team]("teams")
+    
+  val hackathonsToSponsors = 
+    manyToManyRelation(hackathons, sponsors, "hackathons_sponsors").
+    via[HackathonSponsor](f = (h, s, hs) => (h.id === hs.hackathonId, s.id === hs.sponsorId))
   
   val locationToHackathons = oneToManyRelation(locations, hackathons).via((l, h) => l.id === h.locationId)
+  
   val authorToNews = oneToManyRelation(users, news).via((u, n) => u.id === n.authorId)
 
   val usersToRoles =
@@ -154,7 +174,7 @@ object Model extends Schema {
 	  orderBy(p.order asc)
     )
   }
-  
+    
   def lookupPrize(id: Long): Option[Prize] = {
     prizes.lookup(id)
   }
@@ -179,4 +199,19 @@ object Model extends Schema {
     lookupTeam(id).get.users
   }
   
+  def findSponsorsIdsByHackathonId(hackathonId : Long) :Iterable[Long] = {
+    from (Model.hackathonsToSponsors) (hs =>
+      where(hs.hackathonId === hackathonId)
+      select(hs.sponsorId)
+      orderBy(hs.order asc)
+    )
+  }
+  
+  def findGeneralSponsorsIds() : Iterable[Long] = {
+    from(Model.sponsors)(s =>
+      where(s.isGeneralSponsor === true)
+      select(s.id)
+      orderBy(s.order asc)
+    )
+  }
 }

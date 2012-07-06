@@ -1,0 +1,65 @@
+@(hackathons: Iterable[model.Hackathon], sponsors: Map[Long, model.Sponsor], generalSponsors: Iterable[Long], hackathonSponsors: Map[Long, Iterable[Long]], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
+
+@import helper._
+@import tags._
+
+@main(Messages("home.welcome"), user, nav = "sponsors") {
+	<div class="container">
+  
+    <div class="page-header">
+    <h1>@Messages("sponsors.title")</h1>
+    </div>
+	
+	@flash.get("status").map { status =>
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert">×</button>
+       		<strong>@Messages(status)</strong>
+		</div>
+    }
+
+	<h2>Portal sponsors</h2>
+	<p></p>
+	<ul class="thumbnails">
+
+	@generalSponsors.map { sponsorId =>
+		<li class="span3">
+			<div class="thumbnail">
+				<img src="http://placehold.it/260x180" alt="">
+				<div class="caption">
+					<h5>@sponsors(sponsorId).name</h5>
+					<p>@sponsors(sponsorId).description</p>
+				</div>
+			</div>
+		</li>	 
+	}
+	</ul>
+	
+	<h2>Hackathons sponsors</h2>
+	<p></p>
+
+	@hackathons.map { h =>
+		<h3>@h.subject (@h.id)</h3>
+		<p></p>
+		<ul class="thumbnails">
+		@hackathonSponsors(h.id).map { sponsorId =>
+			<li class="span3">
+				<div class="thumbnail">
+					<img src="http://placehold.it/190x120" alt="">
+					<div class="caption">
+						<h5>@sponsors(sponsorId).name</h5>
+						<p>@sponsors(sponsorId).description</p>
+					</div>
+				</div>
+			</li>			
+		}	
+		</ul>
+	}
+	        
+	<div class="form-actions">
+		<a class="btn btn-success" href="www.google.pl">@Messages("sponsors.addSponsor")</a>
+	</div>
+	        
+	@footer()
+  	
+  </div>
+}

@@ -23,10 +23,6 @@ object Application extends Controller with securesocial.core.SecureSocial {
     Ok(views.html.contact(request.user))
   }
   
-  def sponsors = UserAwareAction { implicit request =>
-    Ok(views.html.sponsors(request.user))
-  }
-  
   def profile = SecuredAction() { implicit request =>
 	Ok(views.html.profile(request.user))
   }

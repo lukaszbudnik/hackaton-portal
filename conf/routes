@@ -6,7 +6,6 @@
 GET     /                           controllers.Application.index
 GET     /about                      controllers.Application.about
 GET     /contact                    controllers.Application.contact
-GET     /sponsors                   controllers.Application.sponsors
 GET     /profile                    controllers.Application.profile
 
 # Map static resources from the /public folder to the /assets URL path
@@ -100,5 +99,20 @@ GET     /prizes/:id/edit          	controllers.Prize.edit(id: Long)
 POST    /prizes/:id/update        	controllers.Prize.update(id: Long)
 # Delete
 POST    /prizes/:id/delete        	controllers.Prize.delete(id: Long)
+
+GET     /hackathons.json            controllers.Hackathon.hackathonsJson
+
+# Sponsors routes
+# Create
+#GET     /sponsors/new					controllers.Sponsor.create
+#POST    /sponsors                   	controllers.Sponsor.save
+# Retrieve
+GET     /sponsors                   	controllers.Sponsor.index
+#GET     /sponsors/:id                 	controllers.Sponsor.view(id: Long)
+# Update
+#GET     /sponsors/:id/edit          	controllers.Sponsor.edit(id: Long)
+#POST    /sponsors/:id/update        	controllers.Sponsor.update(id: Long)
+# Delete
+#POST    /sponsors/:id/delete        	controllers.Sponsor.delete(id: Long)
 
 GET     /hackathons.json            controllers.Hackathon.hackathonsJson

@@ -46,9 +46,6 @@ about.platform.text = Hackton-portal (a platform which powers this site) is an o
 contact.title = Contact
 contact.text = For any queries regarding the hackaton.pl or hackaton-portal please contact Łukasz Budnik at l.budnik@kainos.com. If you wish to ask about a specific hackathon please go to its home page and see contact details.
 
-sponsors.title = Our Sponsors
-sponsors.text = We'd like to thank the following companies and organisations for supporting Hackaton.pl portal. Thanks!
-
 profile.title = Your profile
 
 news.title = News
@@ -134,14 +131,21 @@ prizes.added = Prize added
 prizes.updated = Prize updated
 prizes.deleted = Prize deleted
 newPrize.title = Add a prize
-newPrize.addProblem = Add a prize
-
 prizes.name.label = Prize name
 prizes.description.label = Description
 prizes.order.label = Define prize order
 prizes.founderName.label = Prize founder (optional)
 prizes.founderWebPage.label = Prize founder web page address (optional)
 prizes.hackathon.label = Choose hackathon 
+
+
+sponsors.title = Our Sponsors
+sponsors.text = We'd like to thank the following companies and organisations for supporting Hackaton.pl portal. Thanks!
+sponsors.addSponsor = Add sponsor
+sponsors.added = Sponsor added
+sponsors.updated = Sponsor updated
+sponsors.deleted = Sponsor deleted
+newSponsor.title = Add new sponsor
 
 social.twitter.share = Share
 social.twitter.follow = Follow
