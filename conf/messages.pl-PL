@@ -1,6 +1,6 @@
-about.idea.text      = Hackatony to charytatywne imprezy na których programiści, konsultanci, menadżerowie wspólnie z przedstawicielami organizacji rządowych, pozarządowych, charytatywnych, służby zdrowia spotykają się razem aby w swoim wolnym czasie spróbować rozwiązać problemy za pomocą dedykowanego oprogramowania. Hackatony zazwyczaj trwają dwa dni (i nierzadko dwie noce). A wszystko to za darmo z głębokiego przekonania, że czasami warto zrobić coś bezinteresownie dla drugiego człowieka!
+about.idea.text      = <h2>Idea</h2><p>Hackatony to charytatywne imprezy na których programiści, konsultanci, menadżerowie wspólnie z przedstawicielami organizacji rządowych, pozarządowych, charytatywnych, służby zdrowia i innych spotykają się razem aby w swoim wolnym czasie spróbować rozwiązać ważne problemy, z którymi te organizacje borykają się na codzień.</p><p>A wszystko to za darmo z głębokiego przekonania, że czasami warto zrobić coś bezinteresownie dla innych!</p><h2>Formuła</h2><p>Hackatony odbywają się w weekendy, trwają 2 dni a niekiedy i 2 noce. Wszystkie zespoły gromadzą się w jednym miejscu, w którym mają zapewnione odpowiednie stanowiska pracy (szybki internet, white boardy oraz najważniejsze ciastka i kawę!). Programiści mogą również zasięgać porad przedstawicieli danych organizacji uczestniczących w hackatonie (zgodnie z metodologią Scrum mówiącą o tym, że programiści bezpośrednio współpracują z klientem).</p> <h2>Rezultaty</h2><p>Rezultatem wspólnej pracy są najczęściej prototypy aplikacji bądź gotowe do użycia aplikacje. Bardzo często aplikacje tworzone podczas hackatonów są dalej rozwijane już po zakończeniu imprezy.</p>
 about.idea.title     = O hackatonach
-about.platform.text  = Hackton.pl wykorzystuje platformę hackaton-portal. Jest to platforma do organizowania i zarządzania hackatonami stworzona przez grupę entuzjastów. hackaton-portal to inicjatywa open-source i jest dystrybuowana na zasadach licencji Apache License 2.0 czyli każdy może dowolnie wykorzystywać ją i modyfikować. Dlatego też zachęcamy wszystkich do stworzenia własnego forka i współpracy nad tworzeniem kolejnych wersji portalu. Oficjalny link do naszego repozytorium to: <a href="http://github.com/lukasz-budnik/hackathon-portal" target="_blank">hackathon-portal</a>.
+about.platform.text  = <h2>Platforma</h2><p>Hackton.pl wykorzystuje platformę hackaton-portal. Jest to platforma do organizowania i zarządzania hackatonami stworzona przez grupę entuzjastów. hackaton-portal to inicjatywa open-source i jest dystrybuowana na zasadach licencji Apache License 2.0 czyli każdy może dowolnie ją wykorzystywać i modyfikować. Dlatego też zachęcamy wszystkich do stworzenia własnego forka i współpracy nad tworzeniem kolejnych wersji portalu. Oficjalny link do naszego repozytorium to: <a href="http://github.com/lukasz-budnik/hackathon-portal" target="_blank">hackathon-portal</a>.</p> <h2>Technologie</h2> Jeśli jeszcze nie jesteś przekonany czy się do nas dołączyć oto lista technologii, które wykorzystujemy:</p> <ul><li>Scala</li><li>Play Framework 2.0</li><li>Squeryl</li><li>SecureSocial</li><li>Twitter Bootstrap</li><li>BDD z użyciem Spec2</li><li>CoffeeScript</li><li>H2/PostgreSQL</li><li>Heroku</li><li>PivotalTracker</li><li>GitHub</li></ul>
 about.platform.title = O platformie hackton-portal
 about.title          = O hackatonach
 
@@ -18,14 +18,14 @@ global.readMore    = Czytaj więcej »
 global.update      = Zapisz
 global.viewDetails = Zobacz szczegóły »
 
-home.news1.text  = Tweetnij o nas, śledź nas, lub nas, daj nam +1! Pomoż nam wypromować ideę hackatonów w Polsce!
+home.news1.text  = Twitnij o nas, śledź nas, lub nas, daj nam +1! Pomoż nam wypromować ideę hackatonów w Polsce!
 home.news1.title = Śledź nas!
 home.news2.text  = Strona hackaton.pl oraz platforma hackaton-portal są tworzone przez entuzjastów dla entuzjastów. Chętnych rąk do pracy nigdy nie jest za mało, dowiedź się więcej jak możesz nam pomóc.
 home.news2.title = Dołącz do naszego zespołu
-home.news3.text  = If you wish to become a sponsor do not hesitate to contact us. A full list of our sponsors is here.
-home.news3.title = Become a sponsor
+home.news3.text  = Jeśli chciałbyś dołączyć do grona sponsorów portalu hackaton.pl lub jeśli jesteś zainteresowany zostaniem sponsorem wybranego hackatonu nie wahaj się i skontaktuj się z nami. Pełna lista sponsorów jest dostępna pod poniższym linkiem.
+home.news3.title = Zostań sponsorem
 
-home.text        = Hackatony to charytatywne imprezy na których programiści, konsultanci menadżerowie wspólnie z przedstawicielami organizacji rządowych, pozarządowych, charytatywnych, służby zdrowia spotykają się razem aby w swoim wolnym czasie spróbować rozwiązać problemy za pomocą dedykowanego oprogramowania. Hackatony zazwyczaj trwają dwa dni (i nierzadko dwie noce). A wszystko to za darmo z głębokiego przekonania, że czasami warto zrobić coś bezinteresownie dla drugiego człowieka!
+home.text        = Hackatony to charytatywne imprezy na których programiści, konsultanci, menadżerowie wspólnie z przedstawicielami organizacji rządowych, pozarządowych, charytatywnych, służby zdrowia i innych spotykają się razem aby w swoim wolnym czasie spróbować rozwiązać ważne problemy, z którymi te organizacje borykają się na codzień. Rezultatem wspólnej pracy są najczęściej prototypy aplikacji bądź nierzadko gotowe do użycia aplikacje. A wszystko to za darmo z głębokiego przekonania, że czasami warto zrobić coś bezinteresownie dla innych!
 home.welcome     = Witamy na stronie hackaton.pl!
 
 navigation.about    = O hackatonach
@@ -49,6 +49,9 @@ news.status.deleted = Wiadomość usunięta
 news.create.title = Dodaj wiadomość
 news.edit.title = Edytuj wiadomość
 news.publish = Opublikuj
+
+sponsors.title = Nasi sponsorzy
+sponsors.text = <p>Chcielibyśmy podziękować wszystkim naszym sponsorom. Oto ich pełna lista. Dziękujemy!</p>
 
 problems.title = Problems
 problems.addProblem = Add a problem
