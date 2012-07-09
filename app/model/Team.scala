@@ -39,4 +39,12 @@ object Team extends Schema {
   def lookup(id: Long): Option[Team] = {
     teams.lookup(id)
   }
+  
+  def add(team: Team): Team = {
+    teams.insert(team)
+  }
+  
+  def delete(id: Long): Int = {
+      teams.deleteWhere(team => team.id === id)
+  }
 }
