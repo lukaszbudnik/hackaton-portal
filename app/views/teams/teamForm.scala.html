@@ -1,4 +1,4 @@
-@(action: play.api.mvc.Call, actionMessage: String, teamForm: Form[model.Team], users: List[model.User], hackathons: List[model.Hackathon], problems: List[model.Problem])
+@(action: play.api.mvc.Call, actionMessage: String, teamForm: Form[model.Team], users: List[model.User], hackathons: List[model.Hackathon], problems: List[model.Problem])(implicit request: Request[AnyContent])
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -32,7 +32,8 @@
 	    teamForm("creatorId"),
 	    users.map{ u => u.id.toString -> u.name },
 	    '_label -> Messages("teams.creator.label"),
-	    '_showConstraints -> false
+	    '_showConstraints -> false,
+	    'disabled -> "disabled"
 	)
         
 	<div class="form-actions">

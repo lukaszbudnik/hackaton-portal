@@ -31,6 +31,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
 
   def create = SecuredAction() { implicit request =>
     transaction {
+      teamForm.fill(model.Team("", request.user.hackathonUserId, 0))
       Ok(views.html.teams.create(teamForm, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
     }
   }

@@ -92,13 +92,12 @@ case class Location(country: String,
 case class Team(name: String,
 				@Column("creator_id") creatorId: Long,
 				@Column("hackathon_id") hackathonId: Long,
-				@Column("problem_id") problemId: Option[Long]) extends KeyedEntity[Long] {
+				@Column("problem_id") problemId: Option[Long] = Some(0L)) extends KeyedEntity[Long] {
   val id: Long = 0L
   lazy val creator : ManyToOne[User] = Model.creatorToTeams.right(this)  
   lazy val hackathon : ManyToOne[Hackathon] = Model.hackathonToTeams.right(this)
   lazy val problem = Model.problemToTeams.right(this);
   lazy val users = Model.usersToTeams.right(this)
-  def this() = this("", 0, 0, Some(0L))
   def hasMember(userId: Long) : Boolean = {
     users.map{
       u => if(u.id == userId) return true
