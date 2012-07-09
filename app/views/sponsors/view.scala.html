@@ -1,0 +1,50 @@
+@(sponsor: Option[model.Sponsor], hackathons: Iterable[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+
+@import helper._
+
+@main(Messages("news.title"), user, nav = "sponsors") {
+    
+    <div class="container">
+    
+		
+
+		@if(sponsor.isEmpty) {
+			<div class="page-header">
+		    <h1>@Messages("sponsors.notFound")</h1>
+		    </div>
+    	} else {
+    	
+    		<div class="page-header">
+		    	<h2>@sponsor.get.name</h2>
+		    	<h3><a href="@sponsor.get.website">@sponsor.get.website</a></h3>
+		    </div>
+		    
+			<p>@sponsor.get.description</p>
+			
+			@if(sponsor.get.isGeneralSponsor) {
+				<p><b>@Messages("sponsors.generalSponsor")</b></p>
+			}
+			
+			@if(!hackathons.isEmpty) {
+				<p><b>@Messages("sponsors.sponsoredHackathons")</b></p>
+				<ul>
+				
+				@hackathons.map { h =>
+					<li/>@h.subject			
+				}
+				
+				</ul>
+				
+	  		}
+	  		<p></p>
+	  		
+	  		<div class="form-actions">
+		    	@form(routes.Sponsor.delete(sponsor.get.id)) {
+			    	<a class="btn btn-success" href="@routes.Sponsor.edit(sponsor.get.id)">@Messages("global.edit")</a>
+		            <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+		        }
+            </div>
+  		}  	
+  
+    </div>
+}

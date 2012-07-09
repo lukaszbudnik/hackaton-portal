@@ -44,6 +44,7 @@ case class Hackathon(subject: String,
   lazy val location: ManyToOne[Location] = Model.locationToHackathons.right(this)
   lazy val teams = Team.hackathonToTeams.left(this)
   lazy val problems = Model.hackathonToProblems.left(this)
+  lazy val sponsors = from(Model.hackathonsToSponsors.left(this))(hs => select(hs) orderBy(hs.order asc))
   def this() = this("", HackathonStatus.Planning, 1, 1)
 }
 
@@ -62,6 +63,7 @@ case class Sponsor(name: String,
 				 @Column("sponsor_order") order: Int,
 				 @Column("is_general_sponsor") isGeneralSponsor: Boolean) extends KeyedEntity[Long] {
   val id: Long = 0L
+  lazy val hackathons = Model.hackathonsToSponsors.right(this)
 }
 
 case class HackathonSponsor(@Column("hackathon_id") hackathonId: Long,
@@ -167,20 +169,16 @@ object Model extends Schema {
   def findRoleByName(name: String): Option[Role] = {
     roles.find(r => r.name == name)
   }
-   
-  def findSponsorsIdsByHackathonId(hackathonId : Long) :Iterable[Long] = {
-    from (Model.hackathonsToSponsors) (hs =>
-      where(hs.hackathonId === hackathonId)
-      select(hs.sponsorId)
-      orderBy(hs.order asc)
-    )
+    
+  def findGeneralSponsorsOrdered() : Iterable[Sponsor] = {
+    from(sponsors)(s =>
+      where(s.isGeneralSponsor === true)
+      select(s)
+      orderBy(s.order)
+      )
   }
   
-  def findGeneralSponsorsIds() : Iterable[Long] = {
-    from(Model.sponsors)(s =>
-      where(s.isGeneralSponsor === true)
-      select(s.id)
-      orderBy(s.order asc)
-    )
+  def allHackathonsForSponsor(id: Long) = {
+    sponsors.lookup(id).get.hackathons
   }
 }

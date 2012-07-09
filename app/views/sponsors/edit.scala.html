@@ -1,0 +1,17 @@
+@(id: Long, sponsorForm: Form[model.Sponsor], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@main(Messages("sponsors.edit.title"), Some(user), nav = "sponsors") {
+
+	<div class="container">
+    
+	<div class="page-header">
+    	<h2>@Messages("sponsors.edit.title")</h2>
+	</div>
+    
+    @sponsors.sponsorForm(routes.Sponsor.update(id), Messages("global.update"), sponsorForm)
+    
+    </div>
+}
