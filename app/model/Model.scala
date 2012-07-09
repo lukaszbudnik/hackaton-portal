@@ -6,15 +6,6 @@ import org.squeryl.Schema
 import org.squeryl.KeyedEntity
 import org.squeryl.annotations.Column
 
-case class News(title: String,
-				text: String,
-				labels: String,
-				@Column("author_id") authorId: Long,
-				published: Date) extends KeyedEntity[Long] {
-  val id: Long = 0L
-  lazy val author: ManyToOne[User] = Model.authorToNews.right(this)
-}
-
 case class User(name: String,
 				email: String,
 				@Column("github_username") githubUsername: String,
@@ -126,7 +117,6 @@ object HackathonStatus extends Enumeration {
 
 object Model extends Schema {
   
-  val news = table[News]
   val problems = table[Problem]("problems")
   val prizes = table[Prize]("prizes")
   val users = table[User]("users")
@@ -140,7 +130,6 @@ object Model extends Schema {
     manyToManyRelation(hackathons, sponsors, "hackathons_sponsors").
     via[HackathonSponsor](f = (h, s, hs) => (h.id === hs.hackathonId, s.id === hs.sponsorId))
   
-  val authorToNews = oneToManyRelation(users, news).via((u, n) => u.id === n.authorId)
   val submitterToHackathons = oneToManyRelation(users, hackathons).via((u, h) => u.id === h.submitterId)  
   val locationToHackathons = oneToManyRelation(locations, hackathons).via((l, h) => l.id === h.locationId)
   val submitterToProblems = oneToManyRelation(users, problems).via((u, p) => u.id === p.submitterId)
@@ -157,25 +146,6 @@ object Model extends Schema {
     manyToManyRelation(users, teams, "users_teams").
       via[UserTeam](f = (u, t, ut) => (u.id === ut.userId, t.id === ut.teamId))
       
-  def lookupNews(id: Long): Option[News] = {
-    news.lookup(id)
-  }
-
-  def allNews(): Iterable[News] = {
-    news.toIterable
-  }
-
-  def deleteAllNews() = {
-    news.deleteWhere(n => n.id gt 0L)
-  }
-  
-  def allNewsSortedByDateDesc(): Iterable[News] = {
-	from (news)(n =>
-        select(n)
-        orderBy(n.published desc)
-    )
-  }
-  
   def lookupProblem(id: Long): Option[Problem] = {
     problems.lookup(id)
   }
