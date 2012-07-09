@@ -12,8 +12,8 @@
 	    		<p>@Html(n.text.split("<!--more-->").head)...</p>
 	    		<p>@Messages("news.author.label"): @n.author.head.name @Messages("news.published.label"): @n.published</p>
 	    		<p>@Messages("news.labels.label"):
-				@for(l <- n.labels.split(",")) {
-				  <span class="label">@l</span>
+				@for(l <- n.labels) {
+				  <span class="label">@l.value</span>
 				}
 				</p>
 	    		<p><a class="btn" href="@routes.News.view(n.id)">@Messages("global.readMore")</a></p>

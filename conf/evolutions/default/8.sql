@@ -10,8 +10,8 @@ insert into roles (name) values ('admin');
 
 insert into users_roles (user_id, role_id) values (1, 1);
 
-insert into news (title, text, labels, published, author_id) values ('Tytuł', 'This is an example <!--more-->of multiline news', 'label1, label2', '2012-01-01 00:00:00', 1);
-insert into news (title, text, labels, published, author_id) values ('Tytuł 2', 'This is an example <!--more-->of multiline news', 'label1, label3', '2012-01-02 00:00:00', 1);
+insert into news (title, text, labelsasstring, published, author_id) values ('Tytuł', 'This is an example <!--more-->of multiline news', 'label1, label2', '2012-01-01 00:00:00', 1);
+insert into news (title, text, labelsasstring, published, author_id) values ('Tytuł 2', 'This is an example <!--more-->of multiline news', 'label1, label3', '2012-01-02 00:00:00', 1);
 
 insert into locations (country, city, postal_code, full_address, name, latitude, longitude) values ('Polska', 'Gdańsk', '80-000', 'Ul. Długa 55', 'Hackaton venue!', 54.366667, 18.633333);
 insert into hackathons (subject, status, submitter_id, location_id) values ('Hackaton testowy', 1, 1, 1);
@@ -19,8 +19,8 @@ insert into hackathons (subject, status, submitter_id, location_id) values ('Hac
 insert into locations (country, city, postal_code, full_address, name, latitude, longitude) values ('Polska', 'Warszawa', '80-000', 'Ul. Krótka 5', 'Hackaton venue!', 52.2323, 21.008433);
 insert into hackathons (subject, status, submitter_id, location_id) values ('Hackaton testowy', 2, 1, 2);
 
-insert into news (title, text, labels, published, author_id, hackathon_id) values ('Hackathon News 1', 'This is an example <!--more-->of multiline news', 'label1, label2', '2012-01-01 00:00:00', 1, 1);
-insert into news (title, text, labels, published, author_id, hackathon_id) values ('Hackathon News 2', 'This is an example <!--more-->of multiline news', 'label1, label3', '2012-01-02 00:00:00', 1, 1);
+insert into news (title, text, labelsasstring, published, author_id, hackathon_id) values ('Hackathon News 1', 'This is an example <!--more-->of multiline news', 'label1, label2', '2012-01-01 00:00:00', 1, 1);
+insert into news (title, text, labelsasstring, published, author_id, hackathon_id) values ('Hackathon News 2', 'This is an example <!--more-->of multiline news', 'label1, label3', '2012-01-02 00:00:00', 1, 1);
 
 insert into problems (name, description, submitter_id, hackathon_id) values ('Problem 1.', 'Problem testowy', 1, 1);
 insert into problems (name, description, submitter_id, hackathon_id) values ('Problem 2.', 'Problem testowy numer 2.', 1, 1);
@@ -49,6 +49,9 @@ insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values 
 insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (2,2,1);
 insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (2,4,2);
 insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (2,5,3);
+
+insert into labels(value) values ('test_label_1');
+insert into labels(value) values ('test_label_2');
 
 # --- !Downs
 

@@ -103,12 +103,6 @@ case class UserTeam(@Column("user_id") userId: Long,
   def id = compositeKey(userId, teamId)
 }
 
-object OrderByDirection extends Enumeration {
-  type Direction = Value
-  val Asc = Value("Asc")
-  val Desc = Value("Desc")
-}
-
 object HackathonStatus extends Enumeration {
   val Planning = Value(1, "Planning")
   val InProgress = Value(2, "InProgress")

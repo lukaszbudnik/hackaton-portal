@@ -13,7 +13,7 @@ object News extends Controller with securesocial.core.SecureSocial {
     mapping(
       "title" -> nonEmptyText,
       "text" -> nonEmptyText,
-      "labels" -> nonEmptyText,
+      "labelsAsString" -> nonEmptyText,
       "authorId" -> longNumber,
       "published" -> date("dd/MM/yyyy"),
       "hackathonId"  -> optional(longNumber))(model.News.apply)(model.News.unapply))
@@ -74,7 +74,6 @@ object News extends Controller with securesocial.core.SecureSocial {
             set (
               n.title := news.title,
               n.text := news.text,
-              n.labels := news.labels,
               n.authorId := news.authorId,
               n.published := news.published))
         Redirect(routes.News.index).flashing("status" -> "updated", "title" -> news.title)

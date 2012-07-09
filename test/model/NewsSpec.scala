@@ -16,7 +16,7 @@ class NewsSpec extends Specification {
     "be insertable" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val news: News = new News("title", "text", "label1, label2", 1L, new Date(), None)
+          val news: News = new News("title", "text", "", 1L, new Date(), None)
           News.news.insert(news)
           
           news.isPersisted must beTrue
@@ -24,10 +24,39 @@ class NewsSpec extends Specification {
         }
       }
     }
+    "be insertable with labels" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        transaction {
+          val news: News = new News("title", "text", "", 1L, new Date(), None)
+          News.news.insert(news)
+          
+          news.isPersisted must beTrue
+          news.id must beGreaterThan(0L)
+          
+          // retrieve test labels
+          val label1 = Label.findByValue("test_label_1")
+          val label2 = Label.findByValue("test_label_2")
+          
+          label1.isEmpty must beFalse
+          label2.isEmpty must beFalse
+
+          val labels = Seq(label1.get, label2.get)
+          
+	      labels.foreach {l =>
+	          news.labels.associate(l)
+          }
+          
+          val newsDb = News.lookup(news.id)
+          
+          newsDb.get.labels.seq.size must equalTo(labels.size)
+          
+        }
+      }
+    }
     "be retrivable by id" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val news: News = new News("title", "text", "label1, label2", 1L, new Date(), None)
+          val news: News = new News("title", "text", "", 1L, new Date(), None)
           News.news.insert(news)
           
           news.isPersisted must beTrue
@@ -42,7 +71,7 @@ class NewsSpec extends Specification {
     "be retrivable with author relationship" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val news: News = new News("title", "text", "label1, label2", 1L, new Date(), None)
+          val news: News = new News("title", "text", "", 1L, new Date(), None)
           News.news.insert(news)
           
           news.isPersisted must beTrue
@@ -59,8 +88,8 @@ class NewsSpec extends Specification {
         transaction {
           News.deleteAll()
           
-          News.news.insert(new News("title", "text", "label1, label2", 1L, new Date(), None))
-          News.news.insert(new News("title", "text", "label1, label2", 1L, new Date(), None))
+          News.news.insert(new News("title", "text", "", 1L, new Date(), None))
+          News.news.insert(new News("title", "text", "", 1L, new Date(), None))
           
           val newsList: Iterable[News] = News.all
           newsList must have size(2)
@@ -73,10 +102,10 @@ class NewsSpec extends Specification {
           News.deleteAll
           
           val date1 = new SimpleDateFormat("yyy-MM-dd").parse("2012-01-01")
-          News.news.insert(new News("title", "text", "label1, label2", 1L, date1, None))
+          News.news.insert(new News("title", "text", "", 1L, date1, None))
           
           val date2 = new SimpleDateFormat("yyy-MM-dd").parse("2012-02-02")
-          News.news.insert(new News("title", "text", "label1, label2", 1L, date2, None))
+          News.news.insert(new News("title", "text", "", 1L, date2, None))
           
           val newsList: List[News] = News.all.toList.sortWith((n1, n2) => n1.published.after(n2.published))
           
