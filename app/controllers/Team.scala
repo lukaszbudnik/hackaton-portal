@@ -51,10 +51,11 @@ object Team extends Controller with securesocial.core.SecureSocial {
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      Model.teams.lookup(id).map { team =>
-        helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
-        Ok(views.html.teams.edit(id, teamForm.fill(team), Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))  
-      }.getOrElse{
+      Model.teams.lookup(id).map {
+        team =>
+          helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
+          Ok(views.html.teams.edit(id, teamForm.fill(team), Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
+      }.getOrElse {
         // no team found
         Redirect(routes.Team.view(id)).flashing()
       }
@@ -67,42 +68,55 @@ object Team extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.teams.edit(id, errors, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
       },
       team => transaction {
-    	helpers.Security.verifyIfAllowed(team.creatorId == request.user.hackathonUserId)(request.user)
-        Model.teams.update(t =>
-          where(t.id === id)
-            set (
-              t.name := team.name,
-              t.creatorId := team.creatorId,
-              t.hackathonId := team.hackathonId,
-              t.problemId := team.problemId))
+        helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
+        Model.teams.update(
+          t =>
+            where(t.id === id)
+              set (
+                t.name := team.name,
+                t.creatorId := team.creatorId,
+                t.hackathonId := team.hackathonId,
+                t.problemId := team.problemId))
         Redirect(routes.Team.index).flashing("status" -> "updated", "title" -> team.name)
       })
   }
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      Model.teams.deleteWhere(t => t.id === id)
+      Model.teams.deleteWhere(team => team.id === id)
     }
     Redirect(routes.Team.index).flashing("status" -> "deleted")
   }
-  
+
   def join(id: Long) = SecuredAction() { implicit request =>
-  	transaction {
-  	  val user = Model.users.lookup(request.user.hackathonUserId)
-  	  Model.teams.lookup(id).map{
-  	    t => if(!t.users.toSet.contains(user.get)){
-  	      t.users.associate(user.get)
-  	    }
-  	  }
-  	  Redirect(routes.Team.view(id)).flashing("status" -> "joined")
-    }  
+    transaction {
+      var status = "error"
+      Model.users.lookup(request.user.hackathonUserId).map {
+        user =>
+          Model.teams.lookup(id).map {
+            team =>
+              if (!team.users.toSet.contains(user)) {
+                team.users.associate(user)
+                status = "joined"
+              }
+          }
+      }
+      Redirect(routes.Team.view(id)).flashing("status" -> status)
+    }
   }
-  
+
   def disconnect(id: Long) = SecuredAction() { implicit request =>
     transaction {
-  	  val user = Model.users.lookup(request.user.hackathonUserId)
-  	  Model.teams.lookup(id).map{ t => t.users.dissociate(user.get) }
-  	  Redirect(routes.Team.view(id)).flashing("status" -> "disconnected")
-    }  
+      var status = "error"
+      Model.users.lookup(request.user.hackathonUserId).map {
+        user =>
+          Model.teams.lookup(id).map {
+            team =>
+              team.users.dissociate(user)
+              status = "disconnected"
+          }
+      }
+      Redirect(routes.Team.view(id)).flashing("status" -> status)
+    }
   }
 }
