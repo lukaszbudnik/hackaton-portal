@@ -2,6 +2,6 @@
 
 @main2("teams.edit.title", "teams", Some(user)) {
 
-  @teams.teamForm(routes.Team.update(id), "global.update", teamForm, users, hackathons, problems)
+  @teams.teamForm(routes.Team.update(id), "global.update", teamForm, users, hackathons, problems, user)
 
 }

@@ -2,6 +2,6 @@
 
 @main2("teams.create.title", "teams", Some(user)) {
 
-  @teams.teamForm(routes.Team.save, "global.add", teamForm, users, hackathons, problems)
+  @teams.teamForm(routes.Team.save, "global.add", teamForm, users, hackathons, problems, user)
 
 }

@@ -19,20 +19,21 @@ object Team extends Controller with securesocial.core.SecureSocial {
 
   def index = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.teams.index(Model.teams.toList, request.user))
+      Ok(views.html.teams.index(model.Team.all, request.user))
     }
   }
 
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.teams.view(Model.teams.lookup(id), request.user))
+      Ok(views.html.teams.view(model.Team.lookup(id), request.user))
     }
   }
 
   def create = SecuredAction() { implicit request =>
     transaction {
-      teamForm.fill(model.Team("", request.user.hackathonUserId, 0))
-      Ok(views.html.teams.create(teamForm, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
+      request.user.roles.exists(r => r == "admin")
+      val team = model.Team("", request.user.hackathonUserId, 0)
+      Ok(views.html.teams.create(teamForm.fill(team), Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
     }
   }
 
@@ -43,16 +44,16 @@ object Team extends Controller with securesocial.core.SecureSocial {
       },
       team => transaction {
         // insert team
-        Model.teams.insert(team)
+        model.Team.teams.insert(team)
         // add creator as a member
-        team.users.associate(team.creator.head)
+        team.members.associate(team.creator.head)
         Redirect(routes.Team.index).flashing("status" -> "added", "title" -> team.name)
       })
   }
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      Model.teams.lookup(id).map {
+      model.Team.lookup(id).map {
         team =>
           helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
           Ok(views.html.teams.edit(id, teamForm.fill(team), Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
@@ -70,7 +71,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
       },
       team => transaction {
         helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
-        Model.teams.update(
+        model.Team.teams.update(
           t =>
             where(t.id === id)
               set (
@@ -84,7 +85,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      Model.teams.deleteWhere(team => team.id === id)
+      model.Team.teams.deleteWhere(team => team.id === id)
     }
     Redirect(routes.Team.index).flashing("status" -> "deleted")
   }
@@ -94,10 +95,10 @@ object Team extends Controller with securesocial.core.SecureSocial {
       var status = "error"
       Model.users.lookup(request.user.hackathonUserId).map {
         user =>
-          Model.teams.lookup(id).map {
+          model.Team.lookup(id).map {
             team =>
-              if (!team.users.toSet.contains(user)) {
-                team.users.associate(user)
+              if (!team.hasMember(user.id)) {
+                team.members.associate(user)
                 status = "joined"
               }
           }
@@ -111,9 +112,9 @@ object Team extends Controller with securesocial.core.SecureSocial {
       var status = "error"
       Model.users.lookup(request.user.hackathonUserId).map {
         user =>
-          Model.teams.lookup(id).map {
+          model.Team.lookup(id).map {
             team =>
-              team.users.dissociate(user)
+              team.members.dissociate(user)
               status = "disconnected"
           }
       }

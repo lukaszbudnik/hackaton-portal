@@ -24,12 +24,12 @@ class UserTeamSpec extends Specification {
           Model.users.insert(user2)
 
           val team = Team("test-team", 1L, 1L, Some(1L))
-          Model.teams.insert(team)
+          model.Team.teams.insert(team)
           
           user1.teams.associate(team)
           user2.teams.associate(team)
           
-          val results = Model.allUsersForTeam(team.id).toIterable
+          val results = model.Team.lookup(team.id).get.members
           results.size must equalTo(2)
         }
       }

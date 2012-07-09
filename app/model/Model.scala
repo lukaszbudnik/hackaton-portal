@@ -14,7 +14,7 @@ case class User(name: String,
 				@Column("open_id") openId: String) extends KeyedEntity[Long] {
   val id: Long = 0L
   lazy val roles = Model.usersToRoles.left(this)
-  lazy val teams = Model.usersToTeams.left(this)
+  lazy val teams = Team.usersToTeams.left(this)
 }
 
 case class Role(name: String) extends KeyedEntity[Long] {
@@ -42,7 +42,7 @@ case class Hackathon(subject: String,
   val id: Long = 0L
   lazy val submitter : ManyToOne[User] = Model.submitterToHackathons.right(this)  
   lazy val location: ManyToOne[Location] = Model.locationToHackathons.right(this)
-  lazy val teams = Model.hackathonToTeams.left(this)
+  lazy val teams = Team.hackathonToTeams.left(this)
   lazy val problems = Model.hackathonToProblems.left(this)
   def this() = this("", HackathonStatus.Planning, 1, 1)
 }
@@ -80,23 +80,6 @@ case class Location(country: String,
   val id: Long = 0L
 }
 
-case class Team(name: String,
-				@Column("creator_id") creatorId: Long,
-				@Column("hackathon_id") hackathonId: Long,
-				@Column("problem_id") problemId: Option[Long] = Some(0L)) extends KeyedEntity[Long] {
-  val id: Long = 0L
-  lazy val creator : ManyToOne[User] = Model.creatorToTeams.right(this)  
-  lazy val hackathon : ManyToOne[Hackathon] = Model.hackathonToTeams.right(this)
-  lazy val problem = Model.problemToTeams.right(this);
-  lazy val users = Model.usersToTeams.right(this)
-  def hasMember(userId: Long) : Boolean = {
-    users.map{
-      u => if(u.id == userId) return true
-    }
-    false
-  }
-}
-
 case class UserTeam(@Column("user_id") userId: Long,
 					@Column("team_id") teamId: Long) extends KeyedEntity[CompositeKey2[Long, Long]] {
   def id = compositeKey(userId, teamId)
@@ -123,7 +106,7 @@ object Model extends Schema {
   val hackathons = table[Hackathon]("hackathons")
   val sponsors = table[Sponsor]("sponsors")
   val locations = table[Location]("locations")
-  val teams = table[Team]("teams")
+
     
   val hackathonsToSponsors = 
     manyToManyRelation(hackathons, sponsors, "hackathons_sponsors").
@@ -133,17 +116,10 @@ object Model extends Schema {
   val locationToHackathons = oneToManyRelation(locations, hackathons).via((l, h) => l.id === h.locationId)
   val submitterToProblems = oneToManyRelation(users, problems).via((u, p) => u.id === p.submitterId)
   val hackathonToProblems = oneToManyRelation(hackathons, problems).via((h, p) => h.id === p.hackathonId)
-  val creatorToTeams = oneToManyRelation(users, teams).via((u, t) => u.id === t.creatorId)
-  val hackathonToTeams = oneToManyRelation(hackathons, teams).via((h, t) => h.id === t.hackathonId)
-  val problemToTeams = oneToManyRelation(problems, teams).via((p, t) => p.id === t.problemId)
 
   val usersToRoles =
     manyToManyRelation(users, roles, "users_roles").
       via[UserRole](f = (u, r, ur) => (u.id === ur.userId, r.id === ur.roleId))
-      
-  val usersToTeams =
-    manyToManyRelation(users, teams, "users_teams").
-      via[UserTeam](f = (u, t, ut) => (u.id === ut.userId, t.id === ut.teamId))
       
   def lookupProblem(id: Long): Option[Problem] = {
     problems.lookup(id)
@@ -191,15 +167,7 @@ object Model extends Schema {
   def findRoleByName(name: String): Option[Role] = {
     roles.find(r => r.name == name)
   }
-  
-  def lookupTeam(id: Long): Option[Team] = {
-    teams.lookup(id)
-  }
-  
-  def allUsersForTeam(id : Long) = {
-    lookupTeam(id).get.users
-  }
-  
+   
   def findSponsorsIdsByHackathonId(hackathonId : Long) :Iterable[Long] = {
     from (Model.hackathonsToSponsors) (hs =>
       where(hs.hackathonId === hackathonId)
