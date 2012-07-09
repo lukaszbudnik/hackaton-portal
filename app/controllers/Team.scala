@@ -52,7 +52,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
       Model.teams.lookup(id).map { team =>
-        helpers.Security.verifyIfAllowed(team.creatorId == request.user.hackathonUserId)(request.user)
+        helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
         Ok(views.html.teams.edit(id, teamForm.fill(team), Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))  
       }.getOrElse{
         // no team found
