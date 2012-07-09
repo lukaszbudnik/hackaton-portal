@@ -25,6 +25,7 @@ GET     /authenticate/:provider     securesocial.controllers.LoginPage.authentic
 # News routes
 # Create
 GET     /news/new                   controllers.News.create
+GET     /news/new/:hackathonId      controllers.News.createHackathonNews(hackathonId: Long)
 POST    /news                       controllers.News.save
 # Retrieve
 GET     /news                       controllers.News.index

@@ -6,15 +6,6 @@ import org.squeryl.Schema
 import org.squeryl.KeyedEntity
 import org.squeryl.annotations.Column
 
-case class News(title: String,
-				text: String,
-				labels: String,
-				@Column("author_id") authorId: Long,
-				published: Date) extends KeyedEntity[Long] {
-  val id: Long = 0L
-  lazy val author: ManyToOne[User] = Model.authorToNews.right(this)
-}
-
 case class User(name: String,
 				email: String,
 				@Column("github_username") githubUsername: String,
@@ -23,7 +14,7 @@ case class User(name: String,
 				@Column("open_id") openId: String) extends KeyedEntity[Long] {
   val id: Long = 0L
   lazy val roles = Model.usersToRoles.left(this)
-  lazy val teams = Model.usersToTeams.left(this)
+  lazy val teams = Team.usersToTeams.left(this)
 }
 
 case class Role(name: String) extends KeyedEntity[Long] {
@@ -51,7 +42,7 @@ case class Hackathon(subject: String,
   val id: Long = 0L
   lazy val submitter : ManyToOne[User] = Model.submitterToHackathons.right(this)  
   lazy val location: ManyToOne[Location] = Model.locationToHackathons.right(this)
-  lazy val teams = Model.hackathonToTeams.left(this)
+  lazy val teams = Team.hackathonToTeams.left(this)
   lazy val problems = Model.hackathonToProblems.left(this)
   lazy val sponsors = from(Model.hackathonsToSponsors.left(this))(hs => select(hs) orderBy(hs.order asc))
   def this() = this("", HackathonStatus.Planning, 1, 1)
@@ -91,24 +82,6 @@ case class Location(country: String,
   val id: Long = 0L
 }
 
-case class Team(name: String,
-				@Column("creator_id") creatorId: Long,
-				@Column("hackathon_id") hackathonId: Long,
-				@Column("problem_id") problemId: Option[Long]) extends KeyedEntity[Long] {
-  val id: Long = 0L
-  lazy val creator : ManyToOne[User] = Model.creatorToTeams.right(this)  
-  lazy val hackathon : ManyToOne[Hackathon] = Model.hackathonToTeams.right(this)
-  lazy val problem = Model.problemToTeams.right(this);
-  lazy val users = Model.usersToTeams.right(this)
-  def this() = this("", 0, 0, Some(0L))
-  def hasMember(userId: Long) : Boolean = {
-    users.map{
-      u => if(u.id == userId) return true
-    }
-    false
-  }
-}
-
 case class UserTeam(@Column("user_id") userId: Long,
 					@Column("team_id") teamId: Long) extends KeyedEntity[CompositeKey2[Long, Long]] {
   def id = compositeKey(userId, teamId)
@@ -128,7 +101,6 @@ object HackathonStatus extends Enumeration {
 
 object Model extends Schema {
   
-  val news = table[News]
   val problems = table[Problem]("problems")
   val prizes = table[Prize]("prizes")
   val users = table[User]("users")
@@ -136,48 +108,21 @@ object Model extends Schema {
   val hackathons = table[Hackathon]("hackathons")
   val sponsors = table[Sponsor]("sponsors")
   val locations = table[Location]("locations")
-  val teams = table[Team]("teams")
+
     
   val hackathonsToSponsors = 
     manyToManyRelation(hackathons, sponsors, "hackathons_sponsors").
     via[HackathonSponsor](f = (h, s, hs) => (h.id === hs.hackathonId, s.id === hs.sponsorId))
   
-  val authorToNews = oneToManyRelation(users, news).via((u, n) => u.id === n.authorId)
   val submitterToHackathons = oneToManyRelation(users, hackathons).via((u, h) => u.id === h.submitterId)  
   val locationToHackathons = oneToManyRelation(locations, hackathons).via((l, h) => l.id === h.locationId)
   val submitterToProblems = oneToManyRelation(users, problems).via((u, p) => u.id === p.submitterId)
   val hackathonToProblems = oneToManyRelation(hackathons, problems).via((h, p) => h.id === p.hackathonId)
-  val creatorToTeams = oneToManyRelation(users, teams).via((u, t) => u.id === t.creatorId)
-  val hackathonToTeams = oneToManyRelation(hackathons, teams).via((h, t) => h.id === t.hackathonId)
-  val problemToTeams = oneToManyRelation(problems, teams).via((p, t) => p.id === t.problemId)
 
   val usersToRoles =
     manyToManyRelation(users, roles, "users_roles").
       via[UserRole](f = (u, r, ur) => (u.id === ur.userId, r.id === ur.roleId))
       
-  val usersToTeams =
-    manyToManyRelation(users, teams, "users_teams").
-      via[UserTeam](f = (u, t, ut) => (u.id === ut.userId, t.id === ut.teamId))
-      
-  def lookupNews(id: Long): Option[News] = {
-    news.lookup(id)
-  }
-
-  def allNews(): Iterable[News] = {
-    news.toIterable
-  }
-
-  def deleteAllNews() = {
-    news.deleteWhere(n => n.id gt 0L)
-  }
-  
-  def allNewsSortedByDateDesc(): Iterable[News] = {
-	from (news)(n =>
-        select(n)
-        orderBy(n.published desc)
-    )
-  }
-  
   def lookupProblem(id: Long): Option[Problem] = {
     problems.lookup(id)
   }
@@ -223,14 +168,6 @@ object Model extends Schema {
   
   def findRoleByName(name: String): Option[Role] = {
     roles.find(r => r.name == name)
-  }
-  
-  def lookupTeam(id: Long): Option[Team] = {
-    teams.lookup(id)
-  }
-  
-  def allUsersForTeam(id : Long) = {
-    lookupTeam(id).get.users
   }
     
   def findGeneralSponsorsOrdered() : Iterable[Sponsor] = {

@@ -1,6 +1,7 @@
 package forms
 
 import java.util.Date
+import java.text.SimpleDateFormat
 import org.specs2.mutable._
 import play.api.test.Helpers._
 
@@ -68,24 +69,24 @@ class NewsSpec extends Specification {
     
     "be filled" in {
       val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labels" -> "QWQ", "authorId" -> "12", "published" -> "31/12/2012"))
-      val date = new Date(31,12,2012);
+      val date = new SimpleDateFormat("yyy-MM-dd").parse("2012-01-01")
       
       form.hasErrors must beFalse
       
       form.value must beSome.which { _ match {
-        case (model.News("ABC", "XYZ", "QWQ", 12L, date)) => true
+        case (model.News("ABC", "XYZ", "QWQ", 12L, date, None)) => true
         case _ => false
       }}
     }
     
     "be filled from model" in {
-	  val date = new Date(31,12,2012);
-      val form = newsForm.fill(model.News("ABC", "XYZ", "QWQ", 12L, date))
+	  val date = new SimpleDateFormat("yyy-MM-dd").parse("2012-01-01")
+      val form = newsForm.fill(model.News("ABC", "XYZ", "QWQ", 12L, date, Some(123)))
       
       form.hasErrors must beFalse
       
       form.value must beSome.which { _ match {
-        case (model.News("ABC", "XYZ", "QWQ", 12L, date)) => true
+        case (model.News("ABC", "XYZ", "QWQ", 12L, date, Some(123))) => true
         case _ => false
       }}
     }

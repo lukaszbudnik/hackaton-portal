@@ -1,11 +1,11 @@
 package controllers
 
 import org.squeryl.PrimitiveTypeMode._
-
 import model.Model
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
+import java.util.Date
 
 object News extends Controller with securesocial.core.SecureSocial {
 
@@ -15,23 +15,32 @@ object News extends Controller with securesocial.core.SecureSocial {
       "text" -> nonEmptyText,
       "labels" -> nonEmptyText,
       "authorId" -> longNumber,
-      "published" -> date("dd/MM/yyyy"))(model.News.apply)(model.News.unapply))
+      "published" -> date("dd/MM/yyyy"),
+      "hackathonId"  -> optional(longNumber))(model.News.apply)(model.News.unapply))
 
   def index = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.news.index(Model.allNewsSortedByDateDesc.toList, request.user))
+      Ok(views.html.news.index(model.News.allNewsSortedByDateDesc.toList, request.user))
     }
   }
 
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.news.view(Model.news.lookup(id), request.user))
+      Ok(views.html.news.view(model.News.lookup(id), request.user))
     }
   }
 
   def create = SecuredAction() { implicit request =>
+    val news = model.News("", "", "", request.user.hackathonUserId, new Date(), None)
     transaction {
-      Ok(views.html.news.create(newsForm, Model.users.toList, request.user))
+      Ok(views.html.news.create(newsForm.fill(news), Model.users.toList, request.user))
+    }
+  }
+  
+  def createHackathonNews(hackathonId: Long) = SecuredAction() { implicit request =>
+    val hackathonNews = model.News("", "", "", request.user.hackathonUserId, new Date(), Some(hackathonId))
+    transaction {
+      Ok(views.html.news.create(newsForm.fill(hackathonNews), Model.users.toList, request.user))
     }
   }
 
@@ -41,14 +50,14 @@ object News extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.news.create(errors, Model.users.toList, request.user))
       },
       news => transaction {
-        Model.news.insert(news)
+        model.News.news.insert(news)
         Redirect(routes.News.index).flashing("status" -> "added", "title" -> news.title)
       })
   }
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      Model.news.lookup(id).map { news =>
+      model.News.news.lookup(id).map { news =>
         Ok(views.html.news.edit(id, newsForm.fill(news), Model.users.toList, request.user))
       }.get
     }
@@ -60,7 +69,7 @@ object News extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.news.edit(id, errors, Model.users.toList, request.user))
       },
       news => transaction {
-        Model.news.update(n =>
+        model.News.news.update(n =>
           where(n.id === id)
             set (
               n.title := news.title,
@@ -74,7 +83,7 @@ object News extends Controller with securesocial.core.SecureSocial {
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      Model.news.deleteWhere(n => n.id === id)
+      model.News.news.deleteWhere(n => n.id === id)
     }
     Redirect(routes.News.index).flashing("status" -> "deleted")
   }

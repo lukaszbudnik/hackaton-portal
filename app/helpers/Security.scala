@@ -17,18 +17,21 @@ object Security {
     }
   }
   
-  def verifyIfInRole(role: String)(implicit socialUser: securesocial.core.SocialUser) = {
-    if (!socialUser.roles.exists(_ == role)) {
-      throw new SecurityAbuseException(socialUser)
-    }
-  }
-  
-  def verifyIfInRoles(roles: Iterable[String])(implicit socialUser: securesocial.core.SocialUser) = {
+  def verifyIfAllowed(roles: String*)(implicit socialUser: securesocial.core.SocialUser) = {
     for (role <- roles) {
       if (!socialUser.roles.exists(_ == role)) {
         throw new SecurityAbuseException(socialUser)
       }
     }
   }
-
+  
+  def verifyIfAllowed(authorizedUserId: Long, authorizedRoles: String*)(implicit socialUser: securesocial.core.SocialUser) = {
+    if (authorizedUserId != socialUser.hackathonUserId){
+      authorizedRoles.map {
+        role => if (!socialUser.roles.exists(_ == role)) {
+    				throw new SecurityAbuseException(socialUser)
+        		}
+      }
+    }  
+  }
 }

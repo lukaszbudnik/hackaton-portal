@@ -21,7 +21,11 @@ import play.api.libs.oauth.ServiceInfo
 /**
  *
  */
-case class SocialUser(id: UserId, displayName: String, email: Option[String], avatarUrl: Option[String], authMethod: AuthenticationMethod, oAuth1Info: Option[OAuth1Info] = None, oAuth2Info: Option[OAuth2Info] = None, hackathonUserId: Long = 0, roles: Iterable[String] = Nil)
+case class SocialUser(id: UserId, displayName: String, email: Option[String], avatarUrl: Option[String], authMethod: AuthenticationMethod, oAuth1Info: Option[OAuth1Info] = None, oAuth2Info: Option[OAuth2Info] = None, hackathonUserId: Long = 0, roles: Iterable[String] = Nil){
+  def isAdmin: Boolean = {
+    roles.exists(r => r == "admin")
+  }
+}
 case class UserId(id: String, providerId: String)
 case class OAuth1Info(serviceInfo: ServiceInfo, token: String, secret: String)
 case class OAuth2Info(accessToken: String, tokenType: Option[String] = None, expiresIn: Option[Int] = None, refreshToken: Option[String] = None)

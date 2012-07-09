@@ -1,9 +1,9 @@
-@(action: play.api.mvc.Call, actionMessage: String, teamForm: Form[model.Team], users: List[model.User], hackathons: List[model.Hackathon], problems: List[model.Problem])
+@(action: play.api.mvc.Call, actionMessage: String, teamForm: Form[model.Team], users: List[model.User], hackathons: List[model.Hackathon], problems: List[model.Problem], user: securesocial.core.SocialUser)
 
 @import helper._
 @import helper.twitterBootstrap._
 
-@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
+@implicitFieldConstructor = @{ FieldConstructor(forms.twitterBootstrapInput.f) }
 
 @form(action, 'class -> "form-horizontal") {
         
@@ -27,13 +27,25 @@
     	'_label -> Messages("teams.hackathon.label"),
     	'_showConstraints -> false
     )
+	
+    @if(user.isAdmin){
+    	@select(
+    		teamForm("creatorId"),
+    		users.map{ u => u.id.toString -> u.name },
+    		'_label -> Messages("teams.creator.label"),
+    		'_showConstraints -> false
+    	)    	      
+    }else{
+    	@select(
+    		teamForm("creatorId"),
+    		users.map{ u => u.id.toString -> u.name },
+    		'_label -> Messages("teams.creator.label"),
+    		'_showConstraints -> false,
+    		'disabled -> "disabled"
+    	)
 
-    @select(
-	    teamForm("creatorId"),
-	    users.map{ u => u.id.toString -> u.name },
-	    '_label -> Messages("teams.creator.label"),
-	    '_showConstraints -> false
-	)
+    	@forms.hidden(teamForm("creatorId"))
+    }
         
 	<div class="form-actions">
 		<button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>

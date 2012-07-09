@@ -22,7 +22,7 @@ class TeamSpec extends Specification {
         transaction {
 
           val result = routeAndCall(FakeRequest(GET, "/teams/1")).get
-          val members = Model.allUsersForTeam(1L).toList
+          val members = model.Team.lookup(1L).get.members
 
           status(result) must equalTo(OK)
           members.forall(m => contentAsString(result).contains(m.name)) must beTrue

@@ -34,12 +34,12 @@
 		    		<p>@Messages("teams.hackathon.label"): @team.get.hackathon.head.subject</p>
 		    		<p>@Messages("teams.creator.label"): @team.get.creator.head.name</p>
 
-					@if(team.get.users.isEmpty) {
+					@if(team.get.members.isEmpty) {
 						<h3>@Messages("teams.noMembers")</h3>
 					} else {  
 						<h3>@Messages("teams.members.label")</h3>
 						<ul>
-							@team.get.users.map { teamMember =>
+							@team.get.members.map { teamMember =>
 							<li>@teamMember.name</li>
 							}
 						</ul>			  
