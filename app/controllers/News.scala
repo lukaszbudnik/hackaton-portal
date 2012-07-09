@@ -47,10 +47,17 @@ object News extends Controller with securesocial.core.SecureSocial {
   def save = SecuredAction() { implicit request =>
     newsForm.bindFromRequest.fold(
       errors => transaction {
+        println("errors!" + errors.errors) 
         BadRequest(views.html.news.create(errors, Model.users.toList, request.user))
       },
       news => transaction {
         model.News.news.insert(news)
+
+        news.labelsAsString.split(",").map(_.trim().toLowerCase()).distinct.map { label =>
+          val dbLabel = model.Label.findByValue(label).getOrElse(model.Label.labels.insert(model.Label(label)))
+          news.labels.associate(dbLabel)
+        }
+
         Redirect(routes.News.index).flashing("status" -> "added", "title" -> news.title)
       })
   }
@@ -69,6 +76,14 @@ object News extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.news.edit(id, errors, Model.users.toList, request.user))
       },
       news => transaction {
+        
+        // split labels
+        // uniq
+        // diff with existing
+        // fetch from db
+        // associate
+        // remove old ones
+        
         model.News.news.update(n =>
           where(n.id === id)
             set (
