@@ -17,13 +17,13 @@ class SecuritySpec extends Specification {
     "should throw SecurityAbuseException when user is not in given role" in {
       implicit val socialUser = SocialUser(UserId("id", "providerId"), "displayName", Some("email"), Some("avatarUrl"), AuthenticationMethod.OpenId, None, None, 123, Seq("viewer"))
       
-      Security.verifyIfInRole("admin") must throwA[SecurityAbuseException]
+      Security.verifyIfAllowed("admin") must throwA[SecurityAbuseException]
     }
     
     "should throw SecurityAbuseException when user is not in all given roles" in {
       implicit val socialUser = SocialUser(UserId("id", "providerId"), "displayName", Some("email"), Some("avatarUrl"), AuthenticationMethod.OpenId, None, None, 123, Seq("viewer"))
       
-      Security.verifyIfInRoles(Seq("viewer", "editor")) must throwA[SecurityAbuseException]
+      Security.verifyIfAllowed("viewer", "editor") must throwA[SecurityAbuseException]
     }
   }
   
