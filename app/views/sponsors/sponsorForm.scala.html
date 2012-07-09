@@ -1,0 +1,45 @@
+@(action: play.api.mvc.Call, btnMessage: String, sponsorForm: Form[model.Sponsor])
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
+
+@form(action, 'class -> "form-horizontal") {
+        
+    @inputText(
+    	sponsorForm("name"),
+	    '_label -> Messages("sponsors.name.label"),
+	    '_showConstraints -> false
+    ) 
+
+    @inputText(
+    	sponsorForm("website"),
+    	'_label -> Messages("sponsors.website.label"),
+	    '_showConstraints -> false
+    )
+        
+    @textarea(
+    	sponsorForm("description"),
+    	'_label -> Messages("sponsors.description.label"),
+	    '_showConstraints -> false
+    )
+
+    @inputText(
+    	sponsorForm("order"),
+    	'_label -> Messages("sponsors.order.label"),
+	    '_showConstraints -> false
+    )
+
+    @checkbox(
+    	sponsorForm("isGeneralSponsor"),
+	    '_label -> Messages("sponsors.generalSponsor.label"),
+	    '_showConstraints -> false
+    )
+	
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">@btnMessage</button>
+        <a href="@routes.Sponsor.index" class="btn">@Messages("global.cancel")</a>
+  	</div>
+        
+}

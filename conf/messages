@@ -146,10 +146,24 @@ prizes.hackathon.label = Choose hackathon
 
 sponsors.title = Our Sponsors
 sponsors.text = We'd like to thank the following companies and organisations for supporting Hackaton.pl portal. Thanks!
+sponsors.portalSponsors = Portal sponsors
+sponsors.hackathonsSponsors = Hackathons sponsors
+sponsors.generalSponsor = Portal general sponsor
+sponsors.sponsoredHackathons = Sponsored hackathons
 sponsors.addSponsor = Add sponsor
 sponsors.added = Sponsor added
 sponsors.updated = Sponsor updated
 sponsors.deleted = Sponsor deleted
+newSponsor.title = Create new sponsor
+sponsors.edit.title = Edit sponsor
+sponsors.name.label = Sponsor name
+sponsors.website.label = Website address
+sponsors.description.label = Description
+sponsors.generalSponsor.label = Is general portal sponsor
+sponsors.hackathons.label = Choose sponsored hackathons
+sponsors.order.label = Current sponsor order
+
+
 newSponsor.title = Add new sponsor
 
 social.twitter.share = Share
