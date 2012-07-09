@@ -16,8 +16,8 @@ class NewsSpec extends Specification {
     "be insertable" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val news: News = new News("title", "text", "label1, label2", 1L, new Date())
-          Model.news.insert(news)
+          val news: News = new News("title", "text", "label1, label2", 1L, new Date(), None)
+          News.news.insert(news)
           
           news.isPersisted must beTrue
           news.id must beGreaterThan(0L)
@@ -27,12 +27,12 @@ class NewsSpec extends Specification {
     "be retrivable by id" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val news: News = new News("title", "text", "label1, label2", 1L, new Date())
-          Model.news.insert(news)
+          val news: News = new News("title", "text", "label1, label2", 1L, new Date(), None)
+          News.news.insert(news)
           
           news.isPersisted must beTrue
 
-          val newsDb: Option[News] = Model.lookupNews(news.id)
+          val newsDb: Option[News] = News.lookup(news.id)
 
           newsDb.isEmpty must beFalse
           newsDb.get.id must equalTo(news.id)
@@ -42,12 +42,12 @@ class NewsSpec extends Specification {
     "be retrivable with author relationship" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val news: News = new News("title", "text", "label1, label2", 1L, new Date())
-          Model.news.insert(news)
+          val news: News = new News("title", "text", "label1, label2", 1L, new Date(), None)
+          News.news.insert(news)
           
           news.isPersisted must beTrue
 
-          val newsDb: Option[News] = Model.lookupNews(news.id)
+          val newsDb: Option[News] = News.lookup(news.id)
 
           newsDb.isEmpty must beFalse
           newsDb.get.author.head.name must not beNull
@@ -57,12 +57,12 @@ class NewsSpec extends Specification {
     "be retrivable in bulk" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          Model.deleteAllNews()
+          News.deleteAll()
           
-          Model.news.insert(new News("title", "text", "label1, label2", 1L, new Date()))
-          Model.news.insert(new News("title", "text", "label1, label2", 1L, new Date()))
+          News.news.insert(new News("title", "text", "label1, label2", 1L, new Date(), None))
+          News.news.insert(new News("title", "text", "label1, label2", 1L, new Date(), None))
           
-          val newsList: Iterable[News] = Model.allNews
+          val newsList: Iterable[News] = News.all
           newsList must have size(2)
         }
       }
@@ -70,17 +70,17 @@ class NewsSpec extends Specification {
     "be sortable by date" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          Model.deleteAllNews
+          News.deleteAll
           
           val date1 = new SimpleDateFormat("yyy-MM-dd").parse("2012-01-01")
-          Model.news.insert(new News("title", "text", "label1, label2", 1L, date1))
+          News.news.insert(new News("title", "text", "label1, label2", 1L, date1, None))
           
           val date2 = new SimpleDateFormat("yyy-MM-dd").parse("2012-02-02")
-          Model.news.insert(new News("title", "text", "label1, label2", 1L, date2))
+          News.news.insert(new News("title", "text", "label1, label2", 1L, date2, None))
           
-          val newsList: List[News] = Model.allNews.toList.sortWith((n1, n2) => n1.published.after(n2.published))
+          val newsList: List[News] = News.all.toList.sortWith((n1, n2) => n1.published.after(n2.published))
           
-          val newsList2: List[News] = Model.allNewsSortedByDateDesc.toList
+          val newsList2: List[News] = News.allNewsSortedByDateDesc.toList
           
           newsList must equalTo(newsList2)
         }

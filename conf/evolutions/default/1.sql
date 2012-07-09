@@ -99,10 +99,11 @@ CREATE TABLE news (
     text text,
     labels text,
     published timestamp,
-    
     author_id integer NOT NULL,
+    hackathon_id integer,
     
     FOREIGN KEY (author_id) REFERENCES users(id),
+    FOREIGN KEY (hackathon_id) REFERENCES hackathons(id),
     PRIMARY KEY (id)
 );
  

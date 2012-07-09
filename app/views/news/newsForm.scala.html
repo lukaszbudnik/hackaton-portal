@@ -1,4 +1,4 @@
-@(action: play.api.mvc.Call, newsForm: Form[model.News], users: List[model.User])
+@(action: play.api.mvc.Call, newsForm: Form[model.News], users: Seq[model.User])
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -36,8 +36,10 @@
 	    newsForm("published"),
 	    '_label -> Messages("news.published.label"),
 	    '_showConstraints -> false
-	)   
-    
+	)
+	
+  	@forms.hidden(field = newsForm("hackathonId"))
+	
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">@Messages("news.publish")</button>
         <a href="@routes.News.index" class="btn">@Messages("global.cancel")</a>
