@@ -29,7 +29,7 @@
 			@teams.map { team =>
 			<div class="page-header">
 				<h2>@team.name</h2>
-   				<p>@Messages("teams.creator.label"): @team.creator.head.name</p>
+   				<p>@Messages("teams.creator.label"): @team.creator.name</p>
     			<p><a class="btn" href="@routes.Team.view(team.id)">@Messages("global.readMore")</a></p>
   			</div>
 			}
