@@ -50,10 +50,9 @@ object Team extends Controller with securesocial.core.SecureSocial {
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Team.lookup(id).map {
-        team =>
-          helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
-          Ok(views.html.teams.edit(id, teamForm.fill(team), Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
+      model.Team.lookup(id).map { team =>
+        helpers.Security.verifyIfAllowed(team.creatorId, "admin")(request.user)
+        Ok(views.html.teams.edit(id, teamForm.fill(team), Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
       }.getOrElse {
         // no team found
         Redirect(routes.Team.view(id)).flashing()
@@ -67,7 +66,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.teams.edit(id, errors, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
       },
       team => transaction {
-        helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
+    	helpers.Security.verifyIfAllowed(team.creatorId, "admin")(request.user)
         model.Team.update(id, team)
         Redirect(routes.Team.index).flashing("status" -> "updated", "title" -> team.name)
       })
@@ -75,9 +74,12 @@ object Team extends Controller with securesocial.core.SecureSocial {
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Team.delete(id)
+      model.Team.lookup(id).map { team =>
+      	helpers.Security.verifyIfAllowed(team.creatorId, "admin")(request.user)
+      	model.Team.delete(id)
+      }
+      Redirect(routes.Team.index).flashing("status" -> "deleted")
     }
-    Redirect(routes.Team.index).flashing("status" -> "deleted")
   }
 
   def join(id: Long) = SecuredAction() { implicit request =>
@@ -113,6 +115,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
       var status = "error"
       Model.users.lookup(userId).map { user =>
         model.Team.lookup(id).map { team =>
+          helpers.Security.verifyIfAllowed(team.creatorId, "admin")(request.user)
           team.deleteMember(user)
           status = "disconnectedUser"
         }

@@ -128,7 +128,7 @@ teams.status.deleted = Team deleted
 teams.status.joined = You joined the team
 teams.status.disconnected = You disconnected the team
 teams.status.disconnectedUser = You disconnected user from the team
-teams.status.error = Can't perform operation
+teams.status.error = Can''t perform this operation
 teams.members.label = Team members
 teams.noMembers = No team members yet!
 
