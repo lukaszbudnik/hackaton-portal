@@ -27,7 +27,15 @@
 	       }
 	    }
 
-        @newsList(news, user)
+        @newsList(news)
+
+		@user.map { user =>
+		  	@if(user.isAdmin) {
+			<div class="form-actions">
+	    		<a class="btn btn-success" href="@routes.News.create">@Messages("news.addNews")</a>
+	        </div>
+		  	}
+		}
     	
 		@footer()
     	
