@@ -9,7 +9,7 @@ import org.squeryl.annotations.Column
 case class Team(name: String,
   @Column("creator_id") creatorId: Long,
   @Column("hackathon_id") hackathonId: Long,
-  @Column("problem_id") problemId: Option[Long] = Some(0L)) extends KeyedEntity[Long] {
+  @Column("problem_id") problemId: Option[Long] = None) extends KeyedEntity[Long] {
   val id: Long = 0L
   
   protected[model] lazy val creatorRel: ManyToOne[User] = Team.creatorToTeams.right(this)
@@ -58,7 +58,7 @@ object Team extends Schema {
     teams.insert(team)
   }
 
-  def update(team: Team, id: Long): Int = {
+  def update(id: Long, team: Team): Int = {
     teams.update(t =>
       where(t.id === id)
         set (

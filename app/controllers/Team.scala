@@ -68,7 +68,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
       },
       team => transaction {
         helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
-        model.Team.update(team, id)
+        model.Team.update(id, team)
         Redirect(routes.Team.index).flashing("status" -> "updated", "title" -> team.name)
       })
   }
@@ -102,6 +102,19 @@ object Team extends Controller with securesocial.core.SecureSocial {
         model.Team.lookup(id).map { team =>
           team.deleteMember(user)
           status = "disconnected"
+        }
+      }
+      Redirect(routes.Team.view(id)).flashing("status" -> status)
+    }
+  }
+
+  def disconnectUser(id: Long, userId: Long) = SecuredAction() { implicit request =>
+    transaction {
+      var status = "error"
+      Model.users.lookup(userId).map { user =>
+        model.Team.lookup(id).map { team =>
+          team.deleteMember(user)
+          status = "disconnectedUser"
         }
       }
       Redirect(routes.Team.view(id)).flashing("status" -> status)
