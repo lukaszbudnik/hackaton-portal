@@ -10,7 +10,7 @@
             <div class="page-header">
 	    		<h2>@n.title</h2>
 	    		<p>@Html(n.text.split("<!--more-->").head)...</p>
-	    		<p>@Messages("news.author.label"): @n.author.head.name @Messages("news.published.label"): @n.published</p>
+	    		<p>@Messages("news.author.label"): @n.author.name @Messages("news.published.label"): @n.published</p>
 	    		<p>@Messages("news.labels.label"):
 				@for(l <- n.labels) {
 				  <span class="label">@l.value</span>
