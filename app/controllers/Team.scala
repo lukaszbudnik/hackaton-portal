@@ -31,7 +31,6 @@ object Team extends Controller with securesocial.core.SecureSocial {
 
   def create = SecuredAction() { implicit request =>
     transaction {
-      request.user.roles.exists(r => r == "admin")
       val team = model.Team("", request.user.hackathonUserId, 0)
       Ok(views.html.teams.create(teamForm.fill(team), Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
     }
@@ -43,10 +42,8 @@ object Team extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.teams.create(errors, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
       },
       team => transaction {
-        // insert team
-        model.Team.teams.insert(team)
-        // add creator as a member
-        team.members.associate(team.creator.head)
+        // insert team and add creator as a member
+        model.Team.add(team).members.associate(team.creator.head)
         Redirect(routes.Team.index).flashing("status" -> "added", "title" -> team.name)
       })
   }
@@ -70,7 +67,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.teams.edit(id, errors, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
       },
       team => transaction {
-        helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
+        helpers.Security.verifyIfAllowed(team.creatorId)(request.user)     
         model.Team.teams.update(
           t =>
             where(t.id === id)
@@ -85,7 +82,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Team.teams.deleteWhere(team => team.id === id)
+      model.Team.delete(id)
     }
     Redirect(routes.Team.index).flashing("status" -> "deleted")
   }
