@@ -29,10 +29,10 @@
 		    		@if(team.get.problem.isEmpty){
 		    		<p>@Messages("teams.problem.label"): @Messages("global.none")</p>
 		    		} else {
-		    		<p>@Messages("teams.problem.label"): @team.get.problem.head.name</p>  
+		    		<p>@Messages("teams.problem.label"): @team.get.problem.map { p => p.name }</p>  
 		    		}
-		    		<p>@Messages("teams.hackathon.label"): @team.get.hackathon.head.subject</p>
-		    		<p>@Messages("teams.creator.label"): @team.get.creator.head.name</p>
+		    		<p>@Messages("teams.hackathon.label"): @team.get.hackathon.subject</p>
+		    		<p>@Messages("teams.creator.label"): @team.get.creator.name</p>
 
 					@if(team.get.members.isEmpty) {
 						<h3>@Messages("teams.noMembers")</h3>
