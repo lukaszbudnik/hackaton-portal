@@ -19,7 +19,7 @@ class NewsSpec extends Specification {
       
       form("title").hasErrors must beTrue
       form("text").hasErrors must beTrue
-      form("labels").hasErrors must beTrue
+      form("labelsAsString").hasErrors must beTrue
       form("authorId").hasErrors must beTrue
       form("published").hasErrors must beTrue
       
@@ -27,7 +27,7 @@ class NewsSpec extends Specification {
     }
     
     "require title, text, labels and fail if authorId and published not filled" in {
-      val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labels" -> "QWQ"))
+      val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labelsAsString" -> "QWQ"))
       
       form.hasErrors must beTrue
       form.errors.size must equalTo(2)
@@ -35,7 +35,7 @@ class NewsSpec extends Specification {
       // no errors
       form("title").hasErrors must beFalse
       form("text").hasErrors must beFalse
-      form("labels").hasErrors must beFalse
+      form("labelsAsString").hasErrors must beFalse
       
       // errors
       form("authorId").hasErrors must beTrue
@@ -43,11 +43,11 @@ class NewsSpec extends Specification {
       
       form.data must havePair("title" -> "ABC")
       form.data must havePair("text" -> "XYZ")
-      form.data must havePair("labels" -> "QWQ")
+      form.data must havePair("labelsAsString" -> "QWQ")
       
       form("title").value must beSome.which(_ == "ABC")
       form("text").value must beSome.which(_ == "XYZ")
-      form("labels").value must beSome.which(_ == "QWQ")
+      form("labelsAsString").value must beSome.which(_ == "QWQ")
 
       form("authorId").value must beNone
       form("published").value must beNone
@@ -56,7 +56,7 @@ class NewsSpec extends Specification {
     }
     
     "validate authorId as numeric and published as date" in {
-      val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labels" -> "QWQ", "authorId" -> "_", "published" -> "string"))
+      val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labelsAsString" -> "QWQ", "authorId" -> "_", "published" -> "string"))
       
       form.hasErrors must beTrue
       form.errors.size must equalTo(2)
@@ -68,7 +68,7 @@ class NewsSpec extends Specification {
     }
     
     "be filled" in {
-      val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labels" -> "QWQ", "authorId" -> "12", "published" -> "31/12/2012"))
+      val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labelsAsString" -> "QWQ", "authorId" -> "12", "published" -> "31/12/2012"))
       val date = new SimpleDateFormat("yyy-MM-dd").parse("2012-01-01")
       
       form.hasErrors must beFalse

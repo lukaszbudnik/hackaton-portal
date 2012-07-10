@@ -5,10 +5,10 @@
 @news.map { n =>
 		    <h2>@n.title</h2>
 			<p>@Html(n.text)</p>
-			<p>@Messages("news.author.label"): @n.author.head.name @Messages("news.published.label"): @n.published</p>
+			<p>@Messages("news.author.label"): @n.author.name @Messages("news.published.label"): @n.published</p>
 			<p>@Messages("news.labels.label"):
-				@for(l <- n.labels.split(",")) {
-				<span class="label">@l</span>
+				@for(l <- n.labels) {
+				<span class="label">@l.value</span>
 				}
 			</p>
 			@if(user) {

@@ -97,13 +97,32 @@ CREATE TABLE news (
     id integer NOT NULL DEFAULT nextval('news_id_seq'),
     title varchar(255),
     text text,
-    labels text,
     published timestamp,
     author_id integer NOT NULL,
     hackathon_id integer,
     
     FOREIGN KEY (author_id) REFERENCES users(id),
     FOREIGN KEY (hackathon_id) REFERENCES hackathons(id),
+    PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE label_id_seq;
+CREATE TABLE labels (
+    id integer NOT NULL DEFAULT nextval('label_id_seq'),
+    value varchar(255),
+    PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE news_label_id_seq;
+CREATE TABLE news_labels (
+    id integer NOT NULL DEFAULT nextval('news_label_id_seq'),
+    
+    news_id integer NOT NULL,
+    label_id integer NOT NULL,
+    
+    FOREIGN KEY (news_id) REFERENCES news(id),
+    FOREIGN KEY (label_id) REFERENCES labels(id),
+    UNIQUE (news_id, label_id),
     PRIMARY KEY (id)
 );
  
@@ -130,5 +149,11 @@ DROP SEQUENCE user_id_seq;
 DROP TABLE roles CASCADE;
 DROP SEQUENCE role_id_seq;
 
+DROP TABLE news_labels;
+DROP SEQUENCE news_label_id_seq;
+
 DROP TABLE news CASCADE;
 DROP SEQUENCE news_id_seq;
+
+DROP TABLE labels;
+DROP SEQUENCE label_id_seq;

@@ -1,7 +1,7 @@
 package controllers
 
 import org.squeryl.PrimitiveTypeMode._
-import model.Model
+import model.{Model, Label}
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
@@ -13,7 +13,7 @@ object News extends Controller with securesocial.core.SecureSocial {
     mapping(
       "title" -> nonEmptyText,
       "text" -> nonEmptyText,
-      "labels" -> nonEmptyText,
+      "labelsAsString" -> nonEmptyText,
       "authorId" -> longNumber,
       "published" -> date("dd/MM/yyyy"),
       "hackathonId"  -> optional(longNumber))(model.News.apply)(model.News.unapply))
@@ -50,15 +50,21 @@ object News extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.news.create(errors, Model.users.toList, request.user))
       },
       news => transaction {
-        model.News.news.insert(news)
+        model.News.insert(news)
+
+        news.labelsAsString.split(",").map(_.trim().toLowerCase()).distinct.map { label =>
+          val dbLabel = Label.findByValue(label).getOrElse(Label.insert(Label(label)))
+          news.addLabel(dbLabel)
+        }
+
         Redirect(routes.News.index).flashing("status" -> "added", "title" -> news.title)
       })
   }
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.News.news.lookup(id).map { news =>
-        Ok(views.html.news.edit(id, newsForm.fill(news), Model.users.toList, request.user))
+      model.News.lookup(id).map { news =>
+        Ok(views.html.news.edit(id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), Model.users.toList, request.user))
       }.get
     }
   }
@@ -69,21 +75,37 @@ object News extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.news.edit(id, errors, Model.users.toList, request.user))
       },
       news => transaction {
-        model.News.news.update(n =>
-          where(n.id === id)
-            set (
-              n.title := news.title,
-              n.text := news.text,
-              n.labels := news.labels,
-              n.authorId := news.authorId,
-              n.published := news.published))
+        
+        val dbNews = model.News.lookup(id).get
+        
+        val existingLabels = dbNews.labels.map(_.value).toSeq
+        
+        val newLabels = news.labelsAsString.split(",").map(_.trim().toLowerCase()).distinct.toSeq
+        
+        // collection of model.Label
+        val labelsToBeRemoved = existingLabels.diff(newLabels).map(v => dbNews.labels.find(l => l.value == v).get)
+        // remove old labels
+        labelsToBeRemoved.map { label =>
+          dbNews.removeLabel(label)
+        }
+        
+        // collection of strings
+        val labelsToBeAdded = newLabels.diff(existingLabels)
+        // add new labels
+        labelsToBeAdded.map { label =>
+          dbNews.addLabel(Label.insert(Label(label)))
+        }
+
+        // update the model
+        model.News.update(id, news)
+
         Redirect(routes.News.index).flashing("status" -> "updated", "title" -> news.title)
       })
   }
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.News.news.deleteWhere(n => n.id === id)
+      model.News.delete(id)
     }
     Redirect(routes.News.index).flashing("status" -> "deleted")
   }
