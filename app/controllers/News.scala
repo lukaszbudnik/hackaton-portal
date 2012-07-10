@@ -20,7 +20,7 @@ object News extends Controller with securesocial.core.SecureSocial {
 
   def index = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.news.index(model.News.allNewsSortedByDateDesc.toList, request.user))
+      Ok(views.html.news.index(model.News.all, request.user))
     }
   }
 

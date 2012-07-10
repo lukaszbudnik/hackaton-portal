@@ -107,7 +107,7 @@ class NewsSpec extends Specification {
           
           val newsList: List[News] = News.all.toList.sortWith((n1, n2) => n1.published.after(n2.published))
           
-          val newsList2: List[News] = News.allNewsSortedByDateDesc.toList
+          val newsList2: List[News] = News.all.toList
           
           newsList must equalTo(newsList2)
         }

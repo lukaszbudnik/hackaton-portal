@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], users: Map[Long, String], locations: Map[Long, String], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+@(hackathon: Option[model.Hackathon], hackathonNews: Iterable[model.News], users: Map[Long, String], locations: Map[Long, String], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
 
 @import helper._
 
@@ -8,22 +8,33 @@
     
 		<div class="page-header">
 
-		@if(hackathon.isEmpty) {
-		    <h2>@Messages("hackathons.notFound")</h2>
-    	} else {
-    		<h2>@hackathon.get.subject</h2>
-            <p>@Messages("hackathons.status.label"): @hackathon.get.status</p>
-            <p>@Messages("hackathons.submitter.label"): @users(hackathon.get.submitterId)</p>
-            <p>@Messages("hackathons.location.label"): @locations(hackathon.get.locationId)</p>
+		@hackathon.map { hackathon =>
+		    <h2>@hackathon.subject</h2>
+            <p>@Messages("hackathons.status.label"): @hackathon.status</p>
+            <p>@Messages("hackathons.submitter.label"): @users(hackathon.submitterId)</p>
+            <p>@Messages("hackathons.location.label"): @locations(hackathon.locationId)</p>
+    	  
+		  	@news.newsList(hackathonNews, false)
+		  	
+		  	@user.map { user =>
+	    		@if(user.hackathonUserId == hackathon.submitterId) {
+	    			<div class="form-actions">
+	    				<a class="btn btn-success" href="@routes.News.createHackathonNews(hackathon.id)">@Messages("news.addNews")</a>
+	    			</div>
+	    		  
+	    			<div class="form-actions">
+	    			@form(routes.Hackathon.delete(hackathon.id)) {
+	    				<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.id)">@Messages("global.edit")</a>
+	    				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+	    			}
+	    			</div>
+				}
+		  	}
 
-			<div class="form-actions">
-	    		@form(routes.Hackathon.delete(hackathon.get.id)) {
-		    	<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.get.id)">@Messages("global.edit")</a>
-	            <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-	    		}
-            </div>
-    	}
-    	
+		}.getOrElse {
+		  <h2>@Messages("hackathons.notFound")</h2>
+		}
+
 	    </div>
   
     </div>

@@ -3,7 +3,9 @@
 @import helper._
 
 @news.map { n =>
-		    <h2>@n.title</h2>
+		    <h2>@n.hackathon.map { h => 
+    				@h.subject:
+				} @n.title</h2>
 			<p>@Html(n.text)</p>
 			<p>@Messages("news.author.label"): @n.author.name @Messages("news.published.label"): @n.published</p>
 			<p>@Messages("news.labels.label"):

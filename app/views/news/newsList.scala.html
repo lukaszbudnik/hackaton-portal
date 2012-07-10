@@ -1,14 +1,12 @@
-@(news: Iterable[model.News], user: Option[securesocial.core.SocialUser], hackathonId: Option[Long] = None)
-
-@addHackathonLink(hackathonId: Option[Long]) = @{
-  hackathonId.map { hackathonId =>
-    routes.News.createHackathonNews(hackathonId)
-  }.getOrElse(routes.News.create)
-}
+@(news: Iterable[model.News], showHackathons: Boolean = true)
 
 @news.map { n =>
             <div class="page-header">
-	    		<h2>@n.title</h2>
+	    		<h2>@if(showHackathons) { 
+		    			@n.hackathon.map { h => 
+		    				@h.subject:
+						}
+					} @n.title</h2>
 	    		<p>@Html(n.text.split("<!--more-->").head)...</p>
 	    		<p>@Messages("news.author.label"): @n.author.name @Messages("news.published.label"): @n.published</p>
 	    		<p>@Messages("news.labels.label"):
@@ -20,8 +18,3 @@
     		</div>
 }
 
-@if(user) {
-			<div class="form-actions">
-	    		<a class="btn btn-success" href="@addHackathonLink(hackathonId)">@Messages("news.addNews")</a>
-	        </div>
-}

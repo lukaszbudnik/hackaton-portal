@@ -10,12 +10,15 @@ import scala.annotation.target.field
 
 case class News(title: String, text: String, @(Transient @field) labelsAsString: String, @Column("author_id") authorId: Long, published: Date, @Column("hackathon_id") hackathonId: Option[Long]) extends KeyedEntity[Long] {
   val id: Long = 0L
-  protected[model] lazy val authorRel: ManyToOne[User] = News.authorToNews.right(this)
+  protected[model] lazy val authorRel = News.authorToNews.right(this)
   protected[model] lazy val labelsRel = News.newsToLabels.left(this)
+  protected[model] lazy val hackathonRel = News.hackathonToNews.right(this)
   
   def author = authorRel.head
   
   def labels = labelsRel.toSeq.sortBy(l => l.value)
+  
+  def hackathon = hackathonRel.headOption
   
   def addLabel(label: Label) = {
     labelsRel.associate(label)
@@ -34,6 +37,7 @@ object News extends Schema {
   val newsToLabels =
     manyToManyRelation(news, Label.labels, "news_labels").
       via[NewsLabel](f = (n, l, nl) => (n.id === nl.newsId, l.id === nl.labelId))
+  val hackathonToNews = oneToManyRelation(Model.hackathons, News.news).via((h, n) => h.id === n.hackathonId)
   
   def insert(newsToBeInserted: News) = {
     news.insert(newsToBeInserted)
@@ -58,17 +62,18 @@ object News extends Schema {
   }
 
   def all(): Iterable[News] = {
-    news.toIterable
-  }
-  
-  def all(hackathonId: Long): Iterable[News] = {
-    news.where(n => n.hackathonId === hackathonId)
-  }
-
-  def allNewsSortedByDateDesc(): Iterable[News] = {
-	from (news)(n =>
+    from (news)(n =>
         select(n)
         orderBy(n.published desc)
     )
   }
+  
+  def all(hackathonId: Long): Iterable[News] = {
+    from (news)(n =>
+      	where(n.hackathonId === hackathonId)
+        select(n)
+        orderBy(n.published desc)
+    )
+  }
+
 }
