@@ -18,6 +18,7 @@
 			<div class="page-header">
 				<h2>@team.name</h2>
    				<p>@Messages("teams.creator.label"): @team.creator.name</p>
+				<p>@Messages("teams.members.label"): @team.members.size</p>
     			<p><a class="btn" href="@routes.Team.view(team.id)">@Messages("global.readMore")</a></p>
   			</div>
 			}

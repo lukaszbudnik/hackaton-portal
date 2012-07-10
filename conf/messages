@@ -16,6 +16,7 @@ navigation.login = Sign in
 global.learnMore = Learn more »
 global.viewDetails = View details »
 global.readMore = Read more »
+global.total = Total
 global.submit = Submit
 global.cancel = Cancel
 global.add = Add

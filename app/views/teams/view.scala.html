@@ -30,12 +30,15 @@
 					@if(t.members.isEmpty) {
 						<h3>@Messages("teams.noMembers")</h3>
 					} else {  
-						<h3>@Messages("teams.members.label")</h3>
+						<h3>@Messages("teams.members.label") 
+							<small>@Messages("global.total"): @t.members.size</small>
+						</h3>
 						<ul>
 							@t.members.map { m =>
 							<li>@m.name @if(allowEdit){ <a class="btn btn-warning" href="@routes.Team.disconnectUser(t.id, m.id)">@Messages("teams.disconnect")</a> }</li>
 							}
-						</ul>			  
+						</ul>
+						
 					}
 					
 		   			<div class="form-actions">
