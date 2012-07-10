@@ -2,6 +2,8 @@
 
 @import helper._
 
+@allowEdit = @{ !user.isEmpty && !team.isEmpty && (team.get.creatorId == user.get.hackathonUserId || user.get.isAdmin ) }
+
 @main(Messages("teams.view.title"), user, nav = "teams") {
 
     <div class="container">
@@ -9,10 +11,10 @@
 		<div class="content">
                 
 			<div class="page-header">
-				@if(team.isEmpty) {
-				<h2>@Messages("teams.notFound")</h2>
-				} else {
-				<h2>@team.get.name</h2>
+				@team.map { t =>
+				<h2>@t.name</h2>
+				}.getOrElse {
+				<h2>@Messages("teams.notFound")</h2>				  
 				}
     	   	</div>
 
@@ -23,39 +25,35 @@
 				</div>
 			}
 
-		    @if(!team.isEmpty) {
+		    @team.map{ t =>
 		    <div class="row">
 		    	<div class="span12">
-		    		@if(team.get.problem.isEmpty){
-		    		<p>@Messages("teams.problem.label"): @Messages("global.none")</p>
-		    		} else {
-		    		<p>@Messages("teams.problem.label"): @team.get.problem.map { p => p.name }</p>  
-		    		}
-		    		<p>@Messages("teams.hackathon.label"): @team.get.hackathon.subject</p>
-		    		<p>@Messages("teams.creator.label"): @team.get.creator.name</p>
+		    		<p>@Messages("teams.problem.label"): @t.problem.map { p => @p.name }.getOrElse{ @Messages("global.none") } </p>
+		    		<p>@Messages("teams.hackathon.label"): @t.hackathon.subject</p>
+		    		<p>@Messages("teams.creator.label"): @t.creator.name</p>
 
-					@if(team.get.members.isEmpty) {
+					@if(t.members.isEmpty) {
 						<h3>@Messages("teams.noMembers")</h3>
 					} else {  
 						<h3>@Messages("teams.members.label")</h3>
 						<ul>
-							@team.get.members.map { teamMember =>
-							<li>@teamMember.name</li>
+							@t.members.map { m =>
+							<li>@m.name @if(allowEdit){ <a class="btn btn-warning" href="@routes.Team.disconnectUser(t.id, m.id)">@Messages("teams.disconnect")</a> }</li>
 							}
 						</ul>			  
 					}
 					
 		   			<div class="form-actions">
-		    			@form(routes.Team.delete(team.get.id)) {
+		    			@form(routes.Team.delete(t.id)) {
 
-		    			@if(!user.isEmpty && team.get.hasMember(user.get.hackathonUserId)){
-		    			<a class="btn btn-warning" href="@routes.Team.disconnect(team.get.id)">@Messages("teams.disconnect")</a>		    			  
+		    			@if(!user.isEmpty && t.hasMember(user.get.hackathonUserId)){
+		    			<a class="btn btn-warning" href="@routes.Team.disconnect(t.id)">@Messages("teams.disconnect")</a>		    			  
 		    			} else {
-		    			<a class="btn btn-warning" href="@routes.Team.join(team.get.id)">@Messages("teams.join")</a>  
+		    			<a class="btn btn-warning" href="@routes.Team.join(t.id)">@Messages("teams.join")</a>  
 		    			}
 		    			
-		    			@if(!user.isEmpty && team.get.creatorId == user.get.hackathonUserId){
-		    			<a class="btn btn-success" href="@routes.Team.edit(team.get.id)">@Messages("global.edit")</a>
+		    			@if(allowEdit){
+		    			<a class="btn btn-success" href="@routes.Team.edit(t.id)">@Messages("global.edit")</a>
 		   				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
 		    			}
 		    			

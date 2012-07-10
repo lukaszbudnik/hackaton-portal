@@ -107,4 +107,17 @@ object Team extends Controller with securesocial.core.SecureSocial {
       Redirect(routes.Team.view(id)).flashing("status" -> status)
     }
   }
+
+  def disconnectUser(id: Long, userId: Long) = SecuredAction() { implicit request =>
+    transaction {
+      var status = "error"
+      Model.users.lookup(userId).map { user =>
+        model.Team.lookup(id).map { team =>
+          team.deleteMember(user)
+          status = "disconnectedUser"
+        }
+      }
+      Redirect(routes.Team.view(id)).flashing("status" -> status)
+    }
+  }
 }
