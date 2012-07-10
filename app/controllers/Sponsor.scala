@@ -13,9 +13,9 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
   def index = UserAwareAction { implicit request =>
   	transaction {
   	    	  
-  	  val sponsors: Map[Long, model.Sponsor] = Model.sponsors.toList.map({ s => (s.id, s) }).toMap
+  	  val sponsors: Map[Long, model.Sponsor] = model.Sponsors.all.map({ s => (s.id, s) }).toMap
   	  
-  	  val generalSponsors: Iterable[Long] = Model.findGeneralSponsorsOrdered().map {s => s.id}
+  	  val generalSponsors: Iterable[Long] = model.Sponsors.allGeneralSponsorsOrdered.map {s => s.id}
   	  
   	  val hackathonSponsors: Map[Long, Iterable[Long]] = 
   	    Model.hackathons.toList.map( { h => (
@@ -31,7 +31,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
     transaction {
       
       val hackathons = Model.allHackathonsForSponsor(id)
-      Ok(views.html.sponsors.view(Model.sponsors.lookup(id), hackathons, request.user))
+      Ok(views.html.sponsors.view(model.Sponsors.lookup(id), hackathons, request.user))
       
     }
   }
@@ -57,7 +57,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
         errors =>  transaction {
           BadRequest(views.html.sponsors.create(errors, request.user))
         },sponsor => transaction {
-          Model.sponsors.insert(sponsor)
+          model.Sponsors.sponsors.insert(sponsor)
           Redirect(routes.Sponsor.index).flashing("status" -> "sponsors.added")
         }
 	)
@@ -65,7 +65,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
   
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      Model.sponsors.lookup(id).map { sponsor =>
+      model.Sponsors.sponsors.lookup(id).map { sponsor =>
         Ok(views.html.sponsors.edit(id, sponsorForm.fill(sponsor), request.user))
       }.get
     }
@@ -77,7 +77,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
           BadRequest(views.html.sponsors.edit(id, errors, request.user))
         },
         sponsor => transaction {
-          Model.sponsors.update(s =>
+          model.Sponsors.sponsors.update(s =>
             where(s.id === id)
             set(
                 s.name := sponsor.name,
@@ -95,7 +95,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
   
   def delete(id: Long) = SecuredAction() { implicit request => 
   	transaction {
-  	  Model.sponsors.deleteWhere(s => s.id === id)
+  	  model.Sponsors.sponsors.deleteWhere(s => s.id === id)
   	}
   	Redirect(routes.Sponsor.index).flashing("status" -> "sponsors.deleted")
   }
