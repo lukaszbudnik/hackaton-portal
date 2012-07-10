@@ -18,12 +18,7 @@
 				}
     	   	</div>
 
-			@flash.get("status").map { status =>
-				<div class="alert alert-success">
-					<button type="button" class="close" data-dismiss="alert">×</button>
-		       		<strong>@Messages("teams.status." + status)</strong>
-				</div>
-			}
+			@flashing("teams.status")
 
 		    @team.map{ t =>
 		    <div class="row">

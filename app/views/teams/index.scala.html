@@ -12,19 +12,7 @@
     			<h1>@Messages("teams.title")</h1>
     		</div>
 	
-			@flash.get("status").map { status =>
-				@flash.get("title").map { title =>
-					<div class="alert alert-success">
-						<button type="button" class="close" data-dismiss="alert">×</button>
-		       			<strong>@Messages("teams.status." + status).format(title)</strong>
-					</div>
-				}.getOrElse {
-					<div class="alert alert-success">
-						<button type="button" class="close" data-dismiss="alert">×</button>
-		       			<strong>@Messages("teams.status." + status)</strong>
-					</div>
-				}
-			}
+			@flashing("teams.status")
 
 			@teams.map { team =>
 			<div class="page-header">

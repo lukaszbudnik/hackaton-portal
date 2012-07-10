@@ -24,6 +24,7 @@ global.create = Create
 global.delete = Delete
 global.update = Update
 global.none = None
+global.status.error = Can''t perform this operation
 
 home.welcome = Welcome to hackaton.pl portal!
 home.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
@@ -128,7 +129,6 @@ teams.status.deleted = Team deleted
 teams.status.joined = You joined the team
 teams.status.disconnected = You disconnected the team
 teams.status.disconnectedUser = You disconnected user from the team
-teams.status.error = Can''t perform this operation
 teams.members.label = Team members
 teams.noMembers = No team members yet!
 
