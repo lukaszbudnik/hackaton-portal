@@ -5,6 +5,7 @@ error.date = Wrong date
 
 navigation.home = Home
 navigation.news = News
+navigation.hackathons = Hackathons
 navigation.problems = Problems
 navigation.teams = Teams
 navigation.about = About

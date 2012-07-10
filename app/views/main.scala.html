@@ -43,6 +43,7 @@
             <ul class="nav">
               <li class="@("active".when(nav == "home"))"><a href="@routes.Application.index">@Messages("navigation.home")</a></li>
               <li class="@("active".when(nav == "news"))"><a href="@routes.News.index">@Messages("navigation.news")</a></li>
+			  <li class="@("active".when(nav == "hackathons"))"><a href="@routes.Hackathon.index">@Messages("navigation.hackathons")</a></li>
               <li class="@("active".when(nav == "problems"))"><a href="@routes.Problem.index">@Messages("navigation.problems")</a></li>
 			  <li class="@("active".when(nav == "teams"))"><a href="@routes.Team.index">@Messages("navigation.teams")</a></li>
               <li class="@("active".when(nav == "about"))"><a href="@routes.Application.about">@Messages("navigation.about")</a></li>

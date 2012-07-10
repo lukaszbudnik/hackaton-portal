@@ -1,43 +1,56 @@
 @(hackathon: Option[model.Hackathon], hackathonNews: Iterable[model.News], users: Map[Long, String], locations: Map[Long, String], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
 
 @import helper._
-
+@subnav = @{"news"}
 @main(Messages("hackathons.view.title"), user, nav = "hackathons") {
     
     <div class="container">
-    
-		<div class="page-header">
-
 		@hackathon.map { hackathon =>
-		    <h2>@hackathon.subject</h2>
-            <p>@Messages("hackathons.status.label"): @hackathon.status</p>
-            <p>@Messages("hackathons.submitter.label"): @users(hackathon.submitterId)</p>
-            <p>@Messages("hackathons.location.label"): @locations(hackathon.locationId)</p>
-    	  
+			<div class="page-header">
+				<h2>@hackathon.subject
+					<small>@hackathon.status</small>
+				</h2>
+            	<p>@Messages("hackathons.submitter.label"): @users(hackathon.submitterId)</p>
+            	<p>@Messages("hackathons.location.label"): @locations(hackathon.locationId)</p>
+			</div>
+			
+		  	@user.map { user =>
+		  		@if(user.hackathonUserId == hackathon.submitterId) {
+		  		<div class="form-actions">
+		  			@form(routes.Hackathon.delete(hackathon.id)) {
+		  			<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.id)">@Messages("global.edit")</a>
+		  			<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+		  			}
+		  		</div>
+				}
+		  	}
+		  
+		  	<div class="subnav subnav-fixed">
+				<ul class="nav nav-pills">
+					<li class="@("active".when(subnav == "news"))"><a href="@routes.Hackathon.view(hackathon.id)">@Messages("navigation.news")</a></li>
+					<li class="@("active".when(subnav == "problems"))"><a href="@routes.Problem.index">@Messages("navigation.problems")</a></li>
+					<li class="@("active".when(subnav == "teams"))"><a href="@routes.Team.index">@Messages("navigation.teams")</a></li>
+					<li class="@("active".when(subnav == "sponsors"))"><a href="@routes.Sponsor.index">@Messages("navigation.sponsors")</a></li>
+					<li class="@("active".when(subnav == "prizes"))"><a href="@routes.Prize.index">@Messages("navigation.prizes")</a></li>
+				</ul>
+			</div>
+		  	  
 		  	@news.newsList(hackathonNews, false)
 		  	
 		  	@user.map { user =>
 	    		@if(user.hackathonUserId == hackathon.submitterId) {
-	    			<div class="form-actions">
-	    				<a class="btn btn-success" href="@routes.News.createHackathonNews(hackathon.id)">@Messages("news.addNews")</a>
-	    			</div>
-	    		  
-	    			<div class="form-actions">
-	    			@form(routes.Hackathon.delete(hackathon.id)) {
-	    				<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.id)">@Messages("global.edit")</a>
-	    				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-	    			}
-	    			</div>
+    			<div class="form-actions">
+    				<a class="btn btn-success" href="@routes.News.createHackathonNews(hackathon.id)">@Messages("news.addNews")</a>
+    			</div>
 				}
 		  	}
 
 		}.getOrElse {
-		  <h2>@Messages("hackathons.notFound")</h2>
+			<div class="page-header">
+				<h2>@Messages("hackathons.notFound")</h2>
+			</div>
 		}
 
 	    </div>
-  
-    </div>
-
 }
 
