@@ -8,12 +8,10 @@ import org.squeryl.Schema
 import org.squeryl.KeyedEntity
 import org.squeryl.annotations.Column
 
+
 object Application extends Controller with securesocial.core.SecureSocial {
   
   def index = UserAwareAction { implicit request =>
-    val languages = request.acceptLanguages.mkString(", ")
-    println(languages)
-    println(this.lang(request))
 	Ok(views.html.index(request.user))
   }
   
