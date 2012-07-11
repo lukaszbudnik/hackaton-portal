@@ -13,7 +13,7 @@ navigation.about    = O hackatonach
 navigation.contact  = Kontakt
 navigation.home     = Strona główna
 navigation.login    = Zaloguj się
-navigation.news     = Wiadomości
+navigation.news     = Aktualności
 navigation.problems = Problemy
 navigation.sponsors = Sponsorzy
 navigation.teams    = Zespoły
@@ -47,7 +47,7 @@ contact.title = Kontakt
 
 profile.title = Twoje konto
 
-news.title = Wiadomości
+news.title = Aktualności
 news.labels = Tagi: 
 news.notFound = Wiadomość nie znaleziona
 news.addNews = Dodaj wiadomość
