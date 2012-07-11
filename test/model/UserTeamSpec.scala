@@ -18,9 +18,9 @@ class UserTeamSpec extends Specification {
           val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!")
           val team = Team("test-team", 1L, 1L, Some(1L))
 
-          model.User.add(user1)
-          model.User.add(user2)
-          model.Team.add(team)
+          model.User.insert(user1)
+          model.User.insert(user2)
+          model.Team.insert(team)
 
           user1.isPersisted must beTrue
           user2.isPersisted must beTrue
@@ -54,9 +54,9 @@ class UserTeamSpec extends Specification {
           val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!")
           val team = Team("test-team", 1L, 1L, Some(1L))
 
-          model.User.add(user1)
-          model.User.add(user2)
-          model.Team.add(team)
+          model.User.insert(user1)
+          model.User.insert(user2)
+          model.Team.insert(team)
 
           user1.isPersisted must beTrue
           user2.isPersisted must beTrue
@@ -95,9 +95,9 @@ class UserTeamSpec extends Specification {
           val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!")
           val team = Team("test-team", 1L, 1L, Some(1L))
           
-          model.User.add(user1)
-          model.User.add(user2)
-          model.Team.add(team)
+          model.User.insert(user1)
+          model.User.insert(user2)
+          model.Team.insert(team)
           
           user1.isPersisted must beTrue
           user2.isPersisted must beTrue

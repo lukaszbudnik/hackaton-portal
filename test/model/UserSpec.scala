@@ -12,7 +12,7 @@ class UserSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!")
-          model.User.add(user)
+          model.User.insert(user)
 
           user.isPersisted must beTrue
           user.id must beGreaterThan(0L)
@@ -23,7 +23,7 @@ class UserSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!")
-          model.User.add(user)
+          model.User.insert(user)
 
           user.isPersisted must beTrue
 
@@ -38,7 +38,7 @@ class UserSpec extends Specification {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
           transaction {
             val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!")
-            model.User.add(user)
+            model.User.insert(user)
 
             user.isPersisted must beTrue
 

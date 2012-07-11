@@ -18,7 +18,7 @@ object Problem extends Controller with securesocial.core.SecureSocial {
   def index = UserAwareAction { implicit request =>
     transaction {
       val users: Map[Long, String] = model.User.all.toList.map({ u => (u.id, u.name) }).toMap
-      Ok(views.html.problems.index(Model.problems.toList, users, request.user))
+      Ok(views.html.problems.index(model.Problem.all.toList, users, request.user))
     }
 
   }
@@ -26,7 +26,7 @@ object Problem extends Controller with securesocial.core.SecureSocial {
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
       val users: Map[Long, String] = model.User.all.toList.map({ u => (u.id, u.name) }).toMap
-      Ok(views.html.problems.view(Model.problems.lookup(id), users, request.user))
+      Ok(views.html.problems.view(model.Problem.lookup(id), users, request.user))
     }
   }
 
@@ -42,14 +42,14 @@ object Problem extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.problems.create(errors, model.User.all.toList, Model.hackathons.toList, request.user))
       },
       problem => transaction {
-        Model.problems.insert(problem)
+        model.Problem.insert(problem)
         Redirect(routes.Problem.index).flashing("status" -> "added", "title" -> problem.name)
       })
   }
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      Model.lookupProblem(id).map { problem =>
+      model.Problem.lookup(id).map { problem =>
         Ok(views.html.problems.edit(id, problemForm.fill(problem), model.User.all.toList, Model.hackathons.toList, request.user))
       }.get
     }
@@ -62,13 +62,7 @@ object Problem extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.problems.edit(id, errors, model.User.all.toList, Model.hackathons.toList, request.user))
       },
       problem => transaction {
-        Model.problems.update(p =>
-          where(p.id === id)
-            set (
-              p.name := problem.name,
-              p.description := problem.description,
-              p.submitterId := problem.submitterId,
-              p.hackathonId := problem.hackathonId))
+        model.Problem.update(id, problem)
         Redirect(routes.Problem.index).flashing("status" -> "updated", "title" -> problem.name)
       })
 
@@ -76,7 +70,7 @@ object Problem extends Controller with securesocial.core.SecureSocial {
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      Model.problems.deleteWhere(p => p.id === id)
+      model.Problem.delete(id)
     }
     Redirect(routes.Problem.index).flashing("status" -> "deleted")
   }

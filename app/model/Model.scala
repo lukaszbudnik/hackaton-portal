@@ -6,15 +6,6 @@ import org.squeryl.Schema
 import org.squeryl.KeyedEntity
 import org.squeryl.annotations.Column
 
-case class Problem(name: String,
-				   description: String,
-				   @Column("submitter_id") submitterId: Long,
-				   @Column("hackathon_id") hackathonId: Long) extends KeyedEntity[Long] {
-  val id: Long = 0L
-  lazy val submitter : ManyToOne[User] = Model.submitterToProblems.right(this)
-  lazy val hackathon : ManyToOne[Hackathon] = Model.hackathonToProblems.right(this)
-}
-
 case class Hackathon(subject: String,
 					 status: HackathonStatus.Value,
 					 @Column("submitter_id") submitterId: Long,
@@ -23,7 +14,7 @@ case class Hackathon(subject: String,
   lazy val submitter : ManyToOne[User] = Model.submitterToHackathons.right(this)  
   lazy val location: ManyToOne[Location] = Model.locationToHackathons.right(this)
   lazy val teams = Team.hackathonToTeams.left(this)
-  lazy val problems = Model.hackathonToProblems.left(this)
+  lazy val problems = Problem.hackathonToProblems.left(this)
   lazy val sponsors = from(Model.hackathonsToSponsors.left(this))(hs => select(hs) orderBy(hs.order asc))
   def this() = this("", HackathonStatus.Planning, 1, 1)
 }
@@ -75,9 +66,7 @@ object HackathonStatus extends Enumeration {
 
 object Model extends Schema {
   
-  val problems = table[Problem]("problems")
   val prizes = table[Prize]("prizes")
-
   val hackathons = table[Hackathon]("hackathons")
   val sponsors = table[Sponsor]("sponsors")
   val locations = table[Location]("locations")
@@ -89,21 +78,7 @@ object Model extends Schema {
   
   val submitterToHackathons = oneToManyRelation(User.users, hackathons).via((u, h) => u.id === h.submitterId)  
   val locationToHackathons = oneToManyRelation(locations, hackathons).via((l, h) => l.id === h.locationId)
-  val submitterToProblems = oneToManyRelation(User.users, problems).via((u, p) => u.id === p.submitterId)
-  val hackathonToProblems = oneToManyRelation(hackathons, problems).via((h, p) => h.id === p.hackathonId)
-    
-  def lookupProblem(id: Long): Option[Problem] = {
-    problems.lookup(id)
-  }
-  
-  def allProblems(): Iterable[Problem] = {
-    problems.toIterable
-  }
-  
-  def deleteAllProblems() = {
-    problems.deleteWhere(p => p.id gt 0L)
-  }
-  
+ 
   def lookupHackathon(id: Long): Option[Hackathon] = {
     hackathons.lookup(id)
   }

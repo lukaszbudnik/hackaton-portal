@@ -32,18 +32,18 @@ object Team extends Controller with securesocial.core.SecureSocial {
   def create = SecuredAction() { implicit request =>
     transaction {
       val team = model.Team("", request.user.hackathonUserId, 0)
-      Ok(views.html.teams.create(teamForm.fill(team), model.User.all.toList, Model.hackathons.toList, Model.problems.toList, request.user))
+      Ok(views.html.teams.create(teamForm.fill(team), model.User.all.toList, Model.hackathons.toList, model.Problem.all.toList, request.user))
     }
   }
 
   def save = SecuredAction() { implicit request =>
     teamForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.teams.create(errors, model.User.all.toList, Model.hackathons.toList, Model.problems.toList, request.user))
+        BadRequest(views.html.teams.create(errors, model.User.all.toList, Model.hackathons.toList, model.Problem.all.toList, request.user))
       },
       team => transaction {
         // insert team and add creator as a member
-        model.Team.add(team).addMember(team.creator)
+        model.Team.insert(team).addMember(team.creator)
         Redirect(routes.Team.index).flashing("status" -> "added", "title" -> team.name)
       })
   }
@@ -52,7 +52,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
     transaction {
       model.Team.lookup(id).map { team =>
         helpers.Security.verifyIfAllowed(team.creatorId, "admin")(request.user)
-        Ok(views.html.teams.edit(id, teamForm.fill(team), model.User.all.toList, Model.hackathons.toList, Model.problems.toList, request.user))
+        Ok(views.html.teams.edit(id, teamForm.fill(team), model.User.all.toList, Model.hackathons.toList, model.Problem.all.toList, request.user))
       }.getOrElse {
         // no team found
         Redirect(routes.Team.view(id)).flashing()
@@ -63,7 +63,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
   def update(id: Long) = SecuredAction() { implicit request =>
     teamForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.teams.edit(id, errors, model.User.all.toList, Model.hackathons.toList, Model.problems.toList, request.user))
+        BadRequest(views.html.teams.edit(id, errors, model.User.all.toList, Model.hackathons.toList, model.Problem.all.toList, request.user))
       },
       team => transaction {
     	helpers.Security.verifyIfAllowed(team.creatorId, "admin")(request.user)

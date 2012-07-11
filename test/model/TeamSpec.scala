@@ -17,7 +17,7 @@ class TeamSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           val team: Team = Team("name", 1, 1)
-          Team.add(team)
+          model.Team.insert(team)
           
           team.isPersisted must beTrue
           team.id must beGreaterThan(0L)
@@ -28,11 +28,11 @@ class TeamSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           val team: Team = Team("name", 1, 1)
-          Team.add(team)
+          model.Team.insert(team)
           
           team.isPersisted must beTrue
 
-          val teamDb: Option[Team] = Team.lookup(team.id)
+          val teamDb: Option[Team] = model.Team.lookup(team.id)
 
           teamDb.isEmpty must beFalse
           teamDb.get.id must equalTo(team.id)
@@ -43,11 +43,11 @@ class TeamSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           val team: Team = Team("name", 1, 1)
-          Team.add(team)
+          model.Team.insert(team)
           
           team.isPersisted must beTrue
 
-          val teamDb: Option[Team] = Team.lookup(team.id)
+          val teamDb: Option[Team] = model.Team.lookup(team.id)
 
           teamDb.isEmpty must beFalse
           teamDb.get.creator.name must not beNull
@@ -58,11 +58,11 @@ class TeamSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           val team: Team = Team("name", 1, 1)
-          Team.add(team)
+          model.Team.insert(team)
           
           team.isPersisted must beTrue
 
-          val teamDb: Option[Team] = Team.lookup(team.id)
+          val teamDb: Option[Team] = model.Team.lookup(team.id)
 
           teamDb.isEmpty must beFalse
           teamDb.get.hackathon.subject must not beNull
@@ -74,14 +74,14 @@ class TeamSpec extends Specification {
         transaction {
           val team1: Team = Team("name", 1, 1)
           val team2: Team = Team("name", 1, 1, Some(1))
-          Team.add(team1)
-          Team.add(team2)
+          model.Team.insert(team1)
+          model.Team.insert(team2)
           
           team1.isPersisted must beTrue
           team2.isPersisted must beTrue
 
-          val teamDb1: Option[Team] = Team.lookup(team1.id)
-          val teamDb2: Option[Team] = Team.lookup(team2.id)
+          val teamDb1: Option[Team] = model.Team.lookup(team1.id)
+          val teamDb2: Option[Team] = model.Team.lookup(team2.id)
 
           teamDb1.isEmpty must beFalse
           teamDb1.get.problem.isEmpty must beTrue
@@ -95,9 +95,9 @@ class TeamSpec extends Specification {
     "be retrivable in bulk" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val size = Team.all.size
-          Team.add(Team("name", 1, 1))
-          Team.add(Team("name", 1, 1))
+          val size = model.Team.all.size
+          model.Team.insert(Team("name", 1, 1))
+          model.Team.insert(Team("name", 1, 1))
           
           Team.all must have size(size + 2)
         }
@@ -107,16 +107,16 @@ class TeamSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           val team1: Team = Team("name", 1, 1)
-          Team.add(team1)
+          model.Team.insert(team1)
           
           team1.isPersisted must beTrue
 
-          val teamDb1: Option[Team] = Team.lookup(team1.id)
+          val teamDb1: Option[Team] = model.Team.lookup(team1.id)
           
           val team2: Team = Team("name2", 2, 2, Some(2))
-          Team.update(team1.id, team2)
+          model.Team.update(team1.id, team2)
 
-          val teamDb2: Option[Team] = Team.lookup(team1.id)
+          val teamDb2: Option[Team] = model.Team.lookup(team1.id)
                     
           teamDb1.isEmpty must beFalse
           teamDb2.isEmpty must beFalse
@@ -139,14 +139,14 @@ class TeamSpec extends Specification {
     "be deletable" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val size = Team.all.size
+          val size = model.Team.all.size
           val team = Team("name", 1, 1)
           
-          Team.add(team)
-          Team.all must have size(size + 1)
+          model.Team.insert(team)
+          model.Team.all must have size(size + 1)
           
-          Team.delete(team.id)
-          Team.all must have size(size)
+          model.Team.delete(team.id)
+          model.Team.all must have size(size)
         }
       }
     }

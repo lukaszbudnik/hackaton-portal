@@ -57,7 +57,7 @@ object User extends Schema {
     users.find(u => u.openId == openId)
   }
   
-  def add(user: User): User = {
+  def insert(user: User): User = {
     users.insert(user)
   }
 

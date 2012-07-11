@@ -51,7 +51,7 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
       }
 
       val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), "", "", socialUser.avatarUrl.getOrElse(""), socialUser.id.id + socialUser.id.providerId)
-      model.User.add(newUser)
+      model.User.insert(newUser)
 
       val userRole = model.Role.lookupByName("user")
 

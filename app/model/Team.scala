@@ -38,9 +38,9 @@ case class Team(name: String,
 object Team extends Schema {
   protected[model] val teams = table[Team]("teams")
 
-  protected[model] val creatorToTeams = oneToManyRelation(model.User.users, teams).via((u, t) => u.id === t.creatorId)
+  protected[model] val creatorToTeams = oneToManyRelation(User.users, teams).via((u, t) => u.id === t.creatorId)
   protected[model] val hackathonToTeams = oneToManyRelation(Model.hackathons, teams).via((h, t) => h.id === t.hackathonId)
-  protected[model] val problemToTeams = oneToManyRelation(Model.problems, teams).via((p, t) => p.id === t.problemId)
+  protected[model] val problemToTeams = oneToManyRelation(Problem.problems, teams).via((p, t) => p.id === t.problemId)
 
   protected[model] val usersToTeams =
     manyToManyRelation(model.User.users, teams, "users_teams").
@@ -54,7 +54,7 @@ object Team extends Schema {
     teams.lookup(id)
   }
 
-  def add(team: Team): Team = {
+  def insert(team: Team): Team = {
     teams.insert(team)
   }
 
