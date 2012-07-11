@@ -11,13 +11,13 @@ object Prize extends Controller with securesocial.core.SecureSocial {
   
   def index = UserAwareAction { implicit request =>
   	transaction {
-  	  Ok(views.html.prizes.index(Model.allPrizesOrdered().toList, request.user)) 
+  	  Ok(views.html.prizes.index(model.Prizes.allOrdered.toList, request.user)) 
   	}
   }
   
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.prizes.view(Model.prizes.lookup(id), request.user))
+      Ok(views.html.prizes.view(model.Prizes.lookup(id), request.user))
     }
   }
   
@@ -43,7 +43,7 @@ object Prize extends Controller with securesocial.core.SecureSocial {
         errors =>  transaction {
           BadRequest(views.html.prizes.create(errors, Model.hackathons.toList, request.user))
         },prize => transaction {
-          Model.prizes.insert(prize)
+          model.Prizes.prizes.insert(prize)
           Redirect(routes.Prize.index).flashing("status" -> "prizes.added")
         }
 	)
@@ -51,7 +51,7 @@ object Prize extends Controller with securesocial.core.SecureSocial {
   
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      Model.lookupPrize(id).map { prize =>
+      model.Prizes.lookup(id).map { prize =>
         Ok(views.html.prizes.edit(id, prizeForm.fill(prize), Model.hackathons.toList, request.user))
       }.get
     }
@@ -63,7 +63,7 @@ object Prize extends Controller with securesocial.core.SecureSocial {
           BadRequest(views.html.prizes.edit(id, errors, Model.hackathons.toList, request.user))
         },
         prize => transaction {
-          Model.prizes.update(p =>
+        	model.Prizes.prizes.update(p =>
             where(p.id === id)
             set(
                 p.name := prize.name,
@@ -82,7 +82,7 @@ object Prize extends Controller with securesocial.core.SecureSocial {
   
   def delete(id: Long) = SecuredAction() { implicit request => 
   	transaction {
-  	  Model.prizes.deleteWhere(p => p.id === id)
+  	  model.Prizes.prizes.deleteWhere(p => p.id === id)
   	}
   	Redirect(routes.Prize.index).flashing("status" -> "prizes.deleted")
   }
