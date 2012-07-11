@@ -21,8 +21,8 @@ navigation.teams    = Zespoły
 home.text        = Hackatony to charytatywne imprezy na których programiści, konsultanci, menadżerowie wspólnie z przedstawicielami organizacji rządowych, pozarządowych, charytatywnych, służby zdrowia i innych spotykają się razem aby w swoim wolnym czasie spróbować rozwiązać ważne problemy, z którymi te organizacje borykają się na codzień. Rezultatem wspólnej pracy są najczęściej prototypy aplikacji bądź nierzadko gotowe do użycia aplikacje. A wszystko to za darmo z głębokiego przekonania, że czasami warto zrobić coś bezinteresownie dla innych!
 home.welcome     = Witamy na stronie hackaton.pl!
 
-home.news1.text  = Twitnij o nas, śledź nas, lub nas, daj nam +1! Pomoż nam wypromować ideę hackatonów w Polsce!
-home.news1.title = Śledź nas!
+home.news1.text  = Tweetnij o nas, obserwuj nas, lub nas, daj nam +1! Pomóż nam wypromować ideę hackatonów w Polsce!
+home.news1.title = Obserwuj nas!
 home.news2.text  = Strona hackaton.pl oraz platforma hackaton-portal są tworzone przez entuzjastów dla entuzjastów. Chętnych rąk do pracy nigdy nie jest za wiele, dowiedź się więcej jak możesz nam pomóc.
 home.news2.title = Dołącz do naszego zespołu
 home.news3.text  = Jeśli chciałbyś dołączyć do grona sponsorów portalu hackaton.pl lub jeśli jesteś zainteresowany zostaniem sponsorem wybranego hackatonu nie wahaj się i skontaktuj się z nami. Pełna lista sponsorów jest dostępna pod poniższym linkiem.
@@ -61,26 +61,3 @@ news.publish = Opublikuj
 sponsors.title = Nasi sponsorzy
 sponsors.text = <p>Chcielibyśmy podziękować wszystkim naszym sponsorom. Oto ich pełna lista. Dziękujemy!</p>
 
-problems.title = Problems
-problems.addProblem = Add a problem
-problems.added = Problem added
-problems.updated = Problem updated
-problems.deleted = Problem deleted
-newProblem.title = Add a problem
-newProblem.addProblem = Add a problem
-
-teams.title = Teams
-teams.addTeam = Add a team
-teams.notFound = Team not found
-teams.view.title = Team
-teams.create.title = Add a team
-teams.edit.title = Edit a team
-teams.status.added = Team %s successfully added
-teams.status.updated = Team %s successfully updated
-teams.status.deleted = Team deleted
-
-social.twitter.share = Share
-social.twitter.follow = Follow
-
-securityAbuse.title = Security Abuse Detected
-securityAbuse.text = We have detected security abuse. Please refrain from such actions in future as we may draw consequences next time.
