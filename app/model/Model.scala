@@ -7,30 +7,22 @@ import org.squeryl.KeyedEntity
 import org.squeryl.annotations.Column
 
 case class Hackathon(subject: String,
-					 status: HackathonStatus.Value,
-					 @Column("submitter_id") submitterId: Long,
-					 @Column("location_id") locationId: Long) extends KeyedEntity[Long] {
+  status: HackathonStatus.Value,
+  @Column("submitter_id") submitterId: Long,
+  @Column("location_id") locationId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
-  lazy val submitter : ManyToOne[User] = Model.submitterToHackathons.right(this)  
+  
+  lazy val submitter: ManyToOne[User] = Model.submitterToHackathons.right(this)
   lazy val location: ManyToOne[Location] = Model.locationToHackathons.right(this)
   lazy val teams = Team.hackathonToTeams.left(this)
   lazy val problems = Problem.hackathonToProblems.left(this)
-  def sponsors = from(model.Sponsors.hackathonsToSponsors.left(this))(hs => select(hs) orderBy(hs.order asc))
+  
+  def sponsors = from(model.Sponsors.hackathonsToSponsors.left(this))(hs => select(hs) orderBy (hs.order asc))
   def this() = this("", HackathonStatus.Planning, 1, 1)
 }
 
-case class Location(country: String,
-                    city: String,
-                    @Column("postal_code") postalCode: String,
-                    @Column("full_address") fullAddress: String,
-                    name: String,
-                    latitude: Double,
-                    longitude: Double) extends KeyedEntity[Long] {
-  val id: Long = 0L
-}
-
 case class UserTeam(@Column("user_id") userId: Long,
-					@Column("team_id") teamId: Long) extends KeyedEntity[CompositeKey2[Long, Long]] {
+  @Column("team_id") teamId: Long) extends KeyedEntity[CompositeKey2[Long, Long]] {
   def id = compositeKey(userId, teamId)
 }
 
@@ -41,18 +33,16 @@ object HackathonStatus extends Enumeration {
 }
 
 object Model extends Schema {
-  
-  val hackathons = table[Hackathon]("hackathons")
-  val locations = table[Location]("locations")
 
-  
-  val submitterToHackathons = oneToManyRelation(User.users, hackathons).via((u, h) => u.id === h.submitterId)  
-  val locationToHackathons = oneToManyRelation(locations, hackathons).via((l, h) => l.id === h.locationId)
- 
+  val hackathons = table[Hackathon]("hackathons")
+
+  protected[model] val locationToHackathons = oneToManyRelation(Location.locations, Model.hackathons).via((l, h) => l.id === h.locationId)
+  protected[model] val submitterToHackathons = oneToManyRelation(User.users, hackathons).via((u, h) => u.id === h.submitterId)
+
   def lookupHackathon(id: Long): Option[Hackathon] = {
     hackathons.lookup(id)
   }
-  
+
   def allHackathonsForSponsor(id: Long) = {
     model.Sponsors.lookup(id).get.hackathons
   }
