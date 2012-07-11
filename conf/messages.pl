@@ -48,16 +48,19 @@ contact.title = Kontakt
 profile.title = Twoje konto
 
 news.title = Aktualności
-news.labels = Tagi: 
-news.notFound = Wiadomość nie znaleziona
 news.addNews = Dodaj wiadomość
+news.publish = Opublikuj
+news.notFound = Wiadomość nie znaleziona
+news.title.label = Tytuł
+news.text.label = Tekst
+news.labels.label = Tagi
+news.author.label = Autor
+news.published.label = Data
+news.create.title = Dodaj wiadomość
+news.edit.title = Edytuj wiadomość
 news.status.added = Wiadomość '%s' dodana
 news.status.updated = Wiadomość '%s' zaktualizowana
 news.status.deleted = Wiadomość usunięta
-news.create.title = Dodaj wiadomość
-news.edit.title = Edytuj wiadomość
-news.publish = Opublikuj
 
 sponsors.title = Nasi sponsorzy
 sponsors.text = <p>Chcielibyśmy podziękować wszystkim naszym sponsorom. Oto ich pełna lista. Dziękujemy!</p>
-
