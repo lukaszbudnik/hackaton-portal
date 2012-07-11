@@ -1,4 +1,4 @@
-@(sponsor: Option[model.Sponsor], hackathons: Iterable[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+@(sponsor: Option[model.Sponsor], hackathons: Iterable[model.Hackathon], hs: Map[Long,Int], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
 
 @import helper._
 
@@ -30,12 +30,16 @@
 				<ul>
 				
 				@hackathons.map { h =>
-					<li/>@h.subject			
+					<li/>@(h.subject + " (order: " + hs(h.id) + ")" )
+								
 				}
+				
+				
 				
 				</ul>
 				
 	  		}
+	  			  		
 	  		<p></p>
 	  		
 	  		<div class="form-actions">

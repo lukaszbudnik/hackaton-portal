@@ -1,10 +1,10 @@
-@(action: play.api.mvc.Call, btnMessage: String, sponsorForm: Form[model.Sponsor])
+@(action: play.api.mvc.Call, btnMessage: String, sponsorForm: Form[model.Sponsor], hackathons: List[model.Hackathon])
 
 @import helper._
 @import helper.twitterBootstrap._
 
 @implicitFieldConstructor = @{ FieldConstructor(forms.twitterBootstrapInput.f) }
-
+    
 @form(action, 'class -> "form-horizontal") {
         
     @inputText(
@@ -36,6 +36,28 @@
 	    '_label -> Messages("sponsors.generalSponsor.label"),
 	    '_showConstraints -> false
     )
+
+        
+    @hackathons.zipWithIndex.map { case (hackathon, index) =>  
+    
+    	@defining(sponsorForm("hackathons[" + index + "].hackathonId")) { hackathonIdField =>
+  			<input type="hidden" name="@hackathonIdField.name" id="@hackathonIdField.id" value="@hackathon.id">
+		}
+            	
+    	@select(
+			sponsorForm("hackathons[" + index + "].order"),
+			Seq( 
+				("-1", Messages("sponsors.notSponsored.label")), 
+				("1",Messages("sponsors.sponsored.label") + " (order: 1)"), 
+				("2",Messages("sponsors.sponsored.label") + " (order: 2)"), 
+				("3",Messages("sponsors.sponsored.label") + " (order: 3)"),
+				("4",Messages("sponsors.sponsored.label") + " (order: 4)")
+			),
+    		'_label -> (hackathon.subject),
+    		'_showConstraints -> false
+   		)
+   		
+    }
 	
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">@btnMessage</button>
