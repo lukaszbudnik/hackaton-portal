@@ -6,26 +6,6 @@ import org.squeryl.Schema
 import org.squeryl.KeyedEntity
 import org.squeryl.annotations.Column
 
-case class User(name: String,
-				email: String,
-				@Column("github_username") githubUsername: String,
-				@Column("twitter_account") twitterAccount: String,
-				@Column("avatar_url") avatarUrl: String,
-				@Column("open_id") openId: String) extends KeyedEntity[Long] {
-  val id: Long = 0L
-  lazy val roles = Model.usersToRoles.left(this)
-  lazy val teams = Team.usersToTeams.left(this)
-}
-
-case class Role(name: String) extends KeyedEntity[Long] {
-  val id: Long = 0L
-}
-
-case class UserRole(@Column("user_id") userId: Long,
-					@Column("role_id") roleId: Long) extends KeyedEntity[CompositeKey2[Long,Long]] {
-  def id = compositeKey(userId, roleId)
-}
-
 case class Problem(name: String,
 				   description: String,
 				   @Column("submitter_id") submitterId: Long,
@@ -72,22 +52,15 @@ object HackathonStatus extends Enumeration {
 object Model extends Schema {
   
   val problems = table[Problem]("problems")
-  val users = table[User]("users")
-  val roles = table[Role]("roles")
   val hackathons = table[Hackathon]("hackathons")
-  
   val locations = table[Location]("locations")
 
   
-  val submitterToHackathons = oneToManyRelation(users, hackathons).via((u, h) => u.id === h.submitterId)  
+  val submitterToHackathons = oneToManyRelation(User.users, hackathons).via((u, h) => u.id === h.submitterId)  
   val locationToHackathons = oneToManyRelation(locations, hackathons).via((l, h) => l.id === h.locationId)
-  val submitterToProblems = oneToManyRelation(users, problems).via((u, p) => u.id === p.submitterId)
+  val submitterToProblems = oneToManyRelation(User.users, problems).via((u, p) => u.id === p.submitterId)
   val hackathonToProblems = oneToManyRelation(hackathons, problems).via((h, p) => h.id === p.hackathonId)
-
-  val usersToRoles =
-    manyToManyRelation(users, roles, "users_roles").
-      via[UserRole](f = (u, r, ur) => (u.id === ur.userId, r.id === ur.roleId))
-      
+    
   def lookupProblem(id: Long): Option[Problem] = {
     problems.lookup(id)
   }
@@ -102,23 +75,6 @@ object Model extends Schema {
   
   def lookupHackathon(id: Long): Option[Hackathon] = {
     hackathons.lookup(id)
-  }
-
-  def lookupUser(id: Long) = {
-    users.lookup(id)
-  }
-
-    
-  def findUserByOpenId(openId: String): Option[User] = {
-    users.where(u => u.openId === openId).headOption
-  }
-  
-  def allRoles(): Iterable[Role] = {
-    roles.toIterable
-  }
-  
-  def findRoleByName(name: String): Option[Role] = {
-    roles.find(r => r.name == name)
   }
   
   def allHackathonsForSponsor(id: Long) = {
