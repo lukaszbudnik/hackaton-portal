@@ -1,11 +1,18 @@
 package controllers
 
-import org.squeryl.PrimitiveTypeMode._
-import model.{Model, Label}
-import play.api.data.Forms._
-import play.api.data._
-import play.api.mvc._
 import java.util.Date
+
+import scala.Array.canBuildFrom
+
+import org.squeryl.PrimitiveTypeMode.transaction
+
+import play.api.data.Forms.date
+import play.api.data.Forms.longNumber
+import play.api.data.Forms.mapping
+import play.api.data.Forms.nonEmptyText
+import play.api.data.Forms.optional
+import play.api.data.Form
+import play.api.mvc.Controller
 
 object News extends Controller with securesocial.core.SecureSocial {
 
@@ -16,7 +23,7 @@ object News extends Controller with securesocial.core.SecureSocial {
       "labelsAsString" -> nonEmptyText,
       "authorId" -> longNumber,
       "published" -> date("dd/MM/yyyy"),
-      "hackathonId"  -> optional(longNumber))(model.News.apply)(model.News.unapply))
+      "hackathonId" -> optional(longNumber))(model.News.apply)(model.News.unapply))
 
   def index = UserAwareAction { implicit request =>
     transaction {
@@ -36,7 +43,7 @@ object News extends Controller with securesocial.core.SecureSocial {
       Ok(views.html.news.create(newsForm.fill(news), model.User.all.toList, request.user))
     }
   }
-  
+
   def createHackathonNews(hackathonId: Long) = SecuredAction() { implicit request =>
     val hackathonNews = model.News("", "", "", request.user.hackathonUserId, new Date(), Some(hackathonId))
     transaction {
@@ -53,7 +60,7 @@ object News extends Controller with securesocial.core.SecureSocial {
         model.News.insert(news)
 
         news.labelsAsString.split(",").map(_.trim().toLowerCase()).distinct.map { label =>
-          val dbLabel = Label.findByValue(label).getOrElse(Label.insert(Label(label)))
+          val dbLabel = model.Label.findByValue(label).getOrElse(model.Label.insert(model.Label(label)))
           news.addLabel(dbLabel)
         }
 
@@ -75,25 +82,25 @@ object News extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.news.edit(id, errors, model.User.all.toList, request.user))
       },
       news => transaction {
-        
+
         val dbNews = model.News.lookup(id).get
-        
+
         val existingLabels = dbNews.labels.map(_.value).toSeq
-        
+
         val newLabels = news.labelsAsString.split(",").map(_.trim().toLowerCase()).distinct.toSeq
-        
+
         // collection of model.Label
         val labelsToBeRemoved = existingLabels.diff(newLabels).map(v => dbNews.labels.find(l => l.value == v).get)
         // remove old labels
         labelsToBeRemoved.map { label =>
           dbNews.removeLabel(label)
         }
-        
+
         // collection of strings
         val labelsToBeAdded = newLabels.diff(existingLabels)
         // add new labels
         labelsToBeAdded.map { label =>
-          dbNews.addLabel(Label.insert(Label(label)))
+          dbNews.addLabel(model.Label.insert(model.Label(label)))
         }
 
         // update the model

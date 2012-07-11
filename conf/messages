@@ -60,7 +60,6 @@ news.text.label = Text
 news.labels.label = Tags
 news.author.label = Author
 news.published.label = Published
-news.view.title = News
 news.create.title = Add a news
 news.edit.title = Edit news
 news.status.added = News %s successfully added

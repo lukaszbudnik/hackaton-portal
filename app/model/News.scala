@@ -15,10 +15,10 @@ case class News(title: String,
   published: Date,
   @Column("hackathon_id") hackathonId: Option[Long]) extends KeyedEntity[Long] {
   val id: Long = 0L
-  
-  protected[model] lazy val authorRel = News.authorToNews.right(this)
+
+  protected[model] lazy val authorRel: ManyToOne[User] = News.authorToNews.right(this)
+  protected[model] lazy val hackathonRel: ManyToOne[Hackathon] = News.hackathonToNews.right(this)
   protected[model] lazy val labelsRel = News.newsToLabels.left(this)
-  protected[model] lazy val hackathonRel = News.hackathonToNews.right(this)
 
   def author = authorRel.head
   def hackathon = hackathonRel.headOption
@@ -33,14 +33,19 @@ case class News(title: String,
   }
 }
 
+case class NewsLabel(@Column("news_id") newsId: Long,
+  @Column("label_id") labelId: Long) extends KeyedEntity[CompositeKey2[Long, Long]] {
+  def id = compositeKey(newsId, labelId)
+}
+
 object News extends Schema {
   protected[model] val news = table[News]("news")
 
-  protected[model] val authorToNews = oneToManyRelation(model.User.users, News.news).via((u, n) => u.id === n.authorId)
-  protected[model] val hackathonToNews = oneToManyRelation(Model.hackathons, News.news).via((h, n) => h.id === n.hackathonId)
+  protected[model] val authorToNews = oneToManyRelation(User.users, News.news).via((u, n) => u.id === n.authorId)
+  protected[model] val hackathonToNews = oneToManyRelation(Hackathon.hackathons, News.news).via((h, n) => h.id === n.hackathonId)
 
   protected[model] val newsToLabels =
-    manyToManyRelation(news, Label.labels, "news_labels").
+    manyToManyRelation(News.news, Label.labels, "news_labels").
       via[NewsLabel](f = (n, l, nl) => (n.id === nl.newsId, l.id === nl.labelId))
 
   def all(): Iterable[News] = {

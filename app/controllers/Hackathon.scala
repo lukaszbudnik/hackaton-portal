@@ -1,22 +1,18 @@
 package controllers
 
-import play.api._
-import data.Form
-import data.Forms._
-import play.api.mvc._
-import play.api.i18n._
-import model._
-import org.squeryl.PrimitiveTypeMode._
-import org.squeryl.Schema
-import org.squeryl.KeyedEntity
-import org.squeryl.annotations.Column
-import helpers.Forms._
+import org.squeryl.PrimitiveTypeMode.transaction
+
+import helpers.Forms.enum
+import play.api.data.Forms._
+import play.api.data.Form
+import play.api.mvc.Action
+import play.api.mvc.Controller
 
 object Hackathon extends Controller with securesocial.core.SecureSocial {
 
   def hackathonsJson = Action {
     transaction {
-      val hackathons = Model.hackathons.toList
+      val hackathons = model.Hackathon.all.toList
       Ok(com.codahale.jerkson.Json.generate(hackathons)).as(JSON)
     }
   }
@@ -24,14 +20,14 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
   val hackathonForm = Form(
     mapping(
       "subject" -> nonEmptyText,
-      "status" -> enum(HackathonStatus),
+      "status" -> enum(model.HackathonStatus),
       "submitterId" -> longNumber,
       "locationId" -> longNumber)(model.Hackathon.apply)(model.Hackathon.unapply))
 
   def index = UserAwareAction {
     implicit request =>
       transaction {
-        Ok(views.html.hackathons.index(Model.hackathons.toList, request.user))
+        Ok(views.html.hackathons.index(model.Hackathon.all.toList, request.user))
       }
   }
 
@@ -41,7 +37,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
         val users:Map[Long, String] = model.User.all.map({ u => (u.id, u.name) }).toMap
         val locations:Map[Long, String] = model.Location.all.toList.map({ l => (l.id, l.name) }).toMap
         val news = model.News.all(id)
-        Ok(views.html.hackathons.view(Model.hackathons.lookup(id), news, users, locations, request.user))
+        Ok(views.html.hackathons.view(model.Hackathon.lookup(id), news, users, locations, request.user))
       }
   }
 
@@ -59,7 +55,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
           BadRequest(views.html.hackathons.create(errors, model.User.all.toList, model.Location.all.toList, request.user))
         },
         hackathon => transaction {
-          Model.hackathons.insert(hackathon)
+          model.Hackathon.insert(hackathon)
           Redirect(routes.Hackathon.index).flashing("status" -> "added", "title" -> hackathon.subject)
         }
       )
@@ -68,7 +64,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
   def edit(id: Long) = SecuredAction() {
     implicit request =>
       transaction {
-        Model.hackathons.lookup(id).map {
+        model.Hackathon.lookup(id).map {
           hackathon =>
             Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathon), model.User.all.toList, model.Location.all.toList, request.user))
         }.get
@@ -82,13 +78,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
           BadRequest(views.html.hackathons.edit(id, errors, model.User.all.toList, model.Location.all.toList, request.user))
         },
         hackathon => transaction {
-          Model.hackathons.update(h =>
-            where(h.id === id)
-              set(
-              h.subject := hackathon.subject,
-              h.status := hackathon.status,
-              h.submitterId := hackathon.submitterId,
-              h.locationId := hackathon.locationId))
+          model.Hackathon.update(id, hackathon)
           Redirect(routes.Hackathon.index).flashing("status" -> "updated", "title" -> hackathon.subject)
         })
   }
@@ -96,7 +86,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
   def delete(id: Long) = SecuredAction() {
     implicit request =>
       transaction {
-        Model.hackathons.deleteWhere(h => h.id === id)
+        model.Hackathon.delete(id)
       }
       Redirect(routes.Hackathon.index).flashing("status" -> "deleted")
   }

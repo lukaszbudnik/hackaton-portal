@@ -1,8 +1,8 @@
 package model
 
+import org.squeryl.PrimitiveTypeMode.view2QueryAll
 import org.squeryl.KeyedEntity
 import org.squeryl.Schema
-import org.squeryl.PrimitiveTypeMode._
 
 case class Role(name: String) extends KeyedEntity[Long] {
   val id: Long = 0L

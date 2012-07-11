@@ -16,11 +16,11 @@ class HackathonSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
 
-          val hackathonDb: Option[Hackathon] = Model.lookupHackathon(1L)
+          val hackathonDb: Option[Hackathon] = model.Hackathon.lookup(1L)
 
           hackathonDb.isEmpty must beFalse
           
-          hackathonDb.get.location.head.fullAddress must not beNull
+          hackathonDb.get.location.fullAddress must not beNull
         }
       }
     }

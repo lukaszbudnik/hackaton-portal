@@ -45,6 +45,6 @@ object Location extends Schema {
   }
 
   def delete(id: Long): Int = {
-    locations.deleteWhere(location => location.id === id)
+    locations.deleteWhere(l => l.id === id)
   }
 }

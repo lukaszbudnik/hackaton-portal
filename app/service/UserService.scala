@@ -3,7 +3,6 @@ package service
 import play.api.{ Logger, Application }
 import org.squeryl.PrimitiveTypeMode.{ transaction, inTransaction }
 import securesocial.core.{ UserServicePlugin, UserId, SocialUser }
-import model.Model
 import model.User
 
 class UserService(application: Application) extends UserServicePlugin(application) {
@@ -58,9 +57,9 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
       if (Logger.isDebugEnabled) {
         Logger.debug("Associating " + userRole + " with newly created user " + newUser.id + " for social user " + socialUser)
       }
-      
+
       userRole.map { role =>
-    	  newUser.addRole(role)  
+        newUser.addRole(role)
       }
 
       newUser

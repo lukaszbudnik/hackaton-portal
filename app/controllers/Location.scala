@@ -1,11 +1,10 @@
 package controllers
 
-import org.squeryl.PrimitiveTypeMode._
-import model.Model
+import org.squeryl.PrimitiveTypeMode.transaction
+
 import play.api.data.Forms._
-import play.api.data._
-import play.api.mvc._
-import model.Location$
+import play.api.data.Form
+import play.api.mvc.Controller
 
 object Location extends Controller with securesocial.core.SecureSocial {
 
