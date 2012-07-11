@@ -43,17 +43,16 @@ object Team extends Controller with securesocial.core.SecureSocial {
       },
       team => transaction {
         // insert team and add creator as a member
-        model.Team.add(team).members.associate(team.creator.head)
+        model.Team.add(team).addMember(team.creator)
         Redirect(routes.Team.index).flashing("status" -> "added", "title" -> team.name)
       })
   }
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Team.lookup(id).map {
-        team =>
-          helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
-          Ok(views.html.teams.edit(id, teamForm.fill(team), Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
+      model.Team.lookup(id).map { team =>
+        helpers.Security.verifyIfAllowed(team.creatorId, "admin")(request.user)
+        Ok(views.html.teams.edit(id, teamForm.fill(team), Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
       }.getOrElse {
         // no team found
         Redirect(routes.Team.view(id)).flashing()
@@ -67,38 +66,32 @@ object Team extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.teams.edit(id, errors, Model.users.toList, Model.hackathons.toList, Model.problems.toList, request.user))
       },
       team => transaction {
-        helpers.Security.verifyIfAllowed(team.creatorId)(request.user)     
-        model.Team.teams.update(
-          t =>
-            where(t.id === id)
-              set (
-                t.name := team.name,
-                t.creatorId := team.creatorId,
-                t.hackathonId := team.hackathonId,
-                t.problemId := team.problemId))
+    	helpers.Security.verifyIfAllowed(team.creatorId, "admin")(request.user)
+        model.Team.update(id, team)
         Redirect(routes.Team.index).flashing("status" -> "updated", "title" -> team.name)
       })
   }
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Team.delete(id)
+      model.Team.lookup(id).map { team =>
+      	helpers.Security.verifyIfAllowed(team.creatorId, "admin")(request.user)
+      	model.Team.delete(id)
+      }
+      Redirect(routes.Team.index).flashing("status" -> "deleted")
     }
-    Redirect(routes.Team.index).flashing("status" -> "deleted")
   }
 
   def join(id: Long) = SecuredAction() { implicit request =>
     transaction {
       var status = "error"
-      Model.users.lookup(request.user.hackathonUserId).map {
-        user =>
-          model.Team.lookup(id).map {
-            team =>
-              if (!team.hasMember(user.id)) {
-                team.members.associate(user)
-                status = "joined"
-              }
+      Model.users.lookup(request.user.hackathonUserId).map { user =>
+        model.Team.lookup(id).map { team =>
+          if (!team.hasMember(user.id)) {
+            team.addMember(user)
+            status = "joined"
           }
+        }
       }
       Redirect(routes.Team.view(id)).flashing("status" -> status)
     }
@@ -107,13 +100,25 @@ object Team extends Controller with securesocial.core.SecureSocial {
   def disconnect(id: Long) = SecuredAction() { implicit request =>
     transaction {
       var status = "error"
-      Model.users.lookup(request.user.hackathonUserId).map {
-        user =>
-          model.Team.lookup(id).map {
-            team =>
-              team.members.dissociate(user)
-              status = "disconnected"
-          }
+      Model.users.lookup(request.user.hackathonUserId).map { user =>
+        model.Team.lookup(id).map { team =>
+          team.deleteMember(user)
+          status = "disconnected"
+        }
+      }
+      Redirect(routes.Team.view(id)).flashing("status" -> status)
+    }
+  }
+
+  def disconnectUser(id: Long, userId: Long) = SecuredAction() { implicit request =>
+    transaction {
+      var status = "error"
+      Model.users.lookup(userId).map { user =>
+        model.Team.lookup(id).map { team =>
+          helpers.Security.verifyIfAllowed(team.creatorId, "admin")(request.user)
+          team.deleteMember(user)
+          status = "disconnectedUser"
+        }
       }
       Redirect(routes.Team.view(id)).flashing("status" -> status)
     }

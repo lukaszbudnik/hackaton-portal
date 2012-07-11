@@ -1,27 +1,20 @@
-@(news: Iterable[model.News], user: Option[securesocial.core.SocialUser], hackathonId: Option[Long] = None)
-
-@addHackathonLink(hackathonId: Option[Long]) = @{
-  hackathonId.map { hackathonId =>
-    routes.News.createHackathonNews(hackathonId)
-  }.getOrElse(routes.News.create)
-}
+@(news: Iterable[model.News], showHackathons: Boolean = true)
 
 @news.map { n =>
             <div class="page-header">
-	    		<h2>@n.title</h2>
+	    		<h2>@if(showHackathons) { 
+		    			@n.hackathon.map { h => 
+		    				@h.subject:
+						}
+					} @n.title</h2>
 	    		<p>@Html(n.text.split("<!--more-->").head)...</p>
-	    		<p>@Messages("news.author.label"): @n.author.head.name @Messages("news.published.label"): @n.published</p>
+	    		<p>@Messages("news.author.label"): @n.author.name @Messages("news.published.label"): @n.published</p>
 	    		<p>@Messages("news.labels.label"):
-				@for(l <- n.labels.split(",")) {
-				  <span class="label">@l</span>
+				@for(l <- n.labels) {
+				  <span class="label">@l.value</span>
 				}
 				</p>
 	    		<p><a class="btn" href="@routes.News.view(n.id)">@Messages("global.readMore")</a></p>
     		</div>
 }
 
-@if(user) {
-			<div class="form-actions">
-	    		<a class="btn btn-success" href="@addHackathonLink(hackathonId)">@Messages("news.addNews")</a>
-	        </div>
-}

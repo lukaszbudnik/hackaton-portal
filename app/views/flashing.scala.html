@@ -1,0 +1,24 @@
+@(prefix: String)(implicit flash: Flash, request: Request[AnyContent])
+
+@import tags._
+
+@flash.get("status").map { status =>
+  	@if(status == "error"){
+		<div class="alert alert-error">
+			<button type="button" class="close" data-dismiss="alert">×</button>
+			<strong>@Messages("global.status.error")</strong>
+		</div> 	  
+  	} else {
+  		@flash.get("title").map { title =>
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert">×</button>
+			<strong>@Messages(prefix + "." + status).format(title)</strong>
+		</div>
+  		}.getOrElse {
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert">×</button>
+			<strong>@Messages(prefix + "." + status)</strong>
+		</div>
+  		}
+  	}
+}

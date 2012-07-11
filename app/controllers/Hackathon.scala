@@ -40,7 +40,8 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
       transaction {
         val users:Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
         val locations:Map[Long, String] = Model.locations.toList.map({ l => (l.id, l.name) }).toMap
-        Ok(views.html.hackathons.view(Model.hackathons.lookup(id), users, locations, request.user))
+        val news = model.News.all(id)
+        Ok(views.html.hackathons.view(Model.hackathons.lookup(id), news, users, locations, request.user))
       }
   }
 

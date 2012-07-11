@@ -64,6 +64,7 @@ POST    /teams/:id/delete        	controllers.Team.delete(id: Long)
 # Join
 GET    	/teams/:id/join				controllers.Team.join(id: Long)
 GET    	/teams/:id/disconnect		controllers.Team.disconnect(id: Long)
+GET    	/teams/:id/:uid/disconnect	controllers.Team.disconnectUser(id: Long, uid: Long)
 
 # Locations routes
 # Create
