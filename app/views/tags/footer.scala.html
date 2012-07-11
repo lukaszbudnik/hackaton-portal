@@ -1,0 +1,13 @@
+@()(implicit request: Request[AnyContent])
+
+@import tags._
+
+<footer>
+    <div class="social">
+    	@twitterShare(request.uri)
+    	@twitterFollow()
+    	@googlePlus(request.uri)
+    	@facebookLike(request.uri)
+    </div>
+    <p>&copy; @Messages("brand") @Messages("years")</p>
+</footer>
