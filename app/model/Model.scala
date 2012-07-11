@@ -44,7 +44,7 @@ case class Hackathon(subject: String,
   lazy val location: ManyToOne[Location] = Model.locationToHackathons.right(this)
   lazy val teams = Team.hackathonToTeams.left(this)
   lazy val problems = Model.hackathonToProblems.left(this)
-  lazy val sponsors = from(model.Sponsors.hackathonsToSponsors.left(this))(hs => select(hs) orderBy(hs.order asc))
+  def sponsors = from(model.Sponsors.hackathonsToSponsors.left(this))(hs => select(hs) orderBy(hs.order asc))
   def this() = this("", HackathonStatus.Planning, 1, 1)
 }
 
