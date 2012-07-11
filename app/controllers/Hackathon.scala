@@ -38,7 +38,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
   def view(id: Long) = UserAwareAction {
     implicit request =>
       transaction {
-        val users:Map[Long, String] = Model.users.toList.map({ u => (u.id, u.name) }).toMap
+        val users:Map[Long, String] = model.User.all.map({ u => (u.id, u.name) }).toMap
         val locations:Map[Long, String] = Model.locations.toList.map({ l => (l.id, l.name) }).toMap
         val news = model.News.all(id)
         Ok(views.html.hackathons.view(Model.hackathons.lookup(id), news, users, locations, request.user))
@@ -48,7 +48,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
   def create = SecuredAction() {
     implicit request =>
       transaction {
-        Ok(views.html.hackathons.create(hackathonForm, Model.users.toList, Model.locations.toList, request.user))
+        Ok(views.html.hackathons.create(hackathonForm, model.User.all.toList, Model.locations.toList, request.user))
       }
   }
 
@@ -56,7 +56,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
     implicit request =>
       hackathonForm.bindFromRequest.fold(
         errors => transaction {
-          BadRequest(views.html.hackathons.create(errors, Model.users.toList, Model.locations.toList, request.user))
+          BadRequest(views.html.hackathons.create(errors, model.User.all.toList, Model.locations.toList, request.user))
         },
         hackathon => transaction {
           Model.hackathons.insert(hackathon)
@@ -70,7 +70,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
       transaction {
         Model.hackathons.lookup(id).map {
           hackathon =>
-            Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathon), Model.users.toList, Model.locations.toList, request.user))
+            Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathon), model.User.all.toList, Model.locations.toList, request.user))
         }.get
       }
   }
@@ -79,7 +79,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
     implicit request =>
       hackathonForm.bindFromRequest.fold(
         errors => transaction {
-          BadRequest(views.html.hackathons.edit(id, errors, Model.users.toList, Model.locations.toList, request.user))
+          BadRequest(views.html.hackathons.edit(id, errors, model.User.all.toList, Model.locations.toList, request.user))
         },
         hackathon => transaction {
           Model.hackathons.update(h =>

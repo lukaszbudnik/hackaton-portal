@@ -13,7 +13,7 @@ class RoleSpec extends Specification {
         transaction {
           val admin = "admin"
           
-          val role = Model.findRoleByName(admin)
+          val role = model.Role.lookupByName(admin)
 
           role.get.name must equalTo(admin)
         }
@@ -25,7 +25,7 @@ class RoleSpec extends Specification {
         transaction {
           val user = "user"
           
-          val role = Model.findRoleByName(user)
+          val role = model.Role.lookupByName(user)
 
           role.get.name must equalTo(user)
         }

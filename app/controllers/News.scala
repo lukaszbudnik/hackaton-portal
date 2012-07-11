@@ -33,21 +33,21 @@ object News extends Controller with securesocial.core.SecureSocial {
   def create = SecuredAction() { implicit request =>
     val news = model.News("", "", "", request.user.hackathonUserId, new Date(), None)
     transaction {
-      Ok(views.html.news.create(newsForm.fill(news), Model.users.toList, request.user))
+      Ok(views.html.news.create(newsForm.fill(news), model.User.all.toList, request.user))
     }
   }
   
   def createHackathonNews(hackathonId: Long) = SecuredAction() { implicit request =>
     val hackathonNews = model.News("", "", "", request.user.hackathonUserId, new Date(), Some(hackathonId))
     transaction {
-      Ok(views.html.news.create(newsForm.fill(hackathonNews), Model.users.toList, request.user))
+      Ok(views.html.news.create(newsForm.fill(hackathonNews), model.User.all.toList, request.user))
     }
   }
 
   def save = SecuredAction() { implicit request =>
     newsForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.news.create(errors, Model.users.toList, request.user))
+        BadRequest(views.html.news.create(errors, model.User.all.toList, request.user))
       },
       news => transaction {
         model.News.insert(news)
@@ -64,7 +64,7 @@ object News extends Controller with securesocial.core.SecureSocial {
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.News.lookup(id).map { news =>
-        Ok(views.html.news.edit(id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), Model.users.toList, request.user))
+        Ok(views.html.news.edit(id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), model.User.all.toList, request.user))
       }.get
     }
   }
@@ -72,7 +72,7 @@ object News extends Controller with securesocial.core.SecureSocial {
   def update(id: Long) = SecuredAction() { implicit request =>
     newsForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.news.edit(id, errors, Model.users.toList, request.user))
+        BadRequest(views.html.news.edit(id, errors, model.User.all.toList, request.user))
       },
       news => transaction {
         

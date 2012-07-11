@@ -18,8 +18,8 @@ class UserTeamSpec extends Specification {
           val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!")
           val team = Team("test-team", 1L, 1L, Some(1L))
 
-          Model.users.insert(user1)
-          Model.users.insert(user2)
+          model.User.add(user1)
+          model.User.add(user2)
           model.Team.add(team)
 
           user1.isPersisted must beTrue
@@ -54,8 +54,8 @@ class UserTeamSpec extends Specification {
           val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!")
           val team = Team("test-team", 1L, 1L, Some(1L))
 
-          Model.users.insert(user1)
-          Model.users.insert(user2)
+          model.User.add(user1)
+          model.User.add(user2)
           model.Team.add(team)
 
           user1.isPersisted must beTrue
@@ -95,22 +95,22 @@ class UserTeamSpec extends Specification {
           val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!")
           val team = Team("test-team", 1L, 1L, Some(1L))
           
-          Model.users.insert(user1)
-          Model.users.insert(user2)
+          model.User.add(user1)
+          model.User.add(user2)
           model.Team.add(team)
           
           user1.isPersisted must beTrue
           user2.isPersisted must beTrue
           team.isPersisted must beTrue
 
-          user1.teams.associate(team)
-          user2.teams.associate(team)
+          user1.addTeam(team)
+          user2.addTeam(team)
           
-          val userDb1 = model.Model.lookupUser(user1.id)
+          val userDb1 = model.User.lookup(user1.id)
           userDb1.isEmpty must beFalse
           userDb1.get.teams.size must equalTo(1)
 
-          val userDb2 = model.Model.lookupUser(user2.id)
+          val userDb2 = model.User.lookup(user2.id)
           userDb2.isEmpty must beFalse
           userDb2.get.teams.size must equalTo(1)
         }
