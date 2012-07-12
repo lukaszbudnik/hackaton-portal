@@ -1,6 +1,7 @@
 @(news: Option[model.News], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
 
 @import helper._
+@import tags._
 
 @main(Messages("news.title"), user, nav = "news") {
     
@@ -11,6 +12,10 @@
     	@newsSingle(news, user)
     	
 	    </div>
+	    
+	    @comments()
+	    
+	    @footer()
     
     </div>
 }
