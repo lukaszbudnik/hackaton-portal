@@ -1,11 +1,14 @@
 package model
 
 import java.util.Date
-import org.squeryl.dsl._
+import scala.Array.canBuildFrom
 import org.squeryl.PrimitiveTypeMode._
-import org.squeryl.Schema
+import org.squeryl.dsl.CompositeKey2
+import org.squeryl.dsl.ManyToOne
 import org.squeryl.KeyedEntity
-import org.squeryl.annotations.{ Column, Transient }
+import org.squeryl.Schema
+import org.squeryl.annotations.Column
+import org.squeryl.annotations.Transient
 import scala.annotation.target.field
 
 case class News(title: String,
@@ -47,7 +50,7 @@ case class News(title: String,
     labelsToBeAdded.map { label =>
       addLabel(label)
     }
-    
+
     this
   }
 }
@@ -59,6 +62,7 @@ case class NewsLabel(@Column("news_id") newsId: Long,
 
 object News extends Schema {
   protected[model] val news = table[News]("news")
+  on(news)(n => declare(n.id is (primaryKey, autoIncremented("news_id_seq"))))
 
   protected[model] val authorToNews = oneToManyRelation(User.users, News.news).via((u, n) => u.id === n.authorId)
   protected[model] val hackathonToNews = oneToManyRelation(Hackathon.hackathons, News.news).via((h, n) => h.id === n.hackathonId)
@@ -83,7 +87,7 @@ object News extends Schema {
 
   def update(id: Long, newsToBeUpdate: News): Int = {
     news.lookup(id).map { n =>
-    	n.storeLabels(newsToBeUpdate.labelsAsString)
+      n.storeLabels(newsToBeUpdate.labelsAsString)
     }
 
     news.update(n =>

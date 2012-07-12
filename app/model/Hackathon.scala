@@ -1,10 +1,9 @@
 package model
 
-import java.util.Date
-import org.squeryl.dsl._
 import org.squeryl.PrimitiveTypeMode._
-import org.squeryl.Schema
+import org.squeryl.dsl.ManyToOne
 import org.squeryl.KeyedEntity
+import org.squeryl.Schema
 import org.squeryl.annotations.Column
 
 case class Hackathon(subject: String,
@@ -12,7 +11,7 @@ case class Hackathon(subject: String,
   @Column("organiser_id") organiserId: Long,
   @Column("location_id") locationId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
-  
+
   def this() = this("", HackathonStatus.Planning, 0, 0) // need for status enumeration
 
   private lazy val organiserRel: ManyToOne[User] = Hackathon.organiserToHackathons.right(this)
@@ -38,6 +37,7 @@ object HackathonStatus extends Enumeration {
 
 object Hackathon extends Schema {
   protected[model] val hackathons = table[Hackathon]("hackathons")
+  on(hackathons)(h => declare(h.id is (primaryKey, autoIncremented("hackathon_id_seq"))))
 
   protected[model] val organiserToHackathons = oneToManyRelation(User.users, hackathons).via((u, h) => u.id === h.organiserId)
   protected[model] val locationToHackathons = oneToManyRelation(Location.locations, hackathons).via((l, h) => l.id === h.locationId)

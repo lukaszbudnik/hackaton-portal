@@ -1,6 +1,6 @@
 package model
 
-import org.squeryl.PrimitiveTypeMode.view2QueryAll
+import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.KeyedEntity
 import org.squeryl.Schema
 
@@ -10,7 +10,8 @@ case class Role(name: String) extends KeyedEntity[Long] {
 
 object Role extends Schema {
   protected[model] val roles = table[Role]("roles")
-
+  on(roles)(r => declare(r.id is (primaryKey, autoIncremented("role_id_seq"))))
+  
   def all(): Iterable[Role] = {
     roles.toIterable
   }

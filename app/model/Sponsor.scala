@@ -1,11 +1,11 @@
 package model
 
-import java.util.Date
-import org.squeryl.dsl._
 import org.squeryl.PrimitiveTypeMode._
-import org.squeryl.Schema
+import org.squeryl.dsl.CompositeKey2
 import org.squeryl.KeyedEntity
-import org.squeryl.annotations.{ Column, Transient }
+import org.squeryl.Schema
+import org.squeryl.annotations.Column
+import org.squeryl.annotations.Transient
 import scala.annotation.target.field
 
 case class Sponsor(name: String,
@@ -17,7 +17,7 @@ case class Sponsor(name: String,
   val id: Long = 0L
 
   lazy val hackathons = Sponsor.hackathonsToSponsors.right(this)
-  
+
   // TODO 
   //def hackathons = hackathonsRel.toIterable
 }
@@ -32,6 +32,7 @@ case class HackathonSponsorHelper(hackathonId: Long, order: Int)
 
 object Sponsor extends Schema {
   protected[model] val sponsors = table[Sponsor]("sponsors")
+  on(sponsors)(s => declare(s.id is (primaryKey, autoIncremented("sponsor_id_seq"))))
 
   val hackathonsToSponsors =
     manyToManyRelation(Hackathon.hackathons, Sponsor.sponsors, "hackathons_sponsors").

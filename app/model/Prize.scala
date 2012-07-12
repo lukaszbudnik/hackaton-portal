@@ -1,10 +1,9 @@
 package model
 
-import java.util.Date
-import org.squeryl.dsl._
 import org.squeryl.PrimitiveTypeMode._
-import org.squeryl.Schema
+import org.squeryl.dsl.ManyToOne
 import org.squeryl.KeyedEntity
+import org.squeryl.Schema
 import org.squeryl.annotations.Column
 
 case class Prize(name: String,
@@ -22,6 +21,7 @@ case class Prize(name: String,
 
 object Prize extends Schema {
   protected[model] val prizes = table[Prize]("prizes")
+  on(prizes)(p => declare(p.id is (primaryKey, autoIncremented("prize_id_seq"))))
 
   protected[model] val hackathonToPrizes = oneToManyRelation(Hackathon.hackathons, Prize.prizes).via((h, p) => h.id === p.hackathonId)
 

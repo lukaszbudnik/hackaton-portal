@@ -1,10 +1,9 @@
 package model
 
-import org.squeryl.annotations.Column
+import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.KeyedEntity
 import org.squeryl.Schema
-import org.squeryl.dsl._
-import org.squeryl.PrimitiveTypeMode._
+import org.squeryl.annotations.Column
 
 case class Location(country: String,
   city: String,
@@ -18,6 +17,7 @@ case class Location(country: String,
 
 object Location extends Schema {
   protected[model] val locations = table[Location]("locations")
+  on(locations)(l => declare(l.id is (primaryKey, autoIncremented("location_id_seq"))))
 
   def all(): Iterable[Location] = {
     locations.toIterable

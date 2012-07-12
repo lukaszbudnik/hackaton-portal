@@ -1,8 +1,9 @@
 package model
 
-import org.squeryl.dsl._
-import org.squeryl.KeyedEntity
 import org.squeryl.PrimitiveTypeMode._
+import org.squeryl.dsl.CompositeKey2
+import org.squeryl.dsl.ManyToOne
+import org.squeryl.KeyedEntity
 import org.squeryl.Schema
 import org.squeryl.annotations.Column
 
@@ -42,6 +43,7 @@ case class UserTeam(@Column("user_id") userId: Long,
 
 object Team extends Schema {
   protected[model] val teams = table[Team]("teams")
+  on(teams)(t => declare(t.id is (primaryKey, autoIncremented("team_id_seq"))))
 
   protected[model] val creatorToTeams = oneToManyRelation(User.users, Team.teams).via((u, t) => u.id === t.creatorId)
   protected[model] val hackathonToTeams = oneToManyRelation(Hackathon.hackathons, Team.teams).via((h, t) => h.id === t.hackathonId)
