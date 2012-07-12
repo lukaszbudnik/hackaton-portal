@@ -14,11 +14,11 @@ case class Hackathon(subject: String,
   val id: Long = 0L
   def this() = this("", HackathonStatus.Planning, 0, 0) // need for status enumeration
   
-  protected[model] lazy val organiserRel: ManyToOne[User] = Hackathon.organiserToHackathons.right(this)
-  protected[model] lazy val locationRel: ManyToOne[Location] = Hackathon.locationToHackathons.right(this)
-  protected[model] lazy val teamsRel = Team.hackathonToTeams.left(this)
-  protected[model] lazy val problemsRel = Problem.hackathonToProblems.left(this)
-  protected[model] lazy val sponsorsRel = Sponsors.hackathonsToSponsors.left(this)
+  private lazy val organiserRel: ManyToOne[User] = Hackathon.organiserToHackathons.right(this)
+  private lazy val locationRel: ManyToOne[Location] = Hackathon.locationToHackathons.right(this)
+  private lazy val teamsRel = Team.hackathonToTeams.left(this)
+  private lazy val problemsRel = Problem.hackathonToProblems.left(this)
+  private lazy val sponsorsRel = Sponsor.hackathonsToSponsors.left(this)
 
   def organiser = organiserRel.head
   def location = locationRel.head
@@ -41,10 +41,6 @@ object Hackathon extends Schema {
 
   def all(): Iterable[Hackathon] = {
     hackathons.toIterable
-  }
-
-  def allHackathonsForSponsor(id: Long) = {
-    model.Sponsors.lookup(id).get.hackathons
   }
 
   def lookup(id: Long): Option[Hackathon] = {

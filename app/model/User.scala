@@ -14,8 +14,8 @@ case class User(name: String,
   @Column("open_id") openId: String) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  protected[model] lazy val rolesRel = User.usersToRoles.left(this)
-  protected[model] lazy val teamsRel = Team.usersToTeams.left(this)
+  private lazy val rolesRel = User.usersToRoles.left(this)
+  private lazy val teamsRel = Team.usersToTeams.left(this)
 
   def roles = rolesRel.toIterable
   def teams = teamsRel.toIterable

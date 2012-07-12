@@ -12,10 +12,10 @@ case class Team(name: String,
   @Column("problem_id") problemId: Option[Long] = None) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  protected[model] lazy val creatorRel: ManyToOne[User] = Team.creatorToTeams.right(this)
-  protected[model] lazy val hackathonRel: ManyToOne[Hackathon] = Team.hackathonToTeams.right(this)
-  protected[model] lazy val problemRel: ManyToOne[Problem] = Team.problemToTeams.right(this);
-  protected[model] lazy val membersRel = Team.usersToTeams.right(this)
+  private lazy val creatorRel: ManyToOne[User] = Team.creatorToTeams.right(this)
+  private lazy val hackathonRel: ManyToOne[Hackathon] = Team.hackathonToTeams.right(this)
+  private lazy val problemRel: ManyToOne[Problem] = Team.problemToTeams.right(this);
+  private lazy val membersRel = Team.usersToTeams.right(this)
 
   def creator = creatorRel.head
   def hackathon = hackathonRel.head

@@ -16,7 +16,10 @@ case class Sponsor(name: String,
   @(Transient @field) hackathonsList: List[HackathonSponsorHelper]) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  lazy val hackathons = Sponsors.hackathonsToSponsors.right(this)
+  lazy val hackathons = Sponsor.hackathonsToSponsors.right(this)
+  
+  // TODO 
+  //def hackathons = hackathonsRel.toIterable
 }
 
 case class HackathonSponsor(@Column("hackathon_id") hackathonId: Long,
@@ -27,19 +30,19 @@ case class HackathonSponsor(@Column("hackathon_id") hackathonId: Long,
 
 case class HackathonSponsorHelper(hackathonId: Long, order: Int)
 
-object Sponsors extends Schema {
-  val sponsors = table[Sponsor]("sponsors")
+object Sponsor extends Schema {
+  protected[model] val sponsors = table[Sponsor]("sponsors")
 
   val hackathonsToSponsors =
-    manyToManyRelation(Hackathon.hackathons, sponsors, "hackathons_sponsors").
+    manyToManyRelation(Hackathon.hackathons, Sponsor.sponsors, "hackathons_sponsors").
       via[HackathonSponsor](f = (h, s, hs) => (h.id === hs.hackathonId, s.id === hs.sponsorId))
-
-  def lookup(id: Long): Option[Sponsor] = {
-    sponsors.lookup(id)
-  }
 
   def all(): Iterable[Sponsor] = {
     sponsors.toIterable
+  }
+
+  def lookup(id: Long): Option[Sponsor] = {
+    sponsors.lookup(id)
   }
 
   def allGeneralSponsorsOrdered(): Iterable[Sponsor] = {
@@ -67,4 +70,22 @@ object Sponsors extends Schema {
     hackathonsToSponsors.insert(model.HackathonSponsor(hackathonId, sponsorId, order))
   }
 
+  def insert(sponsor: Sponsor): Sponsor = {
+    sponsors.insert(sponsor)
+  }
+
+  def update(id: Long, sponsor: Sponsor): Int = {
+    sponsors.update(s =>
+      where(s.id === id)
+        set (
+          s.name := sponsor.name,
+          s.description := sponsor.description,
+          s.order := sponsor.order,
+          s.website := sponsor.website,
+          s.isGeneralSponsor := sponsor.isGeneralSponsor))
+  }
+
+  def delete(id: Long): Int = {
+    sponsors.deleteWhere(s => s.id === id)
+  }
 }

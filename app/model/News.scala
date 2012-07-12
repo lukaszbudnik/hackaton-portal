@@ -16,9 +16,9 @@ case class News(title: String,
   @Column("hackathon_id") hackathonId: Option[Long]) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  protected[model] lazy val authorRel: ManyToOne[User] = News.authorToNews.right(this)
-  protected[model] lazy val hackathonRel: ManyToOne[Hackathon] = News.hackathonToNews.right(this)
-  protected[model] lazy val labelsRel = News.newsToLabels.left(this)
+  private lazy val authorRel: ManyToOne[User] = News.authorToNews.right(this)
+  private lazy val hackathonRel: ManyToOne[Hackathon] = News.hackathonToNews.right(this)
+  private lazy val labelsRel = News.newsToLabels.left(this)
 
   def author = authorRel.head
   def hackathon = hackathonRel.headOption

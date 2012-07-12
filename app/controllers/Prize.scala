@@ -9,13 +9,13 @@ object Prize extends Controller with securesocial.core.SecureSocial {
 
   def index = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.prizes.index(model.Prizes.allOrdered.toList, request.user))
+      Ok(views.html.prizes.index(model.Prize.allOrdered.toList, request.user))
     }
   }
 
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.prizes.view(model.Prizes.lookup(id), request.user))
+      Ok(views.html.prizes.view(model.Prize.lookup(id), request.user))
     }
   }
 
@@ -39,14 +39,14 @@ object Prize extends Controller with securesocial.core.SecureSocial {
       errors => transaction {
         BadRequest(views.html.prizes.create(errors, model.Hackathon.all.toList, request.user))
       }, prize => transaction {
-        model.Prizes.prizes.insert(prize)
+        model.Prize.insert(prize)
         Redirect(routes.Prize.index).flashing("status" -> "prizes.added")
       })
   }
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Prizes.lookup(id).map { prize =>
+      model.Prize.lookup(id).map { prize =>
         Ok(views.html.prizes.edit(id, prizeForm.fill(prize), model.Hackathon.all.toList, request.user))
       }.get
     }
@@ -58,23 +58,14 @@ object Prize extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.prizes.edit(id, errors, model.Hackathon.all.toList, request.user))
       },
       prize => transaction {
-        model.Prizes.prizes.update(p =>
-          where(p.id === id)
-            set (
-              p.name := prize.name,
-              p.description := prize.description,
-              p.order := prize.order,
-              p.hackathonId := prize.hackathonId,
-              p.founderName := prize.founderName,
-              p.founderWebPage := prize.founderWebPage))
-        Redirect(routes.Prize.index)
-          .flashing("status" -> "prizes.updated", "title" -> prize.name)
+        model.Prize.update(id, prize)
+        Redirect(routes.Prize.index).flashing("status" -> "prizes.updated", "title" -> prize.name)
       })
   }
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Prizes.prizes.deleteWhere(p => p.id === id)
+      model.Prize.delete(id)
     }
     Redirect(routes.Prize.index).flashing("status" -> "prizes.deleted")
   }
