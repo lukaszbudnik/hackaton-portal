@@ -113,7 +113,7 @@ CREATE TABLE news (
     id integer NOT NULL DEFAULT nextval('news_id_seq'),
     title varchar(255),
     text text,
-    published timestamp,
+    published_date timestamp,
     
     author_id integer NOT NULL,
     hackathon_id integer,

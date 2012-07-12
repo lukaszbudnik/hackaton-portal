@@ -21,7 +21,7 @@ class NewsSpec extends Specification {
       form("text").hasErrors must beTrue
       form("labelsAsString").hasErrors must beTrue
       form("authorId").hasErrors must beTrue
-      form("published").hasErrors must beTrue
+      form("publishedDate").hasErrors must beTrue
       
       form.value must beNone
     }
@@ -39,7 +39,7 @@ class NewsSpec extends Specification {
       
       // errors
       form("authorId").hasErrors must beTrue
-      form("published").hasErrors must beTrue
+      form("publishedDate").hasErrors must beTrue
       
       form.data must havePair("title" -> "ABC")
       form.data must havePair("text" -> "XYZ")
@@ -50,25 +50,25 @@ class NewsSpec extends Specification {
       form("labelsAsString").value must beSome.which(_ == "QWQ")
 
       form("authorId").value must beNone
-      form("published").value must beNone
+      form("publishedDate").value must beNone
       
       form.value must beNone
     }
     
     "validate authorId as numeric and published as date" in {
-      val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labelsAsString" -> "QWQ", "authorId" -> "_", "published" -> "string"))
+      val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labelsAsString" -> "QWQ", "authorId" -> "_", "publishedDate" -> "string"))
       
       form.hasErrors must beTrue
       form.errors.size must equalTo(2)
       
       form("authorId").hasErrors must beTrue
-      form("published").hasErrors must beTrue
+      form("publishedDate").hasErrors must beTrue
       
       form.value must beNone
     }
     
     "be filled" in {
-      val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labelsAsString" -> "QWQ", "authorId" -> "12", "published" -> "31/12/2012"))
+      val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labelsAsString" -> "QWQ", "authorId" -> "12", "publishedDate" -> "31/12/2012"))
       val date = new SimpleDateFormat("yyy-MM-dd").parse("2012-01-01")
       
       form.hasErrors must beFalse

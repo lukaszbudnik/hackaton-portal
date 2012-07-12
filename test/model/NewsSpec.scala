@@ -46,9 +46,9 @@ class NewsSpec extends Specification {
 	          news.addLabel(l)
           }
           
-          val newsDb = News.lookup(news.id)
+          val newsDb = News.lookup(news.id).get
           
-          newsDb.get.labels.seq.size must equalTo(labels.size)
+          newsDb.labels.size must equalTo(labels.size)
           
         }
       }
@@ -105,7 +105,7 @@ class NewsSpec extends Specification {
           val date2 = new SimpleDateFormat("yyy-MM-dd").parse("2012-02-02")
           News.insert(new News("title", "text", "", 1L, date2, None))
           
-          val newsList: List[News] = News.all.toList.sortWith((n1, n2) => n1.published.after(n2.published))
+          val newsList: List[News] = News.all.toList.sortWith((n1, n2) => n1.publishedDate.after(n2.publishedDate))
           
           val newsList2: List[News] = News.all.toList
           

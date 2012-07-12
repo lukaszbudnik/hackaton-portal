@@ -12,7 +12,7 @@ case class News(title: String,
   text: String,
   @(Transient @field) labelsAsString: String,
   @Column("author_id") authorId: Long,
-  published: Date,
+  @Column("published_date") publishedDate: Date,
   @Column("hackathon_id") hackathonId: Option[Long]) extends KeyedEntity[Long] {
   val id: Long = 0L
   
@@ -46,14 +46,14 @@ object News extends Schema {
   def all(): Iterable[News] = {
     from(news)(n =>
       select(n)
-        orderBy (n.published desc))
+        orderBy (n.publishedDate desc))
   }
 
   def all(hackathonId: Long): Iterable[News] = {
     from(news)(n =>
       where(n.hackathonId === hackathonId)
         select (n)
-        orderBy (n.published desc))
+        orderBy (n.publishedDate desc))
   }
 
   def lookup(id: Long): Option[News] = {
@@ -71,7 +71,7 @@ object News extends Schema {
           n.title := newsToBeUpdate.title,
           n.text := newsToBeUpdate.text,
           n.authorId := newsToBeUpdate.authorId,
-          n.published := newsToBeUpdate.published))
+          n.publishedDate := newsToBeUpdate.publishedDate))
   }
 
   def delete(id: Long) = {
