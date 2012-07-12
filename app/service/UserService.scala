@@ -3,7 +3,6 @@ package service
 import play.api.{ Logger, Application }
 import org.squeryl.PrimitiveTypeMode.{ transaction, inTransaction }
 import securesocial.core.{ UserServicePlugin, UserId, SocialUser }
-import model.Model
 import model.User
 
 class UserService(application: Application) extends UserServicePlugin(application) {
@@ -28,7 +27,7 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
     }
 
     transaction {
-      val dbUser: User = Model.findUserByOpenId(socialUser.id.id + socialUser.id.providerId).getOrElse(addNewUserToDatabase(socialUser))
+      val dbUser: User = model.User.lookupByOpenId(socialUser.id.id + socialUser.id.providerId).getOrElse(addNewUserToDatabase(socialUser))
 
       val roles = dbUser.roles.map { r => r.name }
 
@@ -51,15 +50,17 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
       }
 
       val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), "", "", socialUser.avatarUrl.getOrElse(""), socialUser.id.id + socialUser.id.providerId)
-      Model.users.insert(newUser)
+      model.User.insert(newUser)
 
-      val userRole = Model.findRoleByName("user").get
+      val userRole = model.Role.lookupByName("user")
 
       if (Logger.isDebugEnabled) {
         Logger.debug("Associating " + userRole + " with newly created user " + newUser.id + " for social user " + socialUser)
       }
-      
-      newUser.roles.associate(userRole)
+
+      userRole.map { role =>
+        newUser.addRole(role)
+      }
 
       newUser
     }

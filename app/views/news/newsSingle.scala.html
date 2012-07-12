@@ -7,7 +7,7 @@
     				@h.subject:
 				} @n.title</h2>
 			<p>@Html(n.text)</p>
-			<p>@Messages("news.author.label"): @n.author.name @Messages("news.published.label"): @n.published</p>
+			<p>@Messages("news.author.label"): @n.author.name @Messages("news.publishedDate.label"): @n.publishedDate</p>
 			<p>@Messages("news.labels.label"):
 				@for(l <- n.labels) {
 				<span class="label">@l.value</span>
@@ -19,8 +19,8 @@
 		    	<a class="btn btn-success" href="@routes.News.edit(n.id)">@Messages("global.edit")</a>
 	            <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
 	            }
+	    	</div>
             }
-            </div>
 }.getOrElse {
 	<h2>@Messages("news.notFound")</h2>
 }

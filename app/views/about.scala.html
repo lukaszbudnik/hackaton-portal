@@ -9,23 +9,31 @@
 
 		<div class="content">
 
-	    	<div class="page-header">
-	    		<h1>@Messages("about.idea.title")</h1>
+		 	<div class="page-header">
+			    <h1>@Messages("about.idea.title")</h1>
 				<br/>
-				@Messages("about.idea.text")
-	    	</div>
-
+				@Html(Messages("about.idea.text"))
+				@Html(Messages("about.formula.text"))
+				@Html(Messages("about.whoCanJoin.text"))
+				@Html(Messages("about.timeAndPlace.text"))
+				@Html(Messages("about.results.text"))
+				@Html(Messages("about.costs.text"))
+				@Html(Messages("about.prizes.text"))
+				@Html(Messages("about.other.text"))
+		    </div>
+	
 			<div class="page-header">
-	    		<h1>@Messages("about.platform.title")</h1>
+			    <h1><a name="hackaton-portal"></a>@Messages("about.platform.title")</h1>
 				<br/>
 				@Html(Messages("about.platform.text"))
-	    	</div>
+				@Html(Messages("about.technology.text"))
+		    </div>
 
 		</div>
 
-		<hr>
+		<hr />
 
-		@footer()
+		@tags.footer()
 	
 	</div>
 }

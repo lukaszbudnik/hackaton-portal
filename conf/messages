@@ -60,8 +60,7 @@ news.title.label = Title
 news.text.label = Text
 news.labels.label = Tags
 news.author.label = Author
-news.published.label = Published
-news.view.title = News
+news.publishedDate.label = Published date
 news.create.title = Add a news
 news.edit.title = Edit news
 news.status.added = News %s successfully added
@@ -166,12 +165,10 @@ sponsors.description.label = Description
 sponsors.generalSponsor.label = Is general portal sponsor
 sponsors.hackathons.label = Choose sponsored hackathons
 sponsors.order.label = Current sponsor order
-
+sponsors.sponsored.label = Sponsored
+sponsors.notSponsored.label = Not sponsored
 
 newSponsor.title = Add new sponsor
-
-social.twitter.share = Share
-social.twitter.follow = Follow
 
 securityAbuse.title = Security Abuse Detected
 securityAbuse.text = Dear <strong>{0}</strong>! We have detected a security abuse. Please refrain from such actions in future as we may draw consequences next time.

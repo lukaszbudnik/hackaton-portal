@@ -14,7 +14,7 @@ class ProblemSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           val problem: Problem = new Problem("Name", "Description", 1L, 1L)
-          Model.problems.insert(problem)
+          model.Problem.insert(problem)
 
           problem.isPersisted must beTrue
           problem.id must beGreaterThan(0L)
@@ -27,11 +27,11 @@ class ProblemSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           val problem: Problem = new Problem("Name", "Description", 1L, 1L)
-          Model.problems.insert(problem)
+          model.Problem.insert(problem)
 
           problem.isPersisted must beTrue
                     
-          val problemDb: Option[Problem] = Model.lookupProblem(problem.id)
+          val problemDb: Option[Problem] = model.Problem.lookup(problem.id)
           problemDb.isEmpty must beFalse
         }
       }
@@ -40,13 +40,12 @@ class ProblemSpec extends Specification {
     "be retrievable in bulk" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          Model.deleteAllProblems
           
-          Model.problems.insert(new Problem("Name", "Description", 1L, 1L))
-          Model.problems.insert(new Problem("Name", "Description", 1L, 1L))
+          model.Problem.insert(new Problem("Name", "Description", 1L, 1L))
+          model.Problem.insert(new Problem("Name", "Description", 1L, 1L))
           
-          val problemList: Iterable[Problem] = Model.allProblems
-          problemList must have size(2)
+          val problemList: Iterable[Problem] = model.Problem.all
+          problemList must have size(4)
         }
       }
     }

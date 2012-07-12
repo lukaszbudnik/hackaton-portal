@@ -12,7 +12,7 @@ class UserSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!")
-          Model.users.insert(user)
+          model.User.insert(user)
 
           user.isPersisted must beTrue
           user.id must beGreaterThan(0L)
@@ -23,11 +23,11 @@ class UserSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!")
-          Model.users.insert(user)
+          model.User.insert(user)
 
           user.isPersisted must beTrue
 
-          val userDb: Option[User] = Model.lookupUser(user.id)
+          val userDb: Option[User] = model.User.lookup(user.id)
 
           userDb.isEmpty must beFalse
           userDb.get.id must equalTo(user.id)
@@ -38,17 +38,17 @@ class UserSpec extends Specification {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
           transaction {
             val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!")
-            Model.users.insert(user)
+            model.User.insert(user)
 
             user.isPersisted must beTrue
 
-            val roles = Model.allRoles
+            val roles = model.Role.all
             
             roles.foreach {r =>
-              user.roles.associate(r)
+              user.addRole(r)
             }
             
-            val userDb: Option[User] = Model.lookupUser(user.id)
+            val userDb: Option[User] = model.User.lookup(user.id)
             
             userDb.get.roles.seq.size must equalTo(roles.size)
           }

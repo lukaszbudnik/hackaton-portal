@@ -8,13 +8,13 @@
 						}
 					} @n.title</h2>
 	    		<p>@Html(n.text.split("<!--more-->").head)...</p>
-	    		<p>@Messages("news.author.label"): @n.author.name @Messages("news.published.label"): @n.published</p>
+	    		<p>@Messages("news.author.label"): @n.author.name @Messages("news.publishedDate.label"): @n.publishedDate</p>
 	    		<p>@Messages("news.labels.label"):
 				@for(l <- n.labels) {
 				  <span class="label">@l.value</span>
 				}
 				</p>
-	    		<p><a class="btn" href="@routes.News.view(n.id)">@Messages("global.readMore")</a></p>
+	    		<p><a class="btn" href="@routes.News.view(n.id)#disqus_thread">@Messages("global.readMore")</a></p>
     		</div>
 }
 

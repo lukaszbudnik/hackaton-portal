@@ -16,12 +16,12 @@
         <div class="span4">
           <h2>@Messages("home.news1.title")</h2>
           <p>@Messages("home.news1.text")</p>
-          <p><a class="btn" href="#">@Messages("global.viewDetails")</a></p>
+          <p><a class="btn" href="/news">@Messages("global.viewDetails")</a></p>
         </div>
         <div class="span4">
           <h2>@Messages("home.news2.title")</h2>
           <p>@Messages("home.news2.text")</p>
-          <p><a class="btn" href="@routes.Application.contact">@Messages("global.viewDetails")</a></p>
+          <p><a class="btn" href="@routes.Application.about#hackaton-portal">@Messages("global.viewDetails")</a></p>
        </div>
         <div class="span4">
           <h2>@Messages("home.news3.title")</h2>
@@ -31,16 +31,8 @@
       </div>
 
       <hr />
-
-      <footer>
-        <div class="social">
-        	@twitterShare(request.uri)
-        	@twitterFollow()
-        	@googlePlus(request.uri)
-        	@facebookLike(request.uri)
-        </div>
-        <p>&copy; @Messages("brand") @Messages("years")</p>
-      </footer>
+      
+      @tags.footer()
 
     </div> <!-- /container -->
 }
