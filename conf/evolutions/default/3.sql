@@ -4,6 +4,7 @@
 # --- !Ups 
 
 insert into users (name, email, github_username, open_id) values ('Lukasz Budnik','email', 'lukasz-budnik', '108382012254355503021google');
+insert into users (name, email, github_username, open_id) values ('Jan Kowalski','email', 'test', '102068228977340999495google');
 insert into users (name, email, github_username, open_id) values ('test user','email', 'test', 'open_id_test');
 
 insert into users_roles (user_id, role_id) values (1, 1);
