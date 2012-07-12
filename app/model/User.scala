@@ -7,18 +7,19 @@ import org.squeryl.Schema
 import org.squeryl.annotations.Column
 
 case class User(name: String,
-				email: String,
-				@Column("github_username") githubUsername: String,
-				@Column("twitter_account") twitterAccount: String,
-				@Column("avatar_url") avatarUrl: String,
-				@Column("open_id") openId: String) extends KeyedEntity[Long] {
+  email: String,
+  @Column("github_username") githubUsername: String,
+  @Column("twitter_account") twitterAccount: String,
+  @Column("avatar_url") avatarUrl: String,
+  @Column("open_id") openId: String) extends KeyedEntity[Long] {
   val id: Long = 0L
-  
+
   protected[model] lazy val rolesRel = User.usersToRoles.left(this)
   protected[model] lazy val teamsRel = Team.usersToTeams.left(this)
-  
+
   def roles = rolesRel.toIterable
-  
+  def teams = teamsRel.toIterable
+
   def addRole(role: Role) = {
     rolesRel.associate(role)
   }
@@ -26,9 +27,7 @@ case class User(name: String,
   def deleteRole(role: Role) = {
     rolesRel.dissociate(role)
   }
-  
-  def teams = teamsRel.toIterable
-  
+
   def addTeam(team: Team) = {
     teamsRel.associate(team)
   }
@@ -38,13 +37,18 @@ case class User(name: String,
   }
 }
 
+case class UserRole(@Column("user_id") userId: Long,
+  @Column("role_id") roleId: Long) extends KeyedEntity[CompositeKey2[Long, Long]] {
+  def id = compositeKey(userId, roleId)
+}
+
 object User extends Schema {
   protected[model] val users = table[User]("users")
 
   protected[model] val usersToRoles =
-    manyToManyRelation(users, model.Role.roles, "users_roles").
+    manyToManyRelation(User.users, Role.roles, "users_roles").
       via[UserRole](f = (u, r, ur) => (u.id === ur.userId, r.id === ur.roleId))
-      
+
   def all(): Iterable[User] = {
     users.toIterable
   }
@@ -56,12 +60,12 @@ object User extends Schema {
   def lookupByOpenId(openId: String): Option[User] = {
     users.find(u => u.openId == openId)
   }
-  
+
   def insert(user: User): User = {
     users.insert(user)
   }
 
   def delete(id: Long): Int = {
-    users.deleteWhere(team => team.id === id)
+    users.deleteWhere(u => u.id === id)
   }
 }

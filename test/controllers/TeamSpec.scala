@@ -7,7 +7,6 @@ import org.specs2.mutable.Specification
 import play.api.test._
 import play.api.test.Helpers._
 import play.api.i18n.Messages
-import model.Model
 import org.squeryl.PrimitiveTypeMode.transaction
 
 /**

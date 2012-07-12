@@ -12,7 +12,6 @@ case class Label(value: String) extends KeyedEntity[Long] {
 }
 
 object Label extends Schema {
-
   protected[model] val labels = table[Label]("labels")
   
   def insert(label: Label) = {

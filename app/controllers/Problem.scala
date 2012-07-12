@@ -1,10 +1,9 @@
 package controllers
 
 import org.squeryl.PrimitiveTypeMode._
-import play.api.mvc._
-import model.Model
-import play.api.data._
 import play.api.data.Forms._
+import play.api.data.Form
+import play.api.mvc.Controller
 
 object Problem extends Controller with securesocial.core.SecureSocial {
 
@@ -32,14 +31,14 @@ object Problem extends Controller with securesocial.core.SecureSocial {
 
   def create = SecuredAction() { implicit request =>
     transaction {
-      Ok(views.html.problems.create(problemForm, model.User.all.toList, Model.hackathons.toList, request.user))
+      Ok(views.html.problems.create(problemForm, model.User.all.toList, model.Hackathon.all.toList, request.user))
     }
   }
 
   def save = SecuredAction() { implicit request =>
     problemForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.problems.create(errors, model.User.all.toList, Model.hackathons.toList, request.user))
+        BadRequest(views.html.problems.create(errors, model.User.all.toList, model.Hackathon.all.toList, request.user))
       },
       problem => transaction {
         model.Problem.insert(problem)
@@ -50,7 +49,7 @@ object Problem extends Controller with securesocial.core.SecureSocial {
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Problem.lookup(id).map { problem =>
-        Ok(views.html.problems.edit(id, problemForm.fill(problem), model.User.all.toList, Model.hackathons.toList, request.user))
+        Ok(views.html.problems.edit(id, problemForm.fill(problem), model.User.all.toList, model.Hackathon.all.toList, request.user))
       }.get
     }
 
@@ -59,7 +58,7 @@ object Problem extends Controller with securesocial.core.SecureSocial {
   def update(id: Long) = SecuredAction() { implicit request =>
     problemForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.problems.edit(id, errors, model.User.all.toList, Model.hackathons.toList, request.user))
+        BadRequest(views.html.problems.edit(id, errors, model.User.all.toList, model.Hackathon.all.toList, request.user))
       },
       problem => transaction {
         model.Problem.update(id, problem)

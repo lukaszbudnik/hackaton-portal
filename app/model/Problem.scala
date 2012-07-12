@@ -22,8 +22,8 @@ case class Problem(name: String,
 object Problem extends Schema {
   protected[model] val problems = table[Problem]("problems")
 
-  protected[model] val submitterToProblems = oneToManyRelation(User.users, problems).via((u, p) => u.id === p.submitterId)
-  protected[model] val hackathonToProblems = oneToManyRelation(Model.hackathons, problems).via((h, p) => h.id === p.hackathonId)
+  protected[model] val submitterToProblems = oneToManyRelation(User.users, Problem.problems).via((u, p) => u.id === p.submitterId)
+  protected[model] val hackathonToProblems = oneToManyRelation(Hackathon.hackathons, Problem.problems).via((h, p) => h.id === p.hackathonId)
 
   def all(): Iterable[Problem] = {
     problems.toIterable
@@ -48,6 +48,6 @@ object Problem extends Schema {
   }
 
   def delete(id: Long): Int = {
-    problems.deleteWhere(problem => problem.id === id)
+    problems.deleteWhere(p => p.id === id)
   }
 }

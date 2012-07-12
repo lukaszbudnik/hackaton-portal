@@ -1,11 +1,9 @@
 package controllers
 
 import org.squeryl.PrimitiveTypeMode._
-import play.api.mvc._
-import model.Model
-import play.api.data._
 import play.api.data.Forms._
-import play.api.Logger
+import play.api.data.Form
+import play.api.mvc.Controller
 import javax.persistence.OrderBy
 import model.HackathonSponsorHelper
 
@@ -19,12 +17,12 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
   	  val generalSponsors: Iterable[Long] = model.Sponsors.allGeneralSponsorsOrdered.map {s => s.id}
   	  
   	  val hackathonSponsors: Map[Long, Iterable[Long]] = 
-  	    Model.hackathons.toList.map( { h => (
+  	    model.Hackathon.all.toList.map( { h => (
   	        h.id, 
   	        h.sponsors.map { s => s.id} 
   	    )}).toMap
   	  
-  	  Ok(views.html.sponsors.index(Model.hackathons.toIterable, sponsors, generalSponsors, hackathonSponsors, request.user)) 
+  	  Ok(views.html.sponsors.index(model.Hackathon.all, sponsors, generalSponsors, hackathonSponsors, request.user)) 
   	  
   	}
   }
@@ -32,7 +30,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
       
-      val hackathons = Model.allHackathonsForSponsor(id)
+      val hackathons = model.Hackathon.allHackathonsForSponsor(id)
       val hs = model.Sponsors.hackathonsToSponsors.where(hs => hs.sponsorId === id).map( { hs => (hs.hackathonId, hs.order) } ).toMap
       Ok(views.html.sponsors.view(model.Sponsors.lookup(id), hackathons, hs, request.user))
       
@@ -55,14 +53,14 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
   
   def create = SecuredAction() { implicit request =>
   	transaction {
-  	  Ok(views.html.sponsors.create(sponsorForm, Model.hackathons.toList, request.user))
+  	  Ok(views.html.sponsors.create(sponsorForm, model.Hackathon.all.toList, request.user))
   	}
   }
   
   def save = SecuredAction() { implicit request =>
     sponsorForm.bindFromRequest.fold(
         errors =>  transaction {
-          BadRequest(views.html.sponsors.create(errors, Model.hackathons.toList, request.user))
+          BadRequest(views.html.sponsors.create(errors, model.Hackathon.all.toList, request.user))
         },sponsor => transaction {
           
           model.Sponsors.sponsors.insert(sponsor)
@@ -71,7 +69,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
             
             if (hs.order != -1) {
               
-              val hackathon = Model.hackathons.lookup(hs.hackathonId).get
+              val hackathon = model.Hackathon.lookup(hs.hackathonId).get
               //TODO: handle case with no hackathon returned from db
               val hsTable: model.HackathonSponsor = model.HackathonSponsor(hs.hackathonId, sponsor.id, hs.order)
               sponsor.hackathons.associate(hackathon, hsTable)
@@ -87,7 +85,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
     transaction {
       model.Sponsors.sponsors.lookup(id).map { sponsor =>
                    
-        val hackathons = Model.hackathons.toList
+        val hackathons = model.Hackathon.all.toList
         
         val hsList : List[model.HackathonSponsorHelper] = 
           hackathons.map ({ hackathon =>
@@ -106,7 +104,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
   def update(id: Long) = SecuredAction() { implicit request =>
     sponsorForm.bindFromRequest.fold(
         errors =>  transaction {
-          BadRequest(views.html.sponsors.edit(id, errors, Model.hackathons.toList, request.user))
+          BadRequest(views.html.sponsors.edit(id, errors, model.Hackathon.all.toList, request.user))
         },
         sponsor => transaction {
           model.Sponsors.sponsors.update(s =>

@@ -11,12 +11,12 @@ case class Team(name: String,
   @Column("hackathon_id") hackathonId: Long,
   @Column("problem_id") problemId: Option[Long] = None) extends KeyedEntity[Long] {
   val id: Long = 0L
-  
+
   protected[model] lazy val creatorRel: ManyToOne[User] = Team.creatorToTeams.right(this)
   protected[model] lazy val hackathonRel: ManyToOne[Hackathon] = Team.hackathonToTeams.right(this)
-  protected[model] lazy val problemRel = Team.problemToTeams.right(this);
+  protected[model] lazy val problemRel: ManyToOne[Problem] = Team.problemToTeams.right(this);
   protected[model] lazy val membersRel = Team.usersToTeams.right(this)
-  
+
   def creator = creatorRel.head
   def hackathon = hackathonRel.head
   def problem = problemRel.headOption
@@ -35,15 +35,20 @@ case class Team(name: String,
   }
 }
 
+case class UserTeam(@Column("user_id") userId: Long,
+  @Column("team_id") teamId: Long) extends KeyedEntity[CompositeKey2[Long, Long]] {
+  def id = compositeKey(userId, teamId)
+}
+
 object Team extends Schema {
   protected[model] val teams = table[Team]("teams")
 
-  protected[model] val creatorToTeams = oneToManyRelation(User.users, teams).via((u, t) => u.id === t.creatorId)
-  protected[model] val hackathonToTeams = oneToManyRelation(Model.hackathons, teams).via((h, t) => h.id === t.hackathonId)
-  protected[model] val problemToTeams = oneToManyRelation(Problem.problems, teams).via((p, t) => p.id === t.problemId)
+  protected[model] val creatorToTeams = oneToManyRelation(User.users, Team.teams).via((u, t) => u.id === t.creatorId)
+  protected[model] val hackathonToTeams = oneToManyRelation(Hackathon.hackathons, Team.teams).via((h, t) => h.id === t.hackathonId)
+  protected[model] val problemToTeams = oneToManyRelation(Problem.problems, Team.teams).via((p, t) => p.id === t.problemId)
 
   protected[model] val usersToTeams =
-    manyToManyRelation(model.User.users, teams, "users_teams").
+    manyToManyRelation(User.users, Team.teams, "users_teams").
       via[UserTeam](f = (u, t, ut) => (u.id === ut.userId, t.id === ut.teamId))
 
   def all(): Iterable[Team] = {
@@ -69,6 +74,6 @@ object Team extends Schema {
   }
 
   def delete(id: Long): Int = {
-    teams.deleteWhere(team => team.id === id)
+    teams.deleteWhere(t => t.id === id)
   }
 }
