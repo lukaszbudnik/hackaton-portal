@@ -25,14 +25,10 @@ object Prize extends Schema {
 
   protected[model] val hackathonToPrizes = oneToManyRelation(Hackathon.hackathons, Prize.prizes).via((h, p) => h.id === p.hackathonId)
 
-  def all(): Iterable[Prize] = {
-    prizes.toIterable
-  }
-
-  def allOrdered(): Iterable[Prize] = {
+  def all(): Seq[Prize] = {
     from(prizes)(p =>
       select(p)
-        orderBy (p.order asc))
+        orderBy (p.order asc)).toSeq
   }
 
   def lookup(id: Long): Option[Prize] = {

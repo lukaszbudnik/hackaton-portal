@@ -34,7 +34,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
   def view(id: Long) = UserAwareAction {
     implicit request =>
       transaction {
-        Ok(views.html.hackathons.view(model.Hackathon.lookup(id), model.News.all(id), request.user))
+        Ok(views.html.hackathons.view(model.Hackathon.lookup(id), request.user))
       }
   }
 

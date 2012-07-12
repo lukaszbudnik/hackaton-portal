@@ -60,7 +60,7 @@ object News extends Controller with securesocial.core.SecureSocial {
         model.News.insert(news)
 
         news.labelsAsString.split(",").map(_.trim().toLowerCase()).distinct.map { label =>
-          val dbLabel = model.Label.findByValue(label).getOrElse(model.Label.insert(model.Label(label)))
+          val dbLabel = model.Label.lookupByValue(label).getOrElse(model.Label.insert(model.Label(label)))
           news.addLabel(dbLabel)
         }
 

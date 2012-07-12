@@ -12,19 +12,22 @@ case class Hackathon(subject: String,
   @Column("organiser_id") organiserId: Long,
   @Column("location_id") locationId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
-  def this() = this("", HackathonStatus.Planning, 0, 0) // need for status enumeration
   
+  def this() = this("", HackathonStatus.Planning, 0, 0) // need for status enumeration
+
   private lazy val organiserRel: ManyToOne[User] = Hackathon.organiserToHackathons.right(this)
   private lazy val locationRel: ManyToOne[Location] = Hackathon.locationToHackathons.right(this)
   private lazy val teamsRel = Team.hackathonToTeams.left(this)
   private lazy val problemsRel = Problem.hackathonToProblems.left(this)
+  private lazy val newsRel = News.hackathonToNews.left(this)
   private lazy val sponsorsRel = Sponsor.hackathonsToSponsors.left(this)
 
   def organiser = organiserRel.head
   def location = locationRel.head
   def teams = teamsRel.toIterable
   def problems = problemsRel.toIterable
-  def sponsors = from(sponsorsRel)(hs => select(hs) orderBy (hs.order asc))
+  def news = newsRel.toIterable
+  def sponsors = from(sponsorsRel)(s => select(s) orderBy (s.order asc)).toSeq
 }
 
 object HackathonStatus extends Enumeration {

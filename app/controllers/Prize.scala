@@ -9,7 +9,7 @@ object Prize extends Controller with securesocial.core.SecureSocial {
 
   def index = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.prizes.index(model.Prize.allOrdered.toList, request.user))
+      Ok(views.html.prizes.index(model.Prize.all.toList, request.user))
     }
   }
 

@@ -34,8 +34,8 @@ class NewsSpec extends Specification {
           news.id must beGreaterThan(0L)
           
           // retrieve test labels
-          val label1 = Label.findByValue("test_label_1")
-          val label2 = Label.findByValue("test_label_2")
+          val label1 = Label.lookupByValue("test_label_1")
+          val label2 = Label.lookupByValue("test_label_2")
           
           label1.isEmpty must beFalse
           label2.isEmpty must beFalse

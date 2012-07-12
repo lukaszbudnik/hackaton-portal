@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], hackathonNews: Iterable[model.News], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
 
 @import helper._
 
@@ -14,7 +14,7 @@
             <p>@Messages("hackathons.submitter.label"): @hackathon.organiser.name</p>
             <p>@Messages("hackathons.location.label"): @hackathon.location.name)</p>
     	  
-		  	@news.newsList(hackathonNews, false)
+		  	@news.newsList(hackathon.news, false)
 		  	
 		  	@user.map { user =>
 	    		@if(user.hackathonUserId == hackathon.organiserId) {

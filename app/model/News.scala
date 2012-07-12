@@ -48,17 +48,10 @@ object News extends Schema {
     manyToManyRelation(News.news, Label.labels, "news_labels").
       via[NewsLabel](f = (n, l, nl) => (n.id === nl.newsId, l.id === nl.labelId))
 
-  def all(): Iterable[News] = {
+  def all(): Seq[News] = {
     from(news)(n =>
       select(n)
-        orderBy (n.publishedDate desc))
-  }
-
-  def all(hackathonId: Long): Iterable[News] = {
-    from(news)(n =>
-      where(n.hackathonId === hackathonId)
-        select (n)
-        orderBy (n.publishedDate desc))
+        orderBy (n.publishedDate desc)).toSeq
   }
 
   def lookup(id: Long): Option[News] = {

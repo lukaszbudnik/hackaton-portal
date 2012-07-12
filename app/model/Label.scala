@@ -13,12 +13,12 @@ case class Label(value: String) extends KeyedEntity[Long] {
 
 object Label extends Schema {
   protected[model] val labels = table[Label]("labels")
-  
-  def insert(label: Label) = {
+
+  def insert(label: Label): Label = {
     labels.insert(label)
   }
 
-  def findByValue(value: String): Option[Label] = {
+  def lookupByValue(value: String): Option[Label] = {
     labels.find(l => l.value == value)
   }
 
