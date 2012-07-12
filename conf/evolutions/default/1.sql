@@ -18,7 +18,7 @@ CREATE TABLE users (
 CREATE SEQUENCE role_id_seq;
 CREATE TABLE roles (
     id integer NOT NULL DEFAULT nextval('role_id_seq'),
-    name varchar(255),
+    name varchar(255) NOT NULL UNIQUE,
     
     PRIMARY KEY (id)
 );
@@ -30,8 +30,8 @@ CREATE TABLE users_roles (
     user_id integer NOT NULL,
     role_id integer NOT NULL,
     
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (role_id) REFERENCES roles(id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
     UNIQUE (user_id, role_id),
     PRIMARY KEY (id)
 );
@@ -65,7 +65,6 @@ CREATE TABLE hackathons (
     PRIMARY KEY (id)
 );
 
-
 CREATE SEQUENCE problem_id_seq;
 CREATE TABLE problems (
     id integer NOT NULL DEFAULT nextval('problem_id_seq'),
@@ -87,7 +86,7 @@ CREATE TABLE teams (
     
     creator_id integer NOT NULL,
     hackathon_id integer NOT NULL,
-    problem_id integer,
+    problem_id integer UNIQUE,
     
     FOREIGN KEY (creator_id) REFERENCES users(id),
     FOREIGN KEY (hackathon_id) REFERENCES hackathons(id),
@@ -102,8 +101,8 @@ CREATE TABLE users_teams (
     user_id integer NOT NULL,
     team_id integer NOT NULL,
     
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (team_id) REFERENCES teams(id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE,
     UNIQUE (user_id, team_id),
     PRIMARY KEY (id)
 );
@@ -126,7 +125,7 @@ CREATE TABLE news (
 CREATE SEQUENCE label_id_seq;
 CREATE TABLE labels (
     id integer NOT NULL DEFAULT nextval('label_id_seq'),
-    value varchar(255),
+    value varchar(255) UNIQUE,
     
     PRIMARY KEY (id)
 );
@@ -138,8 +137,8 @@ CREATE TABLE news_labels (
     news_id integer NOT NULL,
     label_id integer NOT NULL,
     
-    FOREIGN KEY (news_id) REFERENCES news(id),
-    FOREIGN KEY (label_id) REFERENCES labels(id),
+    FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE,
+    FOREIGN KEY (label_id) REFERENCES labels(id) ON DELETE CASCADE,
     UNIQUE (news_id, label_id),
     PRIMARY KEY (id)
 );
@@ -179,8 +178,9 @@ CREATE TABLE hackathons_sponsors (
 	hackathon_id integer,
 	sponsor_id integer,
 	
-	FOREIGN KEY (hackathon_id) REFERENCES hackathons(id),
-	FOREIGN KEY (sponsor_id) REFERENCES sponsors(id),
+	FOREIGN KEY (hackathon_id) REFERENCES hackathons(id) ON DELETE CASCADE,
+	FOREIGN KEY (sponsor_id) REFERENCES sponsors(id) ON DELETE CASCADE,
+	UNIQUE (hackathon_id, sponsor_id),
 	PRIMARY KEY (id)
 )
 

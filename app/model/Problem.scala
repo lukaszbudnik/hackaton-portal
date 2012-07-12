@@ -14,9 +14,11 @@ case class Problem(name: String,
 
   private lazy val submitterRel: ManyToOne[User] = Problem.submitterToProblems.right(this)
   private lazy val hackathonRel: ManyToOne[Hackathon] = Problem.hackathonToProblems.right(this)
+  private lazy val teamRel = Team.problemToTeams.left(this);
 
   def submitter = submitterRel.head
   def hackathon = hackathonRel.head
+  def team = teamRel.headOption
 }
 
 object Problem extends Schema {

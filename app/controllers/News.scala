@@ -58,12 +58,6 @@ object News extends Controller with securesocial.core.SecureSocial {
       },
       news => transaction {
         model.News.insert(news)
-
-        news.labelsAsString.split(",").map(_.trim().toLowerCase()).distinct.map { label =>
-          val dbLabel = model.Label.lookupByValue(label).getOrElse(model.Label.insert(model.Label(label)))
-          news.addLabel(dbLabel)
-        }
-
         Redirect(routes.News.index).flashing("status" -> "added", "title" -> news.title)
       })
   }
@@ -82,30 +76,7 @@ object News extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.news.edit(id, errors, model.User.all.toList, request.user))
       },
       news => transaction {
-
-        val dbNews = model.News.lookup(id).get
-
-        val existingLabels = dbNews.labels.map(_.value).toSeq
-
-        val newLabels = news.labelsAsString.split(",").map(_.trim().toLowerCase()).distinct.toSeq
-
-        // collection of model.Label
-        val labelsToBeRemoved = existingLabels.diff(newLabels).map(v => dbNews.labels.find(l => l.value == v).get)
-        // remove old labels
-        labelsToBeRemoved.map { label =>
-          dbNews.removeLabel(label)
-        }
-
-        // collection of strings
-        val labelsToBeAdded = newLabels.diff(existingLabels)
-        // add new labels
-        labelsToBeAdded.map { label =>
-          dbNews.addLabel(model.Label.insert(model.Label(label)))
-        }
-
-        // update the model
         model.News.update(id, news)
-
         Redirect(routes.News.index).flashing("status" -> "updated", "title" -> news.title)
       })
   }

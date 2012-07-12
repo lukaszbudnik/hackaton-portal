@@ -31,6 +31,25 @@ case class News(title: String,
   def removeLabel(label: Label) = {
     labelsRel.dissociate(label)
   }
+
+  def storeLabels(newLabelsAsString: String): News = {
+    val newLabels = newLabelsAsString.split(",").filter(s => !s.isEmpty()).map(_.trim().toLowerCase()).distinct.toSeq
+    val existingLabels = labels.map(_.value).toSeq
+
+    // remove old labels
+    val labelsToBeRemoved = existingLabels.diff(newLabels).map(v => labels.find(l => l.value == v).get)
+    labelsToBeRemoved.map { label =>
+      removeLabel(label)
+    }
+
+    // add new labels
+    val labelsToBeAdded = newLabels.diff(existingLabels).map(v => model.Label.lookupByValue(v).getOrElse(model.Label.insert(Label(v))))
+    labelsToBeAdded.map { label =>
+      addLabel(label)
+    }
+    
+    this
+  }
 }
 
 case class NewsLabel(@Column("news_id") newsId: Long,
@@ -58,11 +77,15 @@ object News extends Schema {
     news.lookup(id)
   }
 
-  def insert(newsToBeInserted: News) = {
-    news.insert(newsToBeInserted)
+  def insert(newsToBeInserted: News): News = {
+    news.insert(newsToBeInserted).storeLabels(newsToBeInserted.labelsAsString)
   }
 
-  def update(id: Long, newsToBeUpdate: News) = {
+  def update(id: Long, newsToBeUpdate: News): Int = {
+    news.lookup(id).map { n =>
+    	n.storeLabels(newsToBeUpdate.labelsAsString)
+    }
+
     news.update(n =>
       where(n.id === id)
         set (
