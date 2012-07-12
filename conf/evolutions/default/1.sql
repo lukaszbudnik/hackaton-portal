@@ -57,10 +57,10 @@ CREATE TABLE hackathons (
     subject varchar(255),
     status integer NOT NULL,
     
-    submitter_id integer NOT NULL,
+    organiser_id integer NOT NULL,
     location_id integer NOT NULL,
         
-    FOREIGN KEY (submitter_id) REFERENCES users(id),
+    FOREIGN KEY (organiser_id) REFERENCES users(id),
     FOREIGN KEY (location_id) REFERENCES locations(id),
     PRIMARY KEY (id)
 );

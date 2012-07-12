@@ -9,19 +9,22 @@ import org.squeryl.annotations.Column
 
 case class Hackathon(subject: String,
   status: HackathonStatus.Value,
-  @Column("submitter_id") submitterId: Long,
+  @Column("organiser_id") organiserId: Long,
   @Column("location_id") locationId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
-
-  protected[model] lazy val submitterRel: ManyToOne[User] = Hackathon.submitterToHackathons.right(this)
+  def this() = this("", HackathonStatus.Planning, 0, 0) // need for status enumeration
+  
+  protected[model] lazy val organiserRel: ManyToOne[User] = Hackathon.organiserToHackathons.right(this)
   protected[model] lazy val locationRel: ManyToOne[Location] = Hackathon.locationToHackathons.right(this)
   protected[model] lazy val teamsRel = Team.hackathonToTeams.left(this)
   protected[model] lazy val problemsRel = Problem.hackathonToProblems.left(this)
   protected[model] lazy val sponsorsRel = Sponsors.hackathonsToSponsors.left(this)
 
+  def organiser = organiserRel.head
   def location = locationRel.head
+  def teams = teamsRel.toIterable
+  def problems = problemsRel.toIterable
   def sponsors = from(sponsorsRel)(hs => select(hs) orderBy (hs.order asc))
-  def this() = this("", HackathonStatus.Planning, 1, 1)
 }
 
 object HackathonStatus extends Enumeration {
@@ -33,8 +36,8 @@ object HackathonStatus extends Enumeration {
 object Hackathon extends Schema {
   protected[model] val hackathons = table[Hackathon]("hackathons")
 
+  protected[model] val organiserToHackathons = oneToManyRelation(User.users, hackathons).via((u, h) => u.id === h.organiserId)
   protected[model] val locationToHackathons = oneToManyRelation(Location.locations, hackathons).via((l, h) => l.id === h.locationId)
-  protected[model] val submitterToHackathons = oneToManyRelation(User.users, hackathons).via((u, h) => u.id === h.submitterId)
 
   def all(): Iterable[Hackathon] = {
     hackathons.toIterable
@@ -58,7 +61,7 @@ object Hackathon extends Schema {
         set (
           h.subject := hackathon.subject,
           h.status := hackathon.status,
-          h.submitterId := hackathon.submitterId,
+          h.organiserId := hackathon.organiserId,
           h.locationId := hackathon.locationId))
   }
 

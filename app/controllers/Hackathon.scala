@@ -34,10 +34,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
   def view(id: Long) = UserAwareAction {
     implicit request =>
       transaction {
-        val users:Map[Long, String] = model.User.all.map({ u => (u.id, u.name) }).toMap
-        val locations:Map[Long, String] = model.Location.all.toList.map({ l => (l.id, l.name) }).toMap
-        val news = model.News.all(id)
-        Ok(views.html.hackathons.view(model.Hackathon.lookup(id), news, users, locations, request.user))
+        Ok(views.html.hackathons.view(model.Hackathon.lookup(id), model.News.all(id), request.user))
       }
   }
 
