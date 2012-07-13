@@ -38,33 +38,33 @@ POST    /news/:id/delete            controllers.News.delete(id: Long)
 
 # Problems routes
 # Create
-GET     /hackathons/:hid/problems/new			controllers.Problem.create(hid: Long)
-POST    /hackathons/:hid/problems               controllers.Problem.save(hid: Long)
+GET     /hackathons/:hid/problems/new				controllers.Problem.create(hid: Long)
+POST    /hackathons/:hid/problems               	controllers.Problem.save(hid: Long)
 # Retrieve
-GET     /hackathons/:hid/problems   			controllers.Problem.index(hid: Long)
-GET     /hackathons/:hid/problems/:id           controllers.Problem.view(hid: Long, id: Long)
+GET     /hackathons/:hid/problems   				controllers.Problem.index(hid: Long)
+GET     /hackathons/:hid/problems/:id           	controllers.Problem.view(hid: Long, id: Long)
 # Update
-GET     /hackathons/:hid/problems/:id/edit      controllers.Problem.edit(hid: Long, id: Long)
-POST    /hackathons/:hid/problems/:id/update    controllers.Problem.update(hid: Long, id: Long)
+GET     /hackathons/:hid/problems/:id/edit      	controllers.Problem.edit(hid: Long, id: Long)
+POST    /hackathons/:hid/problems/:id/update    	controllers.Problem.update(hid: Long, id: Long)
 # Delete
-POST    /hackathons/:hid/problems/:id/delete    controllers.Problem.delete(hid: Long, id: Long)
+POST    /hackathons/:hid/problems/:id/delete    	controllers.Problem.delete(hid: Long, id: Long)
 
 # Teams routes
 # Create
-GET     /teams/new               	controllers.Team.create
-POST    /teams                   	controllers.Team.save
+GET     /hackathons/:hid/teams/new               	controllers.Team.create(hid: Long)
+POST    /hackathons/:hid/teams                   	controllers.Team.save(hid: Long)
 # Retrieve
-GET     /teams                   	controllers.Team.index
-GET     /teams/:id               	controllers.Team.view(id: Long)
+GET     /hackathons/:hid/teams                       controllers.Team.index(hid: Long)
+GET     /hackathons/:hid/teams/:id               	controllers.Team.view(hid: Long, id: Long)
 # Update
-GET     /teams/:id/edit          	controllers.Team.edit(id: Long)
-POST    /teams/:id/update        	controllers.Team.update(id: Long)
+GET     /hackathons/:hid/teams/:id/edit          	controllers.Team.edit(hid: Long, id: Long)
+POST    /hackathons/:hid/teams/:id/update        	controllers.Team.update(hid: Long, id: Long)
 # Delete
-POST    /teams/:id/delete        	controllers.Team.delete(id: Long)
+POST    /hackathons/:hid/teams/:id/delete        	controllers.Team.delete(hid: Long, id: Long)
 # Join
-GET    	/teams/:id/join				controllers.Team.join(id: Long)
-GET    	/teams/:id/disconnect		controllers.Team.disconnect(id: Long)
-GET    	/teams/:id/:uid/disconnect	controllers.Team.disconnectUser(id: Long, uid: Long)
+GET    	/hackathons/:hid/teams/:id/join				controllers.Team.join(hid: Long, id: Long)
+GET    	/hackathons/:hid/teams/:id/disconnect		controllers.Team.disconnect(hid: Long, id: Long)
+GET    	/hackathons/:hid/teams/:id/:uid/disconnect	controllers.Team.disconnectUser(hid: Long, id: Long, uid: Long)
 
 # Locations routes
 # Create

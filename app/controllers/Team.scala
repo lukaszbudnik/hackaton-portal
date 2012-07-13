@@ -15,72 +15,75 @@ object Team extends Controller with securesocial.core.SecureSocial {
       "hackathonId" -> longNumber,
       "problemId" -> optional(longNumber))(model.Team.apply)(model.Team.unapply))
 
-  def index = UserAwareAction { implicit request =>
+  def index(hid: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.teams.index(model.Team.all, request.user))
+      Ok(views.html.teams.index(model.Hackathon.lookup(hid), request.user))
     }
   }
 
-  def view(id: Long) = UserAwareAction { implicit request =>
+  def view(hid: Long, id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.teams.view(model.Team.lookup(id), request.user))
+      Ok(views.html.teams.view(model.Hackathon.lookup(hid), model.Team.lookup(id), request.user))
     }
   }
 
-  def create = SecuredAction() { implicit request =>
+  def create(hid: Long) = SecuredAction() { implicit request =>
     transaction {
-      val team = model.Team("", request.user.hackathonUserId, 0)
-      Ok(views.html.teams.create(teamForm.fill(team), model.User.all.toList, model.Hackathon.all.toList, model.Problem.all.toList, request.user))
+      val hackathon = model.Hackathon.lookup(hid)
+      val team = model.Team("", request.user.hackathonUserId, hid)
+      Ok(views.html.teams.create(hackathon, teamForm.fill(team), request.user))
     }
   }
 
-  def save = SecuredAction() { implicit request =>
+  def save(hid: Long) = SecuredAction() { implicit request =>
     teamForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.teams.create(errors, model.User.all.toList, model.Hackathon.all.toList, model.Problem.all.toList, request.user))
+        val hackathon = model.Hackathon.lookup(hid)
+        BadRequest(views.html.teams.create(hackathon, errors, request.user))
       },
       team => transaction {
         // insert team and add creator as a member
         model.Team.insert(team).addMember(team.creator)
-        Redirect(routes.Team.index).flashing("status" -> "added", "title" -> team.name)
+        Redirect(routes.Team.index(hid)).flashing("status" -> "added", "title" -> team.name)
       })
   }
 
-  def edit(id: Long) = SecuredAction() { implicit request =>
+  def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Team.lookup(id).map { team =>
         helpers.Security.verifyIfAllowed(team.creatorId, "admin")(request.user)
-        Ok(views.html.teams.edit(id, teamForm.fill(team), model.User.all.toList, model.Hackathon.all.toList, model.Problem.all.toList, request.user))
+        Ok(views.html.teams.edit(Some(team.hackathon), id, teamForm.fill(team), request.user))
       }.getOrElse {
         // no team found
-        Redirect(routes.Team.view(id)).flashing()
+        Redirect(routes.Team.view(hid, id)).flashing()
       }
     }
   }
 
-  def update(id: Long) = SecuredAction() { implicit request =>
+  def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
     teamForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.teams.edit(id, errors, model.User.all.toList, model.Hackathon.all.toList, model.Problem.all.toList, request.user))
+        val hackathon = model.Hackathon.lookup(hid)
+        BadRequest(views.html.teams.edit(hackathon, id, errors, request.user))
       },
       team => transaction {
         helpers.Security.verifyIfAllowed(team.creatorId, "admin")(request.user)
         model.Team.update(id, team)
-        Redirect(routes.Team.index).flashing("status" -> "updated", "title" -> team.name)
+        Redirect(routes.Team.index(hid)).flashing("status" -> "updated", "title" -> team.name)
       })
   }
 
-  def delete(id: Long) = SecuredAction() { implicit request =>
+  def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Team.lookup(id).map { team =>
         helpers.Security.verifyIfAllowed(team.creatorId, "admin")(request.user)
         model.Team.delete(id)
       }
-      Redirect(routes.Team.index).flashing("status" -> "deleted")
+      Redirect(routes.Team.index(hid)).flashing("status" -> "deleted")
     }
   }
 
-  def join(id: Long) = SecuredAction() { implicit request =>
+  def join(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       var status = "error"
       model.User.lookup(request.user.hackathonUserId).map { user =>
@@ -91,11 +94,11 @@ object Team extends Controller with securesocial.core.SecureSocial {
           }
         }
       }
-      Redirect(routes.Team.view(id)).flashing("status" -> status)
+      Redirect(routes.Team.view(hid, id)).flashing("status" -> status)
     }
   }
 
-  def disconnect(id: Long) = SecuredAction() { implicit request =>
+  def disconnect(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       var status = "error"
       model.User.lookup(request.user.hackathonUserId).map { user =>
@@ -104,11 +107,11 @@ object Team extends Controller with securesocial.core.SecureSocial {
           status = "disconnected"
         }
       }
-      Redirect(routes.Team.view(id)).flashing("status" -> status)
+      Redirect(routes.Team.view(hid, id)).flashing("status" -> status)
     }
   }
 
-  def disconnectUser(id: Long, userId: Long) = SecuredAction() { implicit request =>
+  def disconnectUser(hid: Long, id: Long, userId: Long) = SecuredAction() { implicit request =>
     transaction {
       var status = "error"
       model.User.lookup(userId).map { user =>
@@ -118,7 +121,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
           status = "disconnectedUser"
         }
       }
-      Redirect(routes.Team.view(id)).flashing("status" -> status)
+      Redirect(routes.Team.view(hid, id)).flashing("status" -> status)
     }
   }
 }

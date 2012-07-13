@@ -1,7 +1,5 @@
 @(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
-@import helper._
-
 @hackathons.h_main(hackathon, user, "problems", "problems.status") {
 
   @hackathon.map { hackathon =>

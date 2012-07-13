@@ -1,7 +1,11 @@
-@(id: Long, teamForm: Form[model.Team], users: List[model.User], hackathons: List[model.Hackathon], problems: List[model.Problem], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
+@(hackathon: Option[model.Hackathon], id: Long, teamForm: Form[model.Team], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent])
 
-@main2("teams.edit.title", "teams", Some(user)) {
-
-  @teams.teamForm(routes.Team.update(id), "global.update", teamForm, users, hackathons, problems, user)
+@hackathons.h_main(hackathon, Some(user), "teams", "teams.status") {
+	
+	<div class="page-header">
+		<h2>@Messages("teams.edit.title")</h2>
+	</div>
+  
+	@teams.teamForm(hackathon.get, teamForm, routes.Team.update(hackathon.get.id, id), "global.update")
 
 }
