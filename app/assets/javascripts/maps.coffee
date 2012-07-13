@@ -12,7 +12,7 @@ addMarkers = (map) ->
     $.getJSON('/hackathons.json', (data) ->
         latlngbounds = new google.maps.LatLngBounds()
         $.each(data, (key, val) ->
-            latLng = new google.maps.LatLng(val.location[0].latitude, val.location[0].longitude);
+            latLng = new google.maps.LatLng(val.location.latitude, val.location.longitude);
             marker = new google.maps.Marker(position: latLng, map: map)
             latlngbounds.extend(latLng)
         )

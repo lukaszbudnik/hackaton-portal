@@ -5,6 +5,7 @@ import org.squeryl.dsl.ManyToOne
 import org.squeryl.KeyedEntity
 import org.squeryl.Schema
 import org.squeryl.annotations.Column
+import play.api.libs.json._
 
 case class Hackathon(subject: String,
   status: HackathonStatus.Value,
@@ -66,5 +67,26 @@ object Hackathon extends Schema {
 
   def delete(id: Long): Int = {
     hackathons.deleteWhere(h => h.id === id)
+  }
+
+  implicit object HackathonFormat extends Format[Hackathon] {
+    def reads(json: JsValue): Hackathon = new Hackathon()
+
+    def writes(h: Hackathon): JsValue = JsObject(List(
+      "id" -> JsNumber(h.id),
+      "subject" -> JsString(h.subject),
+      "status" -> JsString(h.status.id.toString),
+      "organiserName" -> JsString(h.organiser.name),
+      "location" -> JsObject(List(
+        "id" -> JsNumber(h.location.id),
+        "city" -> JsString(h.location.city),
+        "country" -> JsString(h.location.country),
+        "fullAddress" -> JsString(h.location.fullAddress),
+        "name" -> JsString(h.location.name),
+        "postalCode" -> JsString(h.location.postalCode),
+        "latitude" -> JsNumber(h.location.latitude),
+        "longitude" -> JsNumber(h.location.longitude)
+      ))
+    ))
   }
 }
