@@ -36,7 +36,7 @@
 				<ul class="nav nav-pills">
 					<li class="@("active".when(subnav == "news"))"><a href="@routes.Hackathon.view(hackathon.id)">@Messages("navigation.news")</a></li>
 					<li class="@("active".when(subnav == "problems"))"><a href="@routes.Problem.index(hackathon.id)">@Messages("navigation.problems")</a></li>
-					<li class="@("active".when(subnav == "teams"))"><a href="@routes.Team.index">@Messages("navigation.teams")</a></li>
+					<li class="@("active".when(subnav == "teams"))"><a href="@routes.Team.index(hackathon.id)">@Messages("navigation.teams")</a></li>
 					<li class="@("active".when(subnav == "sponsors"))"><a href="@routes.Sponsor.index">@Messages("navigation.sponsors")</a></li>
 					<li class="@("active".when(subnav == "prizes"))"><a href="@routes.Prize.index">@Messages("navigation.prizes")</a></li>
 				</ul>

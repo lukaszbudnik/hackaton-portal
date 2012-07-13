@@ -16,7 +16,6 @@ object Problem extends Controller with securesocial.core.SecureSocial {
 
   def index(hid: Long) = UserAwareAction { implicit request =>
     transaction {
-      val hackathon = model.Hackathon.lookup(hid)
       Ok(views.html.problems.index(model.Hackathon.lookup(hid), request.user))
     }
   }
@@ -49,12 +48,13 @@ object Problem extends Controller with securesocial.core.SecureSocial {
 
   def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      val hackathon = model.Hackathon.lookup(hid)
       model.Problem.lookup(id).map { problem =>
-        Ok(views.html.problems.edit(hackathon, id, problemForm.fill(problem), request.user))
-      }.get
+        Ok(views.html.problems.edit(Some(problem.hackathon), id, problemForm.fill(problem), request.user))
+      }.getOrElse {
+        // no problem found
+        Redirect(routes.Problem.view(hid, id)).flashing()
+      }
     }
-
   }
 
   def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
