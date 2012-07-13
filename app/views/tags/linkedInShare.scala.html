@@ -1,0 +1,10 @@
+@(uri: String, lang: String = "pl-PL", site: String = "http://www.hackaton.pl")
+
+<a href="http://www.linkedin.com/shareArticle?mini=true&amp;url=@{site+uri}&amp;title=@{site+uri}" 
+	class="socialite linkedin-share"
+	data-url="@{site+uri}"
+	data-counter="right"
+	rel="nofollow"
+	target="_blank">
+    <span class="vhidden">Share on LinkedIn</span>
+</a>

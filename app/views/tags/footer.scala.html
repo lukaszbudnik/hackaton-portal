@@ -3,11 +3,31 @@
 @import tags._
 
 <footer>
-    <div class="social">
-    	@twitterShare(request.uri)
-    	@twitterFollow()
-    	@googlePlus(request.uri)
-    	@facebookLike(request.uri)
-    </div>
+	
+	<ul id="social">
+        <li>
+            @twitterShare(request.uri)
+        </li>
+        <li>
+        	@twitterFollow()
+        </li>
+        <li>
+            @googlePlus(request.uri)
+        </li>
+        <li>
+            @facebookLike(request.uri)
+        </li>
+        <li>
+            @linkedInShare(request.uri)
+        </li>
+        <li>
+        	@githubWatch()
+      	</li>
+      	<li>
+      		@githubFork()
+      	</li>
+    </ul>
+
+    <p style="clear:both"></p>
     <p>&copy; @Messages("brand") @Messages("years")</p>
 </footer>

@@ -1,13 +1,5 @@
 @(uri: String, lang: String = "pl-PL", site: String = "http://www.hackaton.pl")
 
-<div class="g-plusone" data-href="@{site + uri}"></div>
-
-<script type="text/javascript">
-  window.___gcfg = {lang: '@lang.replace("-", "_")'};
-
-  (function() {
-    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-    po.src = 'https://apis.google.com/js/plusone.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-  })();
-</script>
+<a href="https://plusone.google.com/_/+1/confirm?hl=pl&amp;url=@{site + uri}" class="socialite googleplus-one" data-size="medium" data-href="@{site + uri}" rel="nofollow" target="_blank">
+    <span class="vhidden">Share on Google+</span>
+</a>

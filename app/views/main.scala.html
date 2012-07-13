@@ -7,7 +7,6 @@
 		<meta charset="utf-8" />
         <title>@title</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
 		<script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
@@ -19,12 +18,43 @@
 	    	padding-bottom: 40px;
 	  	}
 		</style>
-		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-responsive.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")">
+		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-responsive.min.css")">
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/datepicker.css")">
+		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/socialite.css")">
 
     	<!--[if lt IE 9]>
       	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     	<![endif]-->
+    	<script type="text/javascript">
+    	
+    	window._socialite = window._socialite || [];
+	    window._socialite.push(function()
+	    {
+	        // add pinterest extension
+	        (function(a,b,c,d){c.network("pinterest",{script:{src:"//assets.pinterest.com/js/pinit.js"}}),c.widget("pinterest","pinit",{process:function(a){if(a.el.nodeName.toLowerCase()!=="a")return!0;var b="socialite-instance-"+a.uid,c=a.el.getAttribute("href");a.el.id=b,a.el.href="#"+b,a.el.setAttribute("data-default-href",c),a.el.setAttribute("onclick",'(function(){window.open("'+c+'")})();')},init:function(a){c.processInstance(a);var d=b.createElement("a");d.className="pin-it-button",c.copyDataAttributes(a.el,d),d.setAttribute("href",a.el.getAttribute("data-default-href")),d.setAttribute("count-layout",a.el.getAttribute("data-count-layout")||"horizontal"),a.el.appendChild(d),c.networkReady("pinterest")&&c.reloadNetwork("pinterest")}})})(window,window.document,window.Socialite);
+	
+	        Socialite.load(document.getElementById('social'));
+	        Socialite.activate(document.getElementById('follow-button'), 'twitter-follow');
+	    });
+
+	    var docReady = function()
+	    {
+	        var s  = document.getElementsByTagName('script')[0],
+	        js = document.createElement('script');
+	        js.type = 'text/javascript';
+	        js.async = true;
+	        js.src = '@routes.Assets.at("javascripts/socialite.min.js")';
+	        s.parentNode.insertBefore(js, s);
+	    };
+	
+	    if (typeof window.addEventListener === 'function') {
+	        window.addEventListener('DOMContentLoaded', docReady, false);
+	    } else {
+	        window.onload = function() { docReady(); };
+	    }
+    	
+    	</script>
     	
         @scripts
     </head>

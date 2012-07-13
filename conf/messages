@@ -27,6 +27,8 @@ global.update = Update
 global.none = None
 global.status.error = Can''t perform this operation
 
+social.twitter.follow = Follow
+
 home.welcome = Welcome to hackaton.pl portal!
 home.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
 

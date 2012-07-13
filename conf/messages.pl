@@ -18,6 +18,8 @@ navigation.problems = Problemy
 navigation.sponsors = Sponsorzy
 navigation.teams    = Zespoły
 
+social.twitter.follow = Obserwuj
+
 home.text        = Hackatony to charytatywne imprezy na których programiści, konsultanci, menadżerowie wspólnie z przedstawicielami organizacji rządowych, pozarządowych, charytatywnych, służby zdrowia i innych spotykają się razem aby w swoim wolnym czasie spróbować rozwiązać ważne problemy, z którymi te organizacje borykają się na co dzień. Rezultatem wspólnej pracy są najczęściej prototypy aplikacji bądź nierzadko gotowe do użycia aplikacje. A wszystko to za darmo z głębokiego przekonania, że czasami warto zrobić coś bezinteresownie dla innych!
 home.welcome     = Witamy na stronie hackaton.pl!
 
