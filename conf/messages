@@ -46,6 +46,8 @@ about.idea.text = Hackathons are all about charity. Programers, consultants, man
 about.platform.title = About hackton-portal
 about.platform.text = Hackton-portal (a platform which powers this site) is an open-source project licensed under Apache License 2.0. Feel free to fork and contribute using GitHub: <a href="http://github.com/lukasz-budnik/hackathon-portal" target="_blank">hackathon-portal</a>.
 
+about.credits.title = Credits
+
 contact.title = Contact
 contact.text = For any queries regarding the hackaton.pl or hackaton-portal please contact Łukasz Budnik at l.budnik@kainos.com. If you wish to ask about a specific hackathon please go to its home page and see contact details.
 
