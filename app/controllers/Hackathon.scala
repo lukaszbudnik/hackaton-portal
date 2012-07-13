@@ -22,7 +22,8 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
     mapping(
       "subject" -> nonEmptyText,
       "status" -> enum(model.HackathonStatus),
-      "submitterId" -> longNumber,
+      "date" -> date("dd/MM/yyyy"),
+      "organizerId" -> longNumber,
       "locationId" -> longNumber)(model.Hackathon.apply)(model.Hackathon.unapply))
 
   def index = UserAwareAction {

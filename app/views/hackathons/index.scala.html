@@ -34,8 +34,10 @@
 
 	@hackathons.map { hackathon =>
 		<div class="page-header">
-    		<h2>@hackathon.subject</h2>
-            <p>@Messages("hackathons.status.label"): @hackathon.status</p>
+			<h2>@hackathon.subject
+				<small>@hackathon.status</small>
+			</h2>
+            <p>@hackathon.location.city @hackathon.date</p>
     		<p><a class="btn" href="@routes.Hackathon.view(hackathon.id)">@Messages("global.readMore")</a></p>
   		</div>
       }

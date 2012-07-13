@@ -1,5 +1,6 @@
 package model
 
+import java.util.Date
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl.ManyToOne
 import org.squeryl.KeyedEntity
@@ -9,11 +10,12 @@ import play.api.libs.json._
 
 case class Hackathon(subject: String,
   status: HackathonStatus.Value,
+  date: Date,
   @Column("organiser_id") organiserId: Long,
   @Column("location_id") locationId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  def this() = this("", HackathonStatus.Planning, 0, 0) // need for status enumeration
+  def this() = this("", HackathonStatus.Planning, new Date(), 0, 0) // need for status enumeration
 
   private lazy val organiserRel: ManyToOne[User] = Hackathon.organiserToHackathons.right(this)
   private lazy val locationRel: ManyToOne[Location] = Hackathon.locationToHackathons.right(this)

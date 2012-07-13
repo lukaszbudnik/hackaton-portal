@@ -1,17 +1,23 @@
 @(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
 
 @import helper._
+
+@scripts = {
+		<link rel="stylesheet" href="@routes.Assets.at("stylesheets/docs.css")">
+  		<script src="@routes.Assets.at("javascripts/subnav.js")" type="text/javascript"></script>
+}
+
 @subnav = @{"news"}
-@main(Messages("hackathons.view.title"), user, nav = "hackathons") {
+@main(Messages("hackathons.view.title"), user, nav = "hackathons", scripts) {
     
     <div class="container">
 		@hackathon.map { hackathon =>
 			<div class="page-header">
-				<h2>@hackathon.subject
+				<h1>@hackathon.subject
 					<small>@hackathon.status</small>
-				</h2>
-            	<p>@Messages("hackathons.submitter.label"): @hackathon.organiser.name</p>
-            	<p>@Messages("hackathons.location.label"): @hackathon.location.name)</p>
+				</h1>
+            	<p>@hackathon.location.city @hackathon.date</p>
+				<p>@Messages("hackathons.organiser.label"): @hackathon.organiser.name</p>
 			</div>
 			
 		  	@user.map { user =>
