@@ -7,13 +7,14 @@ import play.api.data.Forms._
 import play.api.data.Form
 import play.api.mvc.Action
 import play.api.mvc.Controller
+import play.api.libs.json.Json._
 
 object Hackathon extends Controller with securesocial.core.SecureSocial {
 
   def hackathonsJson = Action {
     transaction {
       val hackathons = model.Hackathon.all.toList
-      Ok(com.codahale.jerkson.Json.generate(hackathons)).as(JSON)
+      Ok(toJson(hackathons))
     }
   }
 
