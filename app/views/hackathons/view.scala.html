@@ -1,46 +1,9 @@
 @(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
 
-@import helper._
+@h_main("news", hackathon, user) {
 
-@scripts = {
-		<link rel="stylesheet" href="@routes.Assets.at("stylesheets/docs.css")">
-  		<script src="@routes.Assets.at("javascripts/subnav.js")" type="text/javascript"></script>
-}
-
-@subnav = @{"news"}
-@main(Messages("hackathons.view.title"), user, nav = "hackathons", scripts) {
-    
-    <div class="container">
-		@hackathon.map { hackathon =>
-			<div class="page-header">
-				<h1>@hackathon.subject
-					<small>@hackathon.status</small>
-				</h1>
-            	<p>@hackathon.location.city @hackathon.date</p>
-				<p>@Messages("hackathons.organiser.label"): @hackathon.organiser.name</p>
-			</div>
-			
-		  	@user.map { user =>
-		  		@if(user.hackathonUserId == hackathon.organiserId) {
-		  		<div class="form-actions">
-		  			@form(routes.Hackathon.delete(hackathon.id)) {
-		  			<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.id)">@Messages("global.edit")</a>
-		  			<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-		  			}
-		  		</div>
-				}
-		  	}
-		  
-		  	<div class="subnav">
-				<ul class="nav nav-pills">
-					<li class="@("active".when(subnav == "news"))"><a href="@routes.Hackathon.view(hackathon.id)">@Messages("navigation.news")</a></li>
-					<li class="@("active".when(subnav == "problems"))"><a href="@routes.Problem.index">@Messages("navigation.problems")</a></li>
-					<li class="@("active".when(subnav == "teams"))"><a href="@routes.Team.index">@Messages("navigation.teams")</a></li>
-					<li class="@("active".when(subnav == "sponsors"))"><a href="@routes.Sponsor.index">@Messages("navigation.sponsors")</a></li>
-					<li class="@("active".when(subnav == "prizes"))"><a href="@routes.Prize.index">@Messages("navigation.prizes")</a></li>
-				</ul>
-			</div>
-		  	  
+	@hackathon.map { hackathon =>
+	  
 		  	@news.newsList(hackathon.news, false)
 		  	
 		  	@user.map { user =>
@@ -50,11 +13,7 @@
     			</div>
 				}
 		  	}
+		  	
+	}
 
-		}.getOrElse {
-			<div class="page-header">
-				<h2>@Messages("hackathons.notFound")</h2>
-			</div>
-		}
-	</div>
 }
