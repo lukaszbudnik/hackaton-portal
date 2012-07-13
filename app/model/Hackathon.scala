@@ -1,27 +1,33 @@
 package model
 
-import java.util.Date
-import org.squeryl.dsl._
 import org.squeryl.PrimitiveTypeMode._
-import org.squeryl.Schema
+import org.squeryl.dsl.ManyToOne
 import org.squeryl.KeyedEntity
+import org.squeryl.Schema
 import org.squeryl.annotations.Column
+import play.api.libs.json._
 
 case class Hackathon(subject: String,
   status: HackathonStatus.Value,
-  @Column("submitter_id") submitterId: Long,
+  @Column("organiser_id") organiserId: Long,
   @Column("location_id") locationId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  protected[model] lazy val submitterRel: ManyToOne[User] = Hackathon.submitterToHackathons.right(this)
-  protected[model] lazy val locationRel: ManyToOne[Location] = Hackathon.locationToHackathons.right(this)
-  protected[model] lazy val teamsRel = Team.hackathonToTeams.left(this)
-  protected[model] lazy val problemsRel = Problem.hackathonToProblems.left(this)
-  protected[model] lazy val sponsorsRel = Sponsors.hackathonsToSponsors.left(this)
+  def this() = this("", HackathonStatus.Planning, 0, 0) // need for status enumeration
 
+  private lazy val organiserRel: ManyToOne[User] = Hackathon.organiserToHackathons.right(this)
+  private lazy val locationRel: ManyToOne[Location] = Hackathon.locationToHackathons.right(this)
+  private lazy val teamsRel = Team.hackathonToTeams.left(this)
+  private lazy val problemsRel = Problem.hackathonToProblems.left(this)
+  private lazy val newsRel = News.hackathonToNews.left(this)
+  private lazy val sponsorsRel = Sponsor.hackathonsToSponsors.left(this)
+
+  def organiser = organiserRel.head
   def location = locationRel.head
-  def sponsors = from(sponsorsRel)(hs => select(hs) orderBy (hs.order asc))
-  def this() = this("", HackathonStatus.Planning, 1, 1)
+  def teams = teamsRel.toIterable
+  def problems = problemsRel.toIterable
+  def news = newsRel.toIterable
+  def sponsors = from(sponsorsRel)(s => select(s) orderBy (s.order asc)).toSeq
 }
 
 object HackathonStatus extends Enumeration {
@@ -32,16 +38,13 @@ object HackathonStatus extends Enumeration {
 
 object Hackathon extends Schema {
   protected[model] val hackathons = table[Hackathon]("hackathons")
+  on(hackathons)(h => declare(h.id is (primaryKey, autoIncremented("hackathon_id_seq"))))
 
+  protected[model] val organiserToHackathons = oneToManyRelation(User.users, hackathons).via((u, h) => u.id === h.organiserId)
   protected[model] val locationToHackathons = oneToManyRelation(Location.locations, hackathons).via((l, h) => l.id === h.locationId)
-  protected[model] val submitterToHackathons = oneToManyRelation(User.users, hackathons).via((u, h) => u.id === h.submitterId)
 
   def all(): Iterable[Hackathon] = {
     hackathons.toIterable
-  }
-
-  def allHackathonsForSponsor(id: Long) = {
-    model.Sponsors.lookup(id).get.hackathons
   }
 
   def lookup(id: Long): Option[Hackathon] = {
@@ -58,11 +61,32 @@ object Hackathon extends Schema {
         set (
           h.subject := hackathon.subject,
           h.status := hackathon.status,
-          h.submitterId := hackathon.submitterId,
+          h.organiserId := hackathon.organiserId,
           h.locationId := hackathon.locationId))
   }
 
   def delete(id: Long): Int = {
     hackathons.deleteWhere(h => h.id === id)
+  }
+
+  implicit object HackathonFormat extends Format[Hackathon] {
+    def reads(json: JsValue): Hackathon = new Hackathon()
+
+    def writes(h: Hackathon): JsValue = JsObject(List(
+      "id" -> JsNumber(h.id),
+      "subject" -> JsString(h.subject),
+      "status" -> JsString(h.status.id.toString),
+      "organiserName" -> JsString(h.organiser.name),
+      "location" -> JsObject(List(
+        "id" -> JsNumber(h.location.id),
+        "city" -> JsString(h.location.city),
+        "country" -> JsString(h.location.country),
+        "fullAddress" -> JsString(h.location.fullAddress),
+        "name" -> JsString(h.location.name),
+        "postalCode" -> JsString(h.location.postalCode),
+        "latitude" -> JsNumber(h.location.latitude),
+        "longitude" -> JsNumber(h.location.longitude)
+      ))
+    ))
   }
 }

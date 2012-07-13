@@ -1,8 +1,8 @@
 package model
 
-import org.squeryl.dsl._
-import org.squeryl.KeyedEntity
 import org.squeryl.PrimitiveTypeMode._
+import org.squeryl.dsl.CompositeKey2
+import org.squeryl.KeyedEntity
 import org.squeryl.Schema
 import org.squeryl.annotations.Column
 
@@ -14,8 +14,8 @@ case class User(name: String,
   @Column("open_id") openId: String) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  protected[model] lazy val rolesRel = User.usersToRoles.left(this)
-  protected[model] lazy val teamsRel = Team.usersToTeams.left(this)
+  private lazy val rolesRel = User.usersToRoles.left(this)
+  private lazy val teamsRel = Team.usersToTeams.left(this)
 
   def roles = rolesRel.toIterable
   def teams = teamsRel.toIterable
@@ -44,6 +44,7 @@ case class UserRole(@Column("user_id") userId: Long,
 
 object User extends Schema {
   protected[model] val users = table[User]("users")
+  on(users)(t => declare(t.id is (primaryKey, autoIncremented("user_id_seq"))))
 
   protected[model] val usersToRoles =
     manyToManyRelation(User.users, Role.roles, "users_roles").

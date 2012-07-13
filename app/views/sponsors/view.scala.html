@@ -1,4 +1,4 @@
-@(sponsor: Option[model.Sponsor], hackathons: Iterable[model.Hackathon], hs: Map[Long,Int], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+@(sponsor: Option[model.Sponsor], hs: Map[Long,Int], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
 
 @import helper._
 
@@ -25,11 +25,11 @@
 				<p><b>@Messages("sponsors.generalSponsor")</b></p>
 			}
 			
-			@if(!hackathons.isEmpty) {
+			@if(!sponsor.get.hackathons.isEmpty) {
 				<p><b>@Messages("sponsors.sponsoredHackathons")</b></p>
 				<ul>
 				
-				@hackathons.map { h =>
+				@sponsor.get.hackathons.map { h =>
 					<li/>@(h.subject + " (order: " + hs(h.id) + ")" )
 								
 				}

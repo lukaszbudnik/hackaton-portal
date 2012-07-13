@@ -1,8 +1,9 @@
 package model
 
-import org.squeryl.dsl._
-import org.squeryl.KeyedEntity
 import org.squeryl.PrimitiveTypeMode._
+import org.squeryl.dsl.CompositeKey2
+import org.squeryl.dsl.ManyToOne
+import org.squeryl.KeyedEntity
 import org.squeryl.Schema
 import org.squeryl.annotations.Column
 
@@ -12,10 +13,10 @@ case class Team(name: String,
   @Column("problem_id") problemId: Option[Long] = None) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  protected[model] lazy val creatorRel: ManyToOne[User] = Team.creatorToTeams.right(this)
-  protected[model] lazy val hackathonRel: ManyToOne[Hackathon] = Team.hackathonToTeams.right(this)
-  protected[model] lazy val problemRel: ManyToOne[Problem] = Team.problemToTeams.right(this);
-  protected[model] lazy val membersRel = Team.usersToTeams.right(this)
+  private lazy val creatorRel: ManyToOne[User] = Team.creatorToTeams.right(this)
+  private lazy val hackathonRel: ManyToOne[Hackathon] = Team.hackathonToTeams.right(this)
+  private lazy val problemRel: ManyToOne[Problem] = Team.problemToTeams.right(this);
+  private lazy val membersRel = Team.usersToTeams.right(this)
 
   def creator = creatorRel.head
   def hackathon = hackathonRel.head
@@ -42,6 +43,7 @@ case class UserTeam(@Column("user_id") userId: Long,
 
 object Team extends Schema {
   protected[model] val teams = table[Team]("teams")
+  on(teams)(t => declare(t.id is (primaryKey, autoIncremented("team_id_seq"))))
 
   protected[model] val creatorToTeams = oneToManyRelation(User.users, Team.teams).via((u, t) => u.id === t.creatorId)
   protected[model] val hackathonToTeams = oneToManyRelation(Hackathon.hackathons, Team.teams).via((h, t) => h.id === t.hackathonId)

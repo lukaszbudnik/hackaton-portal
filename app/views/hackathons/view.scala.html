@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], hackathonNews: Iterable[model.News], users: Map[Long, String], locations: Map[Long, String], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
 
 @import helper._
 
@@ -11,13 +11,13 @@
 		@hackathon.map { hackathon =>
 		    <h2>@hackathon.subject</h2>
             <p>@Messages("hackathons.status.label"): @hackathon.status</p>
-            <p>@Messages("hackathons.submitter.label"): @users(hackathon.submitterId)</p>
-            <p>@Messages("hackathons.location.label"): @locations(hackathon.locationId)</p>
+            <p>@Messages("hackathons.submitter.label"): @hackathon.organiser.name</p>
+            <p>@Messages("hackathons.location.label"): @hackathon.location.name)</p>
     	  
-		  	@news.newsList(hackathonNews, false)
+		  	@news.newsList(hackathon.news, false)
 		  	
 		  	@user.map { user =>
-	    		@if(user.hackathonUserId == hackathon.submitterId) {
+	    		@if(user.hackathonUserId == hackathon.organiserId) {
 	    			<div class="form-actions">
 	    				<a class="btn btn-success" href="@routes.News.createHackathonNews(hackathon.id)">@Messages("news.addNews")</a>
 	    			</div>
@@ -38,6 +38,4 @@
 	    </div>
   
     </div>
-
 }
-

@@ -21,21 +21,23 @@ class NewsSpec extends Specification {
           
           news.isPersisted must beTrue
           news.id must beGreaterThan(0L)
+          news.labels.size must equalTo(0)
         }
       }
     }
     "be insertable with labels" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val news: News = new News("title", "text", "", 1L, new Date(), None)
+          val news: News = new News("title", "text", "test1, test2", 1L, new Date(), None)
           News.insert(news)
           
           news.isPersisted must beTrue
           news.id must beGreaterThan(0L)
+          news.labels.size must equalTo(2)
           
           // retrieve test labels
-          val label1 = Label.findByValue("test_label_1")
-          val label2 = Label.findByValue("test_label_2")
+          val label1 = Label.lookupByValue("test_label_1")
+          val label2 = Label.lookupByValue("test_label_2")
           
           label1.isEmpty must beFalse
           label2.isEmpty must beFalse
@@ -48,7 +50,7 @@ class NewsSpec extends Specification {
           
           val newsDb = News.lookup(news.id).get
           
-          newsDb.labels.size must equalTo(labels.size)
+          newsDb.labels.size must equalTo(labels.size + 2)
           
         }
       }

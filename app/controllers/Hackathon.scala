@@ -7,13 +7,14 @@ import play.api.data.Forms._
 import play.api.data.Form
 import play.api.mvc.Action
 import play.api.mvc.Controller
+import play.api.libs.json.Json._
 
 object Hackathon extends Controller with securesocial.core.SecureSocial {
 
   def hackathonsJson = Action {
     transaction {
       val hackathons = model.Hackathon.all.toList
-      Ok(com.codahale.jerkson.Json.generate(hackathons)).as(JSON)
+      Ok(toJson(hackathons))
     }
   }
 
@@ -34,10 +35,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
   def view(id: Long) = UserAwareAction {
     implicit request =>
       transaction {
-        val users:Map[Long, String] = model.User.all.map({ u => (u.id, u.name) }).toMap
-        val locations:Map[Long, String] = model.Location.all.toList.map({ l => (l.id, l.name) }).toMap
-        val news = model.News.all(id)
-        Ok(views.html.hackathons.view(model.Hackathon.lookup(id), news, users, locations, request.user))
+        Ok(views.html.hackathons.view(model.Hackathon.lookup(id), request.user))
       }
   }
 
