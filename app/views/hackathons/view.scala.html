@@ -1,8 +1,8 @@
-@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
-@h_main("news", hackathon, user) {
+@h_main(hackathon, user, "news", "news.status") {
 
-	@hackathon.map { hackathon =>
+		@hackathon.map { hackathon =>
 	  
 		  	@news.newsList(hackathon.news, false)
 		  	
@@ -14,6 +14,6 @@
 				}
 		  	}
 		  	
-	}
+		}
 
 }

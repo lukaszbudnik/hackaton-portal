@@ -1,7 +1,11 @@
-@(problemForm: Form[model.Problem], users: List[model.User], hackathons: List[model.Hackathon], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
+@(hackathon: Option[model.Hackathon], problemForm: Form[model.Problem], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent])
 
-@main2("problems.create.title", "problems", Some(user)) {
-
-  @problems.problemForm(routes.Problem.save, problemForm, users, hackathons)
+@hackathons.h_main(hackathon, Some(user), "problems", "problems.status") {
+	
+	<div class="page-header">
+		<h2>@Messages("problems.create.title")</h2>
+	</div>
+  
+	@problems.problemForm(problemForm, routes.Problem.save(hackathon.get.id), hackathon.get.id)
 
 }

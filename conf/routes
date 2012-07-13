@@ -38,16 +38,16 @@ POST    /news/:id/delete            controllers.News.delete(id: Long)
 
 # Problems routes
 # Create
-GET     /problems/new               controllers.Problem.create
-POST    /problems                   controllers.Problem.save
+GET     /hackathons/:hid/problems/new			controllers.Problem.create(hid: Long)
+POST    /hackathons/:hid/problems               controllers.Problem.save(hid: Long)
 # Retrieve
-GET     /problems                   controllers.Problem.index
-GET     /problems/:id               controllers.Problem.view(id: Long)
+GET     /hackathons/:hid/problems   			controllers.Problem.index(hid: Long)
+GET     /hackathons/:hid/problems/:id           controllers.Problem.view(hid: Long, id: Long)
 # Update
-GET     /problems/:id/edit          controllers.Problem.edit(id: Long)
-POST    /problems/:id/update        controllers.Problem.update(id: Long)
+GET     /hackathons/:hid/problems/:id/edit      controllers.Problem.edit(hid: Long, id: Long)
+POST    /hackathons/:hid/problems/:id/update    controllers.Problem.update(hid: Long, id: Long)
 # Delete
-POST    /problems/:id/delete        controllers.Problem.delete(id: Long)
+POST    /hackathons/:hid/problems/:id/delete    controllers.Problem.delete(hid: Long, id: Long)
 
 # Teams routes
 # Create
@@ -85,7 +85,7 @@ GET     /hackathons/new              controllers.Hackathon.create
 POST    /hackathons                  controllers.Hackathon.save
 # Retrieve
 GET     /hackathons                  controllers.Hackathon.index
-GET     /hackathons/:id              controllers.Hackathon.view(id: Long)
+GET     /hackathons/:id/news		 controllers.Hackathon.view(id: Long)
 # Update
 GET     /hackathons/:id/edit         controllers.Hackathon.edit(id: Long)
 POST    /hackathons/:id/update       controllers.Hackathon.update(id: Long)

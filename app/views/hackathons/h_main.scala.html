@@ -1,4 +1,4 @@
-@(subnav: String, hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(content: Html)(implicit request: Request[AnyContent]) 
+@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser], subnav: String, prefix: String = "")(content: Html)(implicit flash: Flash, request: Request[AnyContent]) 
 
 @import helper._
 
@@ -35,13 +35,16 @@
 		  	<div class="subnav">
 				<ul class="nav nav-pills">
 					<li class="@("active".when(subnav == "news"))"><a href="@routes.Hackathon.view(hackathon.id)">@Messages("navigation.news")</a></li>
-					<li class="@("active".when(subnav == "problems"))"><a href="@routes.Problem.index">@Messages("navigation.problems")</a></li>
+					<li class="@("active".when(subnav == "problems"))"><a href="@routes.Problem.index(hackathon.id)">@Messages("navigation.problems")</a></li>
 					<li class="@("active".when(subnav == "teams"))"><a href="@routes.Team.index">@Messages("navigation.teams")</a></li>
 					<li class="@("active".when(subnav == "sponsors"))"><a href="@routes.Sponsor.index">@Messages("navigation.sponsors")</a></li>
 					<li class="@("active".when(subnav == "prizes"))"><a href="@routes.Prize.index">@Messages("navigation.prizes")</a></li>
 				</ul>
 			</div>
 
+		  	<p></p>
+		  	@tags.flashing(prefix)
+		  	
 		  	<div class="content">
 
 		  		@content

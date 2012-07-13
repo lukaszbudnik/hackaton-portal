@@ -106,7 +106,6 @@ problems.notFound = Problem not found
 problems.name.label = Problem name
 problems.description.label = Description
 problems.submitter.label = Submitter
-problems.hackathon.label = Hackthon
 problems.view.title = Problem
 problems.create.title = Add a problem
 problems.edit.title = Edit problem
