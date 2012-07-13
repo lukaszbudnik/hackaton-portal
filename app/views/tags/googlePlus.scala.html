@@ -1,5 +1,15 @@
 @(uri: String, lang: String = "pl-PL", site: String = "http://www.hackaton.pl")
 
-<a href="https://plusone.google.com/_/+1/confirm?hl=pl&amp;url=@{site + uri}" class="socialite googleplus-one" data-size="medium" data-href="@{site + uri}" rel="nofollow" target="_blank">
-    <span class="vhidden">Share on Google+</span>
-</a>
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium"></div>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+  window.___gcfg = {lang: 'pl'};
+
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>

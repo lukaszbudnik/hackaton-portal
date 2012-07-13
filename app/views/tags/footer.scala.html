@@ -4,30 +4,18 @@
 
 <footer>
 	
-	<ul id="social">
-        <li>
-            @twitterShare(request.uri)
-        </li>
-        <li>
-        	@twitterFollow()
-        </li>
-        <li>
-            @googlePlus(request.uri)
-        </li>
-        <li>
-            @facebookLike(request.uri)
-        </li>
-        <li>
-            @linkedInShare(request.uri)
-        </li>
-        <li>
-        	@githubWatch()
-      	</li>
-      	<li>
-      		@githubFork()
-      	</li>
-    </ul>
-
+	<div style="text-align: center">
+    @twitterShare(request.uri)
+	@twitterFollow()
+    @googlePlus(request.uri)
+    @linkedInShare(request.uri)
+	@pinterest(request.uri)
+	@stumbleUpon(request.uri)
+	@githubWatch()
+	@githubFork()
+    @facebookLike(request.uri)
+	</div>
+	
     <p style="clear:both"></p>
-    <p>&copy; @Messages("brand") @Messages("years")</p>
+    <p style="text-align: center">&copy; @Messages("brand") @Messages("years")</p>
 </footer>
