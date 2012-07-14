@@ -21,6 +21,7 @@ case class Hackathon(subject: String,
   private lazy val locationRel: ManyToOne[Location] = Hackathon.locationToHackathons.right(this)
   private lazy val teamsRel = Team.hackathonToTeams.left(this)
   private lazy val problemsRel = Problem.hackathonToProblems.left(this)
+  private lazy val prizeRel = Prize.hackathonToPrizes.left(this)
   private lazy val newsRel = News.hackathonToNews.left(this)
   private lazy val sponsorsRel = Sponsor.hackathonsToSponsors.left(this)
 
@@ -28,6 +29,7 @@ case class Hackathon(subject: String,
   def location = locationRel.head
   def teams = teamsRel.toIterable
   def problems = problemsRel.toIterable
+  def prizes = prizeRel.toIterable
   def news = newsRel.toIterable
   def sponsors = from(sponsorsRel)(s => select(s) orderBy (s.order asc)).toSeq
 }

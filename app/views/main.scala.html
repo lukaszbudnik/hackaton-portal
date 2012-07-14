@@ -46,7 +46,6 @@
 			  <li class="@("active".when(nav == "hackathons"))"><a href="@routes.Hackathon.index">@Messages("navigation.hackathons")</a></li>
               <li class="@("active".when(nav == "about"))"><a href="@routes.Application.about">@Messages("navigation.about")</a></li>
 			  <li class="@("active".when(nav == "sponsors"))"><a href="@routes.Sponsor.index">@Messages("navigation.sponsors")</a></li>
-			  <li class="@("active".when(nav == "prizes"))"><a href="@routes.Prize.index">@Messages("navigation.prizes")</a></li>
               <li class="@("active".when(nav == "contact"))"><a href="@routes.Application.contact">@Messages("navigation.contact")</a></li>
               @user.map { user =>
                 <li class="@("active".when(nav == "profile"))"><a href="@routes.Application.profile">@user.displayName</a></li>

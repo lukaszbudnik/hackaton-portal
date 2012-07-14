@@ -137,17 +137,17 @@ teams.noMembers = No team members yet!
 
 prizes.title = Prizes
 prizes.addPrize = Add a prize
-prizes.added = Prize added
-prizes.updated = Prize updated
-prizes.deleted = Prize deleted
-newPrize.title = Add a prize
 prizes.name.label = Prize name
 prizes.description.label = Description
 prizes.order.label = Define prize order
 prizes.founderName.label = Prize founder (optional)
 prizes.founderWebPage.label = Prize founder web page address (optional)
-prizes.hackathon.label = Choose hackathon 
-
+prizes.view.title = Prize
+prizes.create.title = Add a prize
+prizes.edit.title = Edit prize
+prizes.status.added = Prize %s successfully added
+prizes.status.updated = Prize %s successfully updated
+prizes.status.deleted = Prize deleted
 
 sponsors.title = Our Sponsors
 sponsors.text = We'd like to thank the following companies and organisations for supporting Hackaton.pl portal. Thanks!

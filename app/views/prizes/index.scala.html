@@ -1,54 +1,31 @@
-@(prizes: Iterable[model.Prize], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
+@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
-@import helper._
-@import tags._
+@hackathons.h_main(hackathon, user, "prizes", "prizes.status") {
 
-@main(Messages("home.welcome"), user, nav = "prizes") {
-	<div class="container">
-  
-    <div class="page-header">
-    <h1>@Messages("prizes.title")</h1>
-    </div>
-	
-	@flash.get("status").map { status =>
-		<div class="alert alert-success">
-			<button type="button" class="close" data-dismiss="alert">×</button>
-       		<strong>@Messages(status)</strong>
-		</div>
-    }
+  @hackathon.map { hackathon =>
 
-    @prizes.map { prize =>
-		<div class="page-header">
-			<h2>@prize.name</h2>
-			<p>@prize.description</p>
-			
-			@if(!prize.founderName.isEmpty) {
-				<h3>Founded by 
-				@if(!prize.founderWebPage.isEmpty) {
-					<a href="@prize.founderWebPage" target="_blank">@prize.founderName</a>
-				} else {
-					@prize.founderName
+    	@hackathon.prizes.map { prize =>
+          	<div class="page-header">
+    			<h2>@prize.name</h2>
+				<p>@prize.description</p>
+
+				@prize.founderName.map { name =>
+					<h3>Founded by 
+					@prize.founderWebPage.map { page =>
+						<a href="@page" target="_blank">@name</a>
+					}.getOrElse {
+						@name
+					}
+					</h3>
 				}
-				</h3>
-			}
-			
-			<p></p>
-			<p><a class="btn" href="@routes.Prize.view(prize.id)">@Messages("global.readMore")</a></p>
-			<p></p>
-		</div>
-    }
-	
-	<div class="form-actions">
-		<a class="btn btn-success" href="@routes.Prize.create">@Messages("prizes.addPrize")</a>
-	</div>
-        
-      <footer>
-        <div class="social">
-        	@googlePlus(request.uri)
-        	@facebookLike(request.uri)
+
+    			<p><a class="btn" href="@routes.Prize.view(hackathon.id, prize.id)">@Messages("global.readMore")</a></p>
+  			</div>
+    	}
+    	
+    	<div class="form-actions">
+			<a class="btn btn-success" href="@routes.Prize.create(hackathon.id)">@Messages("prizes.addPrize")</a>
         </div>
-        <p>&copy; @Messages("brand") @Messages("years")</p>
-      </footer>
-  	
-  </div>
+
+  }
 }
