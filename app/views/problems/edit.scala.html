@@ -6,6 +6,6 @@
 		<h2>@Messages("problems.edit.title")</h2>
 	</div>
   
-	@problems.problemForm(problemForm, routes.Problem.update(hackathon.get.id, id), hackathon.get.id)
+	@problems.problemForm(hackathon.get, problemForm, routes.Problem.update(hackathon.get.id, id), "global.update")
 
 }

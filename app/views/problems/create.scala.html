@@ -6,6 +6,6 @@
 		<h2>@Messages("problems.create.title")</h2>
 	</div>
   
-	@problems.problemForm(problemForm, routes.Problem.save(hackathon.get.id), hackathon.get.id)
+	@problems.problemForm(hackathon.get, problemForm, routes.Problem.save(hackathon.get.id), "global.add")
 
 }

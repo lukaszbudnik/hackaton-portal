@@ -1,4 +1,4 @@
-@(problemForm: Form[model.Problem], action: play.api.mvc.Call, hid: Long)
+@(hackathon: model.Hackathon, problemForm: Form[model.Problem], action: play.api.mvc.Call, actionMessage: String)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -23,8 +23,8 @@
 	@forms.hidden(problemForm("submitterId"))
 	
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">@Messages("global.submit")</button>
-        <a href="@routes.Problem.index(hid)" class="btn">@Messages("global.cancel")</a>
+        <button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
+        <a href="@routes.Problem.index(hackathon.id)" class="btn">@Messages("global.cancel")</a>
   	</div>
         
 }
