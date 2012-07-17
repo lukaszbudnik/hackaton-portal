@@ -1,9 +1,11 @@
 @(uri: String, lang: String = "pl-PL", site: String = "http://www.hackaton.pl")
 
-<div class="g-plusone" data-href="@{site + uri}"></div>
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium"></div>
 
+<!-- Place this tag after the last +1 button tag. -->
 <script type="text/javascript">
-  window.___gcfg = {lang: '@lang.replace("-", "_")'};
+  window.___gcfg = {lang: 'pl'};
 
   (function() {
     var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;

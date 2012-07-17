@@ -41,6 +41,8 @@ global.update = Update
 global.none = None
 global.status.error = Can''t perform this operation
 
+social.twitter.follow = Follow
+
 home.welcome = Welcome to hackaton.pl portal!
 home.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
 
@@ -58,7 +60,7 @@ about.idea.title = About Hackathons
 about.idea.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
  
 about.platform.title = About hackton-portal
-about.platform.text = Hackton-portal (a platform which powers this site) is an open-source project licensed under Apache License 2.0. Feel free to fork and contribute using GitHub: <a href="http://github.com/lukasz-budnik/hackathon-portal" target="_blank">hackathon-portal</a>.
+about.platform.text = Hackton-portal (a platform which powers this site) is an open-source project licensed under Apache License 2.0. Feel free to fork and contribute using GitHub: <a href="http://github.com/lukasz-budnik/hackaton-portal" target="_blank">hackaton-portal</a>.
 
 about.credits.title = Credits
 

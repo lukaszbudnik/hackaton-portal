@@ -1,13 +1,4 @@
-@(twitterStream: String = "hackaton_pl", lang: String = "pl-PL")
+@(twitter: String = "hackaton_pl", lang: String = "pl-PL")
 
-<a href="https://twitter.com/@twitterStream" 
-	class="twitter-follow-button" 
-	data-show-count="false" 
-	data-lang="@{lang.replace("-", "_")}" 
-	data-size="large">
-
-	@Messages("social.twitter.follow") @@@twitterStream
-
-</a>
-
+<a href="https://twitter.com/@twitter" class="twitter-follow-button" data-show-count="true" data-lang="pl">@Messages("social.twitter.follow") @@@twitter</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>

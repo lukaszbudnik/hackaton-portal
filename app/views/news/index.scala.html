@@ -6,9 +6,10 @@
 @main(Messages("news.title"), user, nav = "news") {
     
     <div class="container">
+
+		<div class="row">
+    		<div class="span9">
     
-    	<div class="row">
-    	<div class="span9">
 		    <div class="page-header">
 		    	<h1>@Messages("news.title")</h1>
 		    </div>
@@ -36,16 +37,21 @@
 	        </div>
 		  	}
 		}
+		
+			</div>
+
+			<div class="span3">
+	    	@twitterStream()
+	    	</div>
+		</div>
     	
 		@footer()
 
-		@commentsCount()
-    	
 		</div>
-	   
-	    <div class="span3">
-	    	@twitterStream()
-	    </div>
+
+
     </div>
+		
+	@commentsCount()
 }
 
