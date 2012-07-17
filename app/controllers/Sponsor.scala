@@ -1,11 +1,31 @@
 package controllers
 
-import org.squeryl.PrimitiveTypeMode._
-import play.api.data.Forms._
+import java.io.FileInputStream
+
+import org.squeryl.PrimitiveTypeMode.__thisDsl
+import org.squeryl.PrimitiveTypeMode.long2ScalarLong
+import org.squeryl.PrimitiveTypeMode.transaction
+
+import helpers.SponsorLogoDetails
+import model.CloudinaryResource
+import play.api.data.Forms.boolean
+import play.api.data.Forms.list
+import play.api.data.Forms.longNumber
+import play.api.data.Forms.mapping
+import play.api.data.Forms.nonEmptyText
+import play.api.data.Forms.number
+import play.api.data.Forms.optional
 import play.api.data.Form
+import play.api.i18n.Messages
+import play.api.libs.json.Json._
+import play.api.libs.json.Format
+import play.api.libs.json.JsArray
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsString
+import play.api.libs.json.JsValue
 import play.api.mvc.Controller
-import javax.persistence.OrderBy
-import model.HackathonSponsorHelper
+import play.api.Logger
+import service.CloudinaryService
 
 object Sponsor extends Controller with securesocial.core.SecureSocial {
 
@@ -18,7 +38,10 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
       "isGeneralSponsor" -> boolean,
       "hackathons" -> list(mapping(
         "hackathonId" -> longNumber,
-        "order" -> number)((model.HackathonSponsorHelper).apply)(model.HackathonSponsorHelper.unapply)))(model.Sponsor.apply)(model.Sponsor.unapply))
+        "order" -> number)((model.HackathonSponsorHelper).apply)(model.HackathonSponsorHelper.unapply)),
+      "logoResourceId" -> optional(longNumber))(model.Sponsor.apply)(model.Sponsor.unapply))
+
+  val uploadError = toJson(Seq(toJson(Map("error" -> toJson(Messages("fileupload.server.error"))))))
 
   def index = UserAwareAction { implicit request =>
     transaction {
@@ -52,6 +75,49 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
     }
   }
 
+  def uploadLogo = SecuredAction() { implicit request =>
+
+    val temporaryFile = request.body.asRaw.get.asFile
+    val in = new FileInputStream(temporaryFile)
+    val bytes = new Array[Byte](temporaryFile.length.toInt);
+    in.read(bytes)
+    in.close()
+    val filename = request.headers.get("X-File-Name").get
+    val responseOption = CloudinaryService.uploadImage(filename, bytes);
+
+    if (responseOption.isDefined) {
+
+      responseOption.get match {
+        case success: CloudinaryService.CloudinaryImageResponse =>
+
+          transaction {
+            val res = new CloudinaryResource(success.url, success.publicId);
+            val newRes = CloudinaryResource.insert(res)
+
+            val logoFile = new SponsorLogoDetails(success.url, res.id.toString())
+
+            Ok(toJson(logoFile))
+          }
+        case error: CloudinaryService.CloudinaryErrorResponse =>
+
+          Logger.debug("Sponsor - cloudinaryService - error: " + error.message)
+          Ok(uploadError)
+      }
+    } else {
+
+      Ok(uploadError)
+    }
+  }
+
+  def getLogoDetails(id: Long) = UserAwareAction { implicit request =>
+
+    transaction {
+      val r = CloudinaryResource.lookup(id).get
+      val s: SponsorLogoDetails = new SponsorLogoDetails(r.url, r.id.toString())
+      Ok(toJson(s))
+    }
+  }
+
   def save = SecuredAction() { implicit request =>
     sponsorForm.bindFromRequest.fold(
       errors => transaction {
@@ -59,7 +125,6 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
       }, sponsor => transaction {
 
         model.Sponsor.insert(sponsor)
-
         sponsor.hackathonsList.map { hs =>
 
           if (hs.order != -1) {
@@ -100,16 +165,27 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.sponsors.edit(id, errors, model.Hackathon.all.toList, request.user))
       },
       sponsor => transaction {
-        model.Sponsor.update(id, sponsor)
-        sponsor.hackathonsList.map { hs =>
 
-          if (hs.order == -1)
-            model.Sponsor.deleteSponsorHackathon(id, hs.hackathonId)
-          else
-            model.Sponsor.updateSponsorHackathonOrder(id, hs.hackathonId, hs.order)
+        model.Sponsor.lookup(id).map { oldSponsor =>
 
+          if (oldSponsor.logoResourceId.isDefined && sponsor.logoResourceId.isEmpty) {
+            val resId = oldSponsor.logoResourceId.get
+            model.CloudinaryResource.lookup(resId) map { resource =>
+
+              model.CloudinaryResource.delete(resId);
+              CloudinaryService.destroyImage(resource.publicId)
+            }
+          }
+
+          model.Sponsor.update(id, sponsor)
+          sponsor.hackathonsList.map { hs =>
+
+            if (hs.order == -1)
+              model.Sponsor.deleteSponsorHackathon(id, hs.hackathonId)
+            else
+              model.Sponsor.updateSponsorHackathonOrder(id, hs.hackathonId, hs.order)
+          }
         }
-
         Redirect(routes.Sponsor.index).flashing("status" -> "sponsors.updated", "title" -> sponsor.name)
       })
   }
@@ -120,11 +196,22 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
       // TODO squeryl cascade
       model.Sponsor.lookup(id).map { sponsor =>
         sponsor.hackathons.dissociateAll
+        model.Sponsor.delete(id)
+        sponsor.logoResourceId map { rId =>
+          model.CloudinaryResource.lookup(rId) map { resource =>
+            model.CloudinaryResource.delete(resource.id)
+            CloudinaryService.destroyImage(resource.publicId)
+          }
+        }
       }
-
-      model.Sponsor.delete(id)
+      
     }
     Redirect(routes.Sponsor.index).flashing("status" -> "sponsors.deleted")
   }
 
 }
+
+
+
+
+ 
