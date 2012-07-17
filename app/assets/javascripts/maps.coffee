@@ -6,10 +6,10 @@ initialize = () ->
         mapTypeId: google.maps.MapTypeId.ROADMAP
     )
 
-    markerRedImg = '/assets/images/h_marker_red.png'
-    markerGreenImg = '/assets/images/h_marker_green.png'
-    markerBlueImg = '/assets/images/h_marker_blue.png'
-    markerImages = {1: markerRedImg, 2: markerGreenImg, 3: markerBlueImg}
+    markerPlanningImg = '/assets/images/googlemap_h_blue.png'
+    markerInProgressImg = '/assets/images/googlemap_h_yellow.png'
+    markerFinishedImg = '/assets/images/googlemap_h_green.png'
+    markerImages = {1: markerPlanningImg, 2: markerInProgressImg, 3: markerFinishedImg}
 
     google.maps.event.addListenerOnce(map, 'tilesloaded', addMarkers(map, markerImages))
 
