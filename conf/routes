@@ -25,7 +25,6 @@ GET     /authenticate/:provider     securesocial.controllers.LoginPage.authentic
 # News routes
 # Create
 GET     /news/new                   controllers.News.create
-GET     /news/new/:hackathonId      controllers.News.createHackathonNews(hackathonId: Long)
 POST    /news                       controllers.News.save
 # Retrieve
 GET     /news                       controllers.News.index
@@ -35,6 +34,18 @@ GET     /news/:id/edit              controllers.News.edit(id: Long)
 POST    /news/:id                   controllers.News.update(id: Long)
 # Delete
 POST    /news/:id/delete            controllers.News.delete(id: Long)
+
+# Create
+GET     /hackathons/:hid/news/new					controllers.News.createH(hid: Long)
+POST    /hackathons/:hid/news               		controllers.News.saveH(hid: Long)
+# Retrieve
+GET     /hackathons/:hid/news   					controllers.News.indexH(hid: Long)
+GET     /hackathons/:hid/news/:id           		controllers.News.viewH(hid: Long, id: Long)
+# Update
+GET     /hackathons/:hid/news/:id/edit      		controllers.News.editH(hid: Long, id: Long)
+POST    /hackathons/:hid/news/:id/update    		controllers.News.updateH(hid: Long, id: Long)
+# Delete
+POST    /hackathons/:hid/news/:id/delete    		controllers.News.deleteH(hid: Long, id: Long)
 
 # Problems routes
 # Create

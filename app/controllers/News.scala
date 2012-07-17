@@ -31,30 +31,43 @@ object News extends Controller with securesocial.core.SecureSocial {
     }
   }
 
+  def indexH(hid: Long) = UserAwareAction { implicit request =>
+    transaction {
+      Ok(views.html.news.indexH(model.Hackathon.lookup(hid), request.user))
+    }
+  }
+
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
       Ok(views.html.news.view(model.News.lookup(id), request.user))
     }
   }
 
-  def create = SecuredAction() { implicit request =>
-    val news = model.News("", "", "", request.user.hackathonUserId, new Date(), None)
+  def viewH(hid: Long, id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.news.create(newsForm.fill(news), model.User.all.toList, request.user))
+      Ok(views.html.news.viewH(model.Hackathon.lookup(hid), model.News.lookup(id), request.user))
     }
   }
 
-  def createHackathonNews(hackathonId: Long) = SecuredAction() { implicit request =>
-    val hackathonNews = model.News("", "", "", request.user.hackathonUserId, new Date(), Some(hackathonId))
+  def create = SecuredAction() { implicit request =>
+    val news = model.News("", "", "", request.user.hackathonUserId, new Date(), None)
     transaction {
-      Ok(views.html.news.create(newsForm.fill(hackathonNews), model.User.all.toList, request.user))
+      Ok(views.html.news.create(newsForm.fill(news), request.user))
+    }
+  }
+
+  def createH(hid: Long) = SecuredAction() { implicit request =>
+    transaction {
+      val hackathon = model.Hackathon.lookup(hid)
+      val news = model.News("", "", "", request.user.hackathonUserId, new Date(), Some(hid))
+      Ok(views.html.news.createH(hackathon, newsForm.fill(news), request.user))
     }
   }
 
   def save = SecuredAction() { implicit request =>
     newsForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.news.create(errors, model.User.all.toList, request.user))
+        BadRequest(views.html.news.create(errors, request.user))
       },
       news => transaction {
         model.News.insert(news)
@@ -62,22 +75,60 @@ object News extends Controller with securesocial.core.SecureSocial {
       })
   }
 
+  def saveH(hid: Long) = SecuredAction() { implicit request =>
+    newsForm.bindFromRequest.fold(
+      errors => transaction {
+        val hackathon = model.Hackathon.lookup(hid)
+        BadRequest(views.html.news.createH(hackathon, errors, request.user))
+      },
+      news => transaction {
+        model.News.insert(news)
+        Redirect(routes.News.indexH(hid)).flashing("status" -> "added", "title" -> news.title)
+      })
+  }
+
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.News.lookup(id).map { news =>
-        Ok(views.html.news.edit(id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), model.User.all.toList, request.user))
-      }.get
+        Ok(views.html.news.edit(id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), request.user))
+      }.getOrElse {
+        // no news found
+        Redirect(routes.News.view(id)).flashing()
+      }
+    }
+  }
+
+  def editH(hid: Long, id: Long) = SecuredAction() { implicit request =>
+    transaction {
+      model.News.lookup(id).map { news =>
+        Ok(views.html.news.editH(news.hackathon, id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), request.user))
+      }.getOrElse {
+        // no news found
+        Redirect(routes.News.viewH(hid, id)).flashing()
+      }
     }
   }
 
   def update(id: Long) = SecuredAction() { implicit request =>
     newsForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.news.edit(id, errors, model.User.all.toList, request.user))
+        BadRequest(views.html.news.edit(id, errors, request.user))
       },
       news => transaction {
         model.News.update(id, news)
         Redirect(routes.News.index).flashing("status" -> "updated", "title" -> news.title)
+      })
+  }
+
+  def updateH(hid: Long, id: Long) = SecuredAction() { implicit request =>
+    newsForm.bindFromRequest.fold(
+      errors => transaction {
+        val hackathon = model.Hackathon.lookup(hid)
+        BadRequest(views.html.news.editH(hackathon, id, errors, request.user))
+      },
+      news => transaction {
+        model.News.update(id, news)
+        Redirect(routes.News.indexH(hid)).flashing("status" -> "updated", "title" -> news.title)
       })
   }
 
@@ -86,6 +137,13 @@ object News extends Controller with securesocial.core.SecureSocial {
       model.News.delete(id)
     }
     Redirect(routes.News.index).flashing("status" -> "deleted")
+  }
+
+  def deleteH(hid: Long, id: Long) = SecuredAction() { implicit request =>
+    transaction {
+      model.News.delete(id)
+    }
+    Redirect(routes.News.indexH(hid)).flashing("status" -> "deleted")
   }
 
 }

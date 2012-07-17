@@ -1,0 +1,11 @@
+@(hackathon: Option[model.Hackathon], newsForm: Form[model.News], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent])
+
+@hackathons.h_main(hackathon, Some(user), "news", "news.status") {
+	
+	<div class="page-header">
+		<h2>@Messages("news.create.title")</h2>
+	</div>
+
+	@news.newsForm(hackathon, newsForm, routes.News.saveH(hackathon.get.id), "global.add")
+
+}

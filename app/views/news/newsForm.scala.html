@@ -1,4 +1,4 @@
-@(action: play.api.mvc.Call, newsForm: Form[model.News], users: Seq[model.User])
+@(hackathon: Option[model.Hackathon], newsForm: Form[model.News], action: play.api.mvc.Call, actionMessage: String)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -24,13 +24,6 @@
 	    '_label -> Messages("news.labels.label"),
 	    '_showConstraints -> false
 	)    
-
-    @select(
-        newsForm("authorId"),
-        users.map{ u => u.id.toString -> u.name },
-        '_label -> Messages("news.author.label"),
-        '_showConstraints -> false
-    )
     
   	@inputDate(
 	    newsForm("publishedDate"),
@@ -38,10 +31,16 @@
 	    '_showConstraints -> false
 	)
 	
-  	@forms.hidden(field = newsForm("hackathonId"))
+  	@forms.hidden(newsForm("hackathonId"))
+	@forms.hidden(newsForm("authorId"))
 	
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">@Messages("news.publish")</button>
-        <a href="@routes.News.index" class="btn">@Messages("global.cancel")</a>
+  		
+  		@hackathon.map { hackathon =>
+        <a href="@routes.News.indexH(hackathon.id)" class="btn">@Messages("global.cancel")</a>
+  		}.getOrElse{
+  	    <a href="@routes.News.index" class="btn">@Messages("global.cancel")</a>
+  		}  	
     </div>
 }

@@ -1,19 +1,5 @@
 @(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
-@h_main(hackathon, user, "news", "news.status") {
+@h_main(hackathon, user, "main", "hackathons.status") {
 
-		@hackathon.map { hackathon =>
-	  
-		  	@news.newsList(hackathon.news, false)
-		  	
-		  	@user.map { user =>
-	    		@if(user.hackathonUserId == hackathon.organiserId) {
-    			<div class="form-actions">
-    				<a class="btn btn-success" href="@routes.News.createHackathonNews(hackathon.id)">@Messages("news.addNews")</a>
-    			</div>
-				}
-		  	}
-		  	
-		}
-		
 }
