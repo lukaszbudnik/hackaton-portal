@@ -122,13 +122,20 @@ POST    /hackathons/:hid/prizes/:id/delete        	controllers.Prize.delete(hid:
 # Create
 GET     /sponsors/new					controllers.Sponsor.create
 POST    /sponsors                   	controllers.Sponsor.save
+
+#Upload
+POST    /sponsors/uploadLogo			controllers.Sponsor.uploadLogo
+GET		/sponsors/uploadLogo/:id	   controllers.Sponsor.getLogoDetails(id:Long)
+
 # Retrieve
 GET     /sponsors                   	controllers.Sponsor.index
 GET     /sponsors/:id                 	controllers.Sponsor.view(id: Long)
+
 # Update
 GET     /sponsors/:id/edit          	controllers.Sponsor.edit(id: Long)
 POST    /sponsors/:id/update        	controllers.Sponsor.update(id: Long)
+
 # Delete
-POST    /sponsors/:id/delete        	controllers.Sponsor.delete(id: Long)
+GET    /sponsors/:id/delete        	controllers.Sponsor.delete(id: Long)
 
 GET     /hackathons.json            controllers.Hackathon.hackathonsJson

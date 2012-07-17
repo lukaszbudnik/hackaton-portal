@@ -51,18 +51,7 @@ insert into prizes (name, description, prize_order, founder_name, founder_web_pa
 insert into prizes (name, description, prize_order, hackathon_id) values ('Prize 3', 'Cool prize', 3, 1);
 
 insert into sponsors (name, description, website, is_general_sponsor, sponsor_order) values ('Kainos Software Ltd', 'First main sponsor', 'www.google.com', TRUE, 1);
-insert into sponsors (name, description, website, is_general_sponsor, sponsor_order) values ('General sponsor 2', 'Second main sponsor + Hackaton sponsor', 'www.google.com', TRUE, 2);
-insert into sponsors (name, description, website, is_general_sponsor, sponsor_order) values ('Hackaton Sponsor 1', 'Hackaton sponsor description 1', 'www.google.com', FALSE, 3);
-insert into sponsors (name, description, website, is_general_sponsor, sponsor_order) values ('Hackaton Sponsor 2', 'Hackaton sponsor description 1', 'www.google.com', FALSE, 3);
-insert into sponsors (name, description, website, is_general_sponsor, sponsor_order) values ('Hackaton Sponsor 3', 'Hackaton sponsor description 1', 'www.google.com', FALSE, 3);
 
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (1,2,1);
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (1,3,2);
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (1,4,3);
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (1,5,3);
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (2,2,1);
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (2,4,2);
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (2,5,3);
 
 # --- !Downs
 

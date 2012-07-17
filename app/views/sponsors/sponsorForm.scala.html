@@ -1,10 +1,12 @@
-@(action: play.api.mvc.Call, btnMessage: String, sponsorForm: Form[model.Sponsor], hackathons: List[model.Hackathon])
+@(action: play.api.mvc.Call, actionUpload : play.api.mvc.Call, btnMessage: String, sponsorForm: Form[model.Sponsor], hackathons: List[model.Hackathon])(implicit request: Request[AnyContent])
 
 @import helper._
 @import helper.twitterBootstrap._
 
 @implicitFieldConstructor = @{ FieldConstructor(forms.twitterBootstrapInput.f) }
-    
+
+
+<div style="float:left">
 @form(action, 'class -> "form-horizontal") {
         
     @inputText(
@@ -30,6 +32,7 @@
     	'_label -> Messages("sponsors.order.label"),
 	    '_showConstraints -> false
     )
+    @forms.hidden(field = sponsorForm("logoResourceId"))
 
     @checkbox(
     	sponsorForm("isGeneralSponsor"),
@@ -62,6 +65,99 @@
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">@btnMessage</button>
         <a href="@routes.Sponsor.index" class="btn">@Messages("global.cancel")</a>
-  	</div>
-        
+  	</div>       
 }
+</div>
+<div   style="margin-left:80px;float:left">
+
+@form(actionUpload, 'class -> "form-horizontal", 'id -> "fileupload") {
+	
+<!-- The template to display files available for upload -->
+	
+ <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+ <div class="row fileupload-buttonbar">
+     <div class="span2" style="float:left; margin-right:30px">
+         <!-- The fileinput-button span is used to style the file input field as button -->
+             <span class="btn btn-primary fileinput-button">
+                 <i class="icon-upload icon-white"></i>
+                 <span>Upload logo...</span>
+                 <input type="file" name="files[]" multiple>
+             </span>
+         </div>
+	<div class="files" style="float:left"></div>
+    </div>	
+</div>
+
+<script id="template-upload" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <div class="template-upload fade">
+	{% if (!file.error) { %}
+	<img src="@routes.Assets.at("images/loader.gif")" style="align:center"/>
+	{% } %}
+	{% if (file.name) { %}
+		<span>
+		File: {%=file.name%}</span>
+	 {% } %}
+		<p>
+			{% if (file.error) { %}
+				<span><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</span>
+				<p></p>
+			{% } else { %}	
+			{% } %}
+		</p>
+		<p>
+        <span class="cancel" style="display:none" >{% if (!i) { %}
+            <button class="btn btn-warning">
+                <i class="icon-ban-circle icon-white"></i>
+                <span>{%=locale.fileupload.cancel%}</span>
+            </button>
+        {% } %}</span>
+		</p>
+	</div>
+{% } %}
+</script>
+<!-- The template to display files available for download -->
+<script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <div class="template-download fade">
+	{% if(file.resourceId) { updateResourceId(file.resourceId); } %}
+		{% if (!file.error) { %}	
+		<div class="thumbnail">
+					<a href="{%=file.url%}" ><img src="{%=file.url%}"/></a>
+				</div>
+		{% } else if (file.error) { %}
+			<p>
+				<span><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</span>
+			</p>    
+        {% } %}	
+			<p/>
+			<p>
+				<span class="delete">
+					<button class="btn btn-danger" onclick="{%='$("#logoResourceId").val("")'%}">
+						<i class="icon-trash icon-white"></i>
+						<span>{%=locale.fileupload.destroy%}</span>
+					</button>
+				</span>
+			</p>
+	</div>		
+{% } %}
+</script>
+	
+}
+<!-- Musisz odtworzyc te strone z danym id. Jesli dany id istnieje to pobierz jego logo i wyswietl je. -->
+@import tags._
+
+@fileuploadlocale()
+<script src="@routes.Assets.at("javascripts/vendor/jquery.ui.widget.js")" type="text/javascript"></script>
+<script src="http://blueimp.github.com/JavaScript-Templates/tmpl.min.js" type="text/javascript"></script>
+<script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js" type="text/javascript"></script>
+<script src="http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js" type="text/javascript"></script>
+
+<script src="@routes.Assets.at("javascripts/jquery.iframe-transport.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/jquery.fileupload.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/jquery.fileupload-fp.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/jquery.fileupload-ui.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/sponsorLogo.js")" type="text/javascript"></script>
+
+
+

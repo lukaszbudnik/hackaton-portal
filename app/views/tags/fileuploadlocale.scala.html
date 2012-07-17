@@ -1,0 +1,21 @@
+@()(implicit request: Request[AnyContent])
+
+        <script type="text/javascript">
+		window.locale = {
+	    "fileupload": {
+	        "errors": {
+	            "maxFileSize": '@Messages("fileupload.filetoobig")',
+	            "minFileSize": '@Messages("fileupload.filetosmall")',
+	            "acceptFileTypes": '@Messages("fileupload.typenotallowed")',
+	            "maxNumberOfFiles": '@Messages("fileupload.maxnofiles.exceeded")',
+	            "uploadedBytes":'@Messages("fileupload.filesize.exceeded")',
+	            "emptyResult": '@Messages("fileupload.emptyResult")'
+	        },
+	        "error": '@Messages("fileupload.label.error")',
+	        "start": '@Messages("fileupload.label.start")',
+	        "cancel": '@Messages("fileupload.label.cancel")',
+	        "destroy": '@Messages("fileupload.label.delete")'
+	    }
+	};
+        </script>
+

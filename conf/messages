@@ -3,6 +3,20 @@ years = 2012
 
 error.date = Wrong date
 
+fileupload.server.error = Error occured while uploading a file
+fileupload.filetoobig = File is too big
+fileupload.filetoosmall = File is too small
+fileupload.typenotallowed = Filetype not allowed
+fileupload.maxnofiles.exceeded = Max number of files exceeded
+fileupload.filesize.exceeded = Uploaded bytes exceed file size
+fileupload.emptyResult = Empty file upload result
+fileupload.label.error = Error
+fileupload.label.start = Start
+fileupload.label.cancel = Cancel
+fileupload.label.delete = Delete
+	
+
+
 navigation.home = Home
 navigation.news = News
 navigation.hackathons = Hackathons
@@ -171,6 +185,7 @@ sponsors.hackathons.label = Choose sponsored hackathons
 sponsors.order.label = Current sponsor order
 sponsors.sponsored.label = Sponsored
 sponsors.notSponsored.label = Not sponsored
+
 
 newSponsor.title = Add new sponsor
 

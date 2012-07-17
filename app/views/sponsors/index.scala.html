@@ -26,7 +26,12 @@
 	@generalSponsors.map { sponsorId =>
 		<li class="span3">
 			<div class="thumbnail">
+				
+				@if(sponsors(sponsorId).logoResource.isDefined) {
+				<img src="@sponsors(sponsorId).logoResource.get.url" alt="">
+				} else {
 				<img src="http://placehold.it/260x180" alt="">
+				}				
 				<div class="caption">
 					<h5>@sponsors(sponsorId).name</h5>
 					<p>@sponsors(sponsorId).description</p>
