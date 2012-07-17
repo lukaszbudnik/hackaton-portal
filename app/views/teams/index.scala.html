@@ -1,34 +1,21 @@
-@(teams: Iterable[model.Team], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
+@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
-@import helper._
+@hackathons.h_main(hackathon, user, "teams", "teams.status") {
 
-@main(Messages("teams.title"), user, nav = "teams") {
+  @hackathon.map { hackathon =>
 
-   <div class="container">
-		
-		<div class="content">
-                
-    		<div class="page-header">
-    			<h1>@Messages("teams.title")</h1>
-    		</div>
-	
-			@tags.flashing("teams.status")
-
-			@teams.map { team =>
-			<div class="page-header">
+    	@hackathon.teams.map { team =>
+    	  	<div class="page-header">
 				<h2>@team.name</h2>
    				<p>@Messages("teams.creator.label"): @team.creator.name</p>
 				<p>@Messages("teams.members.label"): @team.members.size</p>
-    			<p><a class="btn" href="@routes.Team.view(team.id)">@Messages("global.readMore")</a></p>
+    			<p><a class="btn" href="@routes.Team.view(hackathon.id, team.id)">@Messages("global.readMore")</a></p>
   			</div>
-			}
-              
-			<div class="form-actions">
-    			<a class="btn btn-success" href="@routes.Team.create">@Messages("teams.addTeam")</a>
-			</div>
-  	
-			@tags.footer()
+    	}
+    	
+    	<div class="form-actions">
+    		<a class="btn btn-success" href="@routes.Team.create(hackathon.id)">@Messages("teams.addTeam")</a>
+        </div>
 
-		</div>
-	</div>
+  }
 }

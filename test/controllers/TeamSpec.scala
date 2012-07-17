@@ -16,11 +16,11 @@ import org.squeryl.PrimitiveTypeMode.transaction
 class TeamSpec extends Specification {
 
   "Team controller" should {
-    "Display all team members on GET /teams/1" in {
+    "Display all team members on GET /hackathons/1/teams/1" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
 
-          val result = routeAndCall(FakeRequest(GET, "/teams/1")).get
+          val result = routeAndCall(FakeRequest(GET, "/hackathons/1/teams/1")).get
           val members = model.Team.lookup(1L).get.members
 
           status(result) must equalTo(OK)

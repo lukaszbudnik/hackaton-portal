@@ -11,7 +11,7 @@
     	<h2>@Messages("sponsors.edit.title")</h2>
 	</div>
     
-    @sponsors.sponsorForm(routes.Sponsor.update(id), Messages("global.update"), sponsorForm, hackathons)
+    @sponsors.sponsorForm(routes.Sponsor.update(id), routes.Sponsor.uploadLogo, Messages("global.update"), sponsorForm, hackathons)(request)
     
     </div>
 }

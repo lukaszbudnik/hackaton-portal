@@ -1,43 +1,5 @@
-@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
+@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
-@import helper._
+@h_main(hackathon, user, "main", "hackathons.status") {
 
-@main(Messages("hackathons.view.title"), user, nav = "hackathons") {
-    
-    <div class="container">
-    
-		<div class="page-header">
-
-		@hackathon.map { hackathon =>
-		    <h2>@hackathon.subject</h2>
-            <p>@Messages("hackathons.status.label"): @hackathon.status</p>
-            <p>@Messages("hackathons.submitter.label"): @hackathon.organiser.name</p>
-            <p>@Messages("hackathons.location.label"): @hackathon.location.name)</p>
-    	  
-		  	@news.newsList(hackathon.news, false)
-		  	
-		  	@user.map { user =>
-	    		@if(user.hackathonUserId == hackathon.organiserId) {
-	    			<div class="form-actions">
-	    				<a class="btn btn-success" href="@routes.News.createHackathonNews(hackathon.id)">@Messages("news.addNews")</a>
-	    			</div>
-	    		  
-	    			<div class="form-actions">
-	    			@form(routes.Hackathon.delete(hackathon.id)) {
-	    				<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.id)">@Messages("global.edit")</a>
-	    				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-	    			}
-	    			</div>
-				}
-		  	}
-
-		}.getOrElse {
-		  <h2>@Messages("hackathons.notFound")</h2>
-		}
-
-	    </div>
-
-		@tags.comments()
-  
-    </div>
 }

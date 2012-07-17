@@ -1,7 +1,7 @@
-@(id: Long, hackathonForm: Form[model.Hackathon], users: List[model.User], locations: List[model.Location], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
+@(id: Long, hackathonForm: Form[model.Hackathon], locations: Seq[model.Location], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
 
 @main2("hackathons.edit.title", "hackathons", Some(user)) {
 
-  @hackathons.hackathonForm(routes.Hackathon.update(id), hackathonForm, users, locations)
+  @hackathons.hackathonForm(hackathonForm, routes.Hackathon.update(id), locations, "global.update")
 
 }

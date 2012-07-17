@@ -1,4 +1,4 @@
-@(action: play.api.mvc.Call, problemForm: Form[model.Problem], users: List[model.User], hackathons: List[model.Hackathon])
+@(hackathon: model.Hackathon, problemForm: Form[model.Problem], action: play.api.mvc.Call, actionMessage: String)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -18,24 +18,13 @@
 	    '_label -> Messages("problems.description.label"),
 	    '_showConstraints -> false
 	)
-   
-	@select(
-		problemForm("hackathonId"),
-		hackathons.map{ h => h.id.toString -> h.subject },
-		'_label -> Messages("problems.hackathon.label"),
-		'_showConstraints -> false
-	)
 	
-	@select(
-		problemForm("submitterId"),
-		users.map{ p => p.id.toString -> p.name },
-		'_label -> Messages("problems.submitter.label"),
-		'_showConstraints -> false
-	)
+	@forms.hidden(problemForm("hackathonId"))
+	@forms.hidden(problemForm("submitterId"))
 	
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">@Messages("global.submit")</button>
-        <a href="@routes.Problem.index" class="btn">@Messages("global.cancel")</a>
+        <button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
+        <a href="@routes.Problem.index(hackathon.id)" class="btn">@Messages("global.cancel")</a>
   	</div>
         
 }

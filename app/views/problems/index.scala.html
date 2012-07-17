@@ -1,42 +1,20 @@
-@(problems: Iterable[model.Problem], users: Map[Long,String], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
+@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
-@import helper._
+@hackathons.h_main(hackathon, user, "problems", "problems.status") {
 
-@main(Messages("problems.title"), user, nav = "problems") {
+  @hackathon.map { hackathon =>
 
-  <div class="container">
-  
-    	<div class="page-header">
-    		<h1>@Messages("problems.title")</h1>
-    	</div>
-	
-		@flash.get("status").map { status =>
-			@flash.get("title").map { title =>
-			   <div class="alert alert-success">
-			   	<button type="button" class="close" data-dismiss="alert">×</button>
-		       	<strong>@Messages("problems.status." + status).format(title)</strong>
-		       </div>
-	       }.getOrElse {
-	       		<div class="alert alert-success">
-			   	<button type="button" class="close" data-dismiss="alert">×</button>
-		       	<strong>@Messages("problems.status." + status)</strong>
-		       </div>
-	       }
-	    }
-
-		@problems.map { problem =>
+    	@hackathon.problems.map { problem =>
           	<div class="page-header">
     			<h2>@problem.name</h2>
-    			<p>@Messages("problems.submitter.label"): @users(problem.submitterId)</p>
-    			<p><a class="btn" href="@routes.Problem.view(problem.id)">@Messages("global.readMore")</a></p>
+    			<p>@Messages("problems.submitter.label"): @problem.submitter.name</p>
+    			<p><a class="btn" href="@routes.Problem.view(hackathon.id, problem.id)">@Messages("global.readMore")</a></p>
   			</div>
-		}
-              
+    	}
+    	
     	<div class="form-actions">
-    		<a class="btn btn-success" href="@routes.Problem.create">@Messages("problems.addProblem")</a>
+    		<a class="btn btn-success" href="@routes.Problem.create(hackathon.id)">@Messages("problems.addProblem")</a>
         </div>
 
-		@tags.footer()
-  	
-  </div>
+  }
 }

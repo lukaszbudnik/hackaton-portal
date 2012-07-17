@@ -12,6 +12,8 @@ case class Problem(name: String,
   @Column("hackathon_id") hackathonId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
 
+  def this(submitterId: Long, hackathonId: Long) = this("", "", submitterId, hackathonId)
+
   private lazy val submitterRel: ManyToOne[User] = Problem.submitterToProblems.right(this)
   private lazy val hackathonRel: ManyToOne[Hackathon] = Problem.hackathonToProblems.right(this)
   private lazy val teamRel = Team.problemToTeams.left(this);

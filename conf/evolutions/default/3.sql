@@ -12,8 +12,8 @@ insert into users_roles (user_id, role_id) values (1, 1);
 insert into locations (country, city, postal_code, full_address, name, latitude, longitude) values ('Polska', 'Gdańsk', '80-000', 'Ul. Długa 55', 'Hackaton Gdansk!', 54.366667, 18.633333);
 insert into locations (country, city, postal_code, full_address, name, latitude, longitude) values ('Polska', 'Warszawa', '80-000', 'Ul. Krótka 5', 'Hackaton Warszawa!', 52.2323, 21.008433);
 
-insert into hackathons (subject, status, organiser_id, location_id) values ('Hackaton testowy 1', 1, 1, 1);
-insert into hackathons (subject, status, organiser_id, location_id) values ('Hackaton testowy 2', 2, 1, 2);
+insert into hackathons (subject, date, status, organiser_id, location_id) values ('Hackaton testowy 1', '2012-01-02', 1, 1, 1);
+insert into hackathons (subject, date, status, organiser_id, location_id) values ('Hackaton testowy 2', '2012-03-04', 2, 1, 2);
 
 insert into problems (name, description, submitter_id, hackathon_id) values ('Problem 1', 'Problem testowy numer 1', 1, 1);
 insert into problems (name, description, submitter_id, hackathon_id) values ('Problem 2', 'Problem testowy numer 2', 1, 1);
@@ -51,18 +51,7 @@ insert into prizes (name, description, prize_order, founder_name, founder_web_pa
 insert into prizes (name, description, prize_order, hackathon_id) values ('Prize 3', 'Cool prize', 3, 1);
 
 insert into sponsors (name, description, website, is_general_sponsor, sponsor_order) values ('Kainos Software Ltd', 'First main sponsor', 'www.google.com', TRUE, 1);
-insert into sponsors (name, description, website, is_general_sponsor, sponsor_order) values ('General sponsor 2', 'Second main sponsor + Hackaton sponsor', 'www.google.com', TRUE, 2);
-insert into sponsors (name, description, website, is_general_sponsor, sponsor_order) values ('Hackaton Sponsor 1', 'Hackaton sponsor description 1', 'www.google.com', FALSE, 3);
-insert into sponsors (name, description, website, is_general_sponsor, sponsor_order) values ('Hackaton Sponsor 2', 'Hackaton sponsor description 1', 'www.google.com', FALSE, 3);
-insert into sponsors (name, description, website, is_general_sponsor, sponsor_order) values ('Hackaton Sponsor 3', 'Hackaton sponsor description 1', 'www.google.com', FALSE, 3);
 
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (1,2,1);
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (1,3,2);
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (1,4,3);
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (1,5,3);
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (2,2,1);
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (2,4,2);
-insert into hackathons_sponsors(hackathon_id, sponsor_id, sponsor_order) values (2,5,3);
 
 # --- !Downs
 

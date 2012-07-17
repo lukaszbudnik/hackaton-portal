@@ -1,15 +1,11 @@
-@(prizeForm: Form[model.Prize], hackathons: List[model.Hackathon], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
+@(hackathon: Option[model.Hackathon], prizeForm: Form[model.Prize], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent])
 
-@import helper._
-@import helper.twitterBootstrap._
-
-@main(Messages("newPrize.title"), Some(user), nav = "prizes") {
-
-	<div class="container">
-    
-    <h2>@Messages("newPrize.title")</h2>
+@hackathons.h_main(hackathon, Some(user), "prizes", "prizes.status") {
+	
+	<div class="page-header">
+		<h2>@Messages("prizes.create.title")</h2>
+	</div>
   
-    @prizes.prizeForm(routes.Prize.save, Messages("global.create"), prizeForm, hackathons)
-    
-    </div>
+	@prizes.prizeForm(hackathon.get, prizeForm, routes.Prize.save(hackathon.get.id), "global.add")
+
 }

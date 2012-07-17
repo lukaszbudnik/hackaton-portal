@@ -14,6 +14,8 @@ case class Prize(name: String,
   @Column("hackathon_id") hackathonId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
 
+  def this(order: Int, hackathonId: Long) = this("", "", order, None, None, hackathonId)
+  
   private lazy val hackathonRel: ManyToOne[Hackathon] = Prize.hackathonToPrizes.right(this)
 
   def hackathon = hackathonRel.head

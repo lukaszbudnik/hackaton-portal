@@ -7,18 +7,6 @@ import play.api.mvc.Controller
 
 object Prize extends Controller with securesocial.core.SecureSocial {
 
-  def index = UserAwareAction { implicit request =>
-    transaction {
-      Ok(views.html.prizes.index(model.Prize.all.toList, request.user))
-    }
-  }
-
-  def view(id: Long) = UserAwareAction { implicit request =>
-    transaction {
-      Ok(views.html.prizes.view(model.Prize.lookup(id), request.user))
-    }
-  }
-
   val prizeForm = Form(
     mapping(
       "name" -> nonEmptyText,
@@ -28,46 +16,69 @@ object Prize extends Controller with securesocial.core.SecureSocial {
       "founderWebPage" -> optional(nonEmptyText),
       "hackathonId" -> longNumber)(model.Prize.apply)(model.Prize.unapply))
 
-  def create = SecuredAction() { implicit request =>
+  def index(hid: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.prizes.create(prizeForm, model.Hackathon.all.toList, request.user))
+      Ok(views.html.prizes.index(model.Hackathon.lookup(hid), request.user))
     }
   }
 
-  def save = SecuredAction() { implicit request =>
-    prizeForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.prizes.create(errors, model.Hackathon.all.toList, request.user))
-      }, prize => transaction {
-        model.Prize.insert(prize)
-        Redirect(routes.Prize.index).flashing("status" -> "prizes.added")
-      })
-  }
-
-  def edit(id: Long) = SecuredAction() { implicit request =>
+  def view(hid: Long, id: Long) = UserAwareAction { implicit request =>
     transaction {
-      model.Prize.lookup(id).map { prize =>
-        Ok(views.html.prizes.edit(id, prizeForm.fill(prize), model.Hackathon.all.toList, request.user))
-      }.get
+      //TODO check if prize is in hackathon
+      Ok(views.html.prizes.view(model.Hackathon.lookup(hid), model.Prize.lookup(id), request.user))
     }
   }
 
-  def update(id: Long) = SecuredAction() { implicit request =>
+  def create(hid: Long) = SecuredAction() { implicit request =>
+    transaction {
+      val hackathon = model.Hackathon.lookup(hid)
+      val prize = new model.Prize(1, hid)
+      Ok(views.html.prizes.create(hackathon, prizeForm.fill(prize), request.user))
+    }
+  }
+
+  def save(hid: Long) = SecuredAction() { implicit request =>
     prizeForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.prizes.edit(id, errors, model.Hackathon.all.toList, request.user))
+        val hackathon = model.Hackathon.lookup(hid)
+        BadRequest(views.html.prizes.create(hackathon, errors, request.user))
       },
       prize => transaction {
-        model.Prize.update(id, prize)
-        Redirect(routes.Prize.index).flashing("status" -> "prizes.updated", "title" -> prize.name)
+        //TODO check if added
+        model.Prize.insert(prize)
+        Redirect(routes.Prize.index(hid)).flashing("status" -> "added", "title" -> prize.name)
       })
   }
 
-  def delete(id: Long) = SecuredAction() { implicit request =>
+  def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Prize.delete(id)
+      model.Prize.lookup(id).map { prize =>
+        Ok(views.html.prizes.edit(Some(prize.hackathon), id, prizeForm.fill(prize), request.user))
+      }.getOrElse {
+        // no prize found
+        Redirect(routes.Prize.view(hid, id)).flashing()
+      }
     }
-    Redirect(routes.Prize.index).flashing("status" -> "prizes.deleted")
   }
 
+  def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
+    prizeForm.bindFromRequest.fold(
+      errors => transaction {
+        val hackathon = model.Hackathon.lookup(hid)
+        BadRequest(views.html.prizes.edit(hackathon, id, errors, request.user))
+      },
+      prize => transaction {
+        //TODO check if updated
+        model.Prize.update(id, prize)
+        Redirect(routes.Prize.index(hid)).flashing("status" -> "updated", "title" -> prize.name)
+      })
+  }
+
+  def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
+    transaction {
+      //TODO check if deleted
+      model.Prize.delete(id)
+    }
+    Redirect(routes.Prize.index(hid)).flashing("status" -> "deleted")
+  }
 }

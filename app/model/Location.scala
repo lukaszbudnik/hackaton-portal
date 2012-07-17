@@ -19,8 +19,8 @@ object Location extends Schema {
   protected[model] val locations = table[Location]("locations")
   on(locations)(l => declare(l.id is (primaryKey, autoIncremented("location_id_seq"))))
 
-  def all(): Iterable[Location] = {
-    locations.toIterable
+  def all(): Seq[Location] = {
+    locations.toSeq
   }
 
   def lookup(id: Long): Option[Location] = {

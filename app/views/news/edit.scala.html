@@ -1,7 +1,7 @@
-@(id: Long, newsForm: Form[model.News], users: List[model.User], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
+@(id: Long, newsForm: Form[model.News], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
 
 @main2("news.edit.title", "news", Some(user)) {
 
-  @news.newsForm(routes.News.update(id), newsForm, users)
+  @news.newsForm(None, newsForm, routes.News.update(id), "global.update")
 
 }
