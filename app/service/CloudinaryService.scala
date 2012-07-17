@@ -17,10 +17,17 @@ import play.api.libs.json.JsValue
 
 object CloudinaryService {
   
-  val API_KEY = Play.application().configuration().getString("cloudinary.apikey");
-  val SECRET_KEY = Play.application().configuration().getString("cloudinary.secretkey")
-  val UPLOAD_URL = Play.application().configuration().getString("cloudinary.uploadUrl")
-  val DESTROY_URL = Play.application().configuration().getString("cloudinary.destroyUrl")
+    val confUrl = Play.application().configuration().getString("cloudinary.url");
+    val parsingTheme = """cloudinary://(.*)[:](.*)[@](.*)""".r
+    val parsingTheme(api_key, secret_url, cloud_name) = confUrl
+   
+    val API_KEY = api_key
+    val SECRET_KEY = secret_url
+    val UPLOAD_URL = "http://api.cloudinary.com/v1_1/" + cloud_name + "/image/upload"
+    val DESTROY_URL = "http://api.cloudinary.com/v1_1/" + cloud_name + "/image/destroy"
+
+  
+  
   
   def uploadImage(filename: String, fileInBytes : Array[Byte]) : Option[CloudinaryResponse] = {
     val httpClient = new DefaultHttpClient
