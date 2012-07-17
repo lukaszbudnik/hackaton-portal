@@ -30,7 +30,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
   def create(hid: Long) = SecuredAction() { implicit request =>
     transaction {
       val hackathon = model.Hackathon.lookup(hid)
-      val team = model.Team("", request.user.hackathonUserId, hid)
+      val team = new model.Team(request.user.hackathonUserId, hid)
       Ok(views.html.teams.create(hackathon, teamForm.fill(team), request.user))
     }
   }

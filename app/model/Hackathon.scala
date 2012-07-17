@@ -16,6 +16,7 @@ case class Hackathon(subject: String,
   val id: Long = 0L
 
   def this() = this("", HackathonStatus.Planning, new Date(), 0, 0) // need for status enumeration
+  def this(organiserId: Long) = this("", HackathonStatus.Planning, new Date(), organiserId, 0)
 
   private lazy val organiserRel: ManyToOne[User] = Hackathon.organiserToHackathons.right(this)
   private lazy val locationRel: ManyToOne[Location] = Hackathon.locationToHackathons.right(this)

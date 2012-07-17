@@ -50,8 +50,8 @@ object News extends Controller with securesocial.core.SecureSocial {
   }
 
   def create = SecuredAction() { implicit request =>
-    val news = model.News("", "", "", request.user.hackathonUserId, new Date(), None)
     transaction {
+      val news = new model.News(request.user.hackathonUserId)
       Ok(views.html.news.create(newsForm.fill(news), request.user))
     }
   }
@@ -59,7 +59,7 @@ object News extends Controller with securesocial.core.SecureSocial {
   def createH(hid: Long) = SecuredAction() { implicit request =>
     transaction {
       val hackathon = model.Hackathon.lookup(hid)
-      val news = model.News("", "", "", request.user.hackathonUserId, new Date(), Some(hid))
+      val news = new model.News(request.user.hackathonUserId, Some(hid))
       Ok(views.html.news.createH(hackathon, newsForm.fill(news), request.user))
     }
   }

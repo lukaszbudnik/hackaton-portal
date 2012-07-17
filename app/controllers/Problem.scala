@@ -29,7 +29,7 @@ object Problem extends Controller with securesocial.core.SecureSocial {
   def create(hid: Long) = SecuredAction() { implicit request =>
     transaction {
       val hackathon = model.Hackathon.lookup(hid)
-      val problem = model.Problem("", "", request.user.hackathonUserId, hid)
+      val problem = new model.Problem(request.user.hackathonUserId, hid)
       Ok(views.html.problems.create(hackathon, problemForm.fill(problem), request.user))
     }
   }

@@ -32,8 +32,7 @@ object Prize extends Controller with securesocial.core.SecureSocial {
   def create(hid: Long) = SecuredAction() { implicit request =>
     transaction {
       val hackathon = model.Hackathon.lookup(hid)
-      //TODO def in model (hid)
-      val prize = model.Prize("", "", 1, None, None, hid)
+      val prize = new model.Prize(1, hid)
       Ok(views.html.prizes.create(hackathon, prizeForm.fill(prize), request.user))
     }
   }

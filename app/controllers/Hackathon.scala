@@ -29,7 +29,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
   def index = UserAwareAction {
     implicit request =>
       transaction {
-        Ok(views.html.hackathons.index(model.Hackathon.all.toList, request.user))
+        Ok(views.html.hackathons.index(model.Hackathon.all, request.user))
       }
   }
 
@@ -43,7 +43,8 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
   def create = SecuredAction() {
     implicit request =>
       transaction {
-        Ok(views.html.hackathons.create(hackathonForm, model.User.all.toList, model.Location.all.toList, request.user))
+    	val hackathon = new model.Hackathon(request.user.hackathonUserId)
+        Ok(views.html.hackathons.create(hackathonForm.fill(hackathon), model.Location.all, request.user))
       }
   }
 
@@ -51,7 +52,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
     implicit request =>
       hackathonForm.bindFromRequest.fold(
         errors => transaction {
-          BadRequest(views.html.hackathons.create(errors, model.User.all.toList, model.Location.all.toList, request.user))
+          BadRequest(views.html.hackathons.create(errors, model.Location.all, request.user))
         },
         hackathon => transaction {
           model.Hackathon.insert(hackathon)
@@ -65,7 +66,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
       transaction {
         model.Hackathon.lookup(id).map {
           hackathon =>
-            Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathon), model.User.all.toList, model.Location.all.toList, request.user))
+            Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathon), model.Location.all, request.user))
         }.get
       }
   }
@@ -74,7 +75,7 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
     implicit request =>
       hackathonForm.bindFromRequest.fold(
         errors => transaction {
-          BadRequest(views.html.hackathons.edit(id, errors, model.User.all.toList, model.Location.all.toList, request.user))
+          BadRequest(views.html.hackathons.edit(id, errors, model.Location.all, request.user))
         },
         hackathon => transaction {
           model.Hackathon.update(id, hackathon)

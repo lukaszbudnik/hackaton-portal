@@ -19,6 +19,8 @@ case class News(title: String,
   @Column("hackathon_id") hackathonId: Option[Long]) extends KeyedEntity[Long] {
   val id: Long = 0L
 
+  def this(authorId: Long, hackathonId: Option[Long] = None) = this("", "", "", authorId, new Date(), hackathonId)
+    
   private lazy val authorRel: ManyToOne[User] = News.authorToNews.right(this)
   private lazy val hackathonRel: ManyToOne[Hackathon] = News.hackathonToNews.right(this)
   private lazy val labelsRel = News.newsToLabels.left(this)
