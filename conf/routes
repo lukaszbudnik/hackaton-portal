@@ -30,6 +30,7 @@ POST    /news                       controllers.News.save
 # Retrieve
 GET     /news                       controllers.News.index
 GET     /news/:id                   controllers.News.view(id: Long)
+GET     /news/search/:label         controllers.News.search(label: String)
 # Update
 GET     /news/:id/edit              controllers.News.edit(id: Long)
 POST    /news/:id                   controllers.News.update(id: Long)

@@ -1,7 +1,6 @@
 package model
 
 import java.util.Date
-import scala.Array.canBuildFrom
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl.CompositeKey2
 import org.squeryl.dsl.ManyToOne
@@ -60,6 +59,10 @@ case class NewsLabel(@Column("news_id") newsId: Long,
   def id = compositeKey(newsId, labelId)
 }
 
+object NewsLabel extends Schema {
+  protected[model] val newsLabels = table[NewsLabel]("news_labels")
+}
+
 object News extends Schema {
   protected[model] val news = table[News]("news")
   on(news)(n => declare(n.id is (primaryKey, autoIncremented("news_id_seq"))))
@@ -101,5 +104,13 @@ object News extends Schema {
 
   def delete(id: Long) = {
     news.deleteWhere(n => n.id === id)
+  }
+  
+  def findByLabel(label: String) = {
+    from(news, Label.labels, NewsLabel.newsLabels)((n, l, nl) =>
+        where(l.value === label and l.id === nl.labelId and n.id === nl.newsId)
+        select(n)
+        orderBy (n.publishedDate desc)
+      )
   }
 }

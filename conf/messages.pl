@@ -63,6 +63,7 @@ news.edit.title = Edytuj wiadomość
 news.status.added = Wiadomość '%s' dodana
 news.status.updated = Wiadomość '%s' zaktualizowana
 news.status.deleted = Wiadomość usunięta
+news.search = Znaleziono %d newsów z tagiem %s
 
 sponsors.title = Nasi sponsorzy
 sponsors.text = <p>Chcielibyśmy podziękować wszystkim naszym sponsorom. Oto ich pełna lista. Dziękujemy!</p>

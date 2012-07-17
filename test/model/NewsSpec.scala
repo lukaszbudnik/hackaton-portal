@@ -70,6 +70,16 @@ class NewsSpec extends Specification {
         }
       }
     }
+    "be retrivable by label" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        transaction {
+          
+          val newsList: Iterable[News] = News.findByLabel("test_label_1")
+          
+          newsList.size must equalTo(2)
+        }
+      }
+    }
     "be retrivable with author relationship" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {

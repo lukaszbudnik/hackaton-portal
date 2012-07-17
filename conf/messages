@@ -69,6 +69,7 @@ news.edit.title = Edit news
 news.status.added = News %s successfully added
 news.status.updated = News %s successfully updated
 news.status.deleted = News deleted
+news.search = Found %d news with %s label
 
 hackathons.title = Hackathons
 hackathons.addHackathon = Add a hackathon

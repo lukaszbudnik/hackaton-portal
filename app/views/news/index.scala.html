@@ -1,4 +1,4 @@
-@(news: Iterable[model.News], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
+@(news: Iterable[model.News], user: Option[securesocial.core.SocialUser], label: String = "")(implicit flash: Flash, request: Request[AnyContent])
 
 @import helper._
 @import tags._
@@ -13,6 +13,12 @@
 		    <div class="page-header">
 		    	<h1>@Messages("news.title")</h1>
 		    </div>
+
+		@if(label) {
+			<div class="alert alert-info">
+		       	<strong>@Messages("news.search").format(news.size, label)</strong>
+		    </div>
+		}
     
 		@flash.get("status").map { status =>
 			@flash.get("title").map { title =>

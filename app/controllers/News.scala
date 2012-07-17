@@ -30,6 +30,12 @@ object News extends Controller with securesocial.core.SecureSocial {
       Ok(views.html.news.index(model.News.all, request.user))
     }
   }
+  
+  def search(label: String) = UserAwareAction { implicit request =>
+    transaction {
+      Ok(views.html.news.index(model.News.findByLabel(label), request.user, label))
+    }
+  }
 
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
