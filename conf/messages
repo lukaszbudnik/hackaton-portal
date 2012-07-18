@@ -14,8 +14,6 @@ fileupload.label.error = Error
 fileupload.label.start = Start
 fileupload.label.cancel = Cancel
 fileupload.label.delete = Delete
-	
-
 
 navigation.home = Home
 navigation.news = News
@@ -187,8 +185,10 @@ sponsors.order.label = Current sponsor order
 sponsors.sponsored.label = Sponsored
 sponsors.notSponsored.label = Not sponsored
 
-
 newSponsor.title = Add new sponsor
 
 securityAbuse.title = Security Abuse Detected
 securityAbuse.text = Dear <strong>{0}</strong>! We have detected a security abuse. Please refrain from such actions in future as we may draw consequences next time.
+
+notFound.title = Not Found
+notFound.text = The page you have requested does not exist.

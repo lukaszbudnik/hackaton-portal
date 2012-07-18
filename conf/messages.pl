@@ -67,3 +67,9 @@ news.search = Znaleziono %d newsów z tagiem %s
 
 sponsors.title = Nasi sponsorzy
 sponsors.text = <p>Chcielibyśmy podziękować wszystkim naszym sponsorom. Oto ich pełna lista. Dziękujemy!</p>
+
+securityAbuse.title = Wykryto naruszenie bezpieczeństwa
+securityAbuse.text = Drogi <strong>{0}</strong>! Wykryliśmy próbę naruszenia bezpieczeństwa. Proszę powstrzymaj się od takich akcji ponieważ następnym razem możemy wyciągnąć konsekwencje i automatycznie zablokować Twoje konto.
+
+notFound.title = Nie znaleziono
+notFound.text = Strona, na którą próbujesz wejść nie istnieje.

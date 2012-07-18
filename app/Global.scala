@@ -33,6 +33,14 @@ object Global extends GlobalSettings {
 		      })
     }
   }
+  
+  override def onHandlerNotFound(request: RequestHeader): Result = {
+    
+    NotFound(Play.maybeApplication.map {
+      case app if app.mode == Mode.Dev => views.html.defaultpages.devNotFound.f
+      case app => views.html.errors.notFound.f
+    }.getOrElse(views.html.errors.notFound.f)(request, Play.maybeApplication.flatMap(_.routes)))
+  }
 
   private def getSession(adapter: DatabaseAdapter, app: Application) = Session.create(DB.getConnection()(app), adapter)
 

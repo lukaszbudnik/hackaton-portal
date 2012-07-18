@@ -1,4 +1,4 @@
-@(title: String, user: Option[securesocial.core.SocialUser], nav: String = "home")(content: Html)
+@(title: String)(content: Html)
 
 <!DOCTYPE html>
 
@@ -6,12 +6,10 @@
     <head>
 		<meta charset="utf-8" />
         <title>@title</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
 		<script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
-		<script src="@routes.Assets.at("javascripts/bootstrap-datepicker.js")" type="text/javascript"></script>
 		<script src="@routes.Assets.at("javascripts/google-analytics.js")" type="text/javascript"></script>
     	<style type="text/css">
       	body {
@@ -19,8 +17,8 @@
 	    	padding-bottom: 40px;
 	  	}
 		</style>
-		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-responsive.css")">
-		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/datepicker.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")">
+		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-responsive.min.css")">
 
     	<!--[if lt IE 9]>
       	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -36,19 +34,10 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand">@Messages("brand")</a>
+          <img src="@routes.Assets.at("images/logo.png")" class="brand" style="padding: 0px;"/>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="@("active".when(nav == "home"))"><a href="@routes.Application.index">@Messages("navigation.home")</a></li>
-              <li class="@("active".when(nav == "news"))"><a href="@routes.News.index">@Messages("navigation.news")</a></li>
-              <li class="@("active".when(nav == "about"))"><a href="@routes.Application.about">@Messages("navigation.about")</a></li>
-			  <li class="@("active".when(nav == "sponsors"))"><a href="@routes.Sponsor.index">@Messages("navigation.sponsors")</a></li>
-              <li class="@("active".when(nav == "contact"))"><a href="@routes.Application.contact">@Messages("navigation.contact")</a></li>
-              @user.map { user =>
-                <li class="@("active".when(nav == "profile"))"><a href="@routes.Application.profile">@user.displayName</a></li>
-              }.getOrElse {
-                <li><a href="@routes.Application.profile">@Messages("navigation.login")</a></li>
-              }
+              <li><a href="@routes.Application.index">@Messages("navigation.home")</a></li>
             </ul>
           </div>
         </div>
@@ -56,5 +45,11 @@
     </div>
 
         @content
+        
+        <footer>
+		    <p style="clear:both"></p>
+		    <p style="text-align: center">&copy; @Messages("brand") @Messages("years")</p>
+		</footer>
+        
     </body>
 </html>
