@@ -2,7 +2,11 @@
 
 @news.map { n =>
             <div class="page-header">
-	    		<h2>@if(showHackathons) { 
+	    		<h2>
+	    		@if(n.author.avatarUrl) {
+					<img src="@n.author.avatarUrl" alt="@n.author.name" height="40px" width="40px" />
+				}
+	    		@if(showHackathons) { 
 		    			@n.hackathon.map { h => 
 		    				@h.subject:
 						}
