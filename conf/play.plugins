@@ -1,4 +1,3 @@
 9999:service.UserService
-10000:securesocial.core.providers.TwitterProvider
 10001:securesocial.core.providers.FacebookProvider
 10002:securesocial.core.providers.GoogleProvider
