@@ -1,6 +1,7 @@
-@(news: Iterable[model.News], hackathon: Option[model.Hackathon]= None)
+@(news: Iterable[model.News])
 
 @news.map { n =>
+
 	<div class="page-header">
 		<h2>
 			@if(n.author.avatarUrl) { 
@@ -8,7 +9,13 @@
 			}
 			@n.hackathon.map { h => @h.subject: } @n.title
 		</h2>
-		<p>@Html(n.text.split("<!--more-->").head)...</p>
+		<p>
+			@if(n.text.contains("<!--more-->")) {
+				@Html(n.text.split("<!--more-->").head)...
+			} else {
+				@Html(n.text)
+			}
+   		</p>
 	    <p>@Messages("news.author.label"): @n.author.name @Messages("news.publishedDate.label"): @n.publishedDate</p>
 	    <p>@Messages("news.labels.label"):
 			@for(l <- n.labels) {
