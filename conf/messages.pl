@@ -1,6 +1,20 @@
 brand = hackaton.pl
 years = 2012
 
+error.unknown = Wystąpił nieoczekiwany błąd
+
+fileupload.server.error = Wystąpił błąd podczas transferu pliku
+fileupload.filetoobig = Rozmiar pliku jest zbyt duży
+fileupload.filetoosmall = Rozmiar pliku jest zbyt mały
+fileupload.typenotallowed = Niedozwolony typ pliku
+fileupload.maxnofiles.exceeded = Maksymalna liczba plików została przekroczona
+fileupload.filesize.exceeded = Przekroczono dopuszczalny limit na wielkość transferu 
+fileupload.emptyResult = Pusty plik
+fileupload.label.error = Błąd
+fileupload.label.start = Start
+fileupload.label.cancel = Anuluj
+fileupload.label.delete = Usuń
+
 global.cancel      = Anuluj
 global.delete      = Usuń
 global.edit        = Edytuj

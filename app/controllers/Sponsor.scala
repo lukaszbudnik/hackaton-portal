@@ -17,15 +17,12 @@ import play.api.data.Forms.number
 import play.api.data.Forms.optional
 import play.api.data.Form
 import play.api.i18n.Messages
-import play.api.libs.json.Json._
-import play.api.libs.json.Format
-import play.api.libs.json.JsArray
-import play.api.libs.json.JsObject
-import play.api.libs.json.JsString
-import play.api.libs.json.JsValue
+import play.api.libs.json.Json.toJson
 import play.api.mvc.Controller
 import play.api.Logger
-import service.CloudinaryService
+import plugin.cloudimage.CloudImageErrorResponse
+import plugin.cloudimage.CloudImageService
+import plugin.cloudimage.CloudImageSuccessResponse
 
 object Sponsor extends Controller with securesocial.core.SecureSocial {
 
@@ -83,30 +80,25 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
     in.read(bytes)
     in.close()
     val filename = request.headers.get("X-File-Name").get
-    val responseOption = CloudinaryService.uploadImage(filename, bytes);
+    val response = CloudImageService.upload(filename, bytes)
 
-    if (responseOption.isDefined) {
+    response match {
+      case success: CloudImageSuccessResponse =>
 
-      responseOption.get match {
-        case success: CloudinaryService.CloudinaryImageResponse =>
+        transaction {
+          val res = new Resource(success.url, success.publicId);
+          val newRes = Resource.insert(res)
 
-          transaction {
-            val res = new Resource(success.url, success.publicId);
-            val newRes = Resource.insert(res)
+          val logoFile = new SponsorLogoDetails(success.url, res.id.toString())
 
-            val logoFile = new SponsorLogoDetails(success.url, res.id.toString())
+          Ok(toJson(logoFile))
+        }
+      case error: CloudImageErrorResponse =>
 
-            Ok(toJson(logoFile))
-          }
-        case error: CloudinaryService.CloudinaryErrorResponse =>
-
-          Logger.debug("Sponsor - cloudinaryService - error: " + error.message)
-          Ok(uploadError)
-      }
-    } else {
-
-      Ok(uploadError)
+        Logger.debug("Sponsor - cloudinaryService - error: " + error.message)
+        Ok(uploadError)
     }
+
   }
 
   def getLogoDetails(id: Long) = UserAwareAction { implicit request =>
@@ -173,7 +165,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
             model.Resource.lookup(resId) map { resource =>
 
               model.Resource.delete(resId);
-              CloudinaryService.destroyImage(resource.publicId)
+              CloudImageService.destroy(resource.publicId)
             }
           }
 
@@ -200,11 +192,11 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
         sponsor.logoResourceId map { rId =>
           model.Resource.lookup(rId) map { resource =>
             model.Resource.delete(resource.id)
-            CloudinaryService.destroyImage(resource.publicId)
+            CloudImageService.destroy(resource.publicId)
           }
         }
       }
-      
+
     }
     Redirect(routes.Sponsor.index).flashing("status" -> "sponsors.deleted")
   }
