@@ -8,44 +8,43 @@
     <div class="container">
 
 		<div class="row">
+
     		<div class="span9">
     
-		    <div class="page-header">
-		    	<h1>@Messages("news.title")</h1>
-		    </div>
+				<div class="page-header">
+					<h1>@Messages("news.title")</h1>
+		    	</div>
 
-		@if(label) {
-			<div class="alert alert-info">
-		       	<strong>@Messages("news.search").format(news.size, label)</strong>
-		    </div>
-		}
+				@if(label) {
+				<div class="alert alert-info">
+		       		<strong>@Messages("news.search").format(news.size, label)</strong>
+				</div>
+				}
     
-		@tags.flashing("news.status")
+				@flashing("news.status")
 
-        @newsList(news)
+				@newsList(news)
 
-		@user.map { user =>
-		  	@if(user.isAdmin) {
-			<div class="form-actions">
-	    		<a class="btn btn-success" href="@routes.News.create">@Messages("news.addNews")</a>
-	        </div>
-		  	}
-		}
+				@user.map { user =>
+		  			@if(user.isAdmin) {
+		  				<div class="form-actions">
+		  					<a class="btn btn-success" href="@routes.News.create">@Messages("news.addNews")</a>
+		  				</div>
+		  			}
+				}
 		
 			</div>
 
 			<div class="span3">
-	    	@twitterStream()
+				@twitterStream()
 	    	</div>
+
 		</div>
     	
 		@footer()
 
-		</div>
+	</div>
 
-
-    </div>
-		
 	@commentsCount()
 }
 

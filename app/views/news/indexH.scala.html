@@ -1,5 +1,7 @@
 @(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
+@import tags._
+
 @hackathons.h_main(hackathon, user, "news", "news.status") {
 
 	@hackathon.map { h =>
@@ -14,6 +16,8 @@
 	  		}
 		}
 		
+		@footer()
+		
+		@commentsCount()
 	}
-	
 }
