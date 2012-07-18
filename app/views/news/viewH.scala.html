@@ -1,36 +1,28 @@
 @(hackathon: Option[model.Hackathon], news: Option[model.News], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
 @import helper._
+@import tags._
 
 @hackathons.h_main(hackathon, user, "news", "news.status") {
-  
+	
+	@newsSingle(news)
+	
 	@news.map{ news =>
-	  	<div class="page-header">
-			<h2>@news.title</h2>
-		</div>
 	  
-	  	<div class="row">
-			<div class="span12">
-				<p>@Html(news.text)</p>
-				<p>@Messages("news.author.label"): @news.author.name @Messages("news.publishedDate.label"): @news.publishedDate</p>
-				<p>@Messages("news.labels.label"):
-					@for(l <- news.labels) {
-						<span class="label">@l.value</span>
-					}
-				</p>
+		@user.map { user =>
+		  	@if(user.isAdmin || user.hackathonUserId == news.authorId ) {
+		  		<div class="form-actions">
+		  			@form(routes.News.deleteH(hackathon.get.id, news.id)) {
+		  				<a class="btn btn-success" href="@routes.News.editH(hackathon.get.id, news.id)">@Messages("global.edit")</a>
+		  				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+		  			}
+		  		</div>
+		  	}
+		}
+		
+	    @comments()
+	        
+	    @footer()
 
-	    		<div class="form-actions">
-    				@form(routes.News.deleteH(hackathon.get.id, news.id)) {
-    				<a class="btn btn-success" href="@routes.News.editH(hackathon.get.id, news.id)">@Messages("global.edit")</a>
-    				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-    				}
-    			</div>
-	    	</div>
-	   	</div> 
-	  
-	}.getOrElse{
-		<div class="page-header">
-			<h2>@Messages("news.notFound")</h2>
-		</div>
 	}
 }

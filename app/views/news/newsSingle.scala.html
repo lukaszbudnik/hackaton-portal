@@ -1,30 +1,23 @@
-@(news: Option[model.News], user: Option[securesocial.core.SocialUser])
+@(news: Option[model.News])
 
 @import helper._
 
 @news.map { n =>
-		    <h2>
-			@if(n.author.avatarUrl) {
-				<img src="@n.author.avatarUrl" alt="@n.author.name" height="40px" width="40px" />
+	<div class="page-header">
+		<h2>
+			@if(n.author.avatarUrl) { 
+				<img src="@n.author.avatarUrl" alt="@n.author.name" height="40px" width="40px" />    				
 			}
-			@n.hackathon.map { h => 
-    				@h.subject:
-				} @n.title</h2>
-			<p>@Html(n.text)</p>
-			<p>@Messages("news.author.label"): @n.author.name @Messages("news.publishedDate.label"): @n.publishedDate</p>
-			<p>@Messages("news.labels.label"):
-				@for(l <- n.labels) {
-				<span class="label">@l.value</span>
-				}
-			</p>
-			@if(user) {
-			<div class="form-actions">
-	    		@form(routes.News.delete(n.id)) {
-		    	<a class="btn btn-success" href="@routes.News.edit(n.id)">@Messages("global.edit")</a>
-	            <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-	            }
-	    	</div>
-            }
+			@n.hackathon.map { h => @h.subject: } @n.title
+		</h2>
+		<p>@Html(n.text)</p>
+	    <p>@Messages("news.author.label"): @n.author.name @Messages("news.publishedDate.label"): @n.publishedDate</p>
+	    <p>@Messages("news.labels.label"):
+			@for(l <- n.labels) {
+				<a href="@routes.News.search(l.value)" style="text-decoration: none"><span class="label">@l.value</span></a>
+			}
+		</p>
+   	</div>
 }.getOrElse {
 	<h2>@Messages("news.notFound")</h2>
 }
