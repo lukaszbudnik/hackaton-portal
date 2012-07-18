@@ -1,24 +1,26 @@
-@(news: Iterable[model.News], showHackathons: Boolean = true)
+@(news: Iterable[model.News], hackathon: Option[model.Hackathon]= None)
 
 @news.map { n =>
-            <div class="page-header">
-	    		<h2>
-	    		@if(n.author.avatarUrl) {
-					<img src="@n.author.avatarUrl" alt="@n.author.name" height="40px" width="40px" />
-				}
-	    		@if(showHackathons) { 
-		    			@n.hackathon.map { h => 
-		    				@h.subject:
-						}
-					} @n.title</h2>
-	    		<p>@Html(n.text.split("<!--more-->").head)...</p>
-	    		<p>@Messages("news.author.label"): @n.author.name @Messages("news.publishedDate.label"): @n.publishedDate</p>
-	    		<p>@Messages("news.labels.label"):
-				@for(l <- n.labels) {
-				  <a href="@routes.News.search(l.value)" style="text-decoration: none"><span class="label">@l.value</span></a>
-				}
-				</p>
-	    		<p><a class="btn" href="@routes.News.view(n.id)#disqus_thread">@Messages("global.readMore")</a></p>
-    		</div>
+	<div class="page-header">
+		<h2>
+			@if(n.author.avatarUrl) { 
+				<img src="@n.author.avatarUrl" alt="@n.author.name" height="40px" width="40px" />    				
+			}
+			@n.hackathon.map { h => @h.subject: } @n.title
+		</h2>
+		<p>@Html(n.text.split("<!--more-->").head)...</p>
+	    <p>@Messages("news.author.label"): @n.author.name @Messages("news.publishedDate.label"): @n.publishedDate</p>
+	    <p>@Messages("news.labels.label"):
+			@for(l <- n.labels) {
+				<a href="@routes.News.search(l.value)" style="text-decoration: none"><span class="label">@l.value</span></a>
+			}
+		</p>
+	    <p>
+	    @n.hackathon.map { h =>
+			<a class="btn" href="@routes.News.viewH(h.id, n.id)#disqus_thread">@Messages("global.readMore")</a>
+	    }.getOrElse {
+	    	<a class="btn" href="@routes.News.view(n.id)#disqus_thread">@Messages("global.readMore")</a>
+	    }
+	    </p>
+	</div>
 }
-

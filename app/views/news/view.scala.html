@@ -4,18 +4,28 @@
 @import tags._
 
 @main(Messages("news.title"), user, nav = "news") {
-    
-    <div class="container">
-    
-		<div class="page-header">
+	
+	<div class="container">
 
-    		@newsSingle(news, user)
-    	
-	    </div>
+		@newsSingle(news)
+	
+		@news.map{ news =>
 
-	    @comments()
+		  	@user.map { user =>
+		  		@if(user.isAdmin || user.hackathonUserId == news.authorId ) {
+		  			<div class="form-actions">
+		  				@form(routes.News.delete(news.id)) {
+		  					<a class="btn btn-success" href="@routes.News.edit(news.id)">@Messages("global.edit")</a>
+		  					<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+		  				}
+		  			</div>
+		  		}
+			}
+	    		
+			@comments()
 	        
-	    @footer()
-    
-    </div>
+			@footer()
+		}
+
+	</div>
 }
