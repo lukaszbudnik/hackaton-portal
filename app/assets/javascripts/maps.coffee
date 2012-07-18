@@ -13,6 +13,7 @@ initialize = () ->
 
     google.maps.event.addListenerOnce(map, 'tilesloaded', addMarkers(map, markerImages))
 
+
 addMarkers = (map, markerImages) ->
     $.getJSON('/hackathons.json', (data) ->
         latlngbounds = new google.maps.LatLngBounds()
@@ -20,8 +21,12 @@ addMarkers = (map, markerImages) ->
             latLng = new google.maps.LatLng(val.location.latitude, val.location.longitude);
             marker = new google.maps.Marker(position: latLng, map: map, icon: markerImages[val.status])
             latlngbounds.extend(latLng)
+            google.maps.event.addListener(marker, 'click', () -> 
+            	window.location.href = '/hackathons/' + val.id + '/news'
+            )
         )
         map.fitBounds(latlngbounds)
     )
 
 google.maps.event.addDomListener(window, 'load', initialize);
+

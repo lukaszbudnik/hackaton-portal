@@ -7,7 +7,7 @@ import org.squeryl.PrimitiveTypeMode.long2ScalarLong
 import org.squeryl.PrimitiveTypeMode.transaction
 
 import helpers.SponsorLogoDetails
-import model.CloudinaryResource
+import model.Resource
 import play.api.data.Forms.boolean
 import play.api.data.Forms.list
 import play.api.data.Forms.longNumber
@@ -91,8 +91,8 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
         case success: CloudinaryService.CloudinaryImageResponse =>
 
           transaction {
-            val res = new CloudinaryResource(success.url, success.publicId);
-            val newRes = CloudinaryResource.insert(res)
+            val res = new Resource(success.url, success.publicId);
+            val newRes = Resource.insert(res)
 
             val logoFile = new SponsorLogoDetails(success.url, res.id.toString())
 
@@ -112,7 +112,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
   def getLogoDetails(id: Long) = UserAwareAction { implicit request =>
 
     transaction {
-      val r = CloudinaryResource.lookup(id).get
+      val r = Resource.lookup(id).get
       val s: SponsorLogoDetails = new SponsorLogoDetails(r.url, r.id.toString())
       Ok(toJson(s))
     }
@@ -170,9 +170,9 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
 
           if (oldSponsor.logoResourceId.isDefined && sponsor.logoResourceId.isEmpty) {
             val resId = oldSponsor.logoResourceId.get
-            model.CloudinaryResource.lookup(resId) map { resource =>
+            model.Resource.lookup(resId) map { resource =>
 
-              model.CloudinaryResource.delete(resId);
+              model.Resource.delete(resId);
               CloudinaryService.destroyImage(resource.publicId)
             }
           }
@@ -198,8 +198,8 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
         sponsor.hackathons.dissociateAll
         model.Sponsor.delete(id)
         sponsor.logoResourceId map { rId =>
-          model.CloudinaryResource.lookup(rId) map { resource =>
-            model.CloudinaryResource.delete(resource.id)
+          model.Resource.lookup(rId) map { resource =>
+            model.Resource.delete(resource.id)
             CloudinaryService.destroyImage(resource.publicId)
           }
         }

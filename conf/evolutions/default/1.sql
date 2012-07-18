@@ -170,9 +170,9 @@ CREATE TABLE prizes (
     PRIMARY KEY (id)
 );
 
-CREATE SEQUENCE cloudinary_resource_id_seq;
-CREATE TABLE cloudinary_resources(
-	id integer NOT NULL DEFAULT nextval('cloudinary_resource_id_seq'),
+CREATE SEQUENCE resource_id_seq;
+CREATE TABLE resources(
+	id integer NOT NULL DEFAULT nextval('resource_id_seq'),
 	publicId varchar(255),
 	url text,
 	PRIMARY KEY (id)
@@ -187,12 +187,11 @@ CREATE TABLE sponsors (
     website varchar(255),
     is_general_sponsor boolean,
     sponsor_order integer,
-    logo_resource_id integer ,
-    FOREIGN KEY (logo_resource_id) REFERENCES cloudinary_resources(id),
+    logo_resource_id integer,
+    
+    FOREIGN KEY (logo_resource_id) REFERENCES resources(id),
     PRIMARY KEY (id)
 );
-
-
 
 CREATE SEQUENCE hackathon_sponsor_id_seq;
 CREATE TABLE hackathons_sponsors (
@@ -215,6 +214,9 @@ DROP SEQUENCE hackathon_sponsor_id_seq;
 
 DROP TABLE sponsors CASCADE;
 DROP SEQUENCE sponsor_id_seq;
+
+DROP TABLE resources CASCADE;
+DROP SEQUENCE resource_id_seq;
 
 DROP TABLE prizes CASCADE;
 DROP SEQUENCE prize_id_seq;

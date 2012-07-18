@@ -20,8 +20,9 @@ case class Sponsor(name: String,
   val id: Long = 0L
 
   lazy val hackathons = Sponsor.hackathonsToSponsors.right(this)
-  private lazy val resourceRel: ManyToOne[CloudinaryResource] = Sponsor.resourcesToSponsors.right(this)
-  def logoResource = resourceRel.headOption
+  private lazy val logoResourceRel: ManyToOne[Resource] = Sponsor.resourcesToSponsors.right(this)
+  
+  def logoResource = logoResourceRel.headOption
   
   // TODO 
   //def hackathons = hackathonsRel.toIterable
@@ -39,7 +40,7 @@ object Sponsor extends Schema {
   protected[model] val sponsors = table[Sponsor]("sponsors")
   on(sponsors)(s => declare(s.id is (primaryKey, autoIncremented("sponsor_id_seq"))))
 
-  val resourcesToSponsors = oneToManyRelation(CloudinaryResource.resources, sponsors).via((r, s) => r.id === s.logoResourceId)
+  val resourcesToSponsors = oneToManyRelation(Resource.resources, sponsors).via((r, s) => r.id === s.logoResourceId)
   val hackathonsToSponsors =
     manyToManyRelation(Hackathon.hackathons, Sponsor.sponsors, "hackathons_sponsors").
       via[HackathonSponsor](f = (h, s, hs) => (h.id === hs.hackathonId, s.id === hs.sponsorId))
