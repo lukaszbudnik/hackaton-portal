@@ -1,5 +1,7 @@
 @(user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent])
 
+@import tags._
+
 @main(Messages("contact.title"), user, nav = "contact") {
 
 	<div class="container">
@@ -18,9 +20,9 @@
                 
 		</div>
 
-		<hr />
+		<hr/>
 
-		@tags.footer()
+		@footer()
 	
 	</div>
 }
