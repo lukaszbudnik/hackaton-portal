@@ -3,7 +3,11 @@
 @import helper._
 
 @news.map { n =>
-		    <h2>@n.hackathon.map { h => 
+		    <h2>
+			@if(n.author.avatarUrl) {
+				<img src="@n.author.avatarUrl" alt="@n.author.name" height="40px" width="40px" />
+			}
+			@n.hackathon.map { h => 
     				@h.subject:
 				} @n.title</h2>
 			<p>@Html(n.text)</p>
