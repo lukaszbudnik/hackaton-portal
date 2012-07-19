@@ -5,16 +5,18 @@ error.date = Wrong date
 error.unknown = Unknown error occured
 
 fileupload.server.error = Error occured while uploading a file
-fileupload.filetoobig = File is too big
-fileupload.filetoosmall = File is too small
-fileupload.typenotallowed = Filetype not allowed
-fileupload.maxnofiles.exceeded = Max number of files exceeded
-fileupload.filesize.exceeded = Uploaded bytes exceed file size
-fileupload.emptyResult = Empty file upload result
-fileupload.label.error = Error
-fileupload.label.start = Start
-fileupload.label.cancel = Cancel
-fileupload.label.delete = Delete
+js.fileupload.filetoobig = File is too big
+js.fileupload.filetoosmall = File is too small
+js.fileupload.typenotallowed = Filetype not allowed
+js.fileupload.maxnofiles.exceeded = Max number of files exceeded
+js.fileupload.filesize.exceeded = Uploaded bytes exceed file size
+js.fileupload.emptyResult = Empty file upload result
+js.fileupload.label.error = Error
+js.fileupload.label.start = Start
+js.fileupload.label.cancel = Cancel
+js.fileupload.label.delete = Delete
+
+js.infobubble.more = More...
 
 navigation.home = Home
 navigation.news = News
@@ -40,6 +42,7 @@ global.delete = Delete
 global.update = Update
 global.none = None
 global.status.error = Can''t perform this operation
+global.dateformat = dd-MM-yyyy
 
 social.twitter.follow = Follow
 

@@ -13,7 +13,11 @@ initialize = () ->
 
     google.maps.event.addListenerOnce(map, 'tilesloaded', addMarkers(map, markerImages))
 
-
+hackathonDescription = (subject, date, city, fullAddress, id) ->
+	"<b>#{subject}</b>  (#{date})
+	<br/>#{city} #{fullAddress}<br/>
+	>>  <a href=\"/hackathons/#{id}/news\">#{Messages('js.infobubble.more')}</a>"  
+	
 addMarkers = (map, markerImages) ->
     $.getJSON('/hackathons.json', (data) ->
         latlngbounds = new google.maps.LatLngBounds()
@@ -21,8 +25,18 @@ addMarkers = (map, markerImages) ->
             latLng = new google.maps.LatLng(val.location.latitude, val.location.longitude);
             marker = new google.maps.Marker(position: latLng, map: map, icon: markerImages[val.status])
             latlngbounds.extend(latLng)
-            google.maps.event.addListener(marker, 'click', () -> 
-            	window.location.href = '/hackathons/' + val.id + '/news'
+            infoBubble = new InfoBubble({map: map, 
+            content:  hackathonDescription(val.subject, val.date,
+             val.location.city, val.location.fullAddress, 
+             val.id)
+            shadowStyle: 1,
+            arrowPosition: 30,
+            padding: 15,
+            arrowSize: 6
+            })
+                      
+            google.maps.event.addListener(marker, 'click', () ->
+            	infoBubble.open(map, marker) if !infoBubble.isOpen()
             )
         )
         map.fitBounds(latlngbounds)

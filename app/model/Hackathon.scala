@@ -1,12 +1,14 @@
 package model
 
+import java.text.SimpleDateFormat
 import java.util.Date
 import org.squeryl.PrimitiveTypeMode._
+import org.squeryl.annotations.Column
 import org.squeryl.dsl.ManyToOne
 import org.squeryl.KeyedEntity
 import org.squeryl.Schema
-import org.squeryl.annotations.Column
 import play.api.libs.json._
+import play.api.i18n.Messages
 
 case class Hackathon(subject: String,
   status: HackathonStatus.Value,
@@ -81,6 +83,7 @@ object Hackathon extends Schema {
       "id" -> JsNumber(h.id),
       "subject" -> JsString(h.subject),
       "status" -> JsString(h.status.id.toString),
+      "date" -> JsString(new SimpleDateFormat(Messages("global.dateformat")).format(h.date)),
       "organiserName" -> JsString(h.organiser.name),
       "location" -> JsObject(List(
         "id" -> JsNumber(h.location.id),

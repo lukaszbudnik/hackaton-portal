@@ -4,16 +4,18 @@ years = 2012
 error.unknown = Wystąpił nieoczekiwany błąd
 
 fileupload.server.error = Wystąpił błąd podczas transferu pliku
-fileupload.filetoobig = Rozmiar pliku jest zbyt duży
-fileupload.filetoosmall = Rozmiar pliku jest zbyt mały
-fileupload.typenotallowed = Niedozwolony typ pliku
-fileupload.maxnofiles.exceeded = Maksymalna liczba plików została przekroczona
-fileupload.filesize.exceeded = Przekroczono dopuszczalny limit na wielkość transferu 
-fileupload.emptyResult = Pusty plik
-fileupload.label.error = Błąd
-fileupload.label.start = Start
-fileupload.label.cancel = Anuluj
-fileupload.label.delete = Usuń
+js.fileupload.filetoobig = Rozmiar pliku jest zbyt duży
+js.fileupload.filetoosmall = Rozmiar pliku jest zbyt mały
+js.fileupload.typenotallowed = Niedozwolony typ pliku
+js.fileupload.maxnofiles.exceeded = Maksymalna liczba plików została przekroczona
+js.fileupload.filesize.exceeded = Przekroczono dopuszczalny limit na wielkość transferu 
+js.fileupload.emptyResult = Pusty plik
+js.fileupload.label.error = Błąd
+js.fileupload.label.start = Start
+js.fileupload.label.cancel = Anuluj
+js.fileupload.label.delete = Usuń
+
+js.infobubble.more = Więcej...
 
 global.cancel      = Anuluj
 global.delete      = Usuń

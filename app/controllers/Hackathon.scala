@@ -1,13 +1,13 @@
 package controllers
 
 import org.squeryl.PrimitiveTypeMode.transaction
-
 import helpers.Forms.enum
 import play.api.data.Forms._
 import play.api.data.Form
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.api.libs.json.Json._
+import jsmessages.api.JsMessages
 
 object Hackathon extends Controller with securesocial.core.SecureSocial {
 
@@ -90,4 +90,6 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
       }
       Redirect(routes.Hackathon.index).flashing("status" -> "deleted")
   }
+  
+ 
 }

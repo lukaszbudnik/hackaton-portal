@@ -17,7 +17,8 @@ object ApplicationBuild extends Build {
       "postgresql" % "postgresql" % "9.1-901.jdbc4",
       "net.databinder" %% "dispatch-http" % "0.8.7",
       "net.databinder" %% "dispatch-mime" % "0.8.7",
-      "net.databinder" %% "dispatch-json" % "0.8.7"
+      "net.databinder" %% "dispatch-json" % "0.8.7",
+      "com.github.julienrf" %% "play-jsmessages" % "1.2.1"
     )
 
     val secureSocial = PlayProject(
@@ -25,6 +26,6 @@ object ApplicationBuild extends Build {
     )
     
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
-      // Add your own project settings here      
+      resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo/"     
     ).dependsOn(secureSocial).aggregate(secureSocial)
 }
