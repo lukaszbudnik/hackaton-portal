@@ -1,9 +1,5 @@
 package controllers
 
-import java.util.Date
-
-import scala.Array.canBuildFrom
-
 import org.squeryl.PrimitiveTypeMode.transaction
 
 import play.api.data.Forms.date
@@ -30,7 +26,7 @@ object News extends Controller with securesocial.core.SecureSocial {
       Ok(views.html.news.index(model.News.all, request.user))
     }
   }
-  
+
   def search(label: String) = UserAwareAction { implicit request =>
     transaction {
       Ok(views.html.news.index(model.News.findByLabel(label), request.user, label))
@@ -56,6 +52,7 @@ object News extends Controller with securesocial.core.SecureSocial {
   }
 
   def create = SecuredAction() { implicit request =>
+    helpers.Security.verifyIfAllowed(request.user)
     transaction {
       val news = new model.News(request.user.hackathonUserId)
       Ok(views.html.news.create(newsForm.fill(news), request.user))
@@ -65,12 +62,16 @@ object News extends Controller with securesocial.core.SecureSocial {
   def createH(hid: Long) = SecuredAction() { implicit request =>
     transaction {
       val hackathon = model.Hackathon.lookup(hid)
+      hackathon.map { h =>
+        helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
+      }
       val news = new model.News(request.user.hackathonUserId, Some(hid))
       Ok(views.html.news.createH(hackathon, newsForm.fill(news), request.user))
     }
   }
 
   def save = SecuredAction() { implicit request =>
+    helpers.Security.verifyIfAllowed(request.user)
     newsForm.bindFromRequest.fold(
       errors => transaction {
         BadRequest(views.html.news.create(errors, request.user))
@@ -88,6 +89,9 @@ object News extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.news.createH(hackathon, errors, request.user))
       },
       news => transaction {
+        model.Hackathon.lookup(hid).map { h =>
+          helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
+        }
         model.News.insert(news)
         Redirect(routes.News.indexH(hid)).flashing("status" -> "added", "title" -> news.title)
       })
@@ -96,6 +100,7 @@ object News extends Controller with securesocial.core.SecureSocial {
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.News.lookup(id).map { news =>
+        helpers.Security.verifyIfAllowed(news.authorId)(request.user)
         Ok(views.html.news.edit(id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), request.user))
       }.getOrElse {
         // no news found
@@ -107,6 +112,11 @@ object News extends Controller with securesocial.core.SecureSocial {
   def editH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.News.lookup(id).map { news =>
+        news.hackathon.map { h =>
+          helpers.Security.verifyIfAllowed(news.authorId, h.organiserId)(request.user)
+        }.getOrElse {
+          helpers.Security.verifyIfAllowed(news.authorId)(request.user)
+        }
         Ok(views.html.news.editH(news.hackathon, id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), request.user))
       }.getOrElse {
         // no news found
@@ -121,6 +131,9 @@ object News extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.news.edit(id, errors, request.user))
       },
       news => transaction {
+        model.News.lookup(id).map { n =>
+          helpers.Security.verifyIfAllowed(n.authorId)(request.user)
+        }
         model.News.update(id, news)
         Redirect(routes.News.index).flashing("status" -> "updated", "title" -> news.title)
       })
@@ -133,6 +146,13 @@ object News extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.news.editH(hackathon, id, errors, request.user))
       },
       news => transaction {
+        model.News.lookup(id).map { n =>
+          n.hackathon.map { h =>
+            helpers.Security.verifyIfAllowed(n.authorId, h.organiserId)(request.user)
+          }.getOrElse {
+            helpers.Security.verifyIfAllowed(n.authorId)(request.user)
+          }
+        }
         model.News.update(id, news)
         Redirect(routes.News.indexH(hid)).flashing("status" -> "updated", "title" -> news.title)
       })
@@ -140,6 +160,9 @@ object News extends Controller with securesocial.core.SecureSocial {
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
+      model.News.lookup(id).map { n =>
+        helpers.Security.verifyIfAllowed(n.authorId)(request.user)
+      }
       model.News.delete(id)
     }
     Redirect(routes.News.index).flashing("status" -> "deleted")
@@ -147,6 +170,13 @@ object News extends Controller with securesocial.core.SecureSocial {
 
   def deleteH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
+      model.News.lookup(id).map { n =>
+        n.hackathon.map { h =>
+          helpers.Security.verifyIfAllowed(n.authorId, h.organiserId)(request.user)
+        }.getOrElse {
+          helpers.Security.verifyIfAllowed(n.authorId)(request.user)
+        }
+      }
       model.News.delete(id)
     }
     Redirect(routes.News.indexH(hid)).flashing("status" -> "deleted")

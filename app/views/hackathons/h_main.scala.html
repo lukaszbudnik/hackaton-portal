@@ -1,6 +1,7 @@
 @(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser], subnav: String, prefix: String = "")(content: Html)(implicit flash: Flash, request: Request[AnyContent]) 
 
 @import helper._
+@import tags._
 
 @scripts = {
 		<link rel="stylesheet" href="@routes.Assets.at("stylesheets/docs.css")">
@@ -22,7 +23,7 @@
 			</div>
 			
 		  	@user.map { user =>
-		  		@if(user.hackathonUserId == hackathon.organiserId) {
+		  		@if(user.isAdmin || user.hackathonUserId == hackathon.organiserId) {
 		  		<div class="form-actions">
 		  			@form(routes.Hackathon.delete(hackathon.id)) {
 		  			<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.id)">@Messages("global.edit")</a>
@@ -43,16 +44,14 @@
 			</div>
 
 		  	<p></p>
-		  	@tags.flashing(prefix)
+		  	@flashing(prefix)
 		  	
 		  	<div class="content">
 
 		  		@content
 
 		  	</div>
-		  	
-		  	@tags.footer()
-		  	
+		  		  	
 		}.getOrElse {
 		  
 			<div class="page-header">

@@ -3,6 +3,7 @@
 @main(Messages("profile.title"), Some(user), nav = "profile") {
   
 <div class="container">
+
 	<div class="page-header">
     	<h2>@if(user.avatarUrl) { <img src="@user.avatarUrl" alt="@user.displayName" width="40px" height="40px"/> } Welcome @user.displayName</h2>
     </div>
@@ -39,8 +40,9 @@
         		@info.refreshToken.map { rt => <li>Refresh Token: @rt</li>}
         	</ul>
         }
-        <hr>
-        <a class="btn" href="@securesocial.controllers.routes.LoginPage.logout()">Logout</a>
+        
+        <hr><a class="btn" href="@securesocial.controllers.routes.LoginPage.logout()">Logout</a>
+
     </div>
 </div>
 }

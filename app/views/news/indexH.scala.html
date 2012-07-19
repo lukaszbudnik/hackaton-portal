@@ -1,31 +1,23 @@
 @(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
 
+@import tags._
+
 @hackathons.h_main(hackathon, user, "news", "news.status") {
 
-		@hackathon.map { hackathon =>
-	  
-			@hackathon.news.map { n =>
-            	<div class="page-header">
-	    			<h2>@n.title</h2>
-	    			<p>@Html(n.text.split("<!--more-->").head)...</p>
-	    			<p>@Messages("news.author.label"): @n.author.name @Messages("news.publishedDate.label"): @n.publishedDate</p>
-	    			<p>@Messages("news.labels.label"):
-					@for(l <- n.labels) {
-						<span class="label">@l.value</span>
-					}
-					</p>
-					<p><a class="btn" href="@routes.News.viewH(hackathon.id, n.id)#disqus_thread">@Messages("global.readMore")</a></p>
-				</div>
-			}
-		  	
-		  	@user.map { user =>
-	    		@if(user.hackathonUserId == hackathon.organiserId) {
-    			<div class="form-actions">
-    				<a class="btn btn-success" href="@routes.News.createH(hackathon.id)">@Messages("news.addNews")</a>
-    			</div>
-				}
-		  	}
-		  	
+	@hackathon.map { h =>
+	
+		@newsList(h.news)
+		
+		@user.map { user =>
+	  		@if(user.isAdmin || user.hackathonUserId == h.organiserId) {
+	  			<div class="form-actions">
+	  				<a class="btn btn-success" href="@routes.News.createH(h.id)">@Messages("news.addNews")</a>
+	  			</div>
+	  		}
 		}
 		
+		@footer()
+		
+		@commentsCount()
+	}
 }
