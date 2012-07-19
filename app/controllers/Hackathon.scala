@@ -7,7 +7,6 @@ import play.api.data.Form
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.api.libs.json.Json._
-import jsmessages.api.JsMessages
 
 object Hackathon extends Controller with securesocial.core.SecureSocial {
 
