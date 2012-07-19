@@ -16,7 +16,7 @@ initialize = () ->
 hackathonDescription = (subject, date, city, fullAddress, id) ->
 	"<b>#{subject}</b>  (#{date})
 	<br/>#{city} #{fullAddress}<br/>
-	>>  <a href=\"/hackathons/#{id}/news\">#{Messages('js.infobubble.more')}</a>"  
+	 &raquo;  <a href=\"/hackathons/#{id}/news\">#{Messages('js.infobubble.more')}</a>"  
 	
 addMarkers = (map, markerImages) ->
     $.getJSON('/hackathons.json', (data) ->
@@ -30,6 +30,8 @@ addMarkers = (map, markerImages) ->
              val.location.city, val.location.fullAddress, 
              val.id)
             shadowStyle: 1,
+            minHeight: 70,
+            minWidth: 230,
             arrowPosition: 30,
             padding: 15,
             arrowSize: 6
