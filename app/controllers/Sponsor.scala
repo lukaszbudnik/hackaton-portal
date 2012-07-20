@@ -163,10 +163,12 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
           if (oldSponsor.logoResourceId.isDefined && sponsor.logoResourceId.isEmpty) {
             val resId = oldSponsor.logoResourceId.get
             model.Resource.lookup(resId) map { resource =>
-
+              model.Sponsor.update(id, sponsor)	
               model.Resource.delete(resId);
               CloudImageService.destroy(resource.publicId)
             }
+          } else {
+            model.Sponsor.update(id, sponsor)
           }
 
           model.Sponsor.update(id, sponsor)
