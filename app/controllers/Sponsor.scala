@@ -1,11 +1,9 @@
 package controllers
 
 import java.io.FileInputStream
-
 import org.squeryl.PrimitiveTypeMode.__thisDsl
 import org.squeryl.PrimitiveTypeMode.long2ScalarLong
 import org.squeryl.PrimitiveTypeMode.transaction
-
 import helpers.SponsorLogoDetails
 import model.Resource
 import play.api.data.Forms.boolean
@@ -20,9 +18,12 @@ import play.api.i18n.Messages
 import play.api.libs.json.Json.toJson
 import play.api.mvc.Controller
 import play.api.Logger
+import play.api.Play.current
 import plugin.cloudimage.CloudImageErrorResponse
-import plugin.cloudimage.CloudImageService
 import plugin.cloudimage.CloudImageSuccessResponse
+import plugin.cloudimage.CloudImageService
+import plugin.cloudimage.CloudImagePlugin
+import plugin._
 
 object Sponsor extends Controller with securesocial.core.SecureSocial {
 
@@ -80,7 +81,8 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
     in.read(bytes)
     in.close()
     val filename = request.headers.get("X-File-Name").get
-    val response = CloudImageService.upload(filename, bytes)
+    val cloudImageService = use[CloudImagePlugin].cloudImageService
+    val response = cloudImageService.upload(filename, bytes)
 
     response match {
       case success: CloudImageSuccessResponse =>
@@ -164,8 +166,9 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
             val resId = oldSponsor.logoResourceId.get
             model.Resource.lookup(resId) map { resource =>
               model.Sponsor.update(id, sponsor)	
-              model.Resource.delete(resId);
-              CloudImageService.destroy(resource.publicId)
+              model.Resource.delete(resId)
+              val cloudImageService = use[CloudImagePlugin].cloudImageService
+              cloudImageService.destroy(resource.publicId)
             }
           } else {
             model.Sponsor.update(id, sponsor)
@@ -194,7 +197,8 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
         sponsor.logoResourceId map { rId =>
           model.Resource.lookup(rId) map { resource =>
             model.Resource.delete(resource.id)
-            CloudImageService.destroy(resource.publicId)
+            val cloudImageService = use[CloudImagePlugin].cloudImageService
+            cloudImageService.destroy(resource.publicId)
           }
         }
       }

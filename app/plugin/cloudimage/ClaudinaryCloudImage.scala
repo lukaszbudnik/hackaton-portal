@@ -1,27 +1,48 @@
-package service
-import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.io.IOUtils
+package plugin.cloudimage
+
 import org.apache.http.client.methods.HttpPost
-import org.apache.http.entity.mime.content.ByteArrayBody
-import org.apache.http.entity.mime.content.StringBody
-import org.apache.http.entity.mime.HttpMultipartMode
 import org.apache.http.entity.mime.MultipartEntity
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.HttpResponse
-
+import play.api.Plugin
+import org.apache.commons.io.IOUtils
+import play.api.Logger
+import org.apache.commons.codec.digest.DigestUtils
+import play.api.Play
+import play.api.Application
 import play.api.i18n.Messages
 import play.api.libs.json.Json
-import play.api.Application
-import play.api.Logger
-import plugin.cloudimage.CloudImageErrorResponse
-import plugin.cloudimage.CloudImageResponse
-import plugin.cloudimage.CloudImageServicePlugin
-import plugin.cloudimage.CloudImageSuccessResponse
+import org.apache.http.entity.mime.content.StringBody
+import org.apache.http.entity.mime.HttpMultipartMode
+import org.apache.http.entity.mime.content.ByteArrayBody
 
+class ClaudinaryCloudImagePlugin(app: Application) extends CloudImagePlugin {
 
-class CloudImageService(application: Application) extends CloudImageServicePlugin(application) {
+  private val parsingRegex = """cloudinary://(.*)[:](.*)[@](.*)""".r
 
+  lazy val cloudImageServiceInstance: CloudImageService = {
+    val confUrl = app.configuration.getString("cloudinary.url").getOrElse {
+      throw new RuntimeException("CLOUDINARY_URL not set")
+    }
 
+    val parsingRegex(apiKey, secretKey, cloudName) = confUrl
+
+    Logger.debug(String.format("CloudImageServicePlugin initialized: api_key: %s, secret_key: %s, cloud_name: %s", apiKey, secretKey, cloudName))
+    
+    new ClaudinaryCloudImageService(apiKey, secretKey, cloudName)
+  }
+
+  def cloudImageService = cloudImageServiceInstance
+  
+}
+
+class ClaudinaryCloudImageService(apiKey: String, secretKey: String, cloudName: String) extends CloudImageService {
+  
+  private val UPLOAD_URL_PATTERN = "http://api.cloudinary.com/v1_1/%s/image/upload"
+  private val DESTROY_URL_PATTERN = "http://api.cloudinary.com/v1_1/%s/image/destroy"
+
+  private val uploadUrl = UPLOAD_URL_PATTERN.format(cloudName)
+  private val destroyUrl = UPLOAD_URL_PATTERN.format(cloudName)
   
   def upload(filename: String, fileInBytes: Array[Byte]): CloudImageResponse = {
     Logger.debug(String.format("CloudImageService - upload - start"));
@@ -89,7 +110,5 @@ class CloudImageService(application: Application) extends CloudImageServicePlugi
     val r: HttpResponse = httpClient.execute(post)
     r.getEntity().getContent();
   }
-
-
+  
 }
-  	
