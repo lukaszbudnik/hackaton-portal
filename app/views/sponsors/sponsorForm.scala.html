@@ -120,7 +120,10 @@
 <script id="template-download" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
     <div class="template-download fade">
-	{% if(file.resourceId) { updateResourceId(file.resourceId); } %}
+	{% if(file.resourceId) { 	
+			$('#logoResourceId').val(file.resourceId);
+		
+ } %}
 		{% if (!file.error) { %}	
 		<div class="thumbnail">
 					<a href="{%=file.url%}" ><img src="{%=file.url%}"/></a>

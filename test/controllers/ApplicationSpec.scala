@@ -38,27 +38,6 @@ class ApplicationSpec extends Specification {
       }
     }
 
-    "JS messages, browser first request, miss" in {
-      running(FakeApplication()) {
-        val req = FakeRequest()
-        val result = controllers.Application.jsMessages(req)
-        status(result) must equalTo(OK)
-        headers(result).contains(ETAG) must beTrue
-      }
-    }
-
-    "JS messages browser, subsequent request - hit, not modified" in {
-
-      running(FakeApplication()) {
-        val req = FakeRequest()
-        val result = controllers.Application.jsMessages(req)
-        headers(result).get(ETAG).map { etag =>
-          val req2 = FakeRequest().withHeaders(IF_NONE_MATCH -> etag)
-          val res2 = controllers.Application.jsMessages(req2)
-          status(res2) must equalTo(NOT_MODIFIED)
-        }.get
-      }
-    }
   }
 
 }

@@ -8,8 +8,6 @@ GET     /about                      controllers.Application.about
 GET     /contact                    controllers.Application.contact
 GET     /profile                    controllers.Application.profile
 
-GET     /messages.js                controllers.Application.jsMessages()
-
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
@@ -137,3 +135,7 @@ GET     /locations/:id/edit         controllers.Location.edit(id: Long)
 POST    /locations/:id/update       controllers.Location.update(id: Long)
 # Delete
 POST    /locations/:id/delete       controllers.Location.delete(id: Long)
+
+### Subproject routes ###
+## jsmessages subproject
+GET     /messages.js                controllers.JsMessagesFeed.jsMessages
