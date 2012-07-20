@@ -39,7 +39,7 @@ social.twitter.follow = Obserwuj
 home.text        = Hackatony to charytatywne imprezy, na których programiści, konsultanci, menadżerowie wspólnie z przedstawicielami organizacji rządowych, pozarządowych, charytatywnych, służby zdrowia i innych spotykają się razem, aby w swoim wolnym czasie spróbować rozwiązać ważne problemy, z którymi te organizacje borykają się na co dzień. Rezultatem wspólnej pracy są najczęściej prototypy aplikacji bądź nierzadko gotowe do użycia aplikacje. A wszystko to za darmo z głębokiego przekonania, że czasami warto zrobić coś bezinteresownie dla innych!
 home.welcome     = Witamy na stronie hackaton.pl!
 
-home.news1.text  = Tweetnij o nas, obserwuj nas, lub nas, daj nam +1! Pomóż nam wypromować ideę hackatonów w Polsce!
+home.news1.text  = Tweetnij o nas, obserwuj nas, lub daj nam +1! Pomóż nam wypromować ideę hackatonów w Polsce!
 home.news1.title = Obserwuj nas!
 home.news2.text  = Strona hackaton.pl oraz platforma hackaton-portal są tworzone przez entuzjastów dla entuzjastów. Chętnych rąk do pracy nigdy nie jest za wiele, dowiedź się więcej jak możesz nam pomóc.
 home.news2.title = Dołącz do naszego zespołu
