@@ -36,7 +36,7 @@ class MailgunEmailNotifierPlugin(app: Application) extends EmailNotifierPlugin {
     val loginDomain = app.configuration.getString("mailgun.loginDomain").getOrElse {
       throw new RuntimeException("MAILGUN_SMTP_LOGIN not set")
     }
-    val apiKey = app.configuration.getString("mailgun.apiKey").getOrElse {
+    lazy val apiKey = app.configuration.getString("mailgun.apiKey").getOrElse {
       throw new RuntimeException("MAILGUN_API_KEY not set")
     }
     
