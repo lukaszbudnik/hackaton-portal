@@ -2,3 +2,4 @@
 10001:securesocial.core.providers.FacebookProvider
 10002:securesocial.core.providers.GoogleProvider
 20000:plugin.cloudimage.ClaudinaryCloudImagePlugin
+20001:plugin.emailnotifier.MailgunEmailNotifier
