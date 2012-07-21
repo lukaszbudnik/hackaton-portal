@@ -20,16 +20,20 @@ class ClaudinaryCloudImagePlugin(app: Application) extends CloudImagePlugin {
 
   private val parsingRegex = """cloudinary://(.*)[:](.*)[@](.*)""".r
 
-  lazy val cloudImageServiceInstance: CloudImageService = {
+  private lazy val cloudImageServiceInstance: CloudImageService = {
     val confUrl = app.configuration.getString("cloudinary.url").getOrElse {
       throw new RuntimeException("CLOUDINARY_URL not set")
     }
+    confUrl match {
+      case "mock" => new MockCloudImageService()
+      case _ => {
+        val parsingRegex(apiKey, secretKey, cloudName) = confUrl
 
-    val parsingRegex(apiKey, secretKey, cloudName) = confUrl
-
-    Logger.debug(String.format("CloudImageServicePlugin initialized: api_key: %s, secret_key: %s, cloud_name: %s", apiKey, secretKey, cloudName))
+		Logger.debug(String.format("CloudImageServicePlugin initialized: api_key: %s, secret_key: %s, cloud_name: %s", apiKey, secretKey, cloudName))
     
-    new ClaudinaryCloudImageService(apiKey, secretKey, cloudName)
+		new ClaudinaryCloudImageService(apiKey, secretKey, cloudName)
+      }
+    }
   }
 
   def cloudImageService = cloudImageServiceInstance

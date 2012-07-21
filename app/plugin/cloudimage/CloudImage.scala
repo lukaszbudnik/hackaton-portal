@@ -16,3 +16,14 @@ trait CloudImageService {
 trait CloudImagePlugin extends play.api.Plugin {
   def cloudImageService: CloudImageService
 }
+
+class MockCloudImageService extends CloudImageService {
+  
+  def upload(filename: String, fileInBytes: Array[Byte]): CloudImageResponse = {
+    CloudImageSuccessResponse("url", "secureUrl", "publicId", "1",  "1", "1", "png", "image", "signature")
+  }
+  
+  def destroy(publicId: String) {
+  }
+  
+}
