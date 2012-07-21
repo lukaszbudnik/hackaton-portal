@@ -29,28 +29,28 @@ class ClaudinaryCloudImagePlugin(app: Application) extends CloudImagePlugin {
       case _ => {
         val parsingRegex(apiKey, secretKey, cloudName) = confUrl
 
-		Logger.debug(String.format("CloudImageServicePlugin initialized: api_key: %s, secret_key: %s, cloud_name: %s", apiKey, secretKey, cloudName))
-    
-		new ClaudinaryCloudImageService(apiKey, secretKey, cloudName)
+        Logger.debug(String.format("ClaudinaryCloudImageService about to be created: api_key: %s, secret_key: %s, cloud_name: %s", apiKey, secretKey, cloudName))
+
+        new ClaudinaryCloudImageService(apiKey, secretKey, cloudName)
       }
     }
   }
 
   def cloudImageService = cloudImageServiceInstance
-  
+
 }
 
 class ClaudinaryCloudImageService(apiKey: String, secretKey: String, cloudName: String) extends CloudImageService {
-  
+
   private val UPLOAD_URL_PATTERN = "http://api.cloudinary.com/v1_1/%s/image/upload"
   private val DESTROY_URL_PATTERN = "http://api.cloudinary.com/v1_1/%s/image/destroy"
 
   private val uploadUrl = UPLOAD_URL_PATTERN.format(cloudName)
   private val destroyUrl = UPLOAD_URL_PATTERN.format(cloudName)
-  
+
   def upload(filename: String, fileInBytes: Array[Byte]): CloudImageResponse = {
-    Logger.debug(String.format("CloudImageService - upload - start"));
-    
+    Logger.debug(String.format("CloudImageService - upload - start"))
+
     val httpClient = new DefaultHttpClient
     val post = new HttpPost(uploadUrl)
     val timestamp = scala.compat.Platform.currentTime.toString();
@@ -95,12 +95,12 @@ class ClaudinaryCloudImageService(apiKey: String, secretKey: String, cloudName: 
   }
 
   def destroy(publicId: String) {
-    
-    Logger.debug(String.format("CloudImageService - destroy, publicId= %s", publicId));
-    
+
+    Logger.debug(String.format("CloudImageService - destroy, publicId= %s", publicId))
+
     val httpClient = new DefaultHttpClient
     val post = new HttpPost(destroyUrl)
-    val timestamp = scala.compat.Platform.currentTime.toString();
+    val timestamp = scala.compat.Platform.currentTime.toString()
     val multiPartEntity: MultipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE)
     val signature = "timestamp=" + timestamp + secretKey
 
@@ -112,7 +112,7 @@ class ClaudinaryCloudImageService(apiKey: String, secretKey: String, cloudName: 
     post.setEntity(multiPartEntity)
 
     val r: HttpResponse = httpClient.execute(post)
-    r.getEntity().getContent();
+    r.getEntity().getContent()
   }
-  
+
 }
