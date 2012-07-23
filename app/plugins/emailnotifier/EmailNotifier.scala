@@ -1,4 +1,4 @@
-package plugin.emailnotifier
+package plugins.emailnotifier
 
 abstract class EmailNotifierResponse
 

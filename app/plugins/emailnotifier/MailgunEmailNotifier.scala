@@ -1,4 +1,4 @@
-package plugin.emailnotifier
+package plugins.emailnotifier
 
 import play.api.Play
 import play.api.Play.current
@@ -27,6 +27,7 @@ import org.apache.http.auth.Credentials
 import org.apache.http.protocol.SyncBasicHttpContext
 import org.apache.http.impl.auth.BasicScheme
 import org.apache.http.protocol.BasicHttpContext
+import plugins.utils.HttpUtils
 
 class MailgunEmailNotifierPlugin(app: Application) extends EmailNotifierPlugin {
 
@@ -65,15 +66,7 @@ class MailgunEmailNotifierService(apiKey: String, login: String, domain: String)
   def send(from: String, to: String, subject: String, textMessage: String, htmlMessage: Option[String] = None) = {
     val httpClient = new DefaultHttpClient
 
-    httpClient.getCredentialsProvider().setCredentials(
-      AuthScope.ANY,
-      new UsernamePasswordCredentials("api", apiKey));
-
-    val execContext = new SyncBasicHttpContext(new BasicHttpContext());
-    val basicAuth = new BasicScheme()
-    execContext.setAttribute("preemptive-auth", basicAuth)
-
-    httpClient.addRequestInterceptor(new PreemptiveAuth(), 0)
+    val execContext = HttpUtils.createPreemptiveAuthHttpContext(httpClient, new UsernamePasswordCredentials("api", apiKey))
 
     val post = new HttpPost(sendUrl)
     val multiPartEntity: MultipartEntity = new MultipartEntity(HttpMultipartMode.STRICT)
@@ -101,29 +94,3 @@ class MailgunEmailNotifierService(apiKey: String, login: String, domain: String)
   
 }
 
-class PreemptiveAuth extends org.apache.http.HttpRequestInterceptor {
-  def process(request: org.apache.http.HttpRequest, context: org.apache.http.protocol.HttpContext): Unit = {
-    val authState: AuthState = context.getAttribute(
-      ClientContext.TARGET_AUTH_STATE).asInstanceOf[AuthState]
-    // If no auth scheme avaialble yet, try to initialize it preemptively  
-    if (authState.getAuthScheme() == null) {
-      val authScheme: AuthScheme = context.getAttribute(
-        "preemptive-auth").asInstanceOf[AuthScheme]
-      val credsProvider: CredentialsProvider = context.getAttribute(
-        ClientContext.CREDS_PROVIDER).asInstanceOf[CredentialsProvider]
-      val targetHost: HttpHost = context.getAttribute(
-        ExecutionContext.HTTP_TARGET_HOST).asInstanceOf[HttpHost]
-      if (authScheme != null) {
-        val creds: Credentials = credsProvider.getCredentials(
-          new AuthScope(
-            targetHost.getHostName(),
-            targetHost.getPort())).asInstanceOf[Credentials]
-        if (creds == null) {
-          throw new HttpException("No credentials for preemptive authentication");
-        }
-        authState.setAuthScheme(authScheme);
-        authState.setCredentials(creds);
-      }
-    }
-  }
-}  

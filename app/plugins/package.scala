@@ -1,5 +1,5 @@
 
-package object plugin {
+package object plugins {
   
   import play.api._
   import play.api.mvc._

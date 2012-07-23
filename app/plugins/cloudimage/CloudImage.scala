@@ -1,4 +1,4 @@
-package plugin.cloudimage
+package plugins.cloudimage
 
 abstract class CloudImageResponse
 

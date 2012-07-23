@@ -1,13 +1,12 @@
-package plugin.emailnotifier
+package plugins.emailnotifier
 
-import org.specs2.mutable.Specification
+import org.specs2.mutable._
 
 import play.api.Play.current
 import play.api.test.Helpers.inMemoryDatabase
 import play.api.test.Helpers.running
 import play.api.test.FakeApplication
-import plugin.emailnotifier.EmailNotifierPlugin
-import plugin.use
+import plugins.use
 
 class MailgunEmailNotifierServiceSpec extends Specification {
 
@@ -20,7 +19,7 @@ class MailgunEmailNotifierServiceSpec extends Specification {
           val textMessage = "Hello, testing text message.\nBest regards"
           val emailNotifierService = use[EmailNotifierPlugin].emailNotifierService
           val id = emailNotifierService.send(from, to, subject, textMessage)
-          id must equalTo(id)
+          id must haveClass[EmailNotifierSuccessResponse]
       }
     }
     "send both text and html messages" in {
@@ -32,7 +31,7 @@ class MailgunEmailNotifierServiceSpec extends Specification {
           val htmlMessage = Some("<html><body><h1>Hello!</h1>and best regards :)</body></html>")
           val emailNotifierService = use[EmailNotifierPlugin].emailNotifierService
           val id = emailNotifierService.send(from, to, subject, textMessage, htmlMessage)
-          id must equalTo(id)
+          id must haveClass[EmailNotifierSuccessResponse]
       }
     }
   }

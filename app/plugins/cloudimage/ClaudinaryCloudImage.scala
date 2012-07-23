@@ -1,4 +1,4 @@
-package plugin.cloudimage
+package plugins.cloudimage
 
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.mime.MultipartEntity

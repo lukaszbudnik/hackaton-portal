@@ -19,11 +19,11 @@ import play.api.libs.json.Json.toJson
 import play.api.mvc.Controller
 import play.api.Logger
 import play.api.Play.current
-import plugin.cloudimage.CloudImageErrorResponse
-import plugin.cloudimage.CloudImageSuccessResponse
-import plugin.cloudimage.CloudImageService
-import plugin.cloudimage.CloudImagePlugin
-import plugin._
+import plugins.cloudimage.CloudImageErrorResponse
+import plugins.cloudimage.CloudImageSuccessResponse
+import plugins.cloudimage.CloudImageService
+import plugins.cloudimage.CloudImagePlugin
+import plugins.use
 
 object Sponsor extends Controller with securesocial.core.SecureSocial {
 
