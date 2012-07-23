@@ -12,27 +12,32 @@ class ApplicationSpec extends Specification {
   "Application" should {
 
     "show index page" in {
-      val result = controllers.Application.index(FakeRequest())
+      running(FakeApplication()) {
+        val result = controllers.Application.index(FakeRequest())
 
-      status(result) must equalTo(OK)
-      contentAsString(result) must contain(Messages("home.welcome"))
+        status(result) must equalTo(OK)
+        contentAsString(result) must contain(Messages("home.welcome"))
+      }
     }
 
     "show about page" in {
-      val result = controllers.Application.about(FakeRequest())
+      running(FakeApplication()) {
+        val result = controllers.Application.about(FakeRequest())
 
-      status(result) must equalTo(OK)
-      contentAsString(result) must contain(Messages("about.title"))
+        status(result) must equalTo(OK)
+        contentAsString(result) must contain(Messages("about.title"))
+      }
     }
 
     "show contact page" in {
-      val result = controllers.Application.contact(FakeRequest())
+      running(FakeApplication()) {
+        val result = controllers.Application.contact(FakeRequest())
 
-      status(result) must equalTo(OK)
-      contentAsString(result) must contain(Messages("contact.title"))
+        status(result) must equalTo(OK)
+        contentAsString(result) must contain(Messages("contact.title"))
+      }
     }
 
   }
-  
 
 }

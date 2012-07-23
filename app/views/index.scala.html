@@ -13,21 +13,23 @@
       </div>
 
       <div class="row">
-        <div class="span4">
+        <div class= @if(!play.Play.isProd()){"span4"}else{"span6"}>
           <h2>@Messages("home.news1.title")</h2>
           <p>@Messages("home.news1.text")</p>
           <p><a class="btn" href="/news">@Messages("global.viewDetails")</a></p>
         </div>
-        <div class="span4">
+        <div class= @if(!play.Play.isProd()){"span4"}else{"span6"}>  
           <h2>@Messages("home.news2.title")</h2>
           <p>@Messages("home.news2.text")</p>
           <p><a class="btn" href="@routes.Application.about#hackaton-portal">@Messages("global.viewDetails")</a></p>
        </div>
+@if(!play.Play.isProd()) {
         <div class="span4">
           <h2>@Messages("home.news3.title")</h2>
           <p>@Messages("home.news3.text")</p>
           <p><a class="btn" href="@routes.Sponsor.index">@Messages("global.viewDetails")</a></p>
         </div>
+}
       </div>
 
       <hr/>

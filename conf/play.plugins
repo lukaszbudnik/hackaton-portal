@@ -1,4 +1,6 @@
 9999:service.UserService
 10001:securesocial.core.providers.FacebookProvider
 10002:securesocial.core.providers.GoogleProvider
-10003:service.CloudImageService
+20000:plugins.cloudimage.ClaudinaryCloudImagePlugin
+20001:plugins.emailnotifier.MailgunEmailNotifierPlugin
+20002:plugins.smsnotifier.TwilioSmsNotifierPlugin

@@ -1,31 +1,56 @@
-package service
-import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.io.IOUtils
+package plugins.cloudimage
+
 import org.apache.http.client.methods.HttpPost
-import org.apache.http.entity.mime.content.ByteArrayBody
-import org.apache.http.entity.mime.content.StringBody
-import org.apache.http.entity.mime.HttpMultipartMode
 import org.apache.http.entity.mime.MultipartEntity
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.HttpResponse
-
+import play.api.Plugin
+import org.apache.commons.io.IOUtils
+import play.api.Logger
+import org.apache.commons.codec.digest.DigestUtils
+import play.api.Play
+import play.api.Application
 import play.api.i18n.Messages
 import play.api.libs.json.Json
-import play.api.Application
-import play.api.Logger
-import plugin.cloudimage.CloudImageErrorResponse
-import plugin.cloudimage.CloudImageResponse
-import plugin.cloudimage.CloudImageServicePlugin
-import plugin.cloudimage.CloudImageSuccessResponse
+import org.apache.http.entity.mime.content.StringBody
+import org.apache.http.entity.mime.HttpMultipartMode
+import org.apache.http.entity.mime.content.ByteArrayBody
 
+class ClaudinaryCloudImagePlugin(app: Application) extends CloudImagePlugin {
 
-class CloudImageService(application: Application) extends CloudImageServicePlugin(application) {
+  private val parsingRegex = """cloudinary://(.*)[:](.*)[@](.*)""".r
 
+  private lazy val cloudImageServiceInstance: CloudImageService = {
+    val confUrl = app.configuration.getString("cloudinary.url").getOrElse {
+      throw new RuntimeException("CLOUDINARY_URL not set")
+    }
+    confUrl match {
+      case "mock" => new MockCloudImageService()
+      case _ => {
+        val parsingRegex(apiKey, secretKey, cloudName) = confUrl
 
-  
+        Logger.debug(String.format("ClaudinaryCloudImageService about to be created: api_key: %s, secret_key: %s, cloud_name: %s", apiKey, secretKey, cloudName))
+
+        new ClaudinaryCloudImageService(apiKey, secretKey, cloudName)
+      }
+    }
+  }
+
+  def cloudImageService = cloudImageServiceInstance
+
+}
+
+class ClaudinaryCloudImageService(apiKey: String, secretKey: String, cloudName: String) extends CloudImageService {
+
+  private val UPLOAD_URL_PATTERN = "http://api.cloudinary.com/v1_1/%s/image/upload"
+  private val DESTROY_URL_PATTERN = "http://api.cloudinary.com/v1_1/%s/image/destroy"
+
+  private val uploadUrl = UPLOAD_URL_PATTERN.format(cloudName)
+  private val destroyUrl = UPLOAD_URL_PATTERN.format(cloudName)
+
   def upload(filename: String, fileInBytes: Array[Byte]): CloudImageResponse = {
-    Logger.debug(String.format("CloudImageService - upload - start"));
-    
+    Logger.debug(String.format("CloudImageService - upload - start"))
+
     val httpClient = new DefaultHttpClient
     val post = new HttpPost(uploadUrl)
     val timestamp = scala.compat.Platform.currentTime.toString();
@@ -70,12 +95,12 @@ class CloudImageService(application: Application) extends CloudImageServicePlugi
   }
 
   def destroy(publicId: String) {
-    
-    Logger.debug(String.format("CloudImageService - destroy, publicId= %s", publicId));
-    
+
+    Logger.debug(String.format("CloudImageService - destroy, publicId= %s", publicId))
+
     val httpClient = new DefaultHttpClient
     val post = new HttpPost(destroyUrl)
-    val timestamp = scala.compat.Platform.currentTime.toString();
+    val timestamp = scala.compat.Platform.currentTime.toString()
     val multiPartEntity: MultipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE)
     val signature = "timestamp=" + timestamp + secretKey
 
@@ -87,9 +112,7 @@ class CloudImageService(application: Application) extends CloudImageServicePlugi
     post.setEntity(multiPartEntity)
 
     val r: HttpResponse = httpClient.execute(post)
-    r.getEntity().getContent();
+    r.getEntity().getContent()
   }
 
-
 }
-  	

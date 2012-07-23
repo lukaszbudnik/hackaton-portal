@@ -2,8 +2,6 @@ package controllers
 
 import java.io.FileInputStream
 
-import scala.math.BigDecimal.long2bigDecimal
-
 import org.squeryl.PrimitiveTypeMode.__thisDsl
 import org.squeryl.PrimitiveTypeMode.long2ScalarLong
 import org.squeryl.PrimitiveTypeMode.transaction
@@ -25,9 +23,12 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
 import play.api.mvc.Controller
 import play.api.Logger
-import plugin.cloudimage.CloudImageErrorResponse
-import plugin.cloudimage.CloudImageService
-import plugin.cloudimage.CloudImageSuccessResponse
+import play.api.Play.current
+import plugins.cloudimage.CloudImageErrorResponse
+import plugins.cloudimage.CloudImageSuccessResponse
+import plugins.cloudimage.CloudImageService
+import plugins.cloudimage.CloudImagePlugin
+import plugins.use
 
 object Sponsor extends Controller with securesocial.core.SecureSocial {
 
@@ -86,7 +87,9 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
     in.read(bytes)
     in.close()
     val filename = temporaryHandle.filename
-    val response = CloudImageService.upload(filename, bytes)
+    val cloudImageService = use[CloudImagePlugin].cloudImageService
+    val response = cloudImageService.upload(filename, bytes)
+
 
     response match {
       case success: CloudImageSuccessResponse =>
@@ -172,9 +175,12 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
           if (oldSponsor.logoResourceId.isDefined && sponsor.logoResourceId.isEmpty) {
             val resId = oldSponsor.logoResourceId.get
             model.Resource.lookup(resId) map { resource =>
-              model.Sponsor.update(id, sponsor)
-              model.Resource.delete(resId);
-              CloudImageService.destroy(resource.publicId)
+
+              model.Sponsor.update(id, sponsor)	
+              model.Resource.delete(resId)
+              val cloudImageService = use[CloudImagePlugin].cloudImageService
+              cloudImageService.destroy(resource.publicId)
+
             }
           } else {
             model.Sponsor.update(id, sponsor)
@@ -203,7 +209,8 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
         sponsor.logoResourceId map { rId =>
           model.Resource.lookup(rId) map { resource =>
             model.Resource.delete(resource.id)
-            CloudImageService.destroy(resource.publicId)
+            val cloudImageService = use[CloudImagePlugin].cloudImageService
+            cloudImageService.destroy(resource.publicId)
           }
         }
       }
