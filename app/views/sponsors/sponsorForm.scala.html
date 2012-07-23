@@ -6,7 +6,8 @@
 @implicitFieldConstructor = @{ FieldConstructor(forms.twitterBootstrapInput.f) }
 
 
-<div style="float:left">
+<div class="row">
+<div class="span5">
 @form(action, 'class -> "form-horizontal") {
         
     @inputText(
@@ -68,35 +69,32 @@
   	</div>       
 }
 </div>
-<div   style="margin-left:80px;float:left">
+<div class="span4">
 
 @form(actionUpload, 'class -> "form-horizontal", 'id -> "fileupload") {
 	
 <!-- The template to display files available for upload -->
 	
  <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
- <div class="row fileupload-buttonbar">
-     <div class="span2" style="float:left; margin-right:30px">
-         <!-- The fileinput-button span is used to style the file input field as button -->
-             <span class="btn btn-primary fileinput-button">
-                 <i class="icon-upload icon-white"></i>
-                 <span>Upload logo...</span>
-                 <input type="file" name="files[]" multiple>
-             </span>
-         </div>
-	<div class="files" style="float:left"></div>
-    </div>	
-</div>
-
+	 <div class="row fileupload-buttonbar">
+	     <div class="span2">
+	         <!-- The fileinput-button span is used to style the file input field as button -->
+	             <span class="btn btn-primary fileinput-button">
+	                 <i class="icon-upload icon-white"></i>
+	                 <span>Upload logo...</span>
+	                 <input type="file" name="files">
+	             </span>
+	         </div>
+		<div class="files span2"></div>
+	</div>	
 <script id="template-upload" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
-    <div class="template-upload fade">
+    <div class="template-upload fade span3">
 	{% if (!file.error) { %}
 	<img src="@routes.Assets.at("images/loader.gif")" style="align:center"/>
 	{% } %}
 	{% if (file.name) { %}
-		<span>
-		File: {%=file.name%}</span>
+		<span>File: {%=file.name%}</span>
 	 {% } %}
 		<p>
 			{% if (file.error) { %}
@@ -119,7 +117,7 @@
 <!-- The template to display files available for download -->
 <script id="template-download" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
-    <div class="template-download fade">
+    <div class="template-download fade span">
 	{% if(file.resourceId) { 	
 			$('#logoResourceId').val(file.resourceId);
 		
@@ -145,22 +143,25 @@
 	</div>		
 {% } %}
 </script>
-	
 }
-<!-- Musisz odtworzyc te strone z danym id. Jesli dany id istnieje to pobierz jego logo i wyswietl je. -->
+
+</div>
+</div>
+
+
 @import tags._
-
 @fileuploadlocale()
-<script src="@routes.Assets.at("javascripts/vendor/jquery.ui.widget.js")" type="text/javascript"></script>
-<script src="http://blueimp.github.com/JavaScript-Templates/tmpl.min.js" type="text/javascript"></script>
-<script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js" type="text/javascript"></script>
-<script src="http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js" type="text/javascript"></script>
+@jsAppend(List("jquery.ui.widget.min.js"
+				, "tmpl.min.js"
+				, "load-image.min.js"
+				, "canvas-to-blob.min.js"
+				, "jquery.iframe-transport.min.js"
+				, "jquery.fileupload.min.js"
+				, "jquery.fileupload-fp.min.js"
+				, "jquery.fileupload-ui.min.js"
+				, "sponsors-logo.min.js"))
 
-<script src="@routes.Assets.at("javascripts/jquery.iframe-transport.js")" type="text/javascript"></script>
-<script src="@routes.Assets.at("javascripts/jquery.fileupload.js")" type="text/javascript"></script>
-<script src="@routes.Assets.at("javascripts/jquery.fileupload-fp.js")" type="text/javascript"></script>
-<script src="@routes.Assets.at("javascripts/jquery.fileupload-ui.js")" type="text/javascript"></script>
-<script src="@routes.Assets.at("javascripts/sponsorLogo.js")" type="text/javascript"></script>
+
 
 
 

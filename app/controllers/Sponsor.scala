@@ -2,11 +2,12 @@ package controllers
 
 import java.io.FileInputStream
 
+import scala.math.BigDecimal.long2bigDecimal
+
 import org.squeryl.PrimitiveTypeMode.__thisDsl
 import org.squeryl.PrimitiveTypeMode.long2ScalarLong
 import org.squeryl.PrimitiveTypeMode.transaction
 
-import helpers.SponsorLogoDetails
 import model.Resource
 import play.api.data.Forms.boolean
 import play.api.data.Forms.list
@@ -18,6 +19,10 @@ import play.api.data.Forms.optional
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.libs.json.Json.toJson
+import play.api.libs.json.JsArray
+import play.api.libs.json.JsNumber
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsString
 import play.api.mvc.Controller
 import play.api.Logger
 import plugin.cloudimage.CloudImageErrorResponse
@@ -72,14 +77,15 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
     }
   }
 
-  def uploadLogo = SecuredAction() { implicit request =>
+  def uploadLogo = UserAwareAction(parse.multipartFormData) { implicit request =>
 
-    val temporaryFile = request.body.asRaw.get.asFile
+    var temporaryHandle = request.body.file("files").get
+    val temporaryFile = temporaryHandle.ref.file
     val in = new FileInputStream(temporaryFile)
     val bytes = new Array[Byte](temporaryFile.length.toInt);
     in.read(bytes)
     in.close()
-    val filename = request.headers.get("X-File-Name").get
+    val filename = temporaryHandle.filename
     val response = CloudImageService.upload(filename, bytes)
 
     response match {
@@ -89,9 +95,11 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
           val res = new Resource(success.url, success.publicId);
           val newRes = Resource.insert(res)
 
-          val logoFile = new SponsorLogoDetails(success.url, res.id.toString())
+          val result = Ok(toJson((Seq(JsObject(List(
+            "url" -> JsString(newRes.url),
+            "resourceId" -> JsNumber(newRes.id)))))))
 
-          Ok(toJson(logoFile))
+          result.withHeaders(CONTENT_TYPE -> "text/plain")
         }
       case error: CloudImageErrorResponse =>
 
@@ -105,8 +113,9 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
 
     transaction {
       val r = Resource.lookup(id).get
-      val s: SponsorLogoDetails = new SponsorLogoDetails(r.url, r.id.toString())
-      Ok(toJson(s))
+      Ok(JsArray(Seq(JsObject(List(
+        "url" -> JsString(r.url),
+        "resourceId" -> JsNumber(r.id))))))
     }
   }
 
@@ -163,7 +172,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
           if (oldSponsor.logoResourceId.isDefined && sponsor.logoResourceId.isEmpty) {
             val resId = oldSponsor.logoResourceId.get
             model.Resource.lookup(resId) map { resource =>
-              model.Sponsor.update(id, sponsor)	
+              model.Sponsor.update(id, sponsor)
               model.Resource.delete(resId);
               CloudImageService.destroy(resource.publicId)
             }

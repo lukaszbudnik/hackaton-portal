@@ -7,7 +7,7 @@ $(() ->
 	$('#fileupload').fileupload 'option',
     	maxFileSize: 30000,
     	acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-    	multipart : false,
+    	multipart : true,
     	process: [action : 'load',
     		action: 'resize', maxWidth: 260, maxHeight: 180,
     			action: 'save'
