@@ -89,3 +89,6 @@ securityAbuse.text = Drogi <strong>{0}</strong>! Wykryliśmy próbę naruszenia 
 
 notFound.title = Nie znaleziono
 notFound.text = Strona, na którą próbujesz wejść nie istnieje.
+
+chat.write = Wyślij wiadomość:
+chat.messages = Wiadomości:

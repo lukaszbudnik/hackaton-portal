@@ -196,3 +196,6 @@ securityAbuse.text = Dear <strong>{0}</strong>! We have detected a security abus
 
 notFound.title = Not Found
 notFound.text = The page you have requested does not exist.
+
+chat.write = Write a message:
+chat.messages = Messages:
