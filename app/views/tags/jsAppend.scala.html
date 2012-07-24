@@ -1,0 +1,6 @@
+@(scripts: Iterable[String], destination : String = "document.body")
+
+
+<script type="text/javascript"> 
+loadScripts(@destination, new Array( @for((i,v) <- scripts.zipWithIndex) { @if(v > 0) {,} '@routes.Assets.at("javascripts")/@i' }));
+</script>

@@ -27,6 +27,6 @@ object ApplicationBuild extends Build {
 	appName + "-jsmessages", appVersion, mainLang = SCALA, path = file("modules/jsmessages")
     )
 
-    val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
+    val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(coffeescriptOptions := Seq("bare")
     ).dependsOn(secureSocial, jsMessages).aggregate(secureSocial, jsMessages)
 }

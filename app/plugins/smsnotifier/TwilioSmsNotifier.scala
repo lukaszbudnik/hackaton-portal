@@ -58,8 +58,7 @@ class TwilioSmsNotifierPlugin(app: Application) extends SmsNotifierPlugin {
 
 class TwilioSmsNotifierService(applicationSid: String, authToken: String) extends SmsNotifierService {
 
-  //private val SEND_URL_PATTERN = "https://api.twilio.com/2010-04-01/Accounts/%s/SMS/Messages.json"
-  private val SEND_URL_PATTERN = "http://localhost:9999/2010-04-01/Accounts/%s/SMS/Messages.json"
+  private val SEND_URL_PATTERN = "https://api.twilio.com/2010-04-01/Accounts/%s/SMS/Messages.json"
   
   val sendUrl = SEND_URL_PATTERN.format(applicationSid)
   
