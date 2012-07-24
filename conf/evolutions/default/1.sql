@@ -12,30 +12,8 @@ CREATE TABLE users (
     open_id varchar(255),
     github_username varchar(255),    
 	twitter_account text,
+	is_admin bool DEFAULT false,
 	
-    PRIMARY KEY (id)
-);
-
-CREATE SEQUENCE role_id_seq;
-CREATE TABLE roles (
-    id integer NOT NULL DEFAULT nextval('role_id_seq'),
-    creation_timestamp timestamp NOT NULL DEFAULT now(),
-    name varchar(255) NOT NULL UNIQUE,
-    
-    PRIMARY KEY (id)
-);
-
-CREATE SEQUENCE user_role_id_seq;
-CREATE TABLE users_roles (
-    id integer NOT NULL DEFAULT nextval('user_role_id_seq'),
-	creation_timestamp timestamp NOT NULL DEFAULT now(),
-    
-    user_id integer NOT NULL,
-    role_id integer NOT NULL,
-    
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
-    UNIQUE (user_id, role_id),
     PRIMARY KEY (id)
 );
 
@@ -244,12 +222,6 @@ DROP SEQUENCE hackathons_id_seq;
 
 DROP TABLE locations CASCADE;
 DROP SEQUENCE location_id_seq;
-
-DROP TABLE users_roles CASCADE;
-DROP SEQUENCE user_role_id_seq;
-
-DROP TABLE roles CASCADE;
-DROP SEQUENCE role_id_seq;
 
 DROP TABLE users CASCADE;
 DROP SEQUENCE user_id_seq;

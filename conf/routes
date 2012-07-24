@@ -136,6 +136,10 @@ POST    /locations/:id/update       controllers.Location.update(id: Long)
 # Delete
 POST    /locations/:id/delete       controllers.Location.delete(id: Long)
 
+# Retrieve
+GET     /users                      controllers.User.index(page: Int ?= 0, orderBy: Int ?= 1, filter ?= "")
+POST    /users/:id/update/:isAdmin  controllers.User.update(id: Int, isAdmin: Boolean)
+
 ### Subproject routes ###
 ## jsmessages subproject
 GET     /messages.js                controllers.JsMessagesFeed.jsMessages

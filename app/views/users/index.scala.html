@@ -1,0 +1,92 @@
+@(users: Iterable[model.User], user: Option[securesocial.core.SocialUser], currentOrderBy: Int = 0, currentFilter: String = "")(implicit flash: Flash, request: Request[AnyContent])
+
+@import helper._
+@import tags._
+
+@****************************************
+* Helper generating navigation links    *
+****************************************@
+@link(newPage: Int, newOrderBy: Option[Int] = None) = @{
+    routes.User.index(newPage, newOrderBy.map { orderBy =>
+        if(orderBy == scala.math.abs(currentOrderBy)) -currentOrderBy else orderBy
+    }.getOrElse(currentOrderBy), currentFilter)
+    
+}
+
+@**********************************
+* Helper generating table headers *
+***********************************@
+@header(orderBy: Int, title: String) = {
+    <th class="header">
+        <a href="@link(0, Some(orderBy))">
+        @Messages("users." + title + ".label")
+        <i class="@if(scala.math.abs(currentOrderBy) == orderBy) @{if(currentOrderBy < 0) "icon-chevron-down" else "icon-chevron-up"}"></i>
+        </a>
+    </th>
+}
+
+@scripts = {
+    <script src="@routes.Assets.at("javascripts/users-update.js")" type="text/javascript"></script>
+    <script src="@routes.JsMessagesFeed.jsMessages" type="text/javascript"></script>
+}
+
+@main(Messages("users.title"), user, nav = "users", scripts) {
+    
+    <div class="container">
+
+		<div class="page-header">
+			<h1>@Messages("users.title")</h1>
+    	</div>
+    	
+    	<div id="actions">
+        
+        @form(action=routes.User.index()) {
+            <input type="search" name="filter" value="@currentFilter" placeholder="@Messages("users.filter.placeholder")" style="vertical-align: top">
+            <input type="submit" value="@Messages("users.filter.label")" class="btn btn-primary">
+        }
+        
+    	</div>
+    	
+
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                	@header(1, "name")
+                	@header(2, "email")
+                    @header(3, "githubUsername")
+                    @header(4, "twitterAccount")
+                    @header(5, "isAdmin")
+                </tr>
+            </thead>
+            <tbody>
+
+            @users.map { u => 
+                <tr>
+                    <td>@u.name</td>
+                    <td>
+                        @u.email
+                    </td>
+                    <td>
+                        @u.githubUsername
+                    </td>
+                    <td>
+                        @u.twitterAccount
+                    </td>
+                    <td>
+                        <span class="human-readable-is-admin" data-user-id="@u.id">@u.isAdmin</span>
+                    </td>
+                    <td>
+                        <a class="btn change-is-admin" data-user-id="@u.id" data-is-admin="@if(u.isAdmin) {1} else {0}">@Messages("users.update.label")</a>
+                    </td>
+                </tr>
+            }
+
+            </tbody>
+        </table>
+
+		@footer()
+
+	</div>
+
+}
+

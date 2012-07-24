@@ -3,7 +3,6 @@ import org.squeryl.adapters.PostgreSqlAdapter
 import org.squeryl.internals.DatabaseAdapter
 import org.squeryl.Session
 import org.squeryl.SessionFactory
-
 import core.SecurityAbuseException
 import play.api.db.DB
 import play.api.mvc.Results.Forbidden
@@ -18,6 +17,7 @@ import play.api.Mode
 import play.api.Play
 import play.api.PlayException
 import play.api.UnexpectedException
+import play.api.Logger
 
 object Global extends GlobalSettings {
 
@@ -62,6 +62,12 @@ object Global extends GlobalSettings {
     super.onRouteRequest(request)
   }
 
-  private def getSession(adapter: DatabaseAdapter, app: Application) = Session.create(DB.getConnection()(app), adapter)
+  private def getSession(adapter: DatabaseAdapter, app: Application) = {
+    val session = Session.create(DB.getConnection()(app), adapter)
+    if (!play.Play.isProd) {
+    	session.setLogger(msg => Logger.debug(msg))
+    }
+    session
+  }
 
 }

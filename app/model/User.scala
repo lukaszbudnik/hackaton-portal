@@ -5,28 +5,20 @@ import org.squeryl.dsl.CompositeKey2
 import org.squeryl.KeyedEntity
 import org.squeryl.Schema
 import org.squeryl.annotations.Column
+import org.squeryl.dsl.ast.ExpressionNode
 
 case class User(name: String,
   email: String,
   @Column("github_username") githubUsername: String,
   @Column("twitter_account") twitterAccount: String,
   @Column("avatar_url") avatarUrl: String,
-  @Column("open_id") openId: String) extends KeyedEntity[Long] {
+  @Column("open_id") openId: String,
+  @Column("is_admin") isAdmin: Boolean) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  private lazy val rolesRel = User.usersToRoles.left(this)
   private lazy val teamsRel = Team.usersToTeams.left(this)
 
-  def roles = rolesRel.toIterable
   def teams = teamsRel.toIterable
-
-  def addRole(role: Role) = {
-    rolesRel.associate(role)
-  }
-
-  def deleteRole(role: Role) = {
-    rolesRel.dissociate(role)
-  }
 
   def addTeam(team: Team) = {
     teamsRel.associate(team)
@@ -37,21 +29,36 @@ case class User(name: String,
   }
 }
 
-case class UserRole(@Column("user_id") userId: Long,
-  @Column("role_id") roleId: Long) extends KeyedEntity[CompositeKey2[Long, Long]] {
-  def id = compositeKey(userId, roleId)
-}
-
 object User extends Schema {
   protected[model] val users = table[User]("users")
   on(users)(t => declare(t.id is (primaryKey, autoIncremented("user_id_seq"))))
 
-  protected[model] val usersToRoles =
-    manyToManyRelation(User.users, Role.roles, "users_roles").
-      via[UserRole](f = (u, r, ur) => (u.id === ur.userId, r.id === ur.roleId))
-
   def all(): Iterable[User] = {
     users.toIterable
+  }
+  
+  def sortedBy(orderBy: Int, filter: String): Iterable[User] = {
+    from(users)(u =>
+	    where(lower(u.name) like "%" + filter.toLowerCase() + "%")
+		select(u)
+		orderBy(getOrderByValue(u, orderBy))
+	)
+  }
+  
+  private def getOrderByValue(u: User, orderBy: Int): ExpressionNode = {
+	  orderBy match {
+	    case 1 => u.name asc
+	    case -1 => u.name desc
+	    case 2 => u.email asc
+	    case -2 => u.email desc
+	    case 3 => u.githubUsername asc
+	    case -3 => u.githubUsername desc
+	    case 4 => u.twitterAccount asc
+	    case -4 => u.twitterAccount desc
+	    // isAdmin is reversed 
+	    case 5 => u.isAdmin desc
+	    case -5 => u.isAdmin asc
+	  }
   }
 
   def lookup(id: Long): Option[User] = {
@@ -64,6 +71,18 @@ object User extends Schema {
 
   def insert(user: User): User = {
     users.insert(user)
+  }
+  
+  def update(id: Long, userToBeUpdated: User): Int = {
+     users.update(u =>
+      where(u.id === id)
+        set (
+          u.avatarUrl := userToBeUpdated.avatarUrl,
+          u.email := userToBeUpdated.email,
+          u.githubUsername := userToBeUpdated.githubUsername,
+          u.isAdmin := userToBeUpdated.isAdmin,
+          u.openId := userToBeUpdated.openId,
+          u.twitterAccount := userToBeUpdated.twitterAccount))
   }
 
   def delete(id: Long): Int = {

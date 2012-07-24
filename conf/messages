@@ -199,3 +199,15 @@ notFound.text = The page you have requested does not exist.
 
 chat.write = Write a message:
 chat.messages = Messages:
+
+users.title = Portal Users
+users.filter.label = Filter
+users.filter.placeholder = Filter by name, email, github, twitter
+users.name.label = Name
+users.email.label = Email
+users.githubUsername.label = GitHub
+users.twitterAccount.label = Twitter
+users.isAdmin.label = Admin
+users.update.label = Change admin
+users.update.error = Failed to update user
+users.update.success = Successfully updated user

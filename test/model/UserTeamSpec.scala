@@ -14,8 +14,8 @@ class UserTeamSpec extends Specification {
     "allow add and retrive members for a team" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val user1 = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!")
-          val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!")
+          val user1 = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!", false)
+          val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!", false)
           val team = Team("test-team", 1L, 1L, Some(1L))
 
           model.User.insert(user1)
@@ -50,8 +50,8 @@ class UserTeamSpec extends Specification {
     "allow delete members from a team" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val user1 = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!")
-          val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!")
+          val user1 = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!", false)
+          val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!", false)
           val team = Team("test-team", 1L, 1L, Some(1L))
 
           model.User.insert(user1)
@@ -91,8 +91,8 @@ class UserTeamSpec extends Specification {
     "allow add and retrieve teams for a user" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val user1 = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!")
-          val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!")
+          val user1 = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!", false)
+          val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!", false)
           val team = Team("test-team", 1L, 1L, Some(1L))
           
           model.User.insert(user1)

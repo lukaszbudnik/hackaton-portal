@@ -11,7 +11,7 @@ class UserSpec extends Specification {
     "be insertable" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!")
+          val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!", true)
           model.User.insert(user)
 
           user.isPersisted must beTrue
@@ -22,7 +22,7 @@ class UserSpec extends Specification {
     "be retrivable by id" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!")
+          val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!", true)
           model.User.insert(user)
 
           user.isPersisted must beTrue
@@ -33,26 +33,6 @@ class UserSpec extends Specification {
           userDb.get.id must equalTo(user.id)
         }
       }
-    }
-    "be associable and retrivable with roles" in {
-        running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-          transaction {
-            val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!")
-            model.User.insert(user)
-
-            user.isPersisted must beTrue
-
-            val roles = model.Role.all
-            
-            roles.foreach {r =>
-              user.addRole(r)
-            }
-            
-            val userDb: Option[User] = model.User.lookup(user.id)
-            
-            userDb.get.roles.seq.size must equalTo(roles.size)
-          }
-        }
     }
   }
 }

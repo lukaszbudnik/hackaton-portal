@@ -29,16 +29,10 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
     transaction {
       val dbUser: User = model.User.lookupByOpenId(socialUser.id.id + socialUser.id.providerId).getOrElse(addNewUserToDatabase(socialUser))
 
-      val roles = dbUser.roles.map { r => r.name }
+      val hackathonSocialUser = socialUser.copy(hackathonUserId = dbUser.id, isAdmin = dbUser.isAdmin)
 
-      if (Logger.isDebugEnabled) {
-        Logger.debug("Adding the following roles " + roles + " to user " + socialUser)
-      }
-
-      val socialUserWithRoles = socialUser.copy(hackathonUserId = dbUser.id, roles = roles)
-
-      users = users + (socialUserWithRoles.id.id + socialUserWithRoles.id.providerId -> socialUserWithRoles)
-      socialUserWithRoles
+      users = users + (hackathonSocialUser.id.id + hackathonSocialUser.id.providerId -> hackathonSocialUser)
+      hackathonSocialUser
     }
   }
 
@@ -49,20 +43,8 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
         Logger.debug("Adding a new user for social user " + socialUser)
       }
 
-      val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), "", "", socialUser.avatarUrl.getOrElse(""), socialUser.id.id + socialUser.id.providerId)
+      val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), "", "", socialUser.avatarUrl.getOrElse(""), socialUser.id.id + socialUser.id.providerId, false)
       model.User.insert(newUser)
-
-      val userRole = model.Role.lookupByName("user")
-
-      if (Logger.isDebugEnabled) {
-        Logger.debug("Associating " + userRole + " with newly created user " + newUser.id + " for social user " + socialUser)
-      }
-
-      userRole.map { role =>
-        newUser.addRole(role)
-      }
-
-      newUser
     }
   }
 

@@ -92,3 +92,15 @@ notFound.text = Strona, na którą próbujesz wejść nie istnieje.
 
 chat.write = Wyślij wiadomość:
 chat.messages = Wiadomości:
+
+users.title = Użytkownicy portalu
+users.filter.label = Filtruj
+users.filter.placeholder = Filtruj po polach nazwisko, email, github, twitter
+users.name.label = Nazwisko
+users.email.label = Email
+users.githubUsername.label = GitHub
+users.twitterAccount.label = Twitter
+users.isAdmin.label = Admin
+users.update.label = Zmień flagę admina
+users.update.error = Wystąpił błąd podczas aktualizacji użytkownika 
+users.update.success = Użytkownik został zaktualizowany
