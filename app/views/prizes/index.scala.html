@@ -23,9 +23,13 @@
   			</div>
     	}
     	
-    	<div class="form-actions">
-			<a class="btn btn-success" href="@routes.Prize.create(hackathon.id)">@Messages("prizes.addPrize")</a>
-        </div>
+    	@user.map { user =>
+	  		@if(user.isAdmin || user.hackathonUserId == hackathon.organiserId) {
+	  			<div class="form-actions">
+	  				<a class="btn btn-success" href="@routes.Prize.create(hackathon.id)">@Messages("prizes.addPrize")</a>
+	  			</div>
+	  		}
+    	}
 
   }
 }
