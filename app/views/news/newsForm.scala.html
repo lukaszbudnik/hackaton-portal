@@ -35,12 +35,12 @@
 	@forms.hidden(newsForm("authorId"))
 	
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">@Messages("news.publish")</button>
+        <button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
   		
   		@hackathon.map { hackathon =>
         <a href="@routes.News.indexH(hackathon.id)" class="btn">@Messages("global.cancel")</a>
   		}.getOrElse{
   	    <a href="@routes.News.index" class="btn">@Messages("global.cancel")</a>
-  		}  	
+  		}
     </div>
 }
