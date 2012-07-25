@@ -170,27 +170,18 @@ prizes.status.updated = Prize %s successfully updated
 prizes.status.deleted = Prize deleted
 
 sponsors.title = Our Sponsors
-sponsors.text = We'd like to thank the following companies and organisations for supporting Hackaton.pl portal. Thanks!
-sponsors.portalSponsors = Portal sponsors
-sponsors.hackathonsSponsors = Hackathons sponsors
-sponsors.generalSponsor = Portal general sponsor
-sponsors.sponsoredHackathons = Sponsored hackathons
+sponsors.text = We''d like to thank the following companies and organisations for supporting Hackaton.pl portal. Thanks!
 sponsors.addSponsor = Add sponsor
-sponsors.added = Sponsor added
-sponsors.updated = Sponsor updated
-sponsors.deleted = Sponsor deleted
-newSponsor.title = Create new sponsor
-sponsors.edit.title = Edit sponsor
-sponsors.name.label = Sponsor name
+sponsors.name.label = Name
+sponsors.title.label = Title
 sponsors.website.label = Website address
 sponsors.description.label = Description
-sponsors.generalSponsor.label = Is general portal sponsor
-sponsors.hackathons.label = Choose sponsored hackathons
-sponsors.order.label = Current sponsor order
-sponsors.sponsored.label = Sponsored
-sponsors.notSponsored.label = Not sponsored
-
-newSponsor.title = Add new sponsor
+sponsors.order.label = Order
+sponsors.create.title = Add new sponsor
+sponsors.edit.title = Edit sponsor
+sponsors.status.added = Sponsor %s successfully added
+sponsors.status.updated = Sponsor %s successfully updated
+sponsors.status.deleted = Sponsor deleted
 
 securityAbuse.title = Security Abuse Detected
 securityAbuse.text = Dear <strong>{0}</strong>! We have detected a security abuse. Please refrain from such actions in future as we may draw consequences next time.

@@ -29,7 +29,7 @@ case class Hackathon(subject: String,
   private lazy val problemsRel = Problem.hackathonToProblems.left(this)
   private lazy val prizeRel = Prize.hackathonToPrizes.left(this)
   private lazy val newsRel = News.hackathonToNews.left(this)
-  private lazy val sponsorsRel = Sponsor.hackathonsToSponsors.left(this)
+  private lazy val sponsorsRel = Sponsor.hackathonToSponsors.left(this)
 
   def organiser = organiserRel.head
   def location = locationRel.head
