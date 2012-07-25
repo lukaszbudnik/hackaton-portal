@@ -113,11 +113,12 @@ locations.fullAddress.label = Address
 locations.latitude.label = Lat
 locations.longitude.label = Long 
 locations.view.title = Location
-locations.create.title = Add a location
+locations.create.title = Add location
 locations.edit.title = Edit location
 locations.status.added = Location %s successfully added
 locations.status.updated = Location %s successfully updated
 locations.status.deleted = Location deleted
+locations.nomatchfound = No match found! » Add new location
 
 problems.title = Problems
 problems.addProblem = Add a problem

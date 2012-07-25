@@ -1,11 +1,15 @@
-@(action: play.api.mvc.Call, locationForm: Form[model.Location])
+@(action: play.api.mvc.Call, locationForm: Form[model.Location], scripts: Html = Html(""))
 
 @import helper._
 @import helper.twitterBootstrap._
 
 @implicitFieldConstructor = @{ FieldConstructor(forms.twitterBootstrapInput.f) }
 
-@form(action, 'class -> "form-horizontal") {
+
+
+
+
+@form(action, 'id -> "locationForm", 'class -> "form-horizontal") {
  
 	@inputText(
 	    locationForm("name"),
@@ -49,9 +53,7 @@
 	    '_showConstraints -> false
 	)	
 
-	<div class="form-actions">
-        <button type="submit" class="btn btn-primary">@Messages("global.submit")</button>
-        <a href="@routes.Location.index" class="btn">@Messages("global.cancel")</a>
-  	</div>
-        
+     
 }
+
+

@@ -9,16 +9,19 @@ import org.squeryl.KeyedEntity
 import org.squeryl.Schema
 import play.api.libs.json._
 import play.api.i18n.Messages
+import scala.annotation.target.field
+import org.squeryl.annotations.Transient
 
 case class Hackathon(subject: String,
   status: HackathonStatus.Value,
   date: Date,
   @Column("organiser_id") organiserId: Long,
-  @Column("location_id") locationId: Long) extends KeyedEntity[Long] {
+  @Column("location_id") locationId: Long,
+   @(Transient @field) var locationName : String) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  def this() = this("", HackathonStatus.Planning, new Date(), 0, 0) // need for status enumeration
-  def this(organiserId: Long) = this("", HackathonStatus.Planning, new Date(), organiserId, 0)
+  def this() = this("", HackathonStatus.Planning, new Date(), 0, 0, "") // need for status enumeration
+  def this(organiserId: Long) = this("", HackathonStatus.Planning, new Date(), organiserId, 0, "")
 
   private lazy val organiserRel: ManyToOne[User] = Hackathon.organiserToHackathons.right(this)
   private lazy val locationRel: ManyToOne[Location] = Hackathon.locationToHackathons.right(this)

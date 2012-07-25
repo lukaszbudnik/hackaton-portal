@@ -13,6 +13,8 @@ case class Location(country: String,
   latitude: Double,
   longitude: Double) extends KeyedEntity[Long] {
   val id: Long = 0L
+  
+   def this() = this("", "", "", "","",  0, 0) // need for status enumeration
 }
 
 object Location extends Schema {
@@ -23,6 +25,16 @@ object Location extends Schema {
     locations.toSeq
   }
 
+  def findByPattern(pattern : String) = {
+       from(locations)((l) => 
+         where ((lower(l.name) like lower(pattern)) 
+             or (lower(l.country) like lower(pattern))
+             or (lower(l.fullAddress) like lower(pattern))
+             or (lower(l.city) like lower(pattern))
+             )
+         select(l)
+         orderBy(l.name desc, l.fullAddress, l.country, l.city))
+  }
   def lookup(id: Long): Option[Location] = {
     locations.lookup(id)
   }

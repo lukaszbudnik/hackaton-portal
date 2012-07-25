@@ -81,6 +81,23 @@ news.status.updated = Wiadomość '%s' zaktualizowana
 news.status.deleted = Wiadomość usunięta
 news.search = Znaleziono %d newsów z tagiem %s
 
+locations.title = Lokalizacja
+locations.addLocation = Dodaj lokalizację
+locations.name.label = Nazwa
+locations.country.label = Kraj
+locations.city.label = Miejscowość
+locations.postalCode.label = Kod pocztowy
+locations.fullAddress.label = Adres
+locations.latitude.label = Szer. geogr.
+locations.longitude.label = Dł. geogr.
+locations.view.title = Lokalizacja
+locations.create.title = Dodaj lokalizację
+locations.edit.title = Edytuj lokalizację
+locations.status.added = Lokalizacja %s dodana pomyślnie!
+locations.status.updated = Lokalizacja  %s zaktualizowana pomyślnie!
+locations.status.deleted = Lokalizacja usunięta!
+locations.nomatchfound = Nie znaleziono! » Dodaj nową
+
 sponsors.title = Nasi sponsorzy
 sponsors.text = <p>Chcielibyśmy podziękować wszystkim naszym sponsorom. Oto ich pełna lista. Dziękujemy!</p>
 
