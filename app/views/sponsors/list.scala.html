@@ -1,6 +1,8 @@
 @(sponsors: Seq[model.Sponsor])
 
+@if(!sponsors.isEmpty){
 <ul class="thumbnails">
+}
 	@sponsors.map { sponsor =>
 		<li class="span3">
 			<div class="thumbnail">
@@ -12,10 +14,19 @@
 						<small>@sponsor.title</small>
 					</h4>
 					<p>@sponsor.description</p>
-					<p><a class="btn" href="@routes.Sponsor.view(sponsor.id)">@Messages("global.readMore")</a></p>
+					<p>
+						@sponsor.hackathon.map { hackathon =>
+						<a class="btn" href="@routes.Sponsor.viewH(hackathon.id, sponsor.id)">@Messages("global.readMore")</a>
+						}.getOrElse {
+						<a class="btn" href="@routes.Sponsor.view(sponsor.id)">@Messages("global.readMore")</a>
+						}
+					</p>
 				</div>					
 
 			</div>
 		</li>
 	}
+
+@if(!sponsors.isEmpty){
 </ul>
+}

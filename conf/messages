@@ -157,6 +157,7 @@ teams.noMembers = No team members yet!
 
 prizes.title = Prizes
 prizes.addPrize = Add a prize
+prizes.notFound = Prize not found
 prizes.name.label = Prize name
 prizes.description.label = Description
 prizes.order.label = Define prize order
@@ -171,7 +172,8 @@ prizes.status.deleted = Prize deleted
 
 sponsors.title = Our Sponsors
 sponsors.text = We''d like to thank the following companies and organisations for supporting Hackaton.pl portal. Thanks!
-sponsors.addSponsor = Add sponsor
+sponsors.addSponsor = Add a sponsor
+sponsors.notFound = Sponsor not found
 sponsors.name.label = Name
 sponsors.title.label = Title
 sponsors.website.label = Website address

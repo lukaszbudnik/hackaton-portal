@@ -1,0 +1,22 @@
+@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent])
+
+@import tags._
+
+@hackathons.h_main(hackathon, user, "sponsors", "sponsors.status") {
+
+	@hackathon.map { h =>
+	
+		@list(h.sponsors)
+		
+		@user.map { user =>
+	  		@if(user.isAdmin || user.hackathonUserId == h.organiserId) {
+	  			<div class="form-actions">
+	  				<a class="btn btn-success" href="@routes.Sponsor.createH(h.id)">@Messages("sponsors.addSponsor")</a>
+	  			</div>
+	  		}
+		}
+		
+		@footer()
+		
+	}
+}

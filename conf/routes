@@ -42,7 +42,7 @@ GET     /hackathons/new				controllers.Hackathon.create
 POST    /hackathons					controllers.Hackathon.save
 # Retrieve
 GET     /hackathons					controllers.Hackathon.index
-GET     /hackathons/:id/news		controllers.Hackathon.view(id: Long)
+GET     /hackathons/:id				controllers.Hackathon.view(id: Long)
 # Update
 GET     /hackathons/:id/edit		controllers.Hackathon.edit(id: Long)
 POST    /hackathons/:id/update		controllers.Hackathon.update(id: Long)
@@ -106,6 +106,19 @@ GET     /hackathons/:hid/prizes/:id/edit          	controllers.Prize.edit(hid: L
 POST    /hackathons/:hid/prizes/:id/update        	controllers.Prize.update(hid: Long, id: Long)
 # Delete
 POST    /hackathons/:hid/prizes/:id/delete        	controllers.Prize.delete(hid: Long, id: Long)
+
+# Prizes routes
+# Create
+GET     /hackathons/:hid/sponsors/new				controllers.Sponsor.createH(hid: Long)
+POST    /hackathons/:hid/sponsors					controllers.Sponsor.saveH(hid: Long)
+# Retrieve
+GET     /hackathons/:hid/sponsors					controllers.Sponsor.indexH(hid: Long)
+GET     /hackathons/:hid/sponsors/:id				controllers.Sponsor.viewH(hid: Long, id: Long)
+# Update
+GET     /hackathons/:hid/sponsors/:id/edit			controllers.Sponsor.editH(hid: Long, id: Long)
+POST    /hackathons/:hid/sponsors/:id/update		controllers.Sponsor.updateH(hid: Long, id: Long)
+# Delete
+POST    /hackathons/:hid/sponsors/:id/delete		controllers.Sponsor.deleteH(hid: Long, id: Long)
 
 # Sponsors routes
 # Create

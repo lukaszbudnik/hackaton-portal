@@ -16,9 +16,13 @@
 
 		@list(sponsors)
 		
-		<div class="form-actions">
-			<a class="btn btn-success" href="@routes.Sponsor.create">@Messages("sponsors.addSponsor")</a>
-		</div>
+		@user.map { user =>
+			@if(user.isAdmin) {
+				<div class="form-actions">
+					<a class="btn btn-success" href="@routes.Sponsor.create">@Messages("sponsors.addSponsor")</a>
+				</div>
+			}
+		}
 
 		@footer()
 

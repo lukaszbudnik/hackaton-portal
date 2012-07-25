@@ -49,9 +49,21 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
     }
   }
 
+  def indexH(hid: Long) = UserAwareAction { implicit request =>
+    transaction {
+      Ok(views.html.sponsors.indexH(model.Hackathon.lookup(hid), request.user))
+    }
+  }
+
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
       Ok(views.html.sponsors.view(model.Sponsor.lookup(id), request.user))
+    }
+  }
+
+  def viewH(hid: Long, id: Long) = UserAwareAction { implicit request =>
+    transaction {
+      Ok(views.html.sponsors.viewH(model.Hackathon.lookup(hid), model.Sponsor.lookup(id), request.user))
     }
   }
 
@@ -59,6 +71,17 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
     transaction {
       val sponsor = new model.Sponsor(None)
       Ok(views.html.sponsors.create(sponsorForm.fill(sponsor), request.user))
+    }
+  }
+
+  def createH(hid: Long) = SecuredAction() { implicit request =>
+    transaction {
+      val hackathon = model.Hackathon.lookup(hid)
+      hackathon.map { h =>
+        helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
+      }
+      val sponsor = new model.Sponsor(Some(hid))
+      Ok(views.html.sponsors.createH(hackathon, sponsorForm.fill(sponsor), request.user))
     }
   }
 
@@ -73,13 +96,44 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
       })
   }
 
+  def saveH(hid: Long) = SecuredAction() { implicit request =>
+    sponsorForm.bindFromRequest.fold(
+      errors => transaction {
+        val hackathon = model.Hackathon.lookup(hid)
+        BadRequest(views.html.sponsors.createH(hackathon, errors, request.user))
+      },
+      sponsor => transaction {
+        model.Hackathon.lookup(hid).map { h =>
+          helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
+        }
+        model.Sponsor.insert(sponsor)
+        Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "added", "title" -> sponsor.name)
+      })
+  }
+
   def edit(id: Long) = SecuredAction() { implicit request =>
-  	transaction {
+    transaction {
       model.Sponsor.lookup(id).map { sponsor =>
         Ok(views.html.sponsors.edit(id, sponsorForm.fill(sponsor), request.user))
       }.getOrElse {
-        // no news found
+        // no sponsor found
         Redirect(routes.Sponsor.view(id)).flashing()
+      }
+    }
+  }
+
+  def editH(hid: Long, id: Long) = SecuredAction() { implicit request =>
+    transaction {
+      model.Sponsor.lookup(id).map { sponsor =>
+        sponsor.hackathon.map { h =>
+          helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
+        }.getOrElse {
+          helpers.Security.verifyIfAllowed()(request.user)
+        }
+        Ok(views.html.sponsors.editH(sponsor.hackathon, id, sponsorForm.fill(sponsor), request.user))
+      }.getOrElse {
+        // no sponsor found
+        Redirect(routes.Sponsor.viewH(hid, id)).flashing()
       }
     }
   }
@@ -95,6 +149,25 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
       })
   }
 
+  def updateH(hid: Long, id: Long) = SecuredAction() { implicit request =>
+    sponsorForm.bindFromRequest.fold(
+      errors => transaction {
+        val hackathon = model.Hackathon.lookup(hid)
+        BadRequest(views.html.sponsors.editH(hackathon, id, errors, request.user))
+      },
+      sponsor => transaction {
+        model.Sponsor.lookup(id).map { sponsor =>
+          sponsor.hackathon.map { h =>
+            helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
+          }.getOrElse {
+            helpers.Security.verifyIfAllowed(request.user)
+          }
+        }
+        model.Sponsor.update(id, sponsor)
+        Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "updated", "title" -> sponsor.name)
+      })
+  }
+
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Sponsor.delete(id)
@@ -102,15 +175,29 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
     }
   }
 
+  def deleteH(hid: Long, id: Long) = SecuredAction() { implicit request =>
+    transaction {
+      model.Sponsor.lookup(id).map { sponsor =>
+        sponsor.hackathon.map { h =>
+          helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
+        }.getOrElse {
+          helpers.Security.verifyIfAllowed(request.user)
+        }
+      }
+      model.Sponsor.delete(id)
+    }
+    Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "deleted")
+  }
+
   def uploadLogo = UserAwareAction(parse.multipartFormData) { implicit request =>
     var temporaryHandle = request.body.file("files").get
     val temporaryFile = temporaryHandle.ref.file
-    
+
     val in = new FileInputStream(temporaryFile)
     val bytes = new Array[Byte](temporaryFile.length.toInt);
     in.read(bytes)
     in.close()
-    
+
     val filename = temporaryHandle.filename
     val response = use[CloudImagePlugin].cloudImageService.upload(filename, bytes)
 
