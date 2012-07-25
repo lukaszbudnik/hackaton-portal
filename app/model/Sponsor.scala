@@ -1,84 +1,45 @@
 package model
 
-import scala.annotation.target.field
-
 import org.squeryl.PrimitiveTypeMode._
-import org.squeryl.annotations.Column
-import org.squeryl.annotations.Transient
-import org.squeryl.dsl.CompositeKey2
 import org.squeryl.dsl.ManyToOne
 import org.squeryl.KeyedEntity
 import org.squeryl.Schema
+import org.squeryl.annotations.Column
 
 case class Sponsor(name: String,
+  title: String,
   description: String,
   website: String,
   @Column("sponsor_order") order: Int,
-  @Column("is_general_sponsor") isGeneralSponsor: Boolean,
-  @(Transient @field) hackathonsList: List[HackathonSponsorHelper],
-  @Column("logo_resource_id") logoResourceId :Option[Long]) extends KeyedEntity[Long] {
+  @Column("hackathon_id") hackathonId: Option[Long],
+  @Column("logo_resource_id") logoResourceId: Option[Long]) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  lazy val hackathons = Sponsor.hackathonsToSponsors.right(this)
-  private lazy val logoResourceRel: ManyToOne[Resource] = Sponsor.resourcesToSponsors.right(this)
-  
+  def this(hackathonId: Option[Long]) = this("", "", "", "", 1, hackathonId, None)
+
+  private lazy val hackathonRel: ManyToOne[Hackathon] = Sponsor.hackathonToSponsors.right(this)
+  private lazy val logoResourceRel: ManyToOne[Resource] = Sponsor.resourceToSponsors.right(this)
+
+  def hackathon = hackathonRel.headOption
   def logoResource = logoResourceRel.headOption
-  
-  // TODO 
-  //def hackathons = hackathonsRel.toIterable
 }
-
-case class HackathonSponsor(@Column("hackathon_id") hackathonId: Long,
-  @Column("sponsor_id") sponsorId: Long,
-  @Column("sponsor_order") order: Int) extends KeyedEntity[CompositeKey2[Long, Long]] {
-  def id = compositeKey(hackathonId, sponsorId)
-}
-
-case class HackathonSponsorHelper(hackathonId: Long, order: Int)
 
 object Sponsor extends Schema {
   protected[model] val sponsors = table[Sponsor]("sponsors")
   on(sponsors)(s => declare(s.id is (primaryKey, autoIncremented("sponsor_id_seq"))))
 
-  val resourcesToSponsors = oneToManyRelation(Resource.resources, sponsors).via((r, s) => r.id === s.logoResourceId)
-  val hackathonsToSponsors =
-    manyToManyRelation(Hackathon.hackathons, Sponsor.sponsors, "hackathons_sponsors").
-      via[HackathonSponsor](f = (h, s, hs) => (h.id === hs.hackathonId, s.id === hs.sponsorId))
-  
- 
-      
-  def all(): Iterable[Sponsor] = {
-    sponsors.toIterable
+  protected[model] val hackathonToSponsors = oneToManyRelation(Hackathon.hackathons, Sponsor.sponsors).via((h, s) => h.id === s.hackathonId)
+  protected[model] val resourceToSponsors = oneToManyRelation(Resource.resources, Sponsor.sponsors).via((r, s) => r.id === s.logoResourceId)
+
+  def all(): Seq[Sponsor] = {
+    from(sponsors)(s =>
+      where(s.hackathonId isNull)
+        select (s)
+        orderBy (s.order)).toSeq
   }
 
   def lookup(id: Long): Option[Sponsor] = {
     sponsors.lookup(id)
-  }
-
-  def allGeneralSponsorsOrdered(): Iterable[Sponsor] = {
-    from(sponsors)(s =>
-      where(s.isGeneralSponsor === true)
-        select (s)
-        orderBy (s.order))
-  }
-
-  def findSponsorHackatonOrder(sponsorId: Long, hackathonId: Long): Option[Int] = {
-    from(hackathonsToSponsors)(hs =>
-      where(hs.sponsorId === sponsorId and hs.hackathonId === hackathonId)
-        select (hs.order)).headOption
-  }
-  
-
-
-  def deleteSponsorHackathon(sponsorId: Long, hackathonId: Long) = {
-    hackathonsToSponsors.deleteWhere(hs =>
-      hs.sponsorId === sponsorId and hs.hackathonId === hackathonId)
-  }
-
-  def updateSponsorHackathonOrder(sponsorId: Long, hackathonId: Long, order: Int) = {
-    hackathonsToSponsors.deleteWhere(hs =>
-      hs.sponsorId === sponsorId and hs.hackathonId === hackathonId)
-    hackathonsToSponsors.insert(model.HackathonSponsor(hackathonId, sponsorId, order))
   }
 
   def insert(sponsor: Sponsor): Sponsor = {
@@ -86,18 +47,43 @@ object Sponsor extends Schema {
   }
 
   def update(id: Long, sponsor: Sponsor): Int = {
-    sponsors.update(s =>
+    var resourceIdToDelete: Option[Long] = None
+    sponsors.lookup(id).map { s =>
+      if (s.logoResourceId != sponsor.logoResourceId) {
+        resourceIdToDelete = s.logoResourceId
+      }
+    }
+
+    val result = sponsors.update(s =>
       where(s.id === id)
         set (
           s.name := sponsor.name,
+          s.title := sponsor.title,
           s.description := sponsor.description,
-          s.order := sponsor.order,
           s.website := sponsor.website,
-          s.isGeneralSponsor := sponsor.isGeneralSponsor,
+          s.order := sponsor.order,
+          s.hackathonId := sponsor.hackathonId,
           s.logoResourceId := sponsor.logoResourceId))
+
+    resourceIdToDelete.map { id =>
+      model.Resource.delete(id)
+    }
+
+    result
   }
 
   def delete(id: Long): Int = {
-    sponsors.deleteWhere(s => s.id === id)
+    var resourceIdToDelete: Option[Long] = None
+    sponsors.lookup(id).map { s =>
+      resourceIdToDelete = s.logoResourceId
+    }
+
+    val result = sponsors.deleteWhere(s => s.id === id)
+
+    resourceIdToDelete.map { id =>
+      model.Resource.delete(id)
+    }
+
+    result
   }
 }

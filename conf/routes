@@ -124,6 +124,8 @@ POST    /sponsors/:id/update		controllers.Sponsor.update(id: Long)
 GET    	/sponsors/:id/delete		controllers.Sponsor.delete(id: Long)
 
 # Locations routes
+# Find
+GET		/locations/find				controllers.Location.findByPattern(term : String)
 # Create
 GET     /locations/new              controllers.Location.create
 POST    /locations                  controllers.Location.save
@@ -140,6 +142,5 @@ POST    /locations/:id/delete       controllers.Location.delete(id: Long)
 GET     /users                      controllers.User.index(page: Int ?= 0, orderBy: Int ?= 1, filter ?= "")
 POST    /users/:id/update/:isAdmin  controllers.User.update(id: Int, isAdmin: Boolean)
 
-### Subproject routes ###
-## jsmessages subproject
+# jsmessages subproject
 GET     /messages.js                controllers.JsMessagesFeed.jsMessages

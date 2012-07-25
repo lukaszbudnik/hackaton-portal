@@ -1,11 +1,18 @@
 package controllers
 
 import org.squeryl.PrimitiveTypeMode.transaction
-
 import play.api.data.Forms._
 import play.api.data.Form
 import play.api.mvc.Controller
-
+import play.api.libs.json.JsValue
+import play.api.libs.json.JsObject
+import play.api.libs.json.Format
+import play.api.libs.json.JsNumber
+import play.api.libs.json.JsString
+import play.api.libs.json.Json._
+import play.api.libs.json.Json._
+import play.api.mvc.Action
+import play.api.Logger
 object Location extends Controller with securesocial.core.SecureSocial {
 
   val locationForm = Form(
@@ -35,7 +42,14 @@ object Location extends Controller with securesocial.core.SecureSocial {
   def create = SecuredAction() {
     implicit request =>
       transaction {
-        Ok(views.html.locations.create(locationForm, request.user))
+        Ok(views.html.locations.locationForm(routes.Location.save, locationForm))
+      }
+  }
+  
+  def createInWindow = SecuredAction() {
+        implicit request =>
+      transaction {
+        Ok(views.html.locations.locationForm(routes.Location.save(), locationForm))
       }
   }
 
@@ -43,11 +57,11 @@ object Location extends Controller with securesocial.core.SecureSocial {
     implicit request =>
       locationForm.bindFromRequest.fold(
         errors => transaction {
-          BadRequest(views.html.locations.create(errors, request.user))
+          BadRequest(views.html.locations.locationForm(routes.Location.save, errors))
         },
         location => transaction {
           model.Location.insert(location)
-          Redirect(routes.Location.index).flashing("status" -> "added", "title" -> location.name)
+          Ok("")
         })
   }
 
@@ -79,6 +93,29 @@ object Location extends Controller with securesocial.core.SecureSocial {
         model.Location.delete(id)
       }
       Redirect(routes.Location.index).flashing("status" -> "deleted")
+  }
+
+  def findByPattern(term: String) = Action {
+    implicit request =>
+      transaction {
+        implicit object LocationFormat extends Format[model.Location] {
+          def reads(json: JsValue): model.Location = new model.Location()
+
+          def writes(l: model.Location): JsValue = JsObject(List(
+            "id" -> JsNumber(l.id),
+            "value" -> JsString(l.name),
+          	"fullAddress" -> JsString(l.fullAddress),
+          	"country" -> JsString(l.country),
+          	"city" -> JsString(l.city)
+          	))
+          
+        }
+       
+
+        val locations: List[model.Location] = model.Location.findByPattern("%" + term + "%").toList
+
+        Ok(toJson(locations))
+      }
   }
 
 }

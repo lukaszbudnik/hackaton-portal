@@ -1,7 +1,13 @@
 @(newsForm: Form[model.News], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
 
-@main2("news.create.title", "news", Some(user)) {
+@main(Messages("news.create.title"), Some(user), nav = "news") {
+	<div class="container">
 
-  @news.newsForm(None, newsForm, routes.News.save, "global.add")
-
+    	<div class="page-header">
+    		<h2>@Messages("news.create.title")</h2>
+		</div>
+  
+    	@news.newsForm(None, newsForm, routes.News.save, "news.publish")
+    
+    </div>
 }

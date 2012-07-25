@@ -1,12 +1,13 @@
 package controllers
 
 import org.squeryl.PrimitiveTypeMode.transaction
+
 import helpers.Forms.enum
 import play.api.data.Forms._
 import play.api.data.Form
+import play.api.libs.json.Json._
 import play.api.mvc.Action
 import play.api.mvc.Controller
-import play.api.libs.json.Json._
 
 object Hackathon extends Controller with securesocial.core.SecureSocial {
 
@@ -23,7 +24,9 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
       "status" -> enum(model.HackathonStatus),
       "date" -> date("dd/MM/yyyy"),
       "organizerId" -> longNumber,
-      "locationId" -> longNumber)(model.Hackathon.apply)(model.Hackathon.unapply))
+      "locationId" -> longNumber,
+      "locationName" -> nonEmptyText)
+      (model.Hackathon.apply)(model.Hackathon.unapply))
 
   def index = UserAwareAction {
     implicit request =>
@@ -42,8 +45,10 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
   def create = SecuredAction() {
     implicit request =>
       transaction {
-    	val hackathon = new model.Hackathon(request.user.hackathonUserId)
-        Ok(views.html.hackathons.create(hackathonForm.fill(hackathon), model.Location.all, request.user))
+        val hackathon = new model.Hackathon(request.user.hackathonUserId)
+      
+          
+        Ok(views.html.hackathons.create(hackathonForm.fill(hackathon), None, request.user))
       }
   }
 
@@ -51,21 +56,25 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
     implicit request =>
       hackathonForm.bindFromRequest.fold(
         errors => transaction {
-          BadRequest(views.html.hackathons.create(errors, model.Location.all, request.user))
+          val location: Option[model.Location] = hackathonForm.data.get("locationId")
+            .map(l => model.Location.lookup(l.toLong).get)
+
+          BadRequest(views.html.hackathons.create(errors, location, request.user))
         },
         hackathon => transaction {
           model.Hackathon.insert(hackathon)
           Redirect(routes.Hackathon.index).flashing("status" -> "added", "title" -> hackathon.subject)
-        }
-      )
+        })
   }
 
   def edit(id: Long) = SecuredAction() {
     implicit request =>
       transaction {
+     
         model.Hackathon.lookup(id).map {
           hackathon =>
-            Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathon), model.Location.all, request.user))
+          	hackathon.locationName = hackathon.location.name
+            Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathon), model.Location.lookup(hackathon.locationId), request.user))
         }.get
       }
   }
@@ -74,7 +83,9 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
     implicit request =>
       hackathonForm.bindFromRequest.fold(
         errors => transaction {
-          BadRequest(views.html.hackathons.edit(id, errors, model.Location.all, request.user))
+          val location: Option[model.Location] = hackathonForm.data.get("locationId")
+            .map(l => model.Location.lookup(l.toLong).get)
+          BadRequest(views.html.hackathons.edit(id, errors,location, request.user))
         },
         hackathon => transaction {
           model.Hackathon.update(id, hackathon)
@@ -89,6 +100,5 @@ object Hackathon extends Controller with securesocial.core.SecureSocial {
       }
       Redirect(routes.Hackathon.index).flashing("status" -> "deleted")
   }
-  
- 
+
 }

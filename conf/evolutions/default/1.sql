@@ -161,35 +161,20 @@ CREATE TABLE sponsors (
     id integer NOT NULL DEFAULT nextval('sponsor_id_seq'),
     creation_timestamp timestamp NOT NULL DEFAULT now(),
     name varchar(255),
+    title varchar(255),
     description text,
     website varchar(255),
-    is_general_sponsor boolean,
     sponsor_order integer,
-    logo_resource_id integer,
     
+    hackathon_id integer,
+    logo_resource_id integer,   
+    
+	FOREIGN KEY (hackathon_id) REFERENCES hackathons(id),
     FOREIGN KEY (logo_resource_id) REFERENCES resources(id),
     PRIMARY KEY (id)
 );
 
-CREATE SEQUENCE hackathon_sponsor_id_seq;
-CREATE TABLE hackathons_sponsors (
-	id integer NOT NULL DEFAULT nextval('hackathon_sponsor_id_seq'),
-	creation_timestamp timestamp NOT NULL DEFAULT now(),
-	sponsor_order integer,
-	
-	hackathon_id integer,
-	sponsor_id integer,
-	
-	FOREIGN KEY (hackathon_id) REFERENCES hackathons(id) ON DELETE CASCADE,
-	FOREIGN KEY (sponsor_id) REFERENCES sponsors(id) ON DELETE CASCADE,
-	UNIQUE (hackathon_id, sponsor_id),
-	PRIMARY KEY (id)
-)
-
 # --- !Downs
-DROP TABLE hackathons_sponsors CASCADE;
-DROP SEQUENCE hackathon_sponsor_id_seq;
-
 DROP TABLE sponsors CASCADE;
 DROP SEQUENCE sponsor_id_seq;
 

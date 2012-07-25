@@ -1,155 +1,141 @@
-@(action: play.api.mvc.Call, actionUpload : play.api.mvc.Call, btnMessage: String, sponsorForm: Form[model.Sponsor], hackathons: List[model.Hackathon])(implicit request: Request[AnyContent])
+@(hackathon: Option[model.Hackathon], sponsorForm: Form[model.Sponsor], action: play.api.mvc.Call, actionMessage: String)(implicit request: Request[AnyContent])
 
 @import helper._
 @import helper.twitterBootstrap._
+@import tags._
 
 @implicitFieldConstructor = @{ FieldConstructor(forms.twitterBootstrapInput.f) }
 
-
 <div class="row">
-<div class="span5">
-@form(action, 'class -> "form-horizontal") {
+
+	<div class="span6">
+		@form(action, 'class -> "form-horizontal") {
         
-    @inputText(
-    	sponsorForm("name"),
-	    '_label -> Messages("sponsors.name.label"),
-	    '_showConstraints -> false
-    ) 
+			@inputText(
+				sponsorForm("name"),
+				'_label -> Messages("sponsors.name.label"),
+				'_showConstraints -> false
+			)
+			
+			@inputText(
+				sponsorForm("title"),
+				'_label -> Messages("sponsors.title.label"),
+				'_showConstraints -> false
+			)
 
-    @inputText(
-    	sponsorForm("website"),
-    	'_label -> Messages("sponsors.website.label"),
-	    '_showConstraints -> false
-    )
+			@inputText(
+				sponsorForm("website"),
+				'_label -> Messages("sponsors.website.label"),
+				'_showConstraints -> false
+			)
         
-    @textarea(
-    	sponsorForm("description"),
-    	'_label -> Messages("sponsors.description.label"),
-	    '_showConstraints -> false
-    )
+			@textarea(
+				sponsorForm("description"),
+				'_label -> Messages("sponsors.description.label"),
+				'_showConstraints -> false
+			)
 
-    @inputText(
-    	sponsorForm("order"),
-    	'_label -> Messages("sponsors.order.label"),
-	    '_showConstraints -> false
-    )
-    @forms.hidden(field = sponsorForm("logoResourceId"))
-
-    @checkbox(
-    	sponsorForm("isGeneralSponsor"),
-	    '_label -> Messages("sponsors.generalSponsor.label"),
-	    '_showConstraints -> false
-    )
-
-        
-    @hackathons.zipWithIndex.map { case (hackathon, index) =>  
-    
-    	@defining(sponsorForm("hackathons[" + index + "].hackathonId")) { hackathonIdField =>
-  			<input type="hidden" name="@hackathonIdField.name" id="@hackathonIdField.id" value="@hackathon.id">
-		}
+			@inputText(
+				sponsorForm("order"),
+				'_label -> Messages("sponsors.order.label"),
+				'_showConstraints -> false
+			)
+			
+			@forms.hidden(field = sponsorForm("hackathonId"))			
+			@forms.hidden(field = sponsorForm("logoResourceId"))
             	
-    	@select(
-			sponsorForm("hackathons[" + index + "].order"),
-			Seq( 
-				("-1", Messages("sponsors.notSponsored.label")), 
-				("1",Messages("sponsors.sponsored.label") + " (order: 1)"), 
-				("2",Messages("sponsors.sponsored.label") + " (order: 2)"), 
-				("3",Messages("sponsors.sponsored.label") + " (order: 3)"),
-				("4",Messages("sponsors.sponsored.label") + " (order: 4)")
-			),
-    		'_label -> (hackathon.subject),
-    		'_showConstraints -> false
-   		)
-   		
-    }
-	
-    <div class="form-actions">
-        <button type="submit" class="btn btn-primary">@btnMessage</button>
-        <a href="@routes.Sponsor.index" class="btn">@Messages("global.cancel")</a>
-  	</div>       
-}
-</div>
-<div class="span4">
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
+				<a href="@routes.Sponsor.index" class="btn">@Messages("global.cancel")</a>
+			</div>       
+		}
+	</div>
 
-@form(actionUpload, 'class -> "form-horizontal", 'id -> "fileupload") {
+	<div class="span6">
+
+		@form(routes.Sponsor.uploadLogo, 'class -> "form-horizontal", 'id -> "fileupload") {
+			<!-- The template to display files available for upload -->
+			<!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+			<div class="row fileupload-buttonbar">
+				<div class="span2">
+	         		<!-- The fileinput-button span is used to style the file input field as button -->
+	             	<span class="btn btn-primary fileinput-button">
+						<i class="icon-upload icon-white"></i>
+						<span>Upload logo...</span>
+						<input type="file" name="files">
+					</span>
+				</div>
+			<div class="files span2"></div>
+		</div>
 	
-<!-- The template to display files available for upload -->
-	
- <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
-	 <div class="row fileupload-buttonbar">
-	     <div class="span2">
-	         <!-- The fileinput-button span is used to style the file input field as button -->
-	             <span class="btn btn-primary fileinput-button">
-	                 <i class="icon-upload icon-white"></i>
-	                 <span>Upload logo...</span>
-	                 <input type="file" name="files">
-	             </span>
-	         </div>
-		<div class="files span2"></div>
-	</div>	
-<script id="template-upload" type="text/x-tmpl">
-{% for (var i=0, file; file=o.files[i]; i++) { %}
-    <div class="template-upload fade span3">
-	{% if (!file.error) { %}
-	<img src="@routes.Assets.at("images/loader.gif")" style="align:center"/>
-	{% } %}
-	{% if (file.name) { %}
-		<span>File: {%=file.name%}</span>
-	 {% } %}
-		<p>
-			{% if (file.error) { %}
+		<script id="template-upload" type="text/x-tmpl">
+			{% for (var i=0, file; file=o.files[i]; i++) { %}
+			<div class="template-upload fade span3">
+
+				{% if (!file.error) { %}
+				<img src="@routes.Assets.at("images/loader.gif")" style="align:center"/>
+				{% } %}
+				
+				{% if (file.name) { %}
+				<span>File: {%=file.name%}</span>
+				{% } %}
+			
+				<p>
+				{% if (file.error) { %}
 				<span><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</span>
 				<p></p>
-			{% } else { %}	
+				{% } else { %}	
+				{% } %}
+				</p>
+				
+				<p>
+					<span class="cancel" style="display:none" >
+						{% if (!i) { %}
+						<button class="btn btn-warning">
+							<i class="icon-ban-circle icon-white"></i>
+							<span>{%=locale.fileupload.cancel%}</span>
+						</button>
+						{% } %}
+					</span>
+				</p>
+			</div>
 			{% } %}
-		</p>
-		<p>
-        <span class="cancel" style="display:none" >{% if (!i) { %}
-            <button class="btn btn-warning">
-                <i class="icon-ban-circle icon-white"></i>
-                <span>{%=locale.fileupload.cancel%}</span>
-            </button>
-        {% } %}</span>
-		</p>
-	</div>
-{% } %}
-</script>
-<!-- The template to display files available for download -->
-<script id="template-download" type="text/x-tmpl">
-{% for (var i=0, file; file=o.files[i]; i++) { %}
-    <div class="template-download fade span">
-	{% if(file.resourceId) { 	
-			$('#logoResourceId').val(file.resourceId);
-		
- } %}
-		{% if (!file.error) { %}	
-		<div class="thumbnail">
+		</script>
+
+		<!-- The template to display files available for download -->
+		<script id="template-download" type="text/x-tmpl">
+			{% for (var i=0, file; file=o.files[i]; i++) { %}
+			<div class="template-download fade span">
+				{% if(file.resourceId) { 	
+					$('#logoResourceId').val(file.resourceId);
+				} %}
+				
+				{% if (!file.error) { %}	
+				<div class="thumbnail">
 					<a href="{%=file.url%}" ><img src="{%=file.url%}"/></a>
 				</div>
-		{% } else if (file.error) { %}
-			<p>
-				<span><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</span>
-			</p>    
-        {% } %}	
-			<p/>
-			<p>
-				<span class="delete">
-					<button class="btn btn-danger" onclick="{%='$("#logoResourceId").val("")'%}">
-						<i class="icon-trash icon-white"></i>
-						<span>{%=locale.fileupload.destroy%}</span>
-					</button>
-				</span>
-			</p>
-	</div>		
-{% } %}
-</script>
-}
+				{% } else if (file.error) { %}
+				<p>
+					<span><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</span>
+				</p>    
+				{% } %}
+		
+				<p/>
+				<p>
+					<span class="delete">
+						<button class="btn btn-danger" onclick="{%='$("#logoResourceId").val("")'%}">
+							<i class="icon-trash icon-white"></i>
+							<span>{%=locale.fileupload.destroy%}</span>
+						</button>
+					</span>
+				</p>
+			</div>		
+			{% } %}
+		</script>
+	}
 
 </div>
-</div>
 
-
-@import tags._
 @fileuploadlocale()
 @jsAppend(List("jquery.ui.widget.min.js"
 				, "tmpl.min.js"
@@ -160,8 +146,3 @@
 				, "jquery.fileupload-fp.min.js"
 				, "jquery.fileupload-ui.min.js"
 				, "sponsors-logo.min.js"))
-
-
-
-
-

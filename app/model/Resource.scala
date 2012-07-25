@@ -4,7 +4,11 @@ import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.KeyedEntity
 import org.squeryl.Schema
 
-case class Resource(url : String, publicId: String) extends KeyedEntity[Long] {
+import play.api.Play.current
+import plugins.cloudimage.CloudImagePlugin
+import plugins.use
+
+case class Resource(url: String, publicId: String) extends KeyedEntity[Long] {
   val id: Long = 0L
 }
 
@@ -33,6 +37,10 @@ object Resource extends Schema {
   }
 
   def delete(id: Long): Int = {
+    resources.lookup(id).map { r =>
+      use[CloudImagePlugin].cloudImageService.destroy(r.publicId)
+    }
+    
     resources.deleteWhere(r => r.id === id)
   }
 }

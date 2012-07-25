@@ -1,24 +1,36 @@
-@(hackathonForm: Form[model.Hackathon], action: play.api.mvc.Call, locations: Seq[model.Location], actionMessage: String)
+@(hackathonForm: Form[model.Hackathon], action: play.api.mvc.Call, location: Option[model.Location], actionMessage: String)
 
 @import helper._
 @import helper.twitterBootstrap._
 
 @implicitFieldConstructor = @{ FieldConstructor(forms.twitterBootstrapInput.f) }
 
-@form(action, 'class -> "form-horizontal") {
+<script type="text/javascript">
+	new HackathonLocations({ findLocationAction : '/locations/find',
+		createLocationAction: '@routes.Location.create',
+		saveLocationAction: '@routes.Location.save',
+		noMatchFoundText : '@Messages("locations.nomatchfound")'
+});
+
+</script>
+
+@form(action, 'id -> "hackathon-form",'class -> "form-horizontal") {
 
 	@inputText(
 	    hackathonForm("subject"),
 	    '_label -> Messages("hackathons.subject.label"),
 	    '_showConstraints -> false
 	)
+	@inputText(
+	    hackathonForm("locationName"),
+	    '_label -> Messages("hackathons.location.label"),
+	    '_showConstraints -> false,
+	    'autocomplete -> "off"
+	)
 
-	@select(
-	    hackathonForm("locationId"),
-	    locations.map{ l => l.id.toString -> l.name },
-        '_label -> Messages("hackathons.location.label"),
-	    '_showConstraints -> false
-    )
+	
+    @forms.hidden(field = hackathonForm("locationId"))    
+    
     
 	@inputDate(
 	    hackathonForm("date"),
@@ -38,6 +50,22 @@
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
         <a href="@routes.Hackathon.index" class="btn">@Messages("global.cancel")</a>
-  	</div>
-        
+  	</div>      
 }
+
+    <div class="modal hackathon-location-modal hide">
+    <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">×</button>
+    <h3>@Messages("locations.create.title")</h3>
+    </div>
+    	<div class="modal-body"">
+    	    	<div class="row">
+    	    		<div id="locationBox" class="span5"></div>
+    				<div id="map-canvas" style="width:400px; height:360px" class="span5"></div>
+    			</div>
+    	</div>
+		 <div class="modal-footer">
+			<a id="cancelLocation" href="#" class="btn" data-dismiss="modal">@Messages("global.cancel")</a>
+			<a id="submitLocation" href="#" class="btn btn-primary">@Messages("global.submit")</a>
+		</div>    	
+    </div>
