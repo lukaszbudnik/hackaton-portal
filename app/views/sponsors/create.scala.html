@@ -1,17 +1,13 @@
-@(sponsorForm: Form[model.Sponsor], hackathons: List[model.Hackathon], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
+@(sponsorForm: Form[model.Sponsor], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
 
-@import helper._
-@import helper.twitterBootstrap._
-
-@main(Messages("newSponsor.title"), Some(user), nav = "sponsors") {
-
+@main(Messages("sponsors.create.title"), Some(user), nav = "sponsors") {
 	<div class="container">
+
     	<div class="page-header">
-    		<h2>@Messages("newSponsor.title")</h2>
-    		
+    		<h2>@Messages("sponsors.create.title")</h2>
 		</div>
   
-    	@sponsors.sponsorForm(routes.Sponsor.save, routes.Sponsor.uploadLogo, Messages("global.create"), sponsorForm, hackathons)(request)
+    	@sponsors.sponsorForm(None, sponsorForm, routes.Sponsor.save, "global.add")(request)
     
     </div>
 }
