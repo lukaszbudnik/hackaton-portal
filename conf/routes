@@ -139,8 +139,9 @@ POST    /locations/:id/update       controllers.Location.update(id: Long)
 POST    /locations/:id/delete       controllers.Location.delete(id: Long)
 
 # Retrieve
-GET     /users                      controllers.User.index(page: Int ?= 0, orderBy: Int ?= 1, filter ?= "")
-POST    /users/:id/update/:isAdmin  controllers.User.update(id: Int, isAdmin: Boolean)
+GET     /users                          controllers.User.index(page: Int ?= 0, orderBy: Int ?= 1, filter ?= "")
+POST    /users/:id/isAdmin/:isAdmin     controllers.User.updateIsAdmin(id: Int, isAdmin: Boolean)
+POST    /users/:id/isBlocked/:isBlocked controllers.User.updateIsBlocked(id: Int, isBlocked: Boolean)
 
 # jsmessages subproject
 GET     /messages.js                controllers.JsMessagesFeed.jsMessages

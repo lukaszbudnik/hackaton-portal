@@ -6,8 +6,6 @@
 insert into users (name, email, github_username, open_id) values ('Jan Kowalski','email', 'test', '102068228977340999495google');
 insert into users (name, email, github_username, open_id) values ('test user','email', 'test', 'open_id_test');
 
-insert into users_roles (user_id, role_id) values (2, 1);
-
 insert into locations (country, city, postal_code, full_address, name, latitude, longitude) values ('Polska', 'Gdańsk', '80-000', 'Ul. Długa 55', 'Hackaton Gdansk!', 54.366667, 18.633333);
 insert into locations (country, city, postal_code, full_address, name, latitude, longitude) values ('Polska', 'Warszawa', '80-000', 'Ul. Krótka 5', 'Hackaton Warszawa!', 52.2323, 21.008433);
 

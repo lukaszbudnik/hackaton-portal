@@ -43,7 +43,7 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
         Logger.debug("Adding a new user for social user " + socialUser)
       }
 
-      val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), "", "", socialUser.avatarUrl.getOrElse(""), socialUser.id.id + socialUser.id.providerId, false)
+      val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), "", "", socialUser.avatarUrl.getOrElse(""), socialUser.id.id + socialUser.id.providerId)
       model.User.insert(newUser)
     }
   }

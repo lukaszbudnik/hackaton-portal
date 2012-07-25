@@ -13,6 +13,7 @@ CREATE TABLE users (
     github_username varchar(255),    
 	twitter_account text,
 	is_admin bool DEFAULT false,
+	is_blocked bool DEFAULT false,
 	
     PRIMARY KEY (id)
 );

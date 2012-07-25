@@ -13,7 +13,8 @@ case class User(name: String,
   @Column("twitter_account") twitterAccount: String,
   @Column("avatar_url") avatarUrl: String,
   @Column("open_id") openId: String,
-  @Column("is_admin") isAdmin: Boolean) extends KeyedEntity[Long] {
+  @Column("is_admin") isAdmin: Boolean = false,
+  @Column("is_blocked") isBlocked: Boolean = false) extends KeyedEntity[Long] {
   val id: Long = 0L
 
   private lazy val teamsRel = Team.usersToTeams.left(this)
@@ -37,12 +38,19 @@ object User extends Schema {
     users.toIterable
   }
   
-  def sortedBy(orderBy: Int, filter: String): Iterable[User] = {
+  def pagedUsers(orderBy: Int, filter: String, offset: Int, pageSize: Int): Iterable[User] = {
     from(users)(u =>
 	    where(lower(u.name) like "%" + filter.toLowerCase() + "%")
 		select(u)
 		orderBy(getOrderByValue(u, orderBy))
-	)
+	).page(offset, pageSize)
+  }
+  
+  def pagedUsersTotalNumber(filter: String): Int = {
+    from(users)(u =>
+	    where(lower(u.name) like "%" + filter.toLowerCase() + "%")
+		compute(count)
+	).toInt
   }
   
   private def getOrderByValue(u: User, orderBy: Int): ExpressionNode = {
@@ -81,6 +89,7 @@ object User extends Schema {
           u.email := userToBeUpdated.email,
           u.githubUsername := userToBeUpdated.githubUsername,
           u.isAdmin := userToBeUpdated.isAdmin,
+          u.isBlocked := userToBeUpdated.isBlocked,
           u.openId := userToBeUpdated.openId,
           u.twitterAccount := userToBeUpdated.twitterAccount))
   }
