@@ -1,0 +1,15 @@
+@(request: RequestHeader, errorString: String)
+
+@error(Messages("badRequest.title")) {
+
+	<div class="container">
+    
+	    <div class="page-header">
+	    <h1>@Messages("badRequest.title")</h1>
+		<br/>
+		@Html(Messages("badRequest.text"))
+	    </div>
+
+    </div>
+
+}

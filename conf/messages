@@ -196,6 +196,12 @@ securityAbuse.text = Dear <strong>{0}</strong>! We have detected a security abus
 notFound.title = Not Found
 notFound.text = The page you have requested does not exist.
 
+generalError.title = An error occurred
+generalError.text = We have been notified. Please try again in a while.
+
+badRequest.title = Invalid request
+badRequest.text = Your request seems to be invalid and we were not able to process it.
+
 chat.write = Write a message:
 chat.messages = Messages:
 

@@ -112,6 +112,12 @@ securityAbuse.text = Drogi <strong>{0}</strong>! Wykryliśmy próbę naruszenia 
 notFound.title = Nie znaleziono
 notFound.text = Strona, na którą próbujesz wejść nie istnieje.
 
+generalError.title = Wystąpił błąd
+generalError.text = Zostaliśmy już o tym powiadomieni. Spróbuj ponownie za chwilę.
+
+badRequest.title = Błędne żądanie
+badRequest.text = Twoje żądanie wygląda na nieprawidłowe i nie byliśmy w stanie poprawnie go obsłużyć.
+
 chat.write = Wyślij wiadomość:
 chat.messages = Wiadomości:
 

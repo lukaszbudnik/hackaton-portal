@@ -8,6 +8,7 @@ import play.api.db.DB
 import play.api.mvc.Results.Forbidden
 import play.api.mvc.Results.InternalServerError
 import play.api.mvc.Results.NotFound
+import play.api.mvc.Results.BadRequest
 import play.api.mvc.Handler
 import play.api.mvc.RequestHeader
 import play.api.mvc.Result
@@ -34,7 +35,7 @@ object Global extends GlobalSettings {
       case e: SecurityAbuseException => Forbidden(views.html.errors.securityAbuse(e))
       case _ => InternalServerError(Play.maybeApplication.map {
         case app if app.mode == Mode.Dev => views.html.defaultpages.devError.f
-        case app => views.html.defaultpages.error.f
+        case app => views.html.errors.generalError.f
       }.getOrElse(views.html.defaultpages.devError.f) {
         ex match {
           case e: PlayException.UsefulException => e
@@ -51,6 +52,14 @@ object Global extends GlobalSettings {
         case app => views.html.errors.notFound.f
       }.getOrElse(views.html.errors.notFound.f)(request, Play.maybeApplication.flatMap(_.routes)))
   }
+  
+  override def onBadRequest(request: RequestHeader, error: String): Result = {
+    BadRequest(
+      Play.maybeApplication.map {
+        case app if app.mode == Mode.Dev => views.html.defaultpages.badRequest.f
+        case app => views.html.errors.badRequest.f
+      }.getOrElse(views.html.errors.badRequest.f)(request, error))
+  }
 
   override def onRouteRequest(request: RequestHeader): Option[Handler] = {
     if (play.Play.isProd() &&
@@ -61,7 +70,7 @@ object Global extends GlobalSettings {
     }
     super.onRouteRequest(request)
   }
-
+  
   private def getSession(adapter: DatabaseAdapter, app: Application) = {
     val session = Session.create(DB.getConnection()(app), adapter)
     if (!play.Play.isProd) {

@@ -1,0 +1,15 @@
+@(ex: java.lang.Throwable)
+
+@error(Messages("generalError.title")) {
+
+	<div class="container">
+    
+	    <div class="page-header">
+	    <h1>@Messages("generalError.title")</h1>
+		<br/>
+		@Html(Messages("generalError.text"))
+	    </div>
+
+    </div>
+
+}
