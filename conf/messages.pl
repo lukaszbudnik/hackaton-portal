@@ -33,6 +33,11 @@ navigation.news     = Aktualności
 navigation.problems = Problemy
 navigation.sponsors = Sponsorzy
 navigation.teams    = Zespoły
+navigation.users    = Użytkownicy
+
+pagination.previous = &larr; Poprzednie
+pagination.next = Następne &rarr;
+pagination.current = Rekordy od %d do %d z łącznie %d
 
 social.twitter.follow = Obserwuj
 
@@ -111,6 +116,7 @@ chat.write = Wyślij wiadomość:
 chat.messages = Wiadomości:
 
 users.title = Użytkownicy portalu
+users.empty.text = Nie znaleziono żadnych użytkowników spełniających podane kryteria
 users.filter.label = Filtruj
 users.filter.placeholder = Filtruj po polach nazwisko, email, github, twitter
 users.name.label = Nazwisko

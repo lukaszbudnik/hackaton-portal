@@ -8,13 +8,17 @@ import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
 import model.Page
+import helpers.Security
 
 object User extends Controller with securesocial.core.SecureSocial {
   
   private val pageSize = 20
 
-  def index(page: Int, orderBy: Int, filter: String) = Action { implicit request =>
+  def index(page: Int, orderBy: Int, filter: String) = SecuredAction() { implicit request =>
     transaction {
+      
+      val socialUser = request.user
+      Security.verifyIfAllowed(socialUser.isAdmin)(socialUser)
       
       val offset = pageSize * page
       
@@ -24,12 +28,15 @@ object User extends Controller with securesocial.core.SecureSocial {
       
       val currentPage = Page(users, page, offset, totalUsers)
       
-      Ok(views.html.users.index(currentPage, None, orderBy, filter))
+      Ok(views.html.users.index(currentPage, socialUser, orderBy, filter))
     }
   }
 
-  def updateIsAdmin(userId: Int, isAdmin: Boolean) = Action { implicit request =>
+  def updateIsAdmin(userId: Int, isAdmin: Boolean) = SecuredAction() { implicit request =>
     transaction {
+      
+      implicit val socialUser = request.user
+      Security.verifyIfAllowed(socialUser.isAdmin)
       
       val user = model.User.lookup(userId)
       
@@ -45,8 +52,12 @@ object User extends Controller with securesocial.core.SecureSocial {
     }
   }
     
-    def updateIsBlocked(userId: Int, isBlocked: Boolean) = Action { implicit request =>
+    def updateIsBlocked(userId: Int, isBlocked: Boolean) = SecuredAction() { implicit request =>
     transaction {
+      
+      implicit val socialUser = request.user
+      Security.verifyIfAllowed(socialUser.isAdmin)
+      
       val user = model.User.lookup(userId)
       
       user.map { u =>
