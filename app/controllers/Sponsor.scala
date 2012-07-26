@@ -63,12 +63,15 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
 
   def viewH(hid: Long, id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.sponsors.viewH(model.Hackathon.lookup(hid), model.Sponsor.lookup(id), request.user))
+      val sponsor = model.Sponsor.lookup(id)
+      val hackathon = sponsor.map { sponsor => sponsor.hackathon }.getOrElse { model.Hackathon.lookup(hid) }
+      Ok(views.html.sponsors.viewH(hackathon, sponsor, request.user))
     }
   }
 
   def create = SecuredAction() { implicit request =>
     transaction {
+      helpers.Security.verifyIfAllowed(request.user)
       val sponsor = new model.Sponsor(None)
       Ok(views.html.sponsors.create(sponsorForm.fill(sponsor), request.user))
     }
@@ -91,6 +94,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.sponsors.create(errors, request.user))
       },
       sponsor => transaction {
+        helpers.Security.verifyIfAllowed(request.user)
         model.Sponsor.insert(sponsor)
         Redirect(routes.Sponsor.index).flashing("status" -> "added", "title" -> sponsor.name)
       })
@@ -99,8 +103,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
   def saveH(hid: Long) = SecuredAction() { implicit request =>
     sponsorForm.bindFromRequest.fold(
       errors => transaction {
-        val hackathon = model.Hackathon.lookup(hid)
-        BadRequest(views.html.sponsors.createH(hackathon, errors, request.user))
+        BadRequest(views.html.sponsors.createH(model.Hackathon.lookup(hid), errors, request.user))
       },
       sponsor => transaction {
         model.Hackathon.lookup(hid).map { h =>
@@ -114,6 +117,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Sponsor.lookup(id).map { sponsor =>
+        helpers.Security.verifyIfAllowed(request.user)
         Ok(views.html.sponsors.edit(id, sponsorForm.fill(sponsor), request.user))
       }.getOrElse {
         // no sponsor found
@@ -125,6 +129,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
   def editH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Sponsor.lookup(id).map { sponsor =>
+        helpers.Security.verifyIfAllowed(Some(hid) == sponsor.hackathonId)(request.user)
         sponsor.hackathon.map { h =>
           helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
         }.getOrElse {
@@ -144,6 +149,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.sponsors.edit(id, errors, request.user))
       },
       sponsor => transaction {
+        helpers.Security.verifyIfAllowed(request.user)
         model.Sponsor.update(id, sponsor)
         Redirect(routes.Sponsor.index).flashing("status" -> "updated", "title" -> sponsor.name)
       })
@@ -152,11 +158,11 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
   def updateH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     sponsorForm.bindFromRequest.fold(
       errors => transaction {
-        val hackathon = model.Hackathon.lookup(hid)
-        BadRequest(views.html.sponsors.editH(hackathon, id, errors, request.user))
+        BadRequest(views.html.sponsors.editH(model.Hackathon.lookup(hid), id, errors, request.user))
       },
       sponsor => transaction {
         model.Sponsor.lookup(id).map { sponsor =>
+          helpers.Security.verifyIfAllowed(Some(hid) == sponsor.hackathonId)(request.user)
           sponsor.hackathon.map { h =>
             helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
           }.getOrElse {
@@ -170,6 +176,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
+      helpers.Security.verifyIfAllowed(request.user)
       model.Sponsor.delete(id)
       Redirect(routes.Sponsor.index).flashing("status" -> "deleted")
     }
@@ -178,6 +185,7 @@ object Sponsor extends Controller with securesocial.core.SecureSocial {
   def deleteH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Sponsor.lookup(id).map { sponsor =>
+        helpers.Security.verifyIfAllowed(Some(hid) == sponsor.hackathonId)(request.user)
         sponsor.hackathon.map { h =>
           helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
         }.getOrElse {

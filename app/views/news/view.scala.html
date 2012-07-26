@@ -12,7 +12,7 @@
 		@news.map{ news =>
 
 		  	@user.map { user =>
-		  		@if(user.isAdmin || user.hackathonUserId == news.authorId ) {
+		  		@if(user.isAdmin || news.authorId == user.hackathonUserId) {
 		  			<div class="form-actions">
 		  				@form(routes.News.delete(news.id)) {
 		  					<a class="btn btn-success" href="@routes.News.edit(news.id)">@Messages("global.edit")</a>

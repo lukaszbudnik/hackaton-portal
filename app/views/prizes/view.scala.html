@@ -23,12 +23,16 @@
 					<p>
 				}
 
-	    		<div class="form-actions">
-    				@form(routes.Prize.delete(hackathon.get.id, prize.id)) {
-    				<a class="btn btn-success" href="@routes.Prize.edit(hackathon.get.id, prize.id)">@Messages("global.edit")</a>
-    				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-    				}
-    			</div>
+				@user.map { user =>
+					@if(user.isAdmin || user.hackathonUserId == hackathon.get.organiserId ) {
+					<div class="form-actions">
+						@form(routes.Prize.delete(hackathon.get.id, prize.id)) {
+							<a class="btn btn-success" href="@routes.Prize.edit(hackathon.get.id, prize.id)">@Messages("global.edit")</a>
+							<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+						}
+					</div>
+					}
+				}
 	    	</div>
 	   	</div> 
 	  

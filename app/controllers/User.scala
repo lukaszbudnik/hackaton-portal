@@ -17,8 +17,8 @@ object User extends Controller with securesocial.core.SecureSocial {
   def index(page: Int, orderBy: Int, filter: String) = SecuredAction() { implicit request =>
     transaction {
       
-      val socialUser = request.user
-      Security.verifyIfAllowed(socialUser.isAdmin)(socialUser)
+      implicit val socialUser = request.user
+      Security.verifyIfAllowed(socialUser)
       
       val offset = pageSize * page
       
@@ -36,7 +36,7 @@ object User extends Controller with securesocial.core.SecureSocial {
     transaction {
       
       implicit val socialUser = request.user
-      Security.verifyIfAllowed(socialUser.isAdmin)
+      Security.verifyIfAllowed(socialUser)
       
       val user = model.User.lookup(userId)
       
@@ -56,7 +56,7 @@ object User extends Controller with securesocial.core.SecureSocial {
     transaction {
       
       implicit val socialUser = request.user
-      Security.verifyIfAllowed(socialUser.isAdmin)
+      Security.verifyIfAllowed(socialUser)
       
       val user = model.User.lookup(userId)
       

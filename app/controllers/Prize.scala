@@ -24,14 +24,18 @@ object Prize extends Controller with securesocial.core.SecureSocial {
 
   def view(hid: Long, id: Long) = UserAwareAction { implicit request =>
     transaction {
-      //TODO check if prize is in hackathon
-      Ok(views.html.prizes.view(model.Hackathon.lookup(hid), model.Prize.lookup(id), request.user))
+      val prize = model.Prize.lookup(id)
+      val hackathon = prize.map { p => Some(p.hackathon) }.getOrElse { model.Hackathon.lookup(hid) }
+      Ok(views.html.prizes.view(hackathon, prize, request.user))
     }
   }
 
   def create(hid: Long) = SecuredAction() { implicit request =>
     transaction {
       val hackathon = model.Hackathon.lookup(hid)
+      hackathon.map { h =>
+        helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
+      }
       val prize = new model.Prize(1, hid)
       Ok(views.html.prizes.create(hackathon, prizeForm.fill(prize), request.user))
     }
@@ -40,10 +44,12 @@ object Prize extends Controller with securesocial.core.SecureSocial {
   def save(hid: Long) = SecuredAction() { implicit request =>
     prizeForm.bindFromRequest.fold(
       errors => transaction {
-        val hackathon = model.Hackathon.lookup(hid)
-        BadRequest(views.html.prizes.create(hackathon, errors, request.user))
+        BadRequest(views.html.prizes.create(model.Hackathon.lookup(hid), errors, request.user))
       },
       prize => transaction {
+        model.Hackathon.lookup(hid).map { h =>
+          helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
+        }
         //TODO check if added
         model.Prize.insert(prize)
         Redirect(routes.Prize.index(hid)).flashing("status" -> "added", "title" -> prize.name)
@@ -53,6 +59,8 @@ object Prize extends Controller with securesocial.core.SecureSocial {
   def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Prize.lookup(id).map { prize =>
+        helpers.Security.verifyIfAllowed(hid == prize.hackathonId)(request.user)
+        helpers.Security.verifyIfAllowed(prize.hackathon.organiserId)(request.user)
         Ok(views.html.prizes.edit(Some(prize.hackathon), id, prizeForm.fill(prize), request.user))
       }.getOrElse {
         // no prize found
@@ -64,10 +72,13 @@ object Prize extends Controller with securesocial.core.SecureSocial {
   def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
     prizeForm.bindFromRequest.fold(
       errors => transaction {
-        val hackathon = model.Hackathon.lookup(hid)
-        BadRequest(views.html.prizes.edit(hackathon, id, errors, request.user))
+        BadRequest(views.html.prizes.edit(model.Hackathon.lookup(hid), id, errors, request.user))
       },
       prize => transaction {
+        model.Prize.lookup(id).map { prize =>
+          helpers.Security.verifyIfAllowed(hid == prize.hackathonId)(request.user)
+          helpers.Security.verifyIfAllowed(prize.hackathon.organiserId)(request.user)
+        }
         //TODO check if updated
         model.Prize.update(id, prize)
         Redirect(routes.Prize.index(hid)).flashing("status" -> "updated", "title" -> prize.name)
@@ -76,9 +87,13 @@ object Prize extends Controller with securesocial.core.SecureSocial {
 
   def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
+      model.Prize.lookup(id).map { prize =>
+        helpers.Security.verifyIfAllowed(hid == prize.hackathonId)(request.user)
+        helpers.Security.verifyIfAllowed(prize.hackathon.organiserId)(request.user)
+      }
       //TODO check if deleted
       model.Prize.delete(id)
+      Redirect(routes.Prize.index(hid)).flashing("status" -> "deleted")
     }
-    Redirect(routes.Prize.index(hid)).flashing("status" -> "deleted")
   }
 }

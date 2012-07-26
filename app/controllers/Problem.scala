@@ -22,7 +22,9 @@ object Problem extends Controller with securesocial.core.SecureSocial {
 
   def view(hid: Long, id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.problems.view(model.Hackathon.lookup(hid), model.Problem.lookup(id), request.user))
+      val problem = model.Problem.lookup(id)
+      val hackathon = problem.map { p => Some(p.hackathon) }.getOrElse { model.Hackathon.lookup(hid) }
+      Ok(views.html.problems.view(hackathon, problem, request.user))
     }
   }
 
@@ -37,8 +39,7 @@ object Problem extends Controller with securesocial.core.SecureSocial {
   def save(hid: Long) = SecuredAction() { implicit request =>
     problemForm.bindFromRequest.fold(
       errors => transaction {
-      val hackathon = model.Hackathon.lookup(hid)
-        BadRequest(views.html.problems.create(hackathon, errors, request.user))
+        BadRequest(views.html.problems.create(model.Hackathon.lookup(hid), errors, request.user))
       },
       problem => transaction {
         model.Problem.insert(problem)
@@ -49,6 +50,8 @@ object Problem extends Controller with securesocial.core.SecureSocial {
   def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Problem.lookup(id).map { problem =>
+        helpers.Security.verifyIfAllowed(hid == problem.hackathonId)(request.user)
+        helpers.Security.verifyIfAllowed(problem.submitterId, problem.hackathon.organiserId)(request.user)
         Ok(views.html.problems.edit(Some(problem.hackathon), id, problemForm.fill(problem), request.user))
       }.getOrElse {
         // no problem found
@@ -60,10 +63,13 @@ object Problem extends Controller with securesocial.core.SecureSocial {
   def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
     problemForm.bindFromRequest.fold(
       errors => transaction {
-        val hackathon = model.Hackathon.lookup(hid)
-        BadRequest(views.html.problems.edit(hackathon, id, errors, request.user))
+        BadRequest(views.html.problems.edit(model.Hackathon.lookup(hid), id, errors, request.user))
       },
       problem => transaction {
+        model.Problem.lookup(id).map { problem =>
+          helpers.Security.verifyIfAllowed(hid == problem.hackathonId)(request.user)
+          helpers.Security.verifyIfAllowed(problem.submitterId, problem.hackathon.organiserId)(request.user)
+        }
         model.Problem.update(id, problem)
         Redirect(routes.Problem.index(hid)).flashing("status" -> "updated", "title" -> problem.name)
       })
@@ -72,8 +78,12 @@ object Problem extends Controller with securesocial.core.SecureSocial {
 
   def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
+      model.Problem.lookup(id).map { problem =>
+        helpers.Security.verifyIfAllowed(hid == problem.hackathonId)(request.user)
+        helpers.Security.verifyIfAllowed(problem.submitterId, problem.hackathon.organiserId)(request.user)
+      }
       model.Problem.delete(id)
+      Redirect(routes.Problem.index(hid)).flashing("status" -> "deleted")
     }
-    Redirect(routes.Problem.index(hid)).flashing("status" -> "deleted")
   }
 }

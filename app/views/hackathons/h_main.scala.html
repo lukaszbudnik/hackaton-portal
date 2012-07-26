@@ -23,7 +23,7 @@
 			</div>
 			
 		  	@user.map { user =>
-		  		@if(user.isAdmin || user.hackathonUserId == hackathon.organiserId) {
+		  		@if(user.isAdmin || hackathon.organiserId == user.hackathonUserId) {
 		  		<div class="form-actions">
 		  			@form(routes.Hackathon.delete(hackathon.id)) {
 		  			<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.id)">@Messages("global.edit")</a>

@@ -10,13 +10,13 @@
 	@sponsor.map{ s =>
 	  	@user.map { user =>
 	  		@if(user.isAdmin || user.hackathonUserId == hackathon.get.organiserId ) {
-	  			<div class="form-actions">
-	  				@form(routes.Sponsor.deleteH(hackathon.get.id, s.id)) {
-	  					<a class="btn btn-success" href="@routes.Sponsor.editH(hackathon.get.id, s.id)">@Messages("global.edit")</a>
-	  					<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-	  				}
-	  			</div>
-	  		}
+	  		<div class="form-actions">
+	  			@form(routes.Sponsor.deleteH(hackathon.get.id, s.id)) {
+	  				<a class="btn btn-success" href="@routes.Sponsor.editH(hackathon.get.id, s.id)">@Messages("global.edit")</a>
+	  				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+	  			}
+	  		</div>
+			}
 		}
 	  	
 	  	@footer()

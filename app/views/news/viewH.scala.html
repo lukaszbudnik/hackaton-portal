@@ -10,7 +10,7 @@
 	@news.map{ news =>
 	  
 		@user.map { user =>
-		  	@if(user.isAdmin || user.hackathonUserId == news.authorId || user.hackathonUserId == hackathon.get.organiserId ) {
+		  	@if(user.isAdmin || news.authorId == user.hackathonUserId || hackathon.get.organiserId == news.authorId) {
 		  		<div class="form-actions">
 		  			@form(routes.News.deleteH(hackathon.get.id, news.id)) {
 		  				<a class="btn btn-success" href="@routes.News.editH(hackathon.get.id, news.id)">@Messages("global.edit")</a>

@@ -23,7 +23,9 @@ object Team extends Controller with securesocial.core.SecureSocial {
 
   def view(hid: Long, id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.teams.view(model.Hackathon.lookup(hid), model.Team.lookup(id), request.user))
+      val team = model.Team.lookup(id)
+      val hackathon = team.map { t => Some(t.hackathon) }.getOrElse { model.Hackathon.lookup(hid) }
+      Ok(views.html.teams.view(hackathon, team, request.user))
     }
   }
 
@@ -38,8 +40,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
   def save(hid: Long) = SecuredAction() { implicit request =>
     teamForm.bindFromRequest.fold(
       errors => transaction {
-        val hackathon = model.Hackathon.lookup(hid)
-        BadRequest(views.html.teams.create(hackathon, errors, request.user))
+        BadRequest(views.html.teams.create(model.Hackathon.lookup(hid), errors, request.user))
       },
       team => transaction {
         // insert team and add creator as a member
@@ -51,7 +52,8 @@ object Team extends Controller with securesocial.core.SecureSocial {
   def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Team.lookup(id).map { team =>
-        helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
+        helpers.Security.verifyIfAllowed(hid == team.hackathonId)(request.user)
+        helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
         Ok(views.html.teams.edit(Some(team.hackathon), id, teamForm.fill(team), request.user))
       }.getOrElse {
         // no team found
@@ -63,11 +65,13 @@ object Team extends Controller with securesocial.core.SecureSocial {
   def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
     teamForm.bindFromRequest.fold(
       errors => transaction {
-        val hackathon = model.Hackathon.lookup(hid)
-        BadRequest(views.html.teams.edit(hackathon, id, errors, request.user))
+        BadRequest(views.html.teams.edit(model.Hackathon.lookup(hid), id, errors, request.user))
       },
       team => transaction {
-        helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
+        model.Team.lookup(id).map { team =>
+          helpers.Security.verifyIfAllowed(hid == team.hackathonId)(request.user)
+          helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
+        }
         model.Team.update(id, team)
         Redirect(routes.Team.index(hid)).flashing("status" -> "updated", "title" -> team.name)
       })
@@ -76,9 +80,10 @@ object Team extends Controller with securesocial.core.SecureSocial {
   def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Team.lookup(id).map { team =>
-        helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
-        model.Team.delete(id)
+        helpers.Security.verifyIfAllowed(hid == team.hackathonId)(request.user)
+        helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
       }
+      model.Team.delete(id)
       Redirect(routes.Team.index(hid)).flashing("status" -> "deleted")
     }
   }
@@ -116,7 +121,7 @@ object Team extends Controller with securesocial.core.SecureSocial {
       var status = "error"
       model.User.lookup(userId).map { user =>
         model.Team.lookup(id).map { team =>
-          helpers.Security.verifyIfAllowed(team.creatorId)(request.user)
+          helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
           team.deleteMember(user)
           status = "disconnectedUser"
         }

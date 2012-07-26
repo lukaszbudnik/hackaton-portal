@@ -47,13 +47,16 @@ object News extends Controller with securesocial.core.SecureSocial {
 
   def viewH(hid: Long, id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.news.viewH(model.Hackathon.lookup(hid), model.News.lookup(id), request.user))
+      val news = model.News.lookup(id)
+      val hackathon = news.map { news => news.hackathon }.getOrElse { model.Hackathon.lookup(hid) }
+      Ok(views.html.news.viewH(hackathon, news, request.user))
     }
   }
 
   def create = SecuredAction() { implicit request =>
     helpers.Security.verifyIfAllowed(request.user)
     transaction {
+      helpers.Security.verifyIfAllowed(request.user)
       val news = new model.News(request.user.hackathonUserId)
       Ok(views.html.news.create(newsForm.fill(news), request.user))
     }
@@ -62,8 +65,8 @@ object News extends Controller with securesocial.core.SecureSocial {
   def createH(hid: Long) = SecuredAction() { implicit request =>
     transaction {
       val hackathon = model.Hackathon.lookup(hid)
-      hackathon.map { h =>
-        helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
+      hackathon.map { hackathon =>
+        helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
       }
       val news = new model.News(request.user.hackathonUserId, Some(hid))
       Ok(views.html.news.createH(hackathon, newsForm.fill(news), request.user))
@@ -77,6 +80,7 @@ object News extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.news.create(errors, request.user))
       },
       news => transaction {
+        helpers.Security.verifyIfAllowed(request.user)
         model.News.insert(news)
         Redirect(routes.News.index).flashing("status" -> "added", "title" -> news.title)
       })
@@ -85,12 +89,11 @@ object News extends Controller with securesocial.core.SecureSocial {
   def saveH(hid: Long) = SecuredAction() { implicit request =>
     newsForm.bindFromRequest.fold(
       errors => transaction {
-        val hackathon = model.Hackathon.lookup(hid)
-        BadRequest(views.html.news.createH(hackathon, errors, request.user))
+        BadRequest(views.html.news.createH(model.Hackathon.lookup(hid), errors, request.user))
       },
       news => transaction {
-        model.Hackathon.lookup(hid).map { h =>
-          helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
+        model.Hackathon.lookup(hid).map { hackathon =>
+          helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
         }
         model.News.insert(news)
         Redirect(routes.News.indexH(hid)).flashing("status" -> "added", "title" -> news.title)
@@ -112,8 +115,9 @@ object News extends Controller with securesocial.core.SecureSocial {
   def editH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.News.lookup(id).map { news =>
-        news.hackathon.map { h =>
-          helpers.Security.verifyIfAllowed(news.authorId, h.organiserId)(request.user)
+        helpers.Security.verifyIfAllowed(Some(hid) == news.hackathonId)(request.user)
+        news.hackathon.map { hackathon =>
+          helpers.Security.verifyIfAllowed(news.authorId, hackathon.organiserId)(request.user)
         }.getOrElse {
           helpers.Security.verifyIfAllowed(news.authorId)(request.user)
         }
@@ -131,8 +135,8 @@ object News extends Controller with securesocial.core.SecureSocial {
         BadRequest(views.html.news.edit(id, errors, request.user))
       },
       news => transaction {
-        model.News.lookup(id).map { n =>
-          helpers.Security.verifyIfAllowed(n.authorId)(request.user)
+        model.News.lookup(id).map { news =>
+          helpers.Security.verifyIfAllowed(news.authorId)(request.user)
         }
         model.News.update(id, news)
         Redirect(routes.News.index).flashing("status" -> "updated", "title" -> news.title)
@@ -142,15 +146,15 @@ object News extends Controller with securesocial.core.SecureSocial {
   def updateH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     newsForm.bindFromRequest.fold(
       errors => transaction {
-        val hackathon = model.Hackathon.lookup(hid)
-        BadRequest(views.html.news.editH(hackathon, id, errors, request.user))
+        BadRequest(views.html.news.editH(model.Hackathon.lookup(hid), id, errors, request.user))
       },
       news => transaction {
-        model.News.lookup(id).map { n =>
-          n.hackathon.map { h =>
-            helpers.Security.verifyIfAllowed(n.authorId, h.organiserId)(request.user)
+        model.News.lookup(id).map { news =>
+          helpers.Security.verifyIfAllowed(Some(hid) == news.hackathonId)(request.user)
+          news.hackathon.map { hackathon =>
+            helpers.Security.verifyIfAllowed(news.authorId, hackathon.organiserId)(request.user)
           }.getOrElse {
-            helpers.Security.verifyIfAllowed(n.authorId)(request.user)
+            helpers.Security.verifyIfAllowed(news.authorId)(request.user)
           }
         }
         model.News.update(id, news)
@@ -160,26 +164,26 @@ object News extends Controller with securesocial.core.SecureSocial {
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.News.lookup(id).map { n =>
-        helpers.Security.verifyIfAllowed(n.authorId)(request.user)
+      model.News.lookup(id).map { news =>
+        helpers.Security.verifyIfAllowed(news.authorId)(request.user)
       }
       model.News.delete(id)
+      Redirect(routes.News.index).flashing("status" -> "deleted")
     }
-    Redirect(routes.News.index).flashing("status" -> "deleted")
   }
 
   def deleteH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.News.lookup(id).map { n =>
-        n.hackathon.map { h =>
-          helpers.Security.verifyIfAllowed(n.authorId, h.organiserId)(request.user)
+      model.News.lookup(id).map { news =>
+        helpers.Security.verifyIfAllowed(Some(hid) == news.hackathonId)(request.user)
+        news.hackathon.map { hackathon =>
+          helpers.Security.verifyIfAllowed(news.authorId, hackathon.organiserId)(request.user)
         }.getOrElse {
-          helpers.Security.verifyIfAllowed(n.authorId)(request.user)
+          helpers.Security.verifyIfAllowed(news.authorId)(request.user)
         }
       }
       model.News.delete(id)
+      Redirect(routes.News.indexH(hid)).flashing("status" -> "deleted")
     }
-    Redirect(routes.News.indexH(hid)).flashing("status" -> "deleted")
   }
-
 }

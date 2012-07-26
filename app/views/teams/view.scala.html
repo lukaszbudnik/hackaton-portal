@@ -2,7 +2,7 @@
 
 @import helper._
 
-@allowEdit = @{ !user.isEmpty && !team.isEmpty && (team.get.creatorId == user.get.hackathonUserId || user.get.isAdmin ) }
+@allowEdit = @{ !user.isEmpty && !team.isEmpty && (team.get.creatorId == user.get.hackathonUserId || team.get.hackathon.organiserId == user.get.hackathonUserId || user.get.isAdmin ) }
 
 @hackathons.h_main(hackathon, user, "teams", "teams.status") {
 	@team.map{ team =>
@@ -23,7 +23,11 @@
 					</h3>
 					<ul>
 						@team.members.map { member =>
-						<li>@member.name @if(allowEdit){ <a class="btn btn-warning" href="@routes.Team.disconnectUser(hackathon.get.id, team.id, member.id)">@Messages("teams.disconnect")</a> }</li>
+						<li>@member.name
+							@if(allowEdit){ 
+							<a class="btn btn-warning" href="@routes.Team.disconnectUser(hackathon.get.id, team.id, member.id)">@Messages("teams.disconnect")</a> 
+							}
+						</li>
 						}
 					</ul>
 				}

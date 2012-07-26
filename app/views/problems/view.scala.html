@@ -14,12 +14,16 @@
 				<p>@Messages("problems.description.label"): @problem.description</p>
 				<p>@Messages("problems.submitter.label"): @problem.submitter.name</p>
 
-	    		<div class="form-actions">
-    				@form(routes.Problem.delete(hackathon.get.id, problem.id)) {
-    				<a class="btn btn-success" href="@routes.Problem.edit(hackathon.get.id, problem.id)">@Messages("global.edit")</a>
-    				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-    				}
-    			</div>
+				@user.map { user =>  			
+					@if(user.isAdmin || problem.submitterId == user.hackathonUserId || problem.hackathon.organiserId == user.hackathonUserId){
+						<div class="form-actions">
+							@form(routes.Problem.delete(hackathon.get.id, problem.id)) {
+								<a class="btn btn-success" href="@routes.Problem.edit(hackathon.get.id, problem.id)">@Messages("global.edit")</a>
+								<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+							}
+						</div>
+					}
+				}
 	    	</div>
 	   	</div> 
 	  
