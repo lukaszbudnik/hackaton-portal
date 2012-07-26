@@ -28,6 +28,7 @@ navigation.contact = Contact
 navigation.prizes = Prizes
 navigation.sponsors = Sponsors
 navigation.login = Sign in
+navigation.users = Users
 
 global.learnMore = Learn more »
 global.viewDetails = View details »
@@ -43,6 +44,10 @@ global.update = Update
 global.none = None
 global.status.error = Can''t perform this operation
 global.dateformat = dd-MM-yyyy
+
+pagination.previous = &larr; Previous
+pagination.next = Next &rarr;
+pagination.current = Displaying %d to %d of %d
 
 social.twitter.follow = Follow
 
@@ -195,6 +200,7 @@ chat.write = Write a message:
 chat.messages = Messages:
 
 users.title = Portal Users
+users.empty.text = No users found
 users.filter.label = Filter
 users.filter.placeholder = Filter by name, email, github, twitter
 users.name.label = Name

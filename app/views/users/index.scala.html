@@ -1,7 +1,8 @@
-@(currentPage: model.Page[model.User], user: Option[securesocial.core.SocialUser], currentOrderBy: Int = 0, currentFilter: String = "")(implicit flash: Flash, request: Request[AnyContent])
+@(currentPage: model.Page[model.User], user: securesocial.core.SocialUser, currentOrderBy: Int = 0, currentFilter: String = "")(implicit flash: Flash, request: Request[AnyContent])
 
 @import helper._
 @import tags._
+
 @****************************************
 * Helper generating navigation links    *
 ****************************************@
@@ -27,7 +28,7 @@
     <script src="@routes.JsMessagesFeed.jsMessages" type="text/javascript"></script>
 }
 
-@main(Messages("users.title"), user, nav = "users", scripts) {
+@main(Messages("users.title"), Some(user), nav = "users", scripts) {
     
     <div class="container">
 
@@ -92,23 +93,23 @@
             <ul>
                 @currentPage.prev.map { page =>
                     <li class="prev">
-                        <a href="@link(page)">&larr; Previous</a>
+                        <a href="@link(page)">@Html(Messages("pagination.previous"))</a>
                     </li>
                 }.getOrElse {
                     <li class="prev disabled">
-                        <a>&larr; Previous</a>
+                        <a>@Html(Messages("pagination.previous"))</a>
                     </li>
                 }
                 <li class="current">
-                    <a>Displaying @(currentPage.offset + 1) to @(currentPage.offset + users.size) of @currentPage.total</a>
+                    <a>@Html(Messages("pagination.current").format(currentPage.offset + 1, currentPage.offset + users.size, currentPage.total))</a>
                 </li>
                 @currentPage.next.map { page =>
                     <li class="next">
-                        <a href="@link(page)">Next &rarr;</a>
+                        <a href="@link(page)">@Html(Messages("pagination.next"))</a>
                     </li>
                 }.getOrElse {
                     <li class="next disabled">
-                        <a>Next &rarr;</a>
+                        <a>@Html(Messages("pagination.next"))</a>
                     </li>
                 }
             </ul>
@@ -117,13 +118,13 @@
     }.getOrElse {
 
         <div class="well">
-            <em>Nothing to display</em>
+            <em>@Messages("users.empty.text")</em>
         </div>
 
     }
 
 
-		@footer()
+		@simpleFooter()
 
 	</div>
 

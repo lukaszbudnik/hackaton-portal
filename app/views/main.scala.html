@@ -55,10 +55,14 @@
 @if(!play.Play.isProd()) {
               @user.map { user =>
                 <li class="@("active".when(nav == "profile"))"><a href="@routes.Application.profile">@user.displayName</a></li>
+                @if(user.isAdmin) { 
+                  <li class="@("active".when(nav == "users"))"><a href="@routes.User.index()">@Messages("navigation.users")</a></li>
+                }
               }.getOrElse {
                 <li><a href="@routes.Application.profile">@Messages("navigation.login")</a></li>
               }
 }
+
             </ul>
           </div>
         </div>
