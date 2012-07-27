@@ -3,7 +3,7 @@
 
 # --- !Ups 
 
-insert into users (name, email, github_username, open_id, is_admin) values ('Jan Kowalski','email', 'test', '102068228977340999495google', 1);
+insert into users (name, email, github_username, open_id, is_admin) values ('Jan Kowalski','email', 'test', '102068228977340999495google', true);
 insert into users (name, email, github_username, open_id) values ('test user','email', 'test', 'open_id_test');
 
 insert into locations (country, city, postal_code, full_address, name, latitude, longitude) values ('Polska', 'Gdańsk', '80-000', 'Ul. Długa 55', 'Hackaton Gdansk!', 54.366667, 18.633333);
