@@ -20,6 +20,13 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
       Ok(toJson(hackathons))
     }
   }
+  
+  def hackathonJson(id: Long) = Action {
+    transaction {
+      val hackathon = model.Hackathon.lookup(id)
+      Ok(toJson(hackathon.get))
+    }
+  }
 
   val hackathonForm = Form(
     mapping(

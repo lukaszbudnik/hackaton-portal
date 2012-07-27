@@ -52,6 +52,7 @@ POST    /hackathons/:id/update		controllers.Hackathon.update(id: Long)
 POST    /hackathons/:id/delete		controllers.Hackathon.delete(id: Long)
 
 GET     /hackathons.json			controllers.Hackathon.hackathonsJson
+GET     /hackathon.json/:id         controllers.Hackathon.hackathonJson(id: Long)
 
 # Hackathons news routes
 # Create
