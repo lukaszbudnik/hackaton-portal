@@ -4,8 +4,9 @@ import org.squeryl.PrimitiveTypeMode._
 import play.api.data.Forms._
 import play.api.data.Form
 import play.api.mvc.Controller
+import core.LangAwareController
 
-object Problem extends Controller with securesocial.core.SecureSocial {
+object Problem extends LangAwareController with securesocial.core.SecureSocial {
 
   val problemForm = Form(
     mapping(

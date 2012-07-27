@@ -1,4 +1,4 @@
-@(sponsors: Seq[model.Sponsor])
+@(sponsors: Seq[model.Sponsor])(implicit request: Request[AnyContent], lang: Lang)
 
 @if(!sponsors.isEmpty){
 <ul class="thumbnails">

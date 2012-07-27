@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], sponsorForm: Form[model.Sponsor], action: play.api.mvc.Call, actionMessage: String)(implicit request: Request[AnyContent])
+@(hackathon: Option[model.Hackathon], sponsorForm: Form[model.Sponsor], action: play.api.mvc.Call, actionMessage: String)(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import helper.twitterBootstrap._

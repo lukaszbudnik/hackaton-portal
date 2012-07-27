@@ -1,4 +1,4 @@
-@(sponsorForm: Form[model.Sponsor], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
+@(sponsorForm: Form[model.Sponsor], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent], lang: Lang)
 
 @main(Messages("sponsors.create.title"), Some(user), nav = "sponsors") {
 	<div class="container">
@@ -7,7 +7,7 @@
     		<h2>@Messages("sponsors.create.title")</h2>
 		</div>
   
-    	@sponsors.sponsorForm(None, sponsorForm, routes.Sponsor.save, "global.add")(request)
+    	@sponsors.sponsorForm(None, sponsorForm, routes.Sponsor.save, "global.add")
     
     </div>
 }

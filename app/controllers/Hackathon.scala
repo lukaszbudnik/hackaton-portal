@@ -1,7 +1,6 @@
 package controllers
 
 import org.squeryl.PrimitiveTypeMode.transaction
-
 import helpers.Forms.enum
 import play.api.data.Forms.date
 import play.api.data.Forms.longNumber
@@ -11,8 +10,9 @@ import play.api.data.Form
 import play.api.libs.json.Json.toJson
 import play.api.mvc.Action
 import play.api.mvc.Controller
+import core.LangAwareController
 
-object Hackathon extends Controller with securesocial.core.SecureSocial {
+object Hackathon extends LangAwareController with securesocial.core.SecureSocial {
 
   def hackathonsJson = Action {
     transaction {

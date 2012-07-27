@@ -13,8 +13,9 @@ import play.api.libs.json.Json._
 import play.api.libs.json.Json._
 import play.api.mvc.Action
 import play.api.Logger
+import core.LangAwareController
 
-object Location extends Controller with securesocial.core.SecureSocial {
+object Location extends LangAwareController with securesocial.core.SecureSocial {
 
   val locationForm = Form(
     mapping(

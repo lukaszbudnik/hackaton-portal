@@ -1,7 +1,6 @@
 package controllers
 
 import org.squeryl.PrimitiveTypeMode.transaction
-
 import play.api.data.Forms.date
 import play.api.data.Forms.longNumber
 import play.api.data.Forms.mapping
@@ -9,8 +8,9 @@ import play.api.data.Forms.nonEmptyText
 import play.api.data.Forms.optional
 import play.api.data.Form
 import play.api.mvc.Controller
+import core.LangAwareController
 
-object News extends Controller with securesocial.core.SecureSocial {
+object News extends LangAwareController with securesocial.core.SecureSocial {
 
   val newsForm = Form(
     mapping(

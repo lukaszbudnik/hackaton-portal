@@ -1,4 +1,4 @@
-@(user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
+@(user: securesocial.core.SocialUser)(implicit request: Request[AnyContent], lang: Lang)
 
 @main(Messages("profile.title"), Some(user), nav = "profile") {
   

@@ -29,6 +29,7 @@ navigation.prizes = Prizes
 navigation.sponsors = Sponsors
 navigation.login = Sign in
 navigation.users = Users
+navigation.changeLanguage = Change Language
 
 global.learnMore = Learn more »
 global.viewDetails = View details »

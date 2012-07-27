@@ -1,4 +1,4 @@
-@(news: Iterable[model.News])
+@(news: Iterable[model.News])(implicit request: Request[AnyContent], lang: Lang)
 
 @news.map { n =>
 

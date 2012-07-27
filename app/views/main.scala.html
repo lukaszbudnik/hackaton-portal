@@ -54,15 +54,24 @@
               <li class="@("active".when(nav == "contact"))"><a href="@routes.Application.contact">@Messages("navigation.contact")</a></li>
 @if(!play.Play.isProd()) {
               @user.map { user =>
-                <li class="@("active".when(nav == "profile"))"><a href="@routes.Application.profile">@user.displayName</a></li>
                 @if(user.isAdmin) { 
                   <li class="@("active".when(nav == "users"))"><a href="@routes.User.index()">@Messages("navigation.users")</a></li>
                 }
+                <li class="@("active".when(nav == "profile"))"><a href="@routes.Application.profile">@user.displayName</a></li>
               }.getOrElse {
                 <li><a href="@routes.Application.profile">@Messages("navigation.login")</a></li>
               }
 }
-
+			</ul>
+			<ul class="nav pull-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">@Messages("navigation.changeLanguage") <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+              	@play.Play.application.configuration.getString("application.langs").split(",").map { lang =>
+              		<li><a href="@routes.Application.changeLanguage(lang)">@lang.trim.toUpperCase</a></li>
+              	}
+              </ul>
+            </li>
             </ul>
           </div>
         </div>

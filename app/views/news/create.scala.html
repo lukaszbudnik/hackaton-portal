@@ -1,4 +1,4 @@
-@(newsForm: Form[model.News], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent])
+@(newsForm: Form[model.News], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent], lang: Lang)
 
 @main(Messages("news.create.title"), Some(user), nav = "news") {
 	<div class="container">

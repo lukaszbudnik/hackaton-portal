@@ -1,12 +1,12 @@
 package controllers
 
 import org.squeryl.PrimitiveTypeMode.transaction
-
 import play.api.data.Forms._
 import play.api.data.Form
 import play.api.mvc.Controller
+import core.LangAwareController
 
-object Team extends Controller with securesocial.core.SecureSocial {
+object Team extends LangAwareController with securesocial.core.SecureSocial {
 
   val teamForm = Form(
     mapping(

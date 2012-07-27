@@ -34,6 +34,7 @@ navigation.problems = Problemy
 navigation.sponsors = Sponsorzy
 navigation.teams    = Zespoły
 navigation.users    = Użytkownicy
+navigation.changeLanguage = Zmień język
 
 pagination.previous = &larr; Poprzednie
 pagination.next = Następne &rarr;

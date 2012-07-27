@@ -1,11 +1,9 @@
 package controllers
 
 import java.io.FileInputStream
-
 import org.squeryl.PrimitiveTypeMode.__thisDsl
 import org.squeryl.PrimitiveTypeMode.long2ScalarLong
 import org.squeryl.PrimitiveTypeMode.transaction
-
 import play.api.Play.current
 import play.api.data.Forms.boolean
 import play.api.data.Forms.list
@@ -28,8 +26,9 @@ import plugins.cloudimage.CloudImagePlugin
 import plugins.cloudimage.CloudImageService
 import plugins.cloudimage.CloudImageSuccessResponse
 import plugins.use
+import core.LangAwareController
 
-object Sponsor extends Controller with securesocial.core.SecureSocial {
+object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
 
   val sponsorForm = Form(
     mapping(

@@ -9,10 +9,11 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
 import model.Page
 import helpers.Security
+import core.LangAwareController
 
-object User extends Controller with securesocial.core.SecureSocial {
+object User extends LangAwareController with securesocial.core.SecureSocial {
   
-  private val pageSize = 20
+  private val PAGE_SIZE = 20
 
   def index(page: Int, orderBy: Int, filter: String) = SecuredAction() { implicit request =>
     transaction {
@@ -20,11 +21,11 @@ object User extends Controller with securesocial.core.SecureSocial {
       implicit val socialUser = request.user
       Security.verifyIfAllowed(socialUser)
       
-      val offset = pageSize * page
+      val offset = PAGE_SIZE * page
       
       val totalUsers = model.User.pagedUsersTotalNumber(filter)
       
-      val users = model.User.pagedUsers(orderBy, filter, offset, pageSize)
+      val users = model.User.pagedUsers(orderBy, filter, offset, PAGE_SIZE)
       
       val currentPage = Page(users, page, offset, totalUsers)
       
