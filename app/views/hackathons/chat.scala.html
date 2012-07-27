@@ -1,0 +1,11 @@
+@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+
+@hackathons.h_main(hackathon, user, "chat") {
+	
+	@hackathon.map { hackathon =>
+		@tags.chat(user, hackathon.id)
+	}
+	        
+    @tags.footer()
+
+}

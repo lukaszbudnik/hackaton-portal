@@ -35,6 +35,7 @@ navigation.sponsors = Sponsorzy
 navigation.teams    = Zespoły
 navigation.users    = Użytkownicy
 navigation.changeLanguage = Zmień język
+navigation.chat = Chat
 
 pagination.previous = &larr; Poprzednie
 pagination.next = Następne &rarr;
@@ -136,3 +137,5 @@ users.updateIsAdmin.label = Zmień admin
 users.updateIsBlocked.label = Zmień zablokowany
 users.update.error = Wystąpił błąd podczas aktualizacji użytkownika 
 users.update.success = Użytkownik został zaktualizowany
+
+teams.chat = Wewnętrzny chat

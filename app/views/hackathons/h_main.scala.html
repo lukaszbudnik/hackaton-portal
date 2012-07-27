@@ -36,6 +36,9 @@
 		  	<div class="subnav">
 				<ul class="nav nav-pills">
 					<li class="@("active".when(subnav == "news"))"><a href="@routes.News.indexH(hackathon.id)">@Messages("navigation.news")</a></li>
+@if(user) {
+					<li class="@("active".when(subnav == "chat"))"><a href="@routes.Hackathon.chat(hackathon.id)">@Messages("navigation.chat")</a></li>
+}
 					<li class="@("active".when(subnav == "problems"))"><a href="@routes.Problem.index(hackathon.id)">@Messages("navigation.problems")</a></li>
 					<li class="@("active".when(subnav == "teams"))"><a href="@routes.Team.index(hackathon.id)">@Messages("navigation.teams")</a></li>
 @if(!play.Play.isProd()) {
@@ -45,11 +48,8 @@
 				</ul>
 			</div>
 
-			
 		  	<p></p>
 		  	@flashing(prefix)
-		  	
-		  	@chat()
 		  	
 		  	<div class="content">
 

@@ -41,6 +41,12 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
       Ok(views.html.hackathons.view(model.Hackathon.lookup(id), request.user))
     }
   }
+  
+  def chat(id: Long) = UserAwareAction { implicit request =>
+    transaction {
+      Ok(views.html.hackathons.chat(model.Hackathon.lookup(id), request.user))
+    }
+  }
 
   def create = SecuredAction() { implicit request =>
     transaction {

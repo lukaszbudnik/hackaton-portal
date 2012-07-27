@@ -50,7 +50,16 @@
 		   		</div>
 					
 	    	</div>
-	   	</div> 
+	   	</div>
+
+		@if(user.isDefined && (team.hasMember(user.get.hackathonUserId) || team.creatorId == user.get.hackathonUserId)) {
+		<div class="page-header">
+			<h2>@Messages("teams.chat")</h2>
+		</div>  
+		<div class="content">
+			@tags.chat(user, hackathon.get.id, Some(team.id))
+		</div>
+		}
 	  
 	}.getOrElse{
 		<div class="page-header">

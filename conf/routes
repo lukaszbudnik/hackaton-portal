@@ -44,6 +44,7 @@ POST    /hackathons					controllers.Hackathon.save
 # Retrieve
 GET     /hackathons					controllers.Hackathon.index
 GET     /hackathons/:id				controllers.Hackathon.view(id: Long)
+GET     /hackathons/chat/:id		controllers.Hackathon.chat(id: Long)
 # Update
 GET     /hackathons/:id/edit		controllers.Hackathon.edit(id: Long)
 POST    /hackathons/:id/update		controllers.Hackathon.update(id: Long)

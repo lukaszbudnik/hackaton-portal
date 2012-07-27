@@ -30,6 +30,7 @@ navigation.sponsors = Sponsors
 navigation.login = Sign in
 navigation.users = Users
 navigation.changeLanguage = Change Language
+navigation.chat = Chat
 
 global.learnMore = Learn more »
 global.viewDetails = View details »
@@ -160,6 +161,7 @@ teams.status.disconnected = You disconnected the team
 teams.status.disconnectedUser = You disconnected user from the team
 teams.members.label = Team members
 teams.noMembers = No team members yet!
+teams.chat = Internal team chat
 
 prizes.title = Prizes
 prizes.addPrize = Add a prize

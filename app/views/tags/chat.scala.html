@@ -1,3 +1,7 @@
+@(user: Option[securesocial.core.SocialUser], hackathonId: Long, teamId: Option[Long] = None)(implicit request: Request[AnyContent], lang: Lang)
+
+@user.map { user =>
+
 <div class="content">
 	<p>@Messages("chat.write")</p>
 	<div><input id="input" /></div>
@@ -6,15 +10,43 @@
 	<div id="pubnub" pub-key="@play.Play.application.configuration.getString("pubnub.pubKey")" sub-key="@play.Play.application.configuration.getString("pubnub.subKey")"></div>
 	<script src="http://cdn.pubnub.com/pubnub-3.1.min.js"></script>
 	<script>(function(){
-		var box = PUBNUB.$('box'), input = PUBNUB.$('input'), channel = 'chat';
-		PUBNUB.subscribe({
-			channel : channel,
-			callback : function(text) { box.innerHTML = (''+text).replace( /[<>]/g, '' ) + '<br/>' + box.innerHTML; }
-		});
+		var box = PUBNUB.$('box'), input = PUBNUB.$('input'), channel = 'chat-channel-@hackathonId';
+		@if(teamId) {
+			channel = channel + '-@teamId';
+		}
+		function parseDate(date) {
+			var string = date.toString('yyyy-MM-dd HH:mm:ss')
+			return string.replace('T', ' ').substring(0, string.indexOf('.'))
+		}
+		function appendMessage(data) {
+			var text = '[' + parseDate(data.date) + ' ' + data.who + ']: ' + (data.text).replace( /[<>]/g, '' ) 
+			box.innerHTML =  text + '<br/>' + box.innerHTML; 
+		}
+		
 		PUBNUB.bind( 'keyup', input, function(e) {
 			(e.keyCode || e.charCode) === 13 && PUBNUB.publish({
-				channel : channel, message : input.value, x : (input.value='')
+				channel : channel, message : {
+				text: input.value,
+				date: new Date(),
+				who: '@user.displayName'
+				}
+				, x : (input.value='')
 			});
 		} );
+		
+		PUBNUB.history( {
+		    channel : channel,
+		    limit   : 20
+		}, function(messages) {
+		    for (i = 0; i < messages.length; i++) {
+		    	appendMessage(messages[i]);
+		    }
+		    PUBNUB.subscribe({
+				channel : channel,
+				callback : appendMessage
+			});
+		});
+		
 		})();</script>
 </div>
+}
