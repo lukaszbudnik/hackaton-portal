@@ -19,7 +19,6 @@
 					<small>@hackathon.status</small>
 				</h1>
             	<p>@hackathon.location.city @hackathon.date</p>
-				<p>@Messages("hackathons.organiser.label"): @hackathon.organiser.name</p>
 			</div>
 			
 		  	@user.map { user =>
@@ -35,6 +34,7 @@
 		  
 		  	<div class="subnav">
 				<ul class="nav nav-pills">
+		  			<li class="@("active".when(subnav == "details"))"><a href="@routes.Hackathon.view(hackathon.id)">@Messages("navigation.details")</a></li>
 					<li class="@("active".when(subnav == "news"))"><a href="@routes.News.indexH(hackathon.id)">@Messages("navigation.news")</a></li>
 					<li class="@("active".when(subnav == "problems"))"><a href="@routes.Problem.index(hackathon.id)">@Messages("navigation.problems")</a></li>
 					<li class="@("active".when(subnav == "teams"))"><a href="@routes.Team.index(hackathon.id)">@Messages("navigation.teams")</a></li>

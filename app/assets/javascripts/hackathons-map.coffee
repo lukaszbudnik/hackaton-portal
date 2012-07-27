@@ -14,9 +14,9 @@ initialize = () ->
     google.maps.event.addListenerOnce(map, 'tilesloaded', addMarkers(map, markerImages))
 
 hackathonDescription = (subject, date, city, fullAddress, id) ->
-	"<b>#{subject}</b>  (#{date})
-	<br/>#{city} #{fullAddress}<br/>
-	 &raquo;  <a href=\"/hackathons/#{id}/news\">#{Messages('js.infobubble.more')}</a>"  
+	"<b>#{subject}</b>  (#{date}) <br/>
+	#{city} #{fullAddress}<br/>
+	&raquo;  <a href=\"/hackathons/#{id}\">#{Messages('js.infobubble.more')}</a>"  
 	
 addMarkers = (map, markerImages) ->
     $.getJSON('/hackathons.json', (data) ->
