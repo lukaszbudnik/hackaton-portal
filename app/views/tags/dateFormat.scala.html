@@ -1,0 +1,5 @@
+@(date : java.util.Date)
+
+@import java.text._
+
+@{new SimpleDateFormat(Messages("global.dateformat")).format(date)}

@@ -1,6 +1,7 @@
 @(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import tags._
+@import java.text._
 
 @h_main(hackathon, user, "details", "hackathons.status") {
 
@@ -14,7 +15,7 @@
     <div class="row">
   		<div class="span4">
   			<dl>
-
+	
   				<dt>@Messages("hackathons.location.label")</dt>
   					<dd>@hackathon.location.name</dd>
        				<dd>@hackathon.location.fullAddress</dd>
@@ -22,7 +23,7 @@
   					<dd>@hackathon.location.country</dd>
 
  				<dt>@Messages("hackathons.date.label")</dt>
-  					<dd>@hackathon.date</dd>
+  					<dd>@tags.dateFormat(hackathon.date)</dd>
 
   				<dt>@Messages("hackathons.organiser.label")</dt>
   					<dd>@hackathon.organiser.name</dd>

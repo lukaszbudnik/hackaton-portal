@@ -333,7 +333,7 @@
 			if (parts.length == format.parts.length) {
 				for (var i=0, cnt = format.parts.length; i < cnt; i++) {
 					val = parseInt(parts[i], 10)||1;
-					switch(format.parts[i]) {
+					switch(format.parts[i].toLowerCase()) {
 						case 'dd':
 						case 'd':
 							date.setDate(val);
@@ -364,7 +364,7 @@
 			val.mm = (val.m < 10 ? '0' : '') + val.m;
 			var date = [];
 			for (var i=0, cnt = format.parts.length; i < cnt; i++) {
-				date.push(val[format.parts[i]]);
+				date.push(val[format.parts[i].toLowerCase()]);
 			}
 			return date.join(format.separator);
 		},
@@ -398,4 +398,12 @@
 							'</div>'+
 						'</div>';
 
+	  $(function () {
+	    $("input[data-toggle='date']").each(function() {
+	    	var format = $(this).attr('data-format');
+	    	var params = (format) ? {format : format} : {};
+	    	$(this).datepicker(params);	    	
+	    });
+	  });
+	  
 }( window.jQuery )

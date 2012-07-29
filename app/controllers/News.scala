@@ -9,6 +9,7 @@ import play.api.data.Forms.optional
 import play.api.data.Form
 import play.api.mvc.Controller
 import core.LangAwareController
+import play.api.i18n.Messages
 
 object News extends LangAwareController with securesocial.core.SecureSocial {
 
@@ -18,7 +19,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
       "text" -> nonEmptyText,
       "labelsAsString" -> nonEmptyText,
       "authorId" -> longNumber,
-      "publishedDate" -> date("dd/MM/yyyy"),
+      "publishedDate" -> date(Messages("global.dateformat")),
       "hackathonId" -> optional(longNumber))(model.News.apply)(model.News.unapply))
 
   def index = UserAwareAction { implicit request =>
