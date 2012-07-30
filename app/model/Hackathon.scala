@@ -44,6 +44,7 @@ object HackathonStatus extends Enumeration {
   val Planning = Value(1, "Planning")
   val InProgress = Value(2, "InProgress")
   val Finished = Value(3, "Finished")
+  val Unverified = Value(4, "Unverified")
 }
 
 object Hackathon extends Schema {
