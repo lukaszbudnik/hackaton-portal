@@ -1,6 +1,6 @@
 @(hackathon: Option[model.Hackathon], id: Long, newsForm: Form[model.News], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
-@hackathons.h_main(hackathon, Some(user), "news", "news.status") {
+@hackathons.hackathonMain(hackathon, Some(user), "news", false, "news.status") {
 	
 	<div class="page-header">
 		<h2>@Messages("news.edit.title")</h2>

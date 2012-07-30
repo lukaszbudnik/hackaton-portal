@@ -3,7 +3,7 @@
 @import helper._
 @import tags._
 
-@hackathons.h_main(hackathon, user, "sponsors", "sponsors.status") {
+@hackathons.hackathonMain(hackathon, user, "sponsors", sponsor.isDefined, "sponsors.status") {
 	
 	@single(sponsor)
 	
@@ -18,8 +18,6 @@
 	  		</div>
 			}
 		}
-	  	
-	  	@footer()
   	}  	
 
 }

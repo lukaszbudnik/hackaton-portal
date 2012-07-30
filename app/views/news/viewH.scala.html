@@ -3,7 +3,7 @@
 @import helper._
 @import tags._
 
-@hackathons.h_main(hackathon, user, "news", "news.status") {
+@hackathons.hackathonMain(hackathon, user, "news", news.isDefined, "news.status") {
 	
 	@newsSingle(news)
 	
@@ -21,8 +21,6 @@
 		}
 		
 	    @comments()
-	        
-	    @footer()
 
 	}
 }

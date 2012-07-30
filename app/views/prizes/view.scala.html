@@ -2,7 +2,7 @@
 
 @import helper._
 
-@hackathons.h_main(hackathon, user, "prizes", "prizes.status") {
+@hackathons.hackathonMain(hackathon, user, "prizes", prize.isDefined, "prizes.status") {
   
 	@prize.map{ prize =>
 		<div class="page-header">
@@ -35,10 +35,11 @@
 				}
 	    	</div>
 	   	</div> 
-	  
+				
 	}.getOrElse{
 		<div class="page-header">
 			<h2>@Messages("prizes.notFound")</h2>
 		</div>
+		
 	}
 }

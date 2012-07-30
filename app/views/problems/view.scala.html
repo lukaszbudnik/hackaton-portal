@@ -2,7 +2,7 @@
 
 @import helper._
 
-@hackathons.h_main(hackathon, user, "problems", "problems.status") {
+@hackathons.hackathonMain(hackathon, user, "problems", problem.isDefined, "problems.status") {
   
 	@problem.map{ problem =>
 		<div class="page-header">
