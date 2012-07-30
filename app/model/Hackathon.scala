@@ -72,6 +72,7 @@ object Hackathon extends Schema {
           h.subject := hackathon.subject,
           h.status := hackathon.status,
           h.organiserId := hackathon.organiserId,
+          h.date := hackathon.date,
           h.locationId := hackathon.locationId))
   }
 
