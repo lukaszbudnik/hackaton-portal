@@ -1,4 +1,4 @@
-@(news: Iterable[model.News])(implicit request: Request[AnyContent], lang: Lang)
+@(news: Iterable[model.News], showHackathonSubject: Boolean = true)(implicit request: Request[AnyContent], lang: Lang)
 
 @news.map { n =>
 
@@ -7,7 +7,10 @@
 			@if(n.author.avatarUrl) { 
 				<img src="@n.author.avatarUrl" alt="@n.author.name" height="40px" width="40px" />    				
 			}
-			@n.hackathon.map { h => @h.subject: } @n.title
+			@if(showHackathonSubject) {
+			  @n.hackathon.map { h => @h.subject: } 
+			}
+			@n.title
 		</h2>
 		<p>
 			@if(n.text.contains("<!--more-->")) {

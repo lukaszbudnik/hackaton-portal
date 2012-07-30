@@ -6,7 +6,7 @@
 
 	@hackathon.map { h =>
 	
-		@newsList(h.news)
+		@newsList(h.news, false)
 		
 		@user.map { user =>
 	  		@if(user.isAdmin || user.hackathonUserId == h.organiserId) {
