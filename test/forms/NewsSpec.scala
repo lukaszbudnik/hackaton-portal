@@ -69,7 +69,7 @@ class NewsSpec extends Specification {
     
     "be filled" in {
       val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labelsAsString" -> "QWQ", "authorId" -> "12", "publishedDate" -> "31-12-2012"))
-      val date = new SimpleDateFormat("yyy-MM-dd").parse("2012-01-01")
+      val date = new SimpleDateFormat("yyyy-MM-dd").parse("2012-01-01")
       
       form.hasErrors must beFalse
       
