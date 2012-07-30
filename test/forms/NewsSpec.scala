@@ -80,7 +80,7 @@ class NewsSpec extends Specification {
     }
     
     "be filled from model" in {
-	  val date = new SimpleDateFormat("yyyy-MM-dd").parse("2012-01-01")
+	  val date = new Date
       val form = newsForm.fill(model.News("ABC", "XYZ", "QWQ", 12L, date, Some(123)))
       
       form.hasErrors must beFalse
