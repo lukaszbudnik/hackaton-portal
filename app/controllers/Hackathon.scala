@@ -11,6 +11,7 @@ import play.api.libs.json.Json.toJson
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import core.LangAwareController
+import play.api.i18n.Messages
 
 object Hackathon extends LangAwareController with securesocial.core.SecureSocial {
 
@@ -32,7 +33,7 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
     mapping(
       "subject" -> nonEmptyText,
       "status" -> enum(model.HackathonStatus),
-      "date" -> date("dd/MM/yyyy"),
+      "date" -> date(Messages("global.dateformat")),
       "organizerId" -> longNumber,
       "locationId" -> longNumber,
       "locationName" -> nonEmptyText)(model.Hackathon.apply)(model.Hackathon.unapply))

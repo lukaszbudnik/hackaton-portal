@@ -11,7 +11,7 @@
 			@n.hackathon.map { h => @h.subject: } @n.title
 		</h2>
 		<p>@Html(n.text)</p>
-	    <p>@Messages("news.author.label"): @n.author.name @Messages("news.publishedDate.label"): @n.publishedDate</p>
+	    <p>@Messages("news.author.label"): @n.author.name @Messages("news.publishedDate.label"): @tags.dateFormat(n.publishedDate)</p>
 	    <p>@Messages("news.labels.label"):
 			@for(l <- n.labels) {
 				<a href="@routes.News.search(l.value)" style="text-decoration: none"><span class="label">@l.value</span></a>
