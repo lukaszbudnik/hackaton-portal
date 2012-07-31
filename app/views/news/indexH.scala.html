@@ -2,11 +2,11 @@
 
 @import tags._
 
-@hackathons.h_main(hackathon, user, "news", "news.status") {
+@hackathons.hackathonMain(hackathon, user, "news", true, "news.status") {
 
 	@hackathon.map { h =>
 	
-		@newsList(h.news)
+		@newsList(h.news, false)
 		
 		@user.map { user =>
 	  		@if(user.isAdmin || user.hackathonUserId == h.organiserId) {
@@ -15,8 +15,6 @@
 	  			</div>
 	  		}
 		}
-		
-		@footer()
 		
 		@commentsCount()
 	}

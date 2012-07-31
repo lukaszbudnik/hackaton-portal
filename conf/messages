@@ -110,6 +110,10 @@ hackathons.edit.title = Edit hackathon
 hackathons.status.added = Hackathon %s successfully added
 hackathons.status.updated = Hackathon %s successfully updated
 hackathons.status.deleted = Hackathon deleted
+hackathons.hackathonStatus.Planning = Planning
+hackathons.hackathonStatus.InProgress = In Progress
+hackathons.hackathonStatus.Finished = Finished
+hackathons.hackathonStatus.Unverified = Unverified
 
 locations.title = Locations
 locations.addLocation = Add a location

@@ -1,19 +1,21 @@
-@()(implicit request: Request[AnyContent], lang: Lang)
+@(socialFooter: Boolean)(implicit request: Request[AnyContent], lang: Lang)
 
 @import tags._
 
 <footer>
-	
-	<div style="text-align: center">
-    @twitterShare(request.uri)
-    @facebookLike(request.uri)
-    @googlePlus(request.uri)
-    @linkedInShare(request.uri)
-	@stumbleUpon(request.uri)
-	@githubWatch()
-	@githubFork()
-	</div>
-	
-    <p style="clear:both"></p>
+
+	@if(socialFooter) {
+		<div style="text-align: center">
+    		@widgets.twitterShare(request.uri)
+    		@widgets.facebookLike(request.uri)
+    		@widgets.googlePlus(request.uri)
+    		@widgets.linkedInShare(request.uri)
+			@widgets.stumbleUpon(request.uri)
+			@widgets.githubWatch()
+			@widgets.githubFork()
+		</div>
+	}
+
+    <p style="clear:both">&nbsp;</p>
     <p style="text-align: center">&copy; @Messages("brand") @Messages("years")</p>
 </footer>

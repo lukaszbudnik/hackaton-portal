@@ -1,11 +1,11 @@
 @(hackathon: Option[model.Hackathon], id: Long, prizeForm: Form[model.Prize], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
-@hackathons.h_main(hackathon, Some(user), "prizes", "prizes.status") {
+@hackathons.hackathonMain(hackathon, Some(user), "prizes", false, "prizes.status") {
 	
 	<div class="page-header">
 		<h2>@Messages("prizes.edit.title")</h2>
 	</div>
   
 	@prizes.prizeForm(hackathon.get, prizeForm, routes.Prize.update(hackathon.get.id, id), "global.update")
-
+	
 }

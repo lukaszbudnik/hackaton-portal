@@ -9,7 +9,10 @@
     	<div class="page-header">
     		<h2>@Messages("locations.create.title")</h2>
 		</div>
-  @locations.locationForm(routes.Location.update(id), locationForm)
+
+		@locations.locationForm(routes.Location.update(id), locationForm)
+
+		@tags.footer(false)
       
     </div>
 }

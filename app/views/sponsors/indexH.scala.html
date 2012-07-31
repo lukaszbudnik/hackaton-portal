@@ -2,7 +2,7 @@
 
 @import tags._
 
-@hackathons.h_main(hackathon, user, "sponsors", "sponsors.status") {
+@hackathons.hackathonMain(hackathon, user, "sponsors", true, "sponsors.status") {
 
 	@hackathon.map { h =>
 	
@@ -15,8 +15,6 @@
 	  			</div>
 	  		}
 		}
-		
-		@footer()
 		
 	}
 }

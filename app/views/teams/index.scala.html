@@ -1,8 +1,10 @@
 @(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
-@hackathons.h_main(hackathon, user, "teams", "teams.status") {
+@hackathons.hackathonMain(hackathon, user, "teams", true, "teams.status") {
 
   @hackathon.map { hackathon =>
+
+		<a class="btn btn-success pull-right" href="@routes.Team.create(hackathon.id)">@Messages("teams.addTeam")</a>
 
     	@hackathon.teams.map { team =>
     	  	<div class="page-header">
@@ -13,9 +15,5 @@
   			</div>
     	}
     	
-    	<div class="form-actions">
-    		<a class="btn btn-success" href="@routes.Team.create(hackathon.id)">@Messages("teams.addTeam")</a>
-        </div>
-
   }
 }

@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser], subnav: String, prefix: String = "")(content: Html)(implicit flash: Flash, request: Request[AnyContent], lang: Lang) 
+@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser], subnav: String, socialFooter: Boolean, prefix: String = "")(content: Html)(implicit flash: Flash, request: Request[AnyContent], lang: Lang) 
 
 @import helper._
 @import tags._
@@ -16,7 +16,7 @@
 
 		  	<div>
 				<h1>@hackathon.subject
-					<small>@hackathon.status</small>
+					<small>@Messages("hackathons.hackathonStatus." + hackathon.status)</small>
 				</h1>
             	<p>@hackathon.location.city @hackathon.date</p>
 			</div>
@@ -48,7 +48,7 @@
 				</ul>
 			</div>
 
-		  	<p></p>
+		  	<p>&nbsp;</p>
 		  	@flashing(prefix)
 		  	
 		  	<div class="content">
@@ -56,12 +56,16 @@
 		  		@content
 
 		  	</div>
+		  	
+		  	@footer(socialFooter)
 		  		  	
 		}.getOrElse {
 		  
 			<div class="page-header">
 				<h2>@Messages("hackathons.notFound")</h2>
 			</div>
+		  
+			@footer(false)
 
 		}
 		

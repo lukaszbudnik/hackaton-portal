@@ -1,6 +1,6 @@
 @(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
-@hackathons.h_main(hackathon, user, "prizes", "prizes.status") {
+@hackathons.hackathonMain(hackathon, user, "prizes", true, "prizes.status") {
 
   @hackathon.map { hackathon =>
 
@@ -30,6 +30,6 @@
 	  			</div>
 	  		}
     	}
-
+    	
   }
 }

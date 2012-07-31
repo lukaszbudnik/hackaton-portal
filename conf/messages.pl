@@ -155,3 +155,8 @@ users.update.error = Wystąpił błąd podczas aktualizacji użytkownika
 users.update.success = Użytkownik został zaktualizowany
 
 teams.chat = Wewnętrzny chat
+
+hackathons.hackathonStatus.Planning = Planowany
+hackathons.hackathonStatus.InProgress = Obecnie Trwający
+hackathons.hackathonStatus.Finished = Zakończony
+hackathons.hackathonStatus.Unverified = Niezweryfikowany
