@@ -4,7 +4,6 @@ import java.util.Date
 import java.text.SimpleDateFormat
 import org.specs2.mutable._
 import play.api.test.Helpers._
-import play.api.test.FakeApplication
 
 class NewsSpec extends Specification {
   
@@ -67,33 +66,29 @@ class NewsSpec extends Specification {
       
       form.value must beNone
     }
-   
- "be filled" in {
-   
-	 	running(FakeApplication()) {
-		      val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labelsAsString" -> "QWQ", "authorId" -> "12", "publishedDate" -> "31-12-2012"))
-		      val date = new SimpleDateFormat("dd-MM-yyyy").parse("31-12-2012")
-		      
-		      form.hasErrors must beFalse
-		      
-		      form.value must beSome.which { _ match {
-		        case (model.News("ABC", "XYZ", "QWQ", 12L, date, None)) => true
-		        case _ => false
-		      }}
-		 }
+    
+    "be filled" in {
+      val form = newsForm.bind(Map("title" -> "ABC", "text" -> "XYZ", "labelsAsString" -> "QWQ", "authorId" -> "12", "publishedDate" -> "31-12-2012"))
+      val date = new SimpleDateFormat("yyyy-MM-dd").parse("31-12-2012")
+      
+      form.hasErrors must beFalse
+      
+      form.value must beSome.which { _ match {
+        case (model.News("ABC", "XYZ", "QWQ", 12L, date, None)) => true
+        case _ => false
+      }}
     }
- "be filled from model" in {
-       running(FakeApplication()) {
-		  val date = new Date
-	      val form = newsForm.fill(model.News("ABC", "XYZ", "QWQ", 12L, date, Some(123)))
-	      
-	      form.hasErrors must beFalse
-	      
-	      form.value must beSome.which { _ match {
-	        case (model.News("ABC", "XYZ", "QWQ", 12L, date, Some(123))) => true
-	        case _ => false
-	      }}
-	    }
+    
+    "be filled from model" in {
+	  val date = new Date
+      val form = newsForm.fill(model.News("ABC", "XYZ", "QWQ", 12L, date, Some(123)))
+      
+      form.hasErrors must beFalse
+      
+      form.value must beSome.which { _ match {
+        case (model.News("ABC", "XYZ", "QWQ", 12L, date, Some(123))) => true
+        case _ => false
+      }}
     }
     
   }
