@@ -4,6 +4,7 @@ import java.io.FileInputStream
 import org.squeryl.PrimitiveTypeMode.__thisDsl
 import org.squeryl.PrimitiveTypeMode.long2ScalarLong
 import org.squeryl.PrimitiveTypeMode.transaction
+import core.LangAwareController
 import play.api.Play.current
 import play.api.data.Forms.boolean
 import play.api.data.Forms.list
@@ -13,6 +14,7 @@ import play.api.data.Forms.nonEmptyText
 import play.api.data.Forms.number
 import play.api.data.Forms.optional
 import play.api.data.Form
+import play.api.i18n.Lang
 import play.api.i18n.Messages
 import play.api.libs.json.Json.toJson
 import play.api.libs.json.JsArray
@@ -21,12 +23,13 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
 import play.api.mvc.Controller
 import play.api.Logger
+import play.api.Play
 import plugins.cloudimage.CloudImageErrorResponse
 import plugins.cloudimage.CloudImagePlugin
 import plugins.cloudimage.CloudImageService
 import plugins.cloudimage.CloudImageSuccessResponse
 import plugins.use
-import core.LangAwareController
+import plugins.cloudimage.TransformationProperty
 
 object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
 
@@ -38,13 +41,27 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
       "website" -> nonEmptyText,
       "order" -> number,
       "hackathonId" -> optional(longNumber),
-      "logoResourceId" -> optional(longNumber))(model.Sponsor.apply)(model.Sponsor.unapply))
+      "logoResourceId" -> optional(longNumber),
+      "logoUrl" -> optional(nonEmptyText))(model.Sponsor.apply)(model.Sponsor.unapply))
 
-  val uploadError = toJson(Seq(toJson(Map("error" -> toJson(Messages("fileupload.server.error"))))))
+  def uploadError(implicit text : String,  lang : Lang) = toJson(Seq(toJson(Map("error" -> toJson(Messages(text))))))
 
+  lazy val cloudImageService = use[CloudImagePlugin].cloudImageService
+  
+  lazy val SPONSOR_LOGO_TRANSFORMATION_PROPS = Map[TransformationProperty.Value, String] (
+    TransformationProperty.WIDTH -> Play.current.configuration.getString("sponsors.logo.maxwidth").getOrElse(""),
+    TransformationProperty.HEIGHT -> Play.current.configuration.getString("sponsors.logo.maxheight").getOrElse(""), 
+    TransformationProperty.CROP_MODE -> "c_fit");
+          
+
+                                                                                                                                                                                                                                                        
   def index = UserAwareAction { implicit request =>
-    transaction {
-      Ok(views.html.sponsors.index(model.Sponsor.all, request.user))
+    transaction {   	
+    	Ok(views.html.sponsors.index(model.Sponsor.all.map {
+	        s =>
+	          s.logoUrl = s.logoUrl.map (cloudImageService.getTransformationUrl(_, SPONSOR_LOGO_TRANSFORMATION_PROPS))
+	          s
+	      }, request.user))
     }
   }
 
@@ -56,13 +73,24 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
 
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.sponsors.view(model.Sponsor.lookup(id), request.user))
+      Ok(views.html.sponsors.view(
+          model.Sponsor.lookup(id) match {
+            case Some(s) =>
+              	s.logoUrl = s.logoUrl.map (cloudImageService.getTransformationUrl(_, SPONSOR_LOGO_TRANSFORMATION_PROPS))
+              	Some(s)
+            case _ => None
+      }, request.user))
     }
   }
 
   def viewH(hid: Long, id: Long) = UserAwareAction { implicit request =>
     transaction {
-      val sponsor = model.Sponsor.lookup(id)
+      val sponsor = model.Sponsor.lookup(id) match {
+            case Some(s) =>
+              	s.logoUrl = s.logoUrl.map (cloudImageService.getTransformationUrl(_, SPONSOR_LOGO_TRANSFORMATION_PROPS))
+              	Some(s)
+            case _ => None        
+      }
       val hackathon = sponsor.map { sponsor => sponsor.hackathon }.getOrElse { model.Hackathon.lookup(hid) }
       Ok(views.html.sponsors.viewH(hackathon, sponsor, request.user))
     }
@@ -204,23 +232,30 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
     val bytes = new Array[Byte](temporaryFile.length.toInt);
     in.read(bytes)
     in.close()
+    
+    val maxSize = Play.current.configuration.getString("sponsors.logo.maxsize").getOrElse("0").toLong * 1024
 
-    val filename = temporaryHandle.filename
-    val response = use[CloudImagePlugin].cloudImageService.upload(filename, bytes)
+    if(bytes.length > maxSize) {
+      Ok(uploadError("js.fileupload.filetoobig", lang))
+    } else {
+	
+	    val filename = temporaryHandle.filename
+	    val response = cloudImageService.upload(filename, bytes)
 
-    response match {
-      case success: CloudImageSuccessResponse =>
-        transaction {
-          val resource = model.Resource(success.url, success.publicId);
-          model.Resource.insert(resource)
-          val result = Ok(toJson((Seq(JsObject(List(
-            "url" -> JsString(resource.url),
-            "resourceId" -> JsNumber(resource.id)))))))
-          result.withHeaders(CONTENT_TYPE -> "text/plain")
-        }
-      case error: CloudImageErrorResponse =>
-        Logger.debug("Sponsor - cloudinaryService - error: " + error.message)
-        Ok(uploadError)
+	    response match {
+	      case success: CloudImageSuccessResponse =>
+	        transaction {
+	          val resource = model.Resource(success.url, success.publicId);
+	          model.Resource.insert(resource)
+	          val result = Ok(toJson((Seq(JsObject(List(
+	            "url" -> JsString(cloudImageService.getTransformationUrl(resource.url, SPONSOR_LOGO_TRANSFORMATION_PROPS)),
+	            "resourceId" -> JsNumber(resource.id)))))))
+	          result.withHeaders(CONTENT_TYPE -> "text/plain")
+	        }
+	      case error: CloudImageErrorResponse =>
+	        Logger.debug("Sponsor - cloudinaryService - error: " + error.message)
+	        Ok(uploadError("fileupload.server.error", lang)).withHeaders(CONTENT_TYPE -> "text/plain")
+	    }
     }
   }
 
@@ -228,7 +263,7 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
     transaction {
       val r = model.Resource.lookup(id).get
       Ok(JsArray(Seq(JsObject(List(
-        "url" -> JsString(r.url),
+        "url" -> JsString(cloudImageService.getTransformationUrl(r.url, SPONSOR_LOGO_TRANSFORMATION_PROPS)),
         "resourceId" -> JsNumber(r.id))))))
     }
   }

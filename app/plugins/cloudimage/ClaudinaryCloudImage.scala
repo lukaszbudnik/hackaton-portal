@@ -1,20 +1,21 @@
 package plugins.cloudimage
 
+import org.apache.commons.codec.digest.DigestUtils
+import org.apache.commons.io.IOUtils
 import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.mime.content.ByteArrayBody
+import org.apache.http.entity.mime.content.StringBody
+import org.apache.http.entity.mime.HttpMultipartMode
 import org.apache.http.entity.mime.MultipartEntity
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.HttpResponse
-import play.api.Plugin
-import org.apache.commons.io.IOUtils
-import play.api.Logger
-import org.apache.commons.codec.digest.DigestUtils
-import play.api.Play
-import play.api.Application
 import play.api.i18n.Messages
 import play.api.libs.json.Json
-import org.apache.http.entity.mime.content.StringBody
-import org.apache.http.entity.mime.HttpMultipartMode
-import org.apache.http.entity.mime.content.ByteArrayBody
+import play.api.Application
+import play.api.Logger
+import org.apache.commons.lang.StringUtils
+
+
 
 class ClaudinaryCloudImagePlugin(app: Application) extends CloudImagePlugin {
 
@@ -44,10 +45,15 @@ class ClaudinaryCloudImageService(apiKey: String, secretKey: String, cloudName: 
 
   private val UPLOAD_URL_PATTERN = "http://api.cloudinary.com/v1_1/%s/image/upload"
   private val DESTROY_URL_PATTERN = "http://api.cloudinary.com/v1_1/%s/image/destroy"
-
+  private val TRANSFORMATION_WIDTH = "w_"
+  private val TRANSFORMATION_HEIGHT = "h_"  
+    
+    
+    
   private val uploadUrl = UPLOAD_URL_PATTERN.format(cloudName)
-  private val destroyUrl = UPLOAD_URL_PATTERN.format(cloudName)
+  private val destroyUrl = DESTROY_URL_PATTERN.format(cloudName)
 
+ 
   def upload(filename: String, fileInBytes: Array[Byte]): CloudImageResponse = {
     Logger.debug(String.format("CloudImageService - upload - start"))
 
@@ -113,6 +119,47 @@ class ClaudinaryCloudImageService(apiKey: String, secretKey: String, cloudName: 
 
     val r: HttpResponse = httpClient.execute(post)
     r.getEntity().getContent()
+  }
+  
+  def getTransformationUrl(url : String,  properties : Map[TransformationProperty.Value, String]) :String = {
+	 
+    val after = StringUtils.substringAfterLast(url, "upload/")
+    val before = StringUtils.substringBeforeLast(url, after)
+    
+
+    val sb = new StringBuilder();
+    var first = false;
+    
+    properties.get(TransformationProperty.WIDTH) match {
+      case Some(x) =>
+        if(!StringUtils.isEmpty(x)) {
+          sb.append(TRANSFORMATION_WIDTH).append(x)
+          first = true;
+        }
+      case _ =>
+    }
+   
+   properties.get(TransformationProperty.HEIGHT) match {
+      case Some(x) =>
+        if(!StringUtils.isEmpty(x)) {
+          if (first) sb.append(",")
+          else first = true
+          sb.append(TRANSFORMATION_HEIGHT).append(x)
+        }
+      case _ =>
+    }    
+    
+   properties.get(TransformationProperty.CROP_MODE) match {
+      case Some(x) =>
+         if (first) sb.append(",")
+         else first = true        
+        if(!StringUtils.isEmpty(x)) {
+          sb.append(x)
+        }
+      case _ =>
+    } 
+
+   before + sb.toString() + "/" + after;
   }
 
 }

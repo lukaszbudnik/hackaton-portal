@@ -11,6 +11,7 @@ case class CloudImageSuccessResponse(val url: String, val secureUrl: String,
 trait CloudImageService {
   def upload(filename: String, fileInBytes: Array[Byte]): CloudImageResponse
   def destroy(publicId: String): Unit
+  def getTransformationUrl(url : String, properties : Map[TransformationProperty.Value, String]) : String
 }
 
 trait CloudImagePlugin extends play.api.Plugin {
@@ -26,4 +27,16 @@ class MockCloudImageService extends CloudImageService {
   def destroy(publicId: String) {
   }
   
+  def getTransformationUrl(url : String, properties : Map[TransformationProperty.Value, String]) :String = {
+    ""
+  }
 }
+
+  object TransformationProperty extends Enumeration {
+    
+    val HEIGHT = Value("height")
+    val WIDTH = Value("width")
+    val CROP_MODE = Value("cropMode")
+  }
+
+ 

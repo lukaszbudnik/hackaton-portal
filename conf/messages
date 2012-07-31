@@ -193,6 +193,8 @@ sponsors.edit.title = Edit sponsor
 sponsors.status.added = Sponsor %s successfully added
 sponsors.status.updated = Sponsor %s successfully updated
 sponsors.status.deleted = Sponsor deleted
+sponsors.button.upload = Upload logo...
+sponsors.upload.maxfilesizeinfo = Logo maximum size: {0} KB
 
 securityAbuse.title = Security Abuse Detected
 securityAbuse.text = Dear <strong>{0}</strong>! We have detected a security abuse. Please refrain from such actions in future as we may draw consequences next time.
