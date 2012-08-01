@@ -15,8 +15,8 @@ insert into hackathons (subject, date, status, organiser_id, location_id) values
 insert into problems (name, description, submitter_id, hackathon_id) values ('Problem 1', 'Problem testowy numer 1', 1, 1);
 insert into problems (name, description, submitter_id, hackathon_id) values ('Problem 2', 'Problem testowy numer 2', 1, 1);
 
-insert into teams (name, creator_id, hackathon_id) values ('Team 1', 1, 1);
-insert into teams (name, creator_id, hackathon_id) values ('Team 2', 2, 1);
+insert into teams (name, status, creator_id, hackathon_id) values ('Team 1', 1, 1, 1);
+insert into teams (name, status, creator_id, hackathon_id) values ('Team 2', 2, 2, 1);
 
 insert into users_teams (user_id, team_id) values (2, 1);
 
