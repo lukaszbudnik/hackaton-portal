@@ -20,7 +20,7 @@
 			</div>
 
 			<div class="span6">
-				<img src=@s.logoResource.map { l => @l.url }.getOrElse{"http://placehold.it/260x180"} alt="" width="260" height="180"/>
+				<img src=@s.logoUrl.getOrElse{"http://placehold.it/260x180"} />
 			</div>
 
 		</div>

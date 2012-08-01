@@ -3,15 +3,18 @@ $(() ->
 	'use strict'
 	$('#fileupload').fileupload autoUpload : true
 	$('#fileupload').fileupload 'option', 'redirect', window.location.href.replace(/\/[^\/]*$/, '/cors/result.html?%s') 
+		
+	$('#fileupload').bind 'fileuploadadded', (e, data) ->
+		if (data.files.valid)
+			$('#fileupload').fileupload 'hideUploadButton'
+		
+
+	$('#fileupload').bind 'fileuploaddestroy', (e, data) ->
+		$('#fileupload').fileupload 'showUploadButton'
 	
 	$('#fileupload').fileupload 'option',
-    	maxFileSize: 30000,
     	acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-    	multipart : true,
-    	process: [action : 'load',
-    		action: 'resize', maxWidth: 260, maxHeight: 180,
-    			action: 'save'
-    	]
+    	multipart : true
     
     $('#fileupload').each () ->	
     	that = this
@@ -19,14 +22,14 @@ $(() ->
     	
     	if resourceId.length isnt 0
     		actionUrl = this.action + '/'  + resourceId + '?' + Math.random()
-    		$(this).find('.fileinput-button input').prop('disabled', true).parent().addClass('disabled')
-    		
+    		$(that).fileupload 'hideUploadButton'
+    			
     		$.getJSON actionUrl, (result) ->
-       			$(that).find('.fileinput-button input').prop('disabled', false).parent().removeClass('disabled')
-       			if result and result.length
-       				
-       				$(that).fileupload('option', 'done').call(that, null, result : result)
-)	
+       			if result and result.length       				
+       				$(that).fileupload('option', 'done').call(that, null, result : result)    		
+    	else
+    		$(that).fileupload 'showUploadButton'       				
+)
 
     			
     		

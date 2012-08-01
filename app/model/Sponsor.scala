@@ -5,6 +5,9 @@ import org.squeryl.dsl.ManyToOne
 import org.squeryl.KeyedEntity
 import org.squeryl.Schema
 import org.squeryl.annotations.Column
+import scala.annotation.target.field
+import org.squeryl.annotations.Transient
+import play.api.Logger
 
 case class Sponsor(name: String,
   title: String,
@@ -12,10 +15,12 @@ case class Sponsor(name: String,
   website: String,
   @Column("sponsor_order") order: Int,
   @Column("hackathon_id") hackathonId: Option[Long],
-  @Column("logo_resource_id") logoResourceId: Option[Long]) extends KeyedEntity[Long] {
+  @Column("logo_resource_id") logoResourceId: Option[Long],
+  @(Transient @field) var logoUrl : Option[String]
+) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  def this(hackathonId: Option[Long]) = this("", "", "", "", 1, hackathonId, None)
+  def this(hackathonId: Option[Long]) = this("", "", "", "", 1, hackathonId, None, None)
 
   private lazy val hackathonRel: ManyToOne[Hackathon] = Sponsor.hackathonToSponsors.right(this)
   private lazy val logoResourceRel: ManyToOne[Resource] = Sponsor.resourceToSponsors.right(this)
@@ -32,15 +37,33 @@ object Sponsor extends Schema {
   protected[model] val resourceToSponsors = oneToManyRelation(Resource.resources, Sponsor.sponsors).via((r, s) => r.id === s.logoResourceId)
 
   def all(): Seq[Sponsor] = {
-    from(sponsors)(s =>
+    join(sponsors, model.Resource.resources.leftOuter)((s,r) =>
       where(s.hackathonId isNull)
-        select (s)
-        orderBy (s.order)).toSeq
-  }
+        select (s, r.map(_.url))
+        orderBy (s.order)
+        on (s.logoResourceId === r.map(_.id))).toSeq map {
+        	case (a,b) =>
+        		a.logoUrl = b
+        		a
+    		}  
+    }
 
   def lookup(id: Long): Option[Sponsor] = {
-    sponsors.lookup(id)
-  }
+    join(sponsors, model.Resource.resources.leftOuter)((s,r) =>
+      where((s.id === id) and (s.hackathonId isNull))
+        select (s, r.map(_.url))
+        orderBy (s.order)
+        on (s.logoResourceId === r.map(_.id))).headOption match {
+        	case Some(x) =>
+        		x match  { 
+        		  case (a, x) =>
+        		    a.logoUrl = x
+        		    Some(a)
+        		}
+        	case _ => None
+    	}  
+    }
+
 
   def insert(sponsor: Sponsor): Sponsor = {
     sponsors.insert(sponsor)

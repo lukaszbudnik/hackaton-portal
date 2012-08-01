@@ -105,8 +105,24 @@ locations.status.updated = Lokalizacja  %s zaktualizowana pomyślnie!
 locations.status.deleted = Lokalizacja usunięta!
 locations.nomatchfound = Nie znaleziono! » Dodaj nową
 
+
+
 sponsors.title = Nasi sponsorzy
 sponsors.text = <p>Chcielibyśmy podziękować wszystkim naszym sponsorom. Oto ich pełna lista. Dziękujemy!</p>
+sponsors.addSponsor = Dodaj sponsora
+sponsors.notFound = Nie znaleziono sponsora
+sponsors.name.label = Nazwa
+sponsors.title.label = Tytuł
+sponsors.website.label = Adres strony
+sponsors.description.label = Opis
+sponsors.order.label = Kolejność
+sponsors.create.title = Dodawanie sponsora
+sponsors.edit.title = Zmiana danych sponsora
+sponsors.status.added = Sponsor %s dodany pomyślnie
+sponsors.status.updated = Dane sponsora %s zaktualizowane pomyślnie
+sponsors.status.deleted = Usunięto dane sponsora
+sponsors.upload.maxfilesizeinfo = Maksymalny rozmiar logo: {0} KB
+sponsors.button.upload = Ustaw logo...
 
 securityAbuse.title = Wykryto naruszenie bezpieczeństwa
 securityAbuse.text = Drogi <strong>{0}</strong>! Wykryliśmy próbę naruszenia bezpieczeństwa. Proszę powstrzymaj się od takich akcji ponieważ następnym razem możemy wyciągnąć konsekwencje i automatycznie zablokować Twoje konto.

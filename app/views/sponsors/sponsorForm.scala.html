@@ -4,6 +4,7 @@
 @import helper.twitterBootstrap._
 @import tags._
 
+
 @implicitFieldConstructor = @{ FieldConstructor(forms.twitterBootstrapInput.f) }
 
 <div class="row">
@@ -59,12 +60,14 @@
 			<div class="row fileupload-buttonbar">
 				<div class="span2">
 	         		<!-- The fileinput-button span is used to style the file input field as button -->
-	             	<span class="btn btn-primary fileinput-button">
+	             	<span class="btn btn-primary fileinput-button" style="visibility:hidden">
 						<i class="icon-upload icon-white"></i>
-						<span>Upload logo...</span>
-						<input type="file" name="files">
+						<span>@Messages("sponsors.button.upload")</span>
+						<input type="file" name="files">					
 					</span>
-				</div>
+					<br/><br/><div>@Messages("sponsors.upload.maxfilesizeinfo", 
+						play.api.Play.current.configuration.getString("sponsors.logo.maxsize").getOrElse(""))</div>	
+			</div>
 			<div class="files span2"></div>
 		</div>
 	
