@@ -19,21 +19,18 @@
 		  	<div>
 				<h1>@hackathon.subject
 					<small>@Messages("hackathons.hackathonStatus." + hackathon.status)</small>
+					@user.map { user =>
+						@if(user.isAdmin || hackathon.organiserId == user.hackathonUserId) {
+							@form(routes.Hackathon.delete(hackathon.id), 'class -> "pull-right", 'style -> "display: inline") {
+								<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.id)">@Messages("global.edit")</a>
+								<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" style="font-weight: bold" />
+							}
+						}
+					}
 				</h1>
             	<p>@hackathon.location.city @hackathon.date</p>
 			</div>
 			
-		  	@user.map { user =>
-		  		@if(user.isAdmin || hackathon.organiserId == user.hackathonUserId) {
-		  		<div class="form-actions">
-		  			@form(routes.Hackathon.delete(hackathon.id)) {
-		  			<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.id)">@Messages("global.edit")</a>
-		  			<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-		  			}
-		  		</div>
-				}
-		  	}
-		  
 		  	<div class="subnav">
 				<ul class="nav nav-pills">
 		  			<li class="@("active".when(subnav == "details"))"><a href="@routes.Hackathon.view(hackathon.id)">@Messages("navigation.details")</a></li>
