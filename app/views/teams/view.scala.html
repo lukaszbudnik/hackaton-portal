@@ -6,8 +6,8 @@
 
 @hackathons.hackathonMain(hackathon, user, "teams", team.isDefined, "teams.status") {
 	@team.map{ team =>
-		<div class="page-header">
-			<h2>@team.name</h2>
+		<div class="page-header team" data-team-id="@team.id">
+			<h2>@team.name @teamActions(hackathon.get, team, user, false)</h2>
 		</div>
 	  
 		<div class="row">
@@ -33,20 +33,11 @@
 				}
 
 	   			<div class="form-actions">
-				@form(routes.Team.delete(hackathon.get.id, team.id)) {
-
 					@if(!user.isEmpty && team.hasMember(user.get.hackathonUserId)){
 						<a class="btn btn-warning" href="@routes.Team.disconnect(hackathon.get.id, team.id)">@Messages("teams.disconnect")</a>		    			  
 					} else {
 						<a class="btn btn-warning" href="@routes.Team.join(hackathon.get.id, team.id)">@Messages("teams.join")</a>  
 					}
-		    			
-		    		@if(allowEdit){
-		    			<a class="btn btn-success" href="@routes.Team.edit(hackathon.get.id, team.id)">@Messages("global.edit")</a>
-		    			<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
-		    		}
-		    		
-		    	}
 		   		</div>
 					
 	    	</div>

@@ -1,22 +1,32 @@
 package controllers
 
 import org.squeryl.PrimitiveTypeMode.transaction
+import core.LangAwareController
+import model.TeamStatus
 import play.api.data.Forms._
 import play.api.data.Form
 import play.api.mvc.Controller
-import core.LangAwareController
+import play.api.libs.json.JsArray
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsString
+import securesocial.core.SocialUser
+import securesocial.core.UserId
+import securesocial.core.AuthenticationMethod
+
 
 object Team extends LangAwareController with securesocial.core.SecureSocial {
 
   val teamForm = Form(
     mapping(
       "name" -> text.verifying("teams.name.error", !_.isEmpty()),
+      "status" -> ignored(TeamStatus.Unverified),
       "creatorId" -> longNumber,
       "hackathonId" -> longNumber,
       "problemId" -> optional(longNumber))(model.Team.apply)(model.Team.unapply))
 
   def index(hid: Long) = UserAwareAction { implicit request =>
     transaction {
+      //val user = SocialUser(UserId("qw", "qwqw"), "displayName", Some("email"), Some("avatarUrl"), AuthenticationMethod.OpenId, None, None, 1, true)
       Ok(views.html.teams.index(model.Hackathon.lookup(hid), request.user))
     }
   }
@@ -68,15 +78,89 @@ object Team extends LangAwareController with securesocial.core.SecureSocial {
         BadRequest(views.html.teams.edit(model.Hackathon.lookup(hid), id, errors, request.user))
       },
       team => transaction {
-        model.Team.lookup(id).map { team =>
+        val dbTeam = model.Team.lookup(id)
+
+        dbTeam.map { team =>
           helpers.Security.verifyIfAllowed(hid == team.hackathonId)(request.user)
           helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
         }
-        model.Team.update(id, team)
+        
+        model.Team.update(id, team.copy(status = dbTeam.get.status))
         Redirect(routes.Team.index(hid)).flashing("status" -> "updated", "title" -> team.name)
       })
   }
+  
+  def verify(hid: Long, id: Long) = SecuredAction() { implicit request =>
+	  transaction {
+	    model.Team.lookup(id).map { team =>
+	      implicit val user = request.user
+	      helpers.Security.verifyIfAllowed(hid == team.hackathonId)
+	      helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.hackathonUserId)
+	      model.Team.update(id, team.copy(status = TeamStatus.Approved))
+	      
+	      Ok(JsArray(Seq(JsObject(List(
+        	"status" -> JsString("ok"))))))
+	      
+	    }.getOrElse {
+	      NotFound(JsArray(Seq(JsObject(List(
+        	"status" -> JsString("error"))))))
+	    }
+	  }
+  }
+  
+  def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
+	  transaction {
+	    model.Team.lookup(id).map { team =>
+	      implicit val user = request.user
+	      helpers.Security.verifyIfAllowed(hid == team.hackathonId)
+	      helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.hackathonUserId || team.creatorId == user.hackathonUserId)
+	      model.Team.update(id, team.copy(status = TeamStatus.Approved))
+	      
+	      Ok(JsArray(Seq(JsObject(List(
+        	"status" -> JsString("ok"))))))
+	      
+	    }.getOrElse {
+	      NotFound(JsArray(Seq(JsObject(List(
+        	"status" -> JsString("error"))))))
+	    }
+	  }
+  }
 
+  def suspend(hid: Long, id: Long) = SecuredAction() { implicit request =>
+	  transaction {
+	    model.Team.lookup(id).map { team =>
+	      helpers.Security.verifyIfAllowed(hid == team.hackathonId)(request.user)
+	      helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
+	      model.Team.update(id, team.copy(status = TeamStatus.Suspended))
+	      
+	      Ok(JsArray(Seq(JsObject(List(
+        	"status" -> JsString("ok"))))))
+	      
+	    }.getOrElse {
+	      NotFound(JsArray(Seq(JsObject(List(
+        	"status" -> JsString("error"))))))
+	    }
+	  }
+  }
+  
+  def block(hid: Long, id: Long) = SecuredAction() { implicit request =>
+	  transaction {
+	    model.Team.lookup(id).map { team =>
+	      implicit val user = request.user
+	      helpers.Security.verifyIfAllowed(hid == team.hackathonId)
+	      helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.hackathonUserId)
+	      model.Team.update(id, team.copy(status = TeamStatus.Blocked))
+	      
+	      Ok(JsArray(Seq(JsObject(List(
+        	"status" -> JsString("ok"))))))
+	      
+	    }.getOrElse {
+	      NotFound(JsArray(Seq(JsObject(List(
+        	"status" -> JsString("error"))))))
+	    }
+	  }
+  }
+  
   def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Team.lookup(id).map { team =>

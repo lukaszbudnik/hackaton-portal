@@ -139,6 +139,18 @@ users.update.error = Wystąpił błąd podczas aktualizacji użytkownika
 users.update.success = Użytkownik został zaktualizowany
 
 teams.chat = Wewnętrzny chat
+teams.empty.text = Nie ma jeszcze żadnych zespołów
+teams.teamStatus.Unverified = Niezweryfikowany
+teams.teamStatus.Approved = Zatwierdzony
+teams.teamStatus.Suspended = Zawieszony
+teams.teamStatus.Blocked = Zablokowany
+teams.suspend.label = Zawieś
+teams.approve.label = Zatwierdź
+teams.verify.label = Zweryfikuj
+teams.block.label = Zablokuj
+teams.delete.label = Usuń
+teams.update.success = Team successfully updated
+teams.update.error = Failed to update team
 
 hackathons.hackathonStatus.Planning = Planowany
 hackathons.hackathonStatus.InProgress = Obecnie Trwający

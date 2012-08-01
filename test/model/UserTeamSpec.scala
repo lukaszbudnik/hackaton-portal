@@ -16,7 +16,7 @@ class UserTeamSpec extends Specification {
         transaction {
           val user1 = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!", false)
           val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!", false)
-          val team = Team("test-team", 1L, 1L, Some(1L))
+          val team = Team("test-team", TeamStatus.Unverified, 1L, 1L, Some(1L))
 
           model.User.insert(user1)
           model.User.insert(user2)
@@ -52,7 +52,7 @@ class UserTeamSpec extends Specification {
         transaction {
           val user1 = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!", false)
           val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!", false)
-          val team = Team("test-team", 1L, 1L, Some(1L))
+          val team = Team("test-team", TeamStatus.Unverified, 1L, 1L, Some(1L))
 
           model.User.insert(user1)
           model.User.insert(user2)
@@ -93,7 +93,7 @@ class UserTeamSpec extends Specification {
         transaction {
           val user1 = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!", false)
           val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!", false)
-          val team = Team("test-team", 1L, 1L, Some(1L))
+          val team = Team("test-team", TeamStatus.Unverified, 1L, 1L, Some(1L))
           
           model.User.insert(user1)
           model.User.insert(user2)

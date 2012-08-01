@@ -4,15 +4,41 @@
 
   @hackathon.map { hackathon =>
 
-		<a class="btn btn-success pull-right" href="@routes.Team.create(hackathon.id)">@Messages("teams.addTeam")</a>
+		<a class="btn btn-success" href="@routes.Team.create(hackathon.id)">@Messages("teams.addTeam")</a>
 
     	@hackathon.teams.map { team =>
-    	  	<div class="page-header">
-				<h2>@team.name</h2>
-   				<p>@Messages("teams.creator.label"): @team.creator.name</p>
-				<p>@Messages("teams.members.label"): @team.members.size</p>
-    			<p><a class="btn" href="@routes.Team.view(hackathon.id, team.id)">@Messages("global.readMore")</a></p>
-  			</div>
+
+    		@*
+    		 * Display teams when:
+    		 *		1. user is admin
+    		 *		2. team is verified
+    		 *		3. user is hackathon organiser or team creator
+    		 *
+    		 *@
+
+    		@if((user.isDefined && user.get.isAdmin) || team.status == model.TeamStatus.Approved || (user.isDefined && (user.get.hackathonUserId == hackathon.organiserId || user.get.hackathonUserId == team.creatorId))) {
+	    	  	<div class="page-header team" data-team-id="@team.id">
+					<h2>@team.name @teamActions(hackathon, team, user)</h2>
+	   				<p>@Messages("teams.creator.label"): @team.creator.name</p>
+					<p>@Messages("teams.members.label"): @team.members.size</p>
+	    			<p><a class="btn" href="@routes.Team.view(hackathon.id, team.id)">@Messages("global.readMore")</a></p>
+	  			</div>
+  			}
+    	}
+
+		 @*
+		  * Show teams.empty.text when
+		  *
+		  * 	1. There are no teams at all
+		  *		2. User is not logged in and there are no approved teams
+		  *		3. User is logged but all added teams not approved and logged in user is not their creator
+		  *
+		  *@
+
+		 @if(hackathon.teams.size == 0 || (user.isEmpty && hackathon.teams.filter(_.status == model.TeamStatus.Approved).size == 0)  || (user.isDefined && hackathon.teams.filterNot(_.status == model.TeamStatus.Approved).filterNot(_.creatorId == user.get.hackathonUserId).size == hackathon.teams.size)) {
+    		<div class="page-header">
+            	<h2>@Messages("teams.empty.text")</h2>
+        	</div>
     	}
     	
   }

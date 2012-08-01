@@ -90,6 +90,10 @@ GET     /hackathons/:hid/teams/:id               	controllers.Team.view(hid: Lon
 # Update
 GET     /hackathons/:hid/teams/:id/edit          	controllers.Team.edit(hid: Long, id: Long)
 POST    /hackathons/:hid/teams/:id/update        	controllers.Team.update(hid: Long, id: Long)
+POST    /hackathons/:hid/teams/:id/verify        	controllers.Team.verify(hid: Long, id: Long)
+POST    /hackathons/:hid/teams/:id/approve        	controllers.Team.verify(hid: Long, id: Long)
+POST    /hackathons/:hid/teams/:id/suspend        	controllers.Team.suspend(hid: Long, id: Long)
+POST    /hackathons/:hid/teams/:id/block        	controllers.Team.block(hid: Long, id: Long)
 # Delete
 POST    /hackathons/:hid/teams/:id/delete        	controllers.Team.delete(hid: Long, id: Long)
 # Join

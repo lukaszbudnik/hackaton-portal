@@ -7,13 +7,21 @@ import org.squeryl.KeyedEntity
 import org.squeryl.Schema
 import org.squeryl.annotations.Column
 
+object TeamStatus extends Enumeration {
+  val Unverified = Value(1, "Unverified")
+  val Approved = Value(2, "Approved")
+  val Suspended = Value(3, "Suspended")
+  val Blocked = Value(4, "Blocked")
+}
+
 case class Team(name: String,
+  status: TeamStatus.Value,
   @Column("creator_id") creatorId: Long,
   @Column("hackathon_id") hackathonId: Long,
   @Column("problem_id") problemId: Option[Long] = None) extends KeyedEntity[Long] {
   val id: Long = 0L
   
-  def this(creatorId: Long, hackathonId: Long) = this("", creatorId, hackathonId)
+  def this(creatorId: Long, hackathonId: Long) = this("", TeamStatus.Unverified, creatorId, hackathonId)
 
   private lazy val creatorRel: ManyToOne[User] = Team.creatorToTeams.right(this)
   private lazy val hackathonRel: ManyToOne[Hackathon] = Team.hackathonToTeams.right(this)
@@ -72,6 +80,7 @@ object Team extends Schema {
       where(t.id === id)
         set (
           t.name := team.name,
+          t.status := team.status,
           t.creatorId := team.creatorId,
           t.hackathonId := team.hackathonId,
           t.problemId := team.problemId))

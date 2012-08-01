@@ -1,0 +1,30 @@
+@(hackathon: model.Hackathon, team: model.Team, user: Option[securesocial.core.SocialUser], ajaxDelete: Boolean = true)(implicit request: Request[AnyContent], lang: Lang)
+
+@import helper._
+
+<small class="team-status">@Messages("teams.teamStatus." + team.status)</small>
+					
+@if(user.isDefined && (user.get.isAdmin || user.get.hackathonUserId == hackathon.organiserId || user.get.hackathonUserId == team.creatorId)) {
+	<div class="pull-right">
+		<a class="btn btn-success" href="@routes.Team.edit(hackathon.id, team.id)">@Messages("global.edit")</a>
+		@if((team.status == model.TeamStatus.Unverified || team.status == model.TeamStatus.Blocked) && (user.get.isAdmin || user.get.hackathonUserId == hackathon.organiserId)) {
+			<a class="btn btn-success team-verify" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@Messages("teams.verify.label")</a>
+		}
+		@if(team.status == model.TeamStatus.Approved) {
+			<a class="btn btn-danger team-suspend" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@Messages("teams.suspend.label")</a>
+		}
+		@if(team.status == model.TeamStatus.Suspended) {
+			<a class="btn btn-success team-approve" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@Messages("teams.approve.label")</a>
+		}
+		@if((team.status != model.TeamStatus.Unverified && team.status != model.TeamStatus.Blocked) && (user.get.isAdmin || user.get.hackathonUserId == hackathon.organiserId)) {
+			<a class="btn btn-danger team-block" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@Messages("teams.block.label")</a>
+		}
+		@if(ajaxDelete) {
+			<a class="btn btn-danger team-delete" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@Messages("global.delete")</a>
+		} else {
+		  @form(routes.Team.delete(hackathon.id, team.id), 'style -> "display: inline" ) {
+			<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" style="font-weight: bold" />
+		  }
+		}
+	</div>
+}

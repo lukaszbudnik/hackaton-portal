@@ -69,6 +69,7 @@ CREATE TABLE teams (
     id integer NOT NULL DEFAULT nextval('team_id_seq'),
     creation_timestamp timestamp NOT NULL DEFAULT now(),
     name varchar(255),
+    status integer NOT NULL,
     
     creator_id integer NOT NULL,
     hackathon_id integer NOT NULL,

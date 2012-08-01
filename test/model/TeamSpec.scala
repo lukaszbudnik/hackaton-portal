@@ -16,7 +16,7 @@ class TeamSpec extends Specification {
     "be insertable" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val team: Team = Team("name", 1, 1)
+          val team: Team = Team("name", TeamStatus.Unverified, 1, 1)
           model.Team.insert(team)
           
           team.isPersisted must beTrue
@@ -27,7 +27,7 @@ class TeamSpec extends Specification {
     "be retrivable by id" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val team: Team = Team("name", 1, 1)
+          val team: Team = Team("name", TeamStatus.Unverified, 1, 1)
           model.Team.insert(team)
           
           team.isPersisted must beTrue
@@ -42,7 +42,7 @@ class TeamSpec extends Specification {
     "be retrivable with creator relationship" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val team: Team = Team("name", 1, 1)
+          val team: Team = Team("name", TeamStatus.Unverified, 1, 1)
           model.Team.insert(team)
           
           team.isPersisted must beTrue
@@ -57,7 +57,7 @@ class TeamSpec extends Specification {
     "be retrivable with hackathon relationship" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val team: Team = Team("name", 1, 1)
+          val team: Team = Team("name", TeamStatus.Unverified, 1, 1)
           model.Team.insert(team)
           
           team.isPersisted must beTrue
@@ -72,8 +72,8 @@ class TeamSpec extends Specification {
     "be retrivable with optional problem relationship" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val team1: Team = Team("name", 1, 1)
-          val team2: Team = Team("name", 1, 1, Some(1))
+          val team1: Team = Team("name", TeamStatus.Unverified, 1, 1)
+          val team2: Team = Team("name", TeamStatus.Unverified, 1, 1, Some(1))
           model.Team.insert(team1)
           model.Team.insert(team2)
           
@@ -96,8 +96,8 @@ class TeamSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           val size = model.Team.all.size
-          model.Team.insert(Team("name", 1, 1))
-          model.Team.insert(Team("name", 1, 1))
+          model.Team.insert(Team("name", TeamStatus.Unverified, 1, 1))
+          model.Team.insert(Team("name", TeamStatus.Unverified, 1, 1))
           
           Team.all must have size(size + 2)
         }
@@ -106,14 +106,14 @@ class TeamSpec extends Specification {
     "be updatable" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val team1: Team = Team("name", 1, 1)
+          val team1: Team = Team("name", TeamStatus.Unverified, 1, 1)
           model.Team.insert(team1)
           
           team1.isPersisted must beTrue
 
           val teamDb1: Option[Team] = model.Team.lookup(team1.id)
           
-          val team2: Team = Team("name2", 2, 2, Some(2))
+          val team2: Team = Team("name2", TeamStatus.Unverified, 2, 2, Some(2))
           model.Team.update(team1.id, team2)
 
           val teamDb2: Option[Team] = model.Team.lookup(team1.id)
@@ -140,7 +140,7 @@ class TeamSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           val size = model.Team.all.size
-          val team = Team("name", 1, 1)
+          val team = Team("name", TeamStatus.Unverified, 1, 1)
           
           model.Team.insert(team)
           model.Team.all must have size(size + 1)
