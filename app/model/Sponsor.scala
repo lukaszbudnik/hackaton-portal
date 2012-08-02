@@ -50,7 +50,7 @@ object Sponsor extends Schema {
 
   def lookup(id: Long): Option[Sponsor] = {
     join(sponsors, model.Resource.resources.leftOuter)((s,r) =>
-      where((s.id === id) and (s.hackathonId isNull))
+      where(s.id === id)
         select (s, r.map(_.url))
         orderBy (s.order)
         on (s.logoResourceId === r.map(_.id))).headOption match {

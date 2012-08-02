@@ -47,7 +47,12 @@
             	
 			<div class="form-actions">
 				<button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
+				
+				@hackathon.map { hackathon =>
+				<a href="@routes.Sponsor.indexH(hackathon.id)" class="btn">@Messages("global.cancel")</a>
+				}.getOrElse{
 				<a href="@routes.Sponsor.index" class="btn">@Messages("global.cancel")</a>
+				}
 			</div>       
 		}
 	</div>
