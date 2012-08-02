@@ -1,6 +1,7 @@
 brand = hackaton.pl
 years = 2012
 
+error.date = Błędna data
 error.unknown = Wystąpił nieoczekiwany błąd
 
 fileupload.server.error = Wystąpił błąd podczas transferu pliku
@@ -17,6 +18,7 @@ js.fileupload.label.delete = Usuń
 
 js.infobubble.more = Więcej...
 
+global.add		   = Dodaj
 global.cancel      = Anuluj
 global.delete      = Usuń
 global.edit        = Edytuj
@@ -30,12 +32,15 @@ navigation.contact  = Kontakt
 navigation.home     = Strona główna
 navigation.login    = Zaloguj się
 navigation.news     = Aktualności
+navigation.hackathons = Hackatony
 navigation.problems = Problemy
 navigation.sponsors = Sponsorzy
 navigation.teams    = Zespoły
 navigation.users    = Użytkownicy
 navigation.changeLanguage = Zmień język
-navigation.chat = Chat
+navigation.chat 	= Chat
+navigation.details 	= Opis
+navigation.prizes	= Nagrody
 
 pagination.previous = &larr; Poprzednie
 pagination.next = Następne &rarr;
@@ -88,6 +93,21 @@ news.status.updated = Wiadomość '%s' zaktualizowana
 news.status.deleted = Wiadomość usunięta
 news.search = Znaleziono %d newsów z tagiem %s
 
+hackathons.title = Hackatony
+hackathons.addHackathon = Dodaj hackaton
+hackathons.notFound = Hackaton nie znaleziony
+hackathons.subject.label = Temat
+hackathons.status.label = Status
+hackathons.date.label = Data
+hackathons.organiser.label = Organizator
+hackathons.location.label = Miejsce
+hackathons.view.title = Hackaton
+hackathons.create.title = Dodaj hackaton
+hackathons.edit.title = Edytuj hackaton
+hackathons.status.added = Hackaton %s dodany pomyślnie!
+hackathons.status.updated = Hackaton %s zaktualizowany pomyślnie!
+hackathons.status.deleted = Hackaton usunięty
+
 locations.title = Lokalizacja
 locations.addLocation = Dodaj lokalizację
 locations.name.label = Nazwa
@@ -105,7 +125,18 @@ locations.status.updated = Lokalizacja  %s zaktualizowana pomyślnie!
 locations.status.deleted = Lokalizacja usunięta!
 locations.nomatchfound = Nie znaleziono! » Dodaj nową
 
-
+problems.title = Problemy
+problems.addProblem = Dodaj problem
+problems.notFound = Problem nie znaleziony
+problems.name.label = Nazwa
+problems.description.label = Opis
+problems.submitter.label = Zgłaszający
+problems.view.title = Problem
+problems.create.title = Dodaj problem
+problems.edit.title = Edytuj problem
+problems.status.added = Problem %s dodany pomyślnie!
+problems.status.updated = Problem %s zaktualizowany pomyślnie!
+problems.status.deleted = Problem usunięty!
 
 sponsors.title = Nasi sponsorzy
 sponsors.text = <p>Chcielibyśmy podziękować wszystkim naszym sponsorom. Oto ich pełna lista. Dziękujemy!</p>
@@ -123,6 +154,21 @@ sponsors.status.updated = Dane sponsora %s zaktualizowane pomyślnie
 sponsors.status.deleted = Usunięto dane sponsora
 sponsors.upload.maxfilesizeinfo = Maksymalny rozmiar logo: {0} KB
 sponsors.button.upload = Ustaw logo...
+
+prizes.title = Nagrody
+prizes.addPrize = Dodaj nagrodę
+prizes.notFound = Nagroda nie znaleziona
+prizes.name.label = Nazwa
+prizes.description.label = Opis
+prizes.order.label = Kolejność
+prizes.founderName.label = Fundator (opcja)
+prizes.founderWebPage.label = Adres strony fundatora (opcja)
+prizes.view.title = Nagroda
+prizes.create.title = Dodaj nagrodę
+prizes.edit.title = Edytuj nagrodę
+prizes.status.added = Nagroda %s dodana pomyślnie!
+prizes.status.updated = Nagroda %s zaktualizowana pomyślnie!
+prizes.status.deleted = Nagroda usunięta!
 
 securityAbuse.title = Wykryto naruszenie bezpieczeństwa
 securityAbuse.text = Drogi <strong>{0}</strong>! Wykryliśmy próbę naruszenia bezpieczeństwa. Proszę powstrzymaj się od takich akcji ponieważ następnym razem możemy wyciągnąć konsekwencje i automatycznie zablokować Twoje konto.
@@ -154,12 +200,28 @@ users.updateIsBlocked.label = Zmień zablokowany
 users.update.error = Wystąpił błąd podczas aktualizacji użytkownika 
 users.update.success = Użytkownik został zaktualizowany
 
+teams.title = Zespół
+teams.addTeam = Dodaj zespół
+teams.notFound = Zespół nie znaleziony
+teams.name.label = Nazwa
+teams.name.error = Nazwa jest wymagana
+teams.creator.label = Twórca zespółu
+teams.hackathon.label = Hackton
+teams.problem.label = Problem
+teams.view.title = Zespół
+teams.create.title = Dodaj zespół
+teams.edit.title = Edytuj zespół
 teams.chat = Wewnętrzny chat
+teams.members.label = Członkowie zespółu
+teams.noMembers = Brak członków zespółu!
 teams.empty.text = Nie ma jeszcze żadnych zespołów
 teams.teamStatus.Unverified = Niezweryfikowany
 teams.teamStatus.Approved = Zatwierdzony
 teams.teamStatus.Suspended = Zawieszony
 teams.teamStatus.Blocked = Zablokowany
+teams.join.label = Dołącz
+teams.leave.label = Odłącz
+teams.remove.label = Usuń
 teams.suspend.label = Zawieś
 teams.approve.label = Zatwierdź
 teams.verify.label = Zweryfikuj
