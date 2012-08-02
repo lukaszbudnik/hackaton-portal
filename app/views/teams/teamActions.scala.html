@@ -4,17 +4,17 @@
 
 <small class="team-status">@Messages("teams.teamStatus." + team.status)</small>
 					
-@if(user.isDefined) {
+@user.map { user =>
 	<div class="pull-right">
-		@if(team.hasMember(user.get.hackathonUserId)){
+		@if(team.hasMember(user..hackathonUserId)){
 			<a class="btn btn-warning" href="@routes.Team.disconnect(hackathon.id, team.id)">@Messages("teams.leave.label")</a>		    			  
 		} 
-		@if(!team.hasMember(user.get.hackathonUserId) && user.get.hackathonUserId != team.creatorId){
+		@if(!team.hasMember(user..hackathonUserId) && user..hackathonUserId != team.creatorId){
 			<a class="btn btn-warning" href="@routes.Team.join(hackathon.id, team.id)">@Messages("teams.join.label")</a>  
 		}
-		@if(user.get.isAdmin || user.get.hackathonUserId == hackathon.organiserId || user.get.hackathonUserId == team.creatorId) {
+		@if(user.isAdmin || user.hackathonUserId == hackathon.organiserId || user..hackathonUserId == team.creatorId) {
 			<a class="btn btn-success" href="@routes.Team.edit(hackathon.id, team.id)">@Messages("global.edit")</a>
-			@if((team.status == model.TeamStatus.Unverified || team.status == model.TeamStatus.Blocked) && (user.get.isAdmin || user.get.hackathonUserId == hackathon.organiserId)) {
+			@if((team.status == model.TeamStatus.Unverified || team.status == model.TeamStatus.Blocked) && (user..isAdmin || user..hackathonUserId == hackathon.organiserId)) {
 				<a class="btn btn-success team-verify" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@Messages("teams.verify.label")</a>
 			}
 			@if(team.status == model.TeamStatus.Approved) {
@@ -23,7 +23,7 @@
 			@if(team.status == model.TeamStatus.Suspended) {
 				<a class="btn btn-success team-approve" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@Messages("teams.approve.label")</a>
 			}
-			@if((team.status != model.TeamStatus.Unverified && team.status != model.TeamStatus.Blocked) && (user.get.isAdmin || user.get.hackathonUserId == hackathon.organiserId)) {
+			@if((team.status != model.TeamStatus.Unverified && team.status != model.TeamStatus.Blocked) && (user..isAdmin || user..hackathonUserId == hackathon.organiserId)) {
 				<a class="btn btn-danger team-block" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@Messages("teams.block.label")</a>
 			}
 			@if(ajaxDelete) {
