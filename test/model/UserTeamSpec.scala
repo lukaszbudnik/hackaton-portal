@@ -88,34 +88,5 @@ class UserTeamSpec extends Specification {
         }
       }
     }
-    "allow add and retrieve teams for a user" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        transaction {
-          val user1 = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!", false)
-          val user2 = User("Łukasz Budnik2", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere2!", false)
-          val team = Team("test-team", TeamStatus.Unverified, 1L, 1L, Some(1L))
-          
-          model.User.insert(user1)
-          model.User.insert(user2)
-          model.Team.insert(team)
-          
-          user1.isPersisted must beTrue
-          user2.isPersisted must beTrue
-          team.isPersisted must beTrue
-
-          user1.addTeam(team)
-          user2.addTeam(team)
-          
-          val userDb1 = model.User.lookup(user1.id)
-          userDb1.isEmpty must beFalse
-          userDb1.get.teams.size must equalTo(1)
-
-          val userDb2 = model.User.lookup(user2.id)
-          userDb2.isEmpty must beFalse
-          userDb2.get.teams.size must equalTo(1)
-        }
-      }
-    }
   }
-
 }

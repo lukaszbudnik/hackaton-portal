@@ -26,7 +26,7 @@ case class Team(name: String,
   private lazy val creatorRel: ManyToOne[User] = Team.creatorToTeams.right(this)
   private lazy val hackathonRel: ManyToOne[Hackathon] = Team.hackathonToTeams.right(this)
   private lazy val problemRel: ManyToOne[Problem] = Team.problemToTeams.right(this);
-  private lazy val membersRel = Team.usersToTeams.right(this)
+  private lazy val membersRel = Team.teamsToUsers.left(this)
 
   def creator = creatorRel.head
   def hackathon = hackathonRel.head
@@ -38,17 +38,13 @@ case class Team(name: String,
   }
 
   def addMember(user: User) = {
-    membersRel.associate(user)
+    hackathon.addMember(user, id)
   }
 
   def deleteMember(user: User) = {
-    membersRel.dissociate(user)
+	hackathon.deleteMember(user)
+	hackathon.addMember(user)
   }
-}
-
-case class UserTeam(@Column("user_id") userId: Long,
-  @Column("team_id") teamId: Long) extends KeyedEntity[CompositeKey2[Long, Long]] {
-  def id = compositeKey(userId, teamId)
 }
 
 object Team extends Schema {
@@ -59,9 +55,9 @@ object Team extends Schema {
   protected[model] val hackathonToTeams = oneToManyRelation(Hackathon.hackathons, Team.teams).via((h, t) => h.id === t.hackathonId)
   protected[model] val problemToTeams = oneToManyRelation(Problem.problems, Team.teams).via((p, t) => p.id === t.problemId)
 
-  protected[model] val usersToTeams =
-    manyToManyRelation(User.users, Team.teams, "users_teams").
-      via[UserTeam](f = (u, t, ut) => (u.id === ut.userId, t.id === ut.teamId))
+  protected[model] val teamsToUsers =
+    manyToManyRelation(Team.teams, User.users, "hackathons_users").
+      via[HackathonUser](f = (t, u, tu) => (t.id === tu.teamId, u.id === tu.userId))
 
   def all(): Iterable[Team] = {
     teams.toIterable
