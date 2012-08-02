@@ -129,8 +129,10 @@ object Team extends LangAwareController with securesocial.core.SecureSocial {
   def suspend(hid: Long, id: Long) = SecuredAction() { implicit request =>
 	  transaction {
 	    model.Team.lookup(id).map { team =>
-	      helpers.Security.verifyIfAllowed(hid == team.hackathonId)(request.user)
-	      helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
+	      implicit val user = request.user
+	      
+	      helpers.Security.verifyIfAllowed(hid == team.hackathonId)
+	      helpers.Security.verifyIfAllowed(user.isAdmin || team.creatorId == user.hackathonUserId || team.hackathon.organiserId == user.hackathonUserId)
 	      model.Team.update(id, team.copy(status = TeamStatus.Suspended))
 	      
 	      Ok(JsArray(Seq(JsObject(List(
