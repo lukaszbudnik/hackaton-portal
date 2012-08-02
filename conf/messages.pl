@@ -105,8 +105,6 @@ locations.status.updated = Lokalizacja  %s zaktualizowana pomyślnie!
 locations.status.deleted = Lokalizacja usunięta!
 locations.nomatchfound = Nie znaleziono! » Dodaj nową
 
-
-
 sponsors.title = Nasi sponsorzy
 sponsors.text = <p>Chcielibyśmy podziękować wszystkim naszym sponsorom. Oto ich pełna lista. Dziękujemy!</p>
 sponsors.addSponsor = Dodaj sponsora
@@ -154,6 +152,19 @@ users.updateIsBlocked.label = Zmień zablokowany
 users.update.error = Wystąpił błąd podczas aktualizacji użytkownika 
 users.update.success = Użytkownik został zaktualizowany
 
+problems.empty.text = Nie ma jeszcze żadnych zespołów
+problems.problemStatus.Unverified = Niezweryfikowany
+problems.problemStatus.Approved = Zatwierdzony
+problems.problemStatus.Suspended = Zawieszony
+problems.problemStatus.Blocked = Zablokowany
+problems.suspend.label = Zawieś
+problems.approve.label = Zatwierdź
+problems.verify.label = Zweryfikuj
+problems.block.label = Zablokuj
+problems.update.success = Problem został zaktualizowany
+problems.delete.success = Problem został usunięty
+problems.update.error = Wystąpił błąd podczas aktualizacji problemu
+
 teams.chat = Wewnętrzny chat
 teams.empty.text = Nie ma jeszcze żadnych zespołów
 teams.teamStatus.Unverified = Niezweryfikowany
@@ -165,8 +176,9 @@ teams.approve.label = Zatwierdź
 teams.verify.label = Zweryfikuj
 teams.block.label = Zablokuj
 teams.delete.label = Usuń
-teams.update.success = Team successfully updated
-teams.update.error = Failed to update team
+teams.update.success = Zespołu został zaktualizowany
+teams.delete.success = Zespół został usunięty
+teams.update.error = Wystąpił błąd podczas aktualizacji zespołu
 
 hackathons.hackathonStatus.Planning = Planowany
 hackathons.hackathonStatus.InProgress = Obecnie Trwający

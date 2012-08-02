@@ -55,6 +55,7 @@ CREATE TABLE problems (
     creation_timestamp timestamp NOT NULL DEFAULT now(),
     name varchar(255),
     description text,
+    status integer NOT NULL,
        
     hackathon_id integer NOT NULL,
     submitter_id integer NOT NULL,

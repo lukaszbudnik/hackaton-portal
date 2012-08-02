@@ -13,7 +13,7 @@ class ProblemSpec extends Specification {
     "be insertable" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val problem: Problem = new Problem("Name", "Description", 1L, 1L)
+          val problem: Problem = new Problem("Name", "Description", ProblemStatus.Unverified, 1L, 1L)
           model.Problem.insert(problem)
 
           problem.isPersisted must beTrue
@@ -26,7 +26,7 @@ class ProblemSpec extends Specification {
     "be retrievable by id" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val problem: Problem = new Problem("Name", "Description", 1L, 1L)
+          val problem: Problem = new Problem("Name", "Description", ProblemStatus.Unverified, 1L, 1L)
           model.Problem.insert(problem)
 
           problem.isPersisted must beTrue
@@ -41,8 +41,8 @@ class ProblemSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           
-          model.Problem.insert(new Problem("Name", "Description", 1L, 1L))
-          model.Problem.insert(new Problem("Name", "Description", 1L, 1L))
+          model.Problem.insert(new Problem("Name", "Description", ProblemStatus.Unverified, 1L, 1L))
+          model.Problem.insert(new Problem("Name", "Description", ProblemStatus.Unverified, 1L, 1L))
           
           val problemList: Iterable[Problem] = model.Problem.all
           problemList must have size(4)

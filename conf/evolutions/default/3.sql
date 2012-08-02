@@ -12,8 +12,8 @@ insert into locations (country, city, postal_code, full_address, name, latitude,
 insert into hackathons (subject, date, status, organiser_id, location_id) values ('Hackaton testowy 1', '2012-01-02', 1, 1, 1);
 insert into hackathons (subject, date, status, organiser_id, location_id) values ('Hackaton testowy 2', '2012-03-04', 2, 2, 2);
 
-insert into problems (name, description, submitter_id, hackathon_id) values ('Problem 1', 'Problem testowy numer 1', 1, 1);
-insert into problems (name, description, submitter_id, hackathon_id) values ('Problem 2', 'Problem testowy numer 2', 1, 1);
+insert into problems (name, description, status, submitter_id, hackathon_id) values ('Problem 1', 'Problem testowy numer 1', 1, 1, 1);
+insert into problems (name, description, status, submitter_id, hackathon_id) values ('Problem 2', 'Problem testowy numer 2', 2, 1, 1);
 
 insert into teams (name, status, creator_id, hackathon_id) values ('Team 1', 1, 1, 1);
 insert into teams (name, status, creator_id, hackathon_id) values ('Team 2', 2, 2, 1);

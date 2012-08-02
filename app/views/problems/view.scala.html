@@ -5,8 +5,8 @@
 @hackathons.hackathonMain(hackathon, user, "problems", problem.isDefined, "problems.status") {
   
 	@problem.map{ problem =>
-		<div class="page-header">
-			<h2>@problem.name</h2>
+		<div class="page-header problem" data-problem-id="@problem.id">
+			<h2>@problem.name @problemActions(hackathon, problem, user, false)</h2>
 		</div>
 	  
 		<div class="row">

@@ -4,16 +4,43 @@
 
 
   @hackathon.map { hackathon =>
-		<a class="btn btn-success pull-right" href="@routes.Problem.create(hackathon.id)">@Messages("problems.addProblem")</a>
+		<a class="btn btn-success" href="@routes.Problem.create(hackathon.id)">@Messages("problems.addProblem")</a>
 
     	@hackathon.problems.map { problem =>
-          	<div class="page-header">
-    			<h2>@problem.name</h2>
-    			<p>@Messages("problems.submitter.label"): @problem.submitter.name</p>
-    			<p><a class="btn" href="@routes.Problem.view(hackathon.id, problem.id)">@Messages("global.readMore")</a></p>
-  			</div>
+    	  
+    	  	@*
+    		 * Display problem when:
+    		 *		1. user is admin
+    		 *		2. team is verified
+    		 *		3. user is hackathon organiser or team creator
+    		 *
+    		 *@
+
+    		@if((user.isDefined && user.get.isAdmin) || problem.status == model.ProblemStatus.Approved || (user.isDefined && (user.get.hackathonUserId == hackathon.organiserId || user.get.hackathonUserId == problem.submitterId))) {
+
+    			<div class="page-header problem" data-problem-id="@problem.id">
+    				<h2>@problem.name @problemActions(hackathon, problem, user)</h2>
+    				<p>@Messages("problems.submitter.label"): @problem.submitter.name</p>
+    				<p><a class="btn" href="@routes.Problem.view(hackathon.id, problem.id)">@Messages("global.readMore")</a></p>
+    			</div>
+    		  
+    		}
     	}
     	
+    	 @*
+		  * Show problems.empty.text when
+		  *
+		  * 	1. There are no problems at all
+		  *		2. User is not logged in and there are no approved problems
+		  *		3. User is logged but all added problems not approved and logged in user is not their creator
+		  *
+		  *@
+
+		 @if(hackathon.problems.size == 0 || (user.isEmpty && hackathon.problems.filter(_.status == model.ProblemStatus.Approved).size == 0)  || (user.isDefined && hackathon.problems.filterNot(_.status == model.ProblemStatus.Approved).filterNot(_.submitterId == user.get.hackathonUserId).size == hackathon.problems.size)) {
+    		<div class="page-header">
+            	<h2>@Messages("teams.empty.text")</h2>
+        	</div>
+    	}
 
   }
 }

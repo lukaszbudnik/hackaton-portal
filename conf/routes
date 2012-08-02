@@ -77,6 +77,10 @@ GET     /hackathons/:hid/problems/:id           	controllers.Problem.view(hid: L
 # Update
 GET     /hackathons/:hid/problems/:id/edit      	controllers.Problem.edit(hid: Long, id: Long)
 POST    /hackathons/:hid/problems/:id/update    	controllers.Problem.update(hid: Long, id: Long)
+POST    /hackathons/:hid/problems/:id/verify        controllers.Problem.verify(hid: Long, id: Long)
+POST    /hackathons/:hid/problems/:id/approve       controllers.Problem.approve(hid: Long, id: Long)
+POST    /hackathons/:hid/problems/:id/suspend       controllers.Problem.suspend(hid: Long, id: Long)
+POST    /hackathons/:hid/problems/:id/block        	controllers.Problem.block(hid: Long, id: Long)
 # Delete
 POST    /hackathons/:hid/problems/:id/delete    	controllers.Problem.delete(hid: Long, id: Long)
 
@@ -91,7 +95,7 @@ GET     /hackathons/:hid/teams/:id               	controllers.Team.view(hid: Lon
 GET     /hackathons/:hid/teams/:id/edit          	controllers.Team.edit(hid: Long, id: Long)
 POST    /hackathons/:hid/teams/:id/update        	controllers.Team.update(hid: Long, id: Long)
 POST    /hackathons/:hid/teams/:id/verify        	controllers.Team.verify(hid: Long, id: Long)
-POST    /hackathons/:hid/teams/:id/approve        	controllers.Team.verify(hid: Long, id: Long)
+POST    /hackathons/:hid/teams/:id/approve        	controllers.Team.approve(hid: Long, id: Long)
 POST    /hackathons/:hid/teams/:id/suspend        	controllers.Team.suspend(hid: Long, id: Long)
 POST    /hackathons/:hid/teams/:id/block        	controllers.Team.block(hid: Long, id: Long)
 # Delete
