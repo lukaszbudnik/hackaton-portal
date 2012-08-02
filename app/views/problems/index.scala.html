@@ -2,8 +2,8 @@
 
 @hackathons.hackathonMain(hackathon, user, "problems", true, "problems.status") {
 
-
   @hackathon.map { hackathon =>
+
 		<a class="btn btn-success" href="@routes.Problem.create(hackathon.id)">@Messages("problems.addProblem")</a>
 
     	@hackathon.problems.map { problem =>
@@ -26,7 +26,7 @@
     		  
     		}
     	}
-    	
+
     	 @*
 		  * Show problems.empty.text when
 		  *
@@ -43,4 +43,5 @@
     	}
 
   }
+  
 }

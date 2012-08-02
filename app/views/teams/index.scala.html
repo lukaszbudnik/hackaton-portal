@@ -4,8 +4,6 @@
 
   @hackathon.map { hackathon =>
 
-		<a class="btn btn-success" href="@routes.Team.create(hackathon.id)">@Messages("teams.addTeam")</a>
-
     	@hackathon.teams.map { team =>
 
     		@*
@@ -35,11 +33,14 @@
 		  *
 		  *@
 
-		 @if(hackathon.teams.size == 0 || (user.isEmpty && hackathon.teams.filter(_.status == model.TeamStatus.Approved).size == 0)  || (user.isDefined && hackathon.teams.filterNot(_.status == model.TeamStatus.Approved).filterNot(_.creatorId == user.get.hackathonUserId).size == hackathon.teams.size)) {
-    		<div class="page-header">
-            	<h2>@Messages("teams.empty.text")</h2>
+		@if(hackathon.teams.size == 0 || (user.isEmpty && hackathon.teams.filter(_.status == model.TeamStatus.Approved).size == 0)  || (user.isDefined && hackathon.teams.filterNot(_.status == model.TeamStatus.Approved).filterNot(_.creatorId == user.get.hackathonUserId).size == hackathon.teams.size)) {
+			<div class="page-header">
+				<h2>@Messages("teams.empty.text")</h2>
         	</div>
-    	}
+		}
     	
+		<a class="btn btn-success" href="@routes.Team.create(hackathon.id)">@Messages("teams.addTeam")</a>
+  
   }
+  
 }
