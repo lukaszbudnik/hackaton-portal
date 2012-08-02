@@ -17,17 +17,11 @@ case class User(name: String,
   @Column("is_blocked") isBlocked: Boolean = false) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  private lazy val teamsRel = Team.usersToTeams.left(this)
-
-  def teams = teamsRel.toIterable
-
-  def addTeam(team: Team) = {
-    teamsRel.associate(team)
-  }
-
-  def deleteTeam(team: Team) = {
-    teamsRel.dissociate(team)
-  }
+  private lazy val hackathonsRel = Hackathon.hackathonsToUsers.right(this)
+  private lazy val teamsRel = Team.teamsToUsers.right(this)
+  
+  def hackathons = hackathonsRel.toIterable
+  def teams =    teamsRel.toIterable
 }
 
 object User extends Schema {

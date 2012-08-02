@@ -18,7 +18,7 @@ insert into problems (name, description, status, submitter_id, hackathon_id) val
 insert into teams (name, status, creator_id, hackathon_id) values ('Team 1', 1, 1, 1);
 insert into teams (name, status, creator_id, hackathon_id) values ('Team 2', 2, 2, 1);
 
-insert into users_teams (user_id, team_id) values (2, 1);
+insert into hackathons_users (hackathon_id, user_id, team_id) values (1, 2, 2);
 
 insert into news (title, text, published_date, author_id) values ('Tytuł 1', 'This is an example <!--more-->of multiline news', '2012-01-01 00:00:00', 1);
 insert into news (title, text, published_date, author_id) values ('Tytuł 2', 'This is an example <!--more-->of multiline news', '2012-01-02 00:00:00', 1);
@@ -64,7 +64,7 @@ delete from labels;
 
 delete from news;
 
-delete from users_teams;
+delete from hackathons_users;
 
 delete from teams;
 

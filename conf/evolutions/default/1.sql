@@ -33,9 +33,9 @@ CREATE TABLE locations (
     PRIMARY KEY (id)
 );
 
-CREATE SEQUENCE hackathons_id_seq;
+CREATE SEQUENCE hackathon_id_seq;
 CREATE TABLE hackathons (
-    id integer NOT NULL DEFAULT nextval('hackathons_id_seq'),
+    id integer NOT NULL DEFAULT nextval('hackathon_id_seq'),
     creation_timestamp timestamp NOT NULL DEFAULT now(),
     date timestamp,
     subject varchar(255),
@@ -82,17 +82,19 @@ CREATE TABLE teams (
     PRIMARY KEY (id)
 );
 
-CREATE SEQUENCE user_team_id_seq;
-CREATE TABLE users_teams (
-    id integer NOT NULL DEFAULT nextval('user_team_id_seq'),
+CREATE SEQUENCE hackathon_user_id_seq;
+CREATE TABLE hackathons_users (
+    id integer NOT NULL DEFAULT nextval('hackathon_user_id_seq'),
     creation_timestamp timestamp NOT NULL DEFAULT now(),
     
+	hackathon_id integer NOT NULL,
     user_id integer NOT NULL,
-    team_id integer NOT NULL,
+    team_id integer,
     
+    FOREIGN KEY (hackathon_id) REFERENCES hackathons(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE,
-    UNIQUE (user_id, team_id),
+    UNIQUE (hackathon_id, user_id),
     PRIMARY KEY (id)
 );
 
@@ -196,8 +198,8 @@ DROP SEQUENCE label_id_seq;
 DROP TABLE news CASCADE;
 DROP SEQUENCE news_id_seq;
 
-DROP TABLE users_teams;
-DROP SEQUENCE user_team_id_seq;
+DROP TABLE hackathons_users;
+DROP SEQUENCE hackathon_user_id_seq;
 
 DROP TABLE teams CASCADE;
 DROP SEQUENCE team_id_seq;
