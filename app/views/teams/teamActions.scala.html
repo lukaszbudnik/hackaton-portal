@@ -4,12 +4,11 @@
 
 <small class="team-status">@Messages("teams.teamStatus." + team.status)</small>
 					
-@user.map { user =>
-	<div class="pull-right">
+<div class="pull-right">
+	@user.map { user =>
 		@if(team.hasMember(user.hackathonUserId)){
 			<a class="btn btn-warning" href="@routes.Team.disconnect(hackathon.id, team.id)">@Messages("teams.leave.label")</a>
-		} 
-		@if(!team.hasMember(user.hackathonUserId) && user.hackathonUserId != team.creatorId){
+		} else {
 			<a class="btn btn-warning" href="@routes.Team.join(hackathon.id, team.id)">@Messages("teams.join.label")</a>  
 		}
 		@if(user.isAdmin || user.hackathonUserId == hackathon.organiserId || user.hackathonUserId == team.creatorId) {
@@ -34,5 +33,7 @@
 				}
 			}
 		}
-	</div>
-}
+	}.getOrElse{
+	  <a class="btn btn-warning" href="@routes.Team.join(hackathon.id, team.id)">@Messages("teams.join.label")</a>
+	}
+</div>
