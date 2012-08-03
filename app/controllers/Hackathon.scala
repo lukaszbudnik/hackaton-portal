@@ -114,4 +114,46 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
       Redirect(routes.Hackathon.index).flashing("status" -> "deleted")
     }
   }
+  
+  def join(id: Long) = SecuredAction() { implicit request =>
+    transaction {
+      var status = "error"
+      model.User.lookup(request.user.hackathonUserId).map { user =>
+        model.Hackathon.lookup(id).map { hackathon =>
+          if (!hackathon.hasMember(user.id)) {
+            hackathon.addMember(user)
+            status = "joined"
+          }
+        }
+      }
+      Redirect(routes.Hackathon.view(id)).flashing("status" -> status)
+    }
+  }
+
+  def disconnect(id: Long) = SecuredAction() { implicit request =>
+    transaction {
+      var status = "error"
+      model.User.lookup(request.user.hackathonUserId).map { user =>
+        model.Hackathon.lookup(id).map { hackathon =>
+          hackathon.deleteMember(user)
+          status = "disconnected"
+        }
+      }
+      Redirect(routes.Hackathon.view(id)).flashing("status" -> status)
+    }
+  }
+
+  def disconnectUser(id: Long, userId: Long) = SecuredAction() { implicit request =>
+    transaction {
+      var status = "error"
+      model.User.lookup(userId).map { user =>
+        model.Hackathon.lookup(id).map { hackathon =>
+          helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
+          hackathon.deleteMember(user)
+          status = "disconnectedUser"
+        }
+      }
+      Redirect(routes.Hackathon.view(id)).flashing("status" -> status)
+    }
+  }
 }

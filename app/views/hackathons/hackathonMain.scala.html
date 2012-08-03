@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser], subnav: String, socialFooter: Boolean, prefix: String = "")(content: Html)(implicit flash: Flash, request: Request[AnyContent], lang: Lang) 
+@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser], subnav: String, prefix: String, socialFooter: Boolean)(content: Html)(implicit flash: Flash, request: Request[AnyContent], lang: Lang) 
 
 @import helper._
 @import tags._
@@ -19,12 +19,17 @@
 				<h1>@hackathon.subject
 					<small>@Messages("hackathons.hackathonStatus." + hackathon.status)</small>
 					@user.map { user =>
-						@if(user.isAdmin || hackathon.organiserId == user.hackathonUserId) {
 							@form(routes.Hackathon.delete(hackathon.id), 'class -> "pull-right", 'style -> "display: inline") {
+								@if(hackathon.hasMember(user.hackathonUserId)){
+							  		<a class="btn btn-warning" href="@routes.Hackathon.disconnect(hackathon.id)">@Messages("hackathons.leave.label")</a>
+							  	} else {
+							  		<a class="btn btn-warning" href="@routes.Hackathon.join(hackathon.id)">@Messages("hackathons.join.label")</a>  
+							  	}
+								@if(user.isAdmin || hackathon.organiserId == user.hackathonUserId) {
 								<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.id)">@Messages("global.edit")</a>
 								<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" style="font-weight: bold" />
+								}
 							}
-						}
 					}
 				</h1>
             	<p>@hackathon.location.city @hackathon.date</p>

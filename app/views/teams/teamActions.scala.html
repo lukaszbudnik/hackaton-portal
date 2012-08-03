@@ -7,7 +7,7 @@
 @user.map { user =>
 	<div class="pull-right">
 		@if(team.hasMember(user.hackathonUserId)){
-			<a class="btn btn-warning" href="@routes.Team.disconnect(hackathon.id, team.id)">@Messages("teams.leave.label")</a>		    			  
+			<a class="btn btn-warning" href="@routes.Team.disconnect(hackathon.id, team.id)">@Messages("teams.leave.label")</a>
 		} 
 		@if(!team.hasMember(user.hackathonUserId) && user.hackathonUserId != team.creatorId){
 			<a class="btn btn-warning" href="@routes.Team.join(hackathon.id, team.id)">@Messages("teams.join.label")</a>  

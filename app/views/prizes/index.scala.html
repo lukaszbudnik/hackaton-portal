@@ -1,6 +1,6 @@
 @(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
-@hackathons.hackathonMain(hackathon, user, "prizes", true, "prizes.status") {
+@hackathons.hackathonMain(hackathon, user, "prizes", "prizes.status", true) {
 
   @hackathon.map { hackathon =>
 

@@ -1,6 +1,6 @@
 @(hackathon: Option[model.Hackathon], prizeForm: Form[model.Prize], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
-@hackathons.hackathonMain(hackathon, Some(user), "prizes", false, "prizes.status") {
+@hackathons.hackathonMain(hackathon, Some(user), "prizes", "prizes.status", false) {
 	
 	<div class="page-header">
 		<h2>@Messages("prizes.create.title")</h2>

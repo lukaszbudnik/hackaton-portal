@@ -1,6 +1,6 @@
 @(hackathon: Option[model.Hackathon], id: Long, teamForm: Form[model.Team], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
-@hackathons.hackathonMain(hackathon, Some(user), "teams", false, "teams.status") {
+@hackathons.hackathonMain(hackathon, Some(user), "teams", "teams.status", false) {
 	
 	<div class="page-header">
 		<h2>@Messages("teams.edit.title")</h2>

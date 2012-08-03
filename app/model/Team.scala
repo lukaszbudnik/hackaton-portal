@@ -38,6 +38,7 @@ case class Team(name: String,
   }
 
   def addMember(user: User) = {
+	hackathon.deleteMember(user)
     hackathon.addMember(user, id)
   }
 
