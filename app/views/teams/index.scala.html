@@ -3,6 +3,8 @@
 @hackathons.hackathonMain(hackathon, user, "teams", "teams.status", true) {
 
   @hackathon.map { hackathon =>
+    
+  		<a class="btn btn-success" href="@routes.Team.create(hackathon.id)">@Messages("teams.addTeam")</a>
 
     	@hackathon.teams.map { team =>
 
@@ -38,9 +40,7 @@
 				<h2>@Messages("teams.empty.text")</h2>
         	</div>
 		}
-    	
-		<a class="btn btn-success" href="@routes.Team.create(hackathon.id)">@Messages("teams.addTeam")</a>
-  
+		 
   }
   
 }

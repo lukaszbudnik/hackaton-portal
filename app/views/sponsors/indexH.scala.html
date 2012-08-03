@@ -5,14 +5,15 @@
 @hackathons.hackathonMain(hackathon, user, "sponsors", "sponsors.status", true) {
 
 	@hackathon.map { h =>
-	
-		@list(h.sponsors)
 		
 		@user.map { user =>
 	  		@if(user.isAdmin || user.hackathonUserId == h.organiserId) {
 	  			<a class="btn btn-success" href="@routes.Sponsor.createH(h.id)">@Messages("sponsors.addSponsor")</a>
+	  			<p>&nbsp;</p>
 	  		}
 		}
+		
+		@list(h.sponsors)
 		
 	}
 }

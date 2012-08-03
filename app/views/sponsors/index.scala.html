@@ -7,22 +7,17 @@
 	<div class="container">
   
     	<div class="page-header">
+			@if(user.isDefined && user.get.isAdmin) {
+				<a class="btn btn-success pull-right" href="@routes.Sponsor.create">@Messages("sponsors.addSponsor")</a>
+			}
     		<h1>@Messages("sponsors.title")</h1>
-			<br>
-			<p>@Messages("sponsors.text")</p>
+			<br/>
+			@Html(Messages("sponsors.text"))
 		</div>
 
 		@flashing("sponsors.status")
-
+			
 		@list(sponsors)
-		
-		@user.map { user =>
-			@if(user.isAdmin) {
-				<div class="form-actions">
-					<a class="btn btn-success" href="@routes.Sponsor.create">@Messages("sponsors.addSponsor")</a>
-				</div>
-			}
-		}
 
 		@footer(true)
 

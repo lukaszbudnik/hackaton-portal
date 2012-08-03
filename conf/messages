@@ -214,7 +214,7 @@ prizes.status.updated = Prize %s successfully updated
 prizes.status.deleted = Prize deleted
 
 sponsors.title = Our Sponsors
-sponsors.text = We''d like to thank the following companies and organisations for supporting Hackaton.pl portal. Thanks!
+sponsors.text = <p>We''d like to thank the following companies and organisations for supporting Hackaton.pl portal. Thanks!</p>
 sponsors.addSponsor = Add a sponsor
 sponsors.notFound = Sponsor not found
 sponsors.name.label = Name
