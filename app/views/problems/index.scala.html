@@ -38,7 +38,7 @@
 
 		 @if(hackathon.problems.size == 0 || (user.isEmpty && hackathon.problems.filter(_.status == model.ProblemStatus.Approved).size == 0)  || (user.isDefined && hackathon.problems.filterNot(_.status == model.ProblemStatus.Approved).filterNot(_.submitterId == user.get.hackathonUserId).size == hackathon.problems.size)) {
     		<div class="page-header">
-            	<h2>@Messages("teams.empty.text")</h2>
+            	<h2>@Messages("problems.empty.text")</h2>
         	</div>
     	}
 
