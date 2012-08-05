@@ -1,26 +1,28 @@
-@(sponsor: Option[model.Sponsor])(implicit request: Request[AnyContent], lang: Lang)
+@(sponsor: Option[model.dto.SponsorWithLogo])(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
 
 @sponsor.map { s =>
 	<div class="page-header">
 
-		<h2>@s.name
-			<small>@s.title</small>
+		<h2>@s.sponsor.name
+			<small>@s.sponsor.title</small>
 		</h2>
 
 		<div class="row">
 			<div class="span6">
-				@if(s.website.startsWith("http")) {
-				<p><a href="@s.website">@s.website</a></p>
+				@if(s.sponsor.website.startsWith("http")) {
+				<p><a href="@s.sponsor.website">@s.sponsor.website</a></p>
 				} else {
-				<p><a href="http://@s.website">@s.website</a></p>
+				<p><a href="http://@s.sponsor.website">@s.sponsor.website</a></p>
 				}
-				<p>@s.description</p>
+				<p>@s.sponsor.description</p>
 			</div>
 
 			<div class="span6">
-				<img src=@s.logoUrl.getOrElse{"http://placehold.it/260x180"} />
+				@defining("http://placehold.it/260x180" )  { placeholder =>
+				<img src="@s.logo.map(l=>l.url).getOrElse{@placeholder}" />
+				}
 			</div>
 
 		</div>

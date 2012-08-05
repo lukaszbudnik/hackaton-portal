@@ -1,4 +1,4 @@
-@(sponsor: Option[model.Sponsor], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent], lang: Lang)
+@(sponsor: Option[model.dto.SponsorWithLogo], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import tags._
@@ -13,8 +13,8 @@
 		  	@user.map { user =>
 		  		@if(user.isAdmin) {
 		  			<div class="form-actions">
-		  				@form(routes.Sponsor.delete(s.id)) {
-		  					<a class="btn btn-success" href="@routes.Sponsor.edit(s.id)">@Messages("global.edit")</a>
+		  				@form(routes.Sponsor.delete(s.sponsor.id)) {
+		  					<a class="btn btn-success" href="@routes.Sponsor.edit(s.sponsor.id)">@Messages("global.edit")</a>
 		  					<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
 		  				}
 		  			</div>

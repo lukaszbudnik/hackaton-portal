@@ -1,24 +1,24 @@
-@(sponsors: Seq[model.Sponsor])(implicit request: Request[AnyContent], lang: Lang)
+@(sponsors: Seq[model.dto.SponsorWithLogo], hackathon: Option[model.Hackathon])(implicit request: Request[AnyContent], lang: Lang)
 
 @if(!sponsors.isEmpty){
 <ul class="thumbnails">
 }
-	@sponsors.map { sponsor =>
+	@sponsors.map { s =>
 		<li class="span3">
 			<div class="thumbnail">
 			@defining("http://placehold.it/260x180" )  { placeholder =>
-				<img src="@sponsor.logoUrl.getOrElse{@placeholder}" />
+				<img src="@s.logo.map(l => l.url).getOrElse{@placeholder}" />
 				}
 				<div class="caption">
-					<h4>@sponsor.name
-						<small>@sponsor.title</small>
+					<h4>@s.sponsor.name
+						<small>@s.sponsor.title</small>
 					</h4>
-					<p>@sponsor.description</p>
+					<p>@s.sponsor.description</p>
 					<p>
-						@sponsor.hackathon.map { hackathon =>
-						<a class="btn" href="@routes.Sponsor.viewH(hackathon.id, sponsor.id)">@Messages("global.readMore")</a>
+						@hackathon.map { hackathon =>
+						<a class="btn" href="@routes.Sponsor.viewH(hackathon.id, s.sponsor.id)">@Messages("global.readMore")</a>
 						}.getOrElse {
-						<a class="btn" href="@routes.Sponsor.view(sponsor.id)">@Messages("global.readMore")</a>
+						<a class="btn" href="@routes.Sponsor.view(s.sponsor.id)">@Messages("global.readMore")</a>
 						}
 					</p>
 				</div>					

@@ -1,4 +1,4 @@
-@(sponsors: Seq[model.Sponsor], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(sponsors: Seq[model.dto.SponsorWithLogo], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import tags._
@@ -16,8 +16,8 @@
 		</div>
 
 		@flashing("sponsors.status")
-			
-		@list(sponsors)
+	
+		@list(sponsors, None)
 
 		@footer(true)
 

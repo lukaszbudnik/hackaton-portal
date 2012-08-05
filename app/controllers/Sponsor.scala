@@ -1,5 +1,6 @@
 package controllers
 
+
 import java.io.FileInputStream
 import org.squeryl.PrimitiveTypeMode.__thisDsl
 import org.squeryl.PrimitiveTypeMode.long2ScalarLong
@@ -30,9 +31,29 @@ import plugins.cloudimage.CloudImageService
 import plugins.cloudimage.CloudImageSuccessResponse
 import plugins.use
 import plugins.cloudimage.TransformationProperty
+import model.dto.SponsorWithLogo
+import model.Resource
+
 
 object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
 
+  private lazy val cloudImageService = use[CloudImagePlugin].cloudImageService
+  
+  /* Transformation properties for displaying a sponsor logo
+   * We try to resize the image according to the predefined configuration (see application.conf) proportionally so that
+   * the image fits into defined boundaries 
+   */
+  private lazy val SPONSOR_LOGO_TRANSFORMATION_PROPS = Map[TransformationProperty.Value, String] (
+    TransformationProperty.WIDTH -> Play.current.configuration.getString("sponsors.logo.maxwidth").getOrElse(""),
+    TransformationProperty.HEIGHT -> Play.current.configuration.getString("sponsors.logo.maxheight").getOrElse(""), 
+    TransformationProperty.CROP_MODE -> "c_fit");
+
+  // shortcut for image transformation
+  private def transformLogo(url : String) = {
+    cloudImageService.getTransformationUrl(url, SPONSOR_LOGO_TRANSFORMATION_PROPS)
+  }  
+  
+  
   val sponsorForm = Form(
     mapping(
       "name" -> nonEmptyText,
@@ -42,56 +63,66 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
       "order" -> number,
       "hackathonId" -> optional(longNumber),
       "logoResourceId" -> optional(longNumber),
-      "logoUrl" -> optional(nonEmptyText))(model.Sponsor.apply)(model.Sponsor.unapply))
+      "logoUrl" -> optional(nonEmptyText))
+      // apply
+      ((name,
+        title,
+        description, 
+    	website, 
+    	order, 
+    	hackathonId, 
+    	logoResourceId, 
+    	logoUrl) => new model.dto.SponsorWithLogo( 
+        		new model.Sponsor(name, 
+        		    title, 
+        		    description, 
+        		    website, 
+        		    order, 
+        		    hackathonId, 
+        		    logoResourceId)
+        		   , if (logoUrl.isDefined) Some(new model.Resource(logoUrl.get, "")) 
+        		     else None)
+        )
+       // unapply 		
+       ((sl : SponsorWithLogo) => 
+        		  	Some(sl.sponsor.name
+        		  	    , sl.sponsor.title
+        		  	    , sl.sponsor.description
+        		  	    , sl.sponsor.website
+        		  	    , sl.sponsor.order
+        		  	    , sl.sponsor.hackathonId
+        		  	    , sl.sponsor.logoResourceId
+        		  	    , sl.logo.map(l => transformLogo(l.url))))
+     )  	
 
+
+  
   def uploadError(implicit text : String,  lang : Lang) = toJson(Seq(toJson(Map("error" -> toJson(Messages(text))))))
 
-  lazy val cloudImageService = use[CloudImagePlugin].cloudImageService
-  
-  lazy val SPONSOR_LOGO_TRANSFORMATION_PROPS = Map[TransformationProperty.Value, String] (
-    TransformationProperty.WIDTH -> Play.current.configuration.getString("sponsors.logo.maxwidth").getOrElse(""),
-    TransformationProperty.HEIGHT -> Play.current.configuration.getString("sponsors.logo.maxheight").getOrElse(""), 
-    TransformationProperty.CROP_MODE -> "c_fit");
-          
-
-                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                
   def index = UserAwareAction { implicit request =>
     transaction {   	
-    	Ok(views.html.sponsors.index(model.Sponsor.all.map {
-	        s =>
-	          s.logoUrl = s.logoUrl.map (cloudImageService.getTransformationUrl(_, SPONSOR_LOGO_TRANSFORMATION_PROPS))
-	          s
-	      }, request.user))
+    	Ok(views.html.sponsors.index(model.dto.SponsorWithLogo.portalSponsors, request.user))
     }
   }
 
   def indexH(hid: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.sponsors.indexH(model.Hackathon.lookup(hid), request.user))
+      Ok(views.html.sponsors.indexH(model.Hackathon.lookup(hid), model.dto.SponsorWithLogo.hackathonSponsors(hid), request.user))
     }
   }
 
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.sponsors.view(
-          model.Sponsor.lookup(id) match {
-            case Some(s) =>
-              	s.logoUrl = s.logoUrl.map (cloudImageService.getTransformationUrl(_, SPONSOR_LOGO_TRANSFORMATION_PROPS))
-              	Some(s)
-            case _ => None
-      }, request.user))
+      Ok(views.html.sponsors.view(model.dto.SponsorWithLogo.lookup(id) , request.user))
     }
   }
 
   def viewH(hid: Long, id: Long) = UserAwareAction { implicit request =>
     transaction {
-      val sponsor = model.Sponsor.lookup(id) match {
-            case Some(s) =>
-              	s.logoUrl = s.logoUrl.map (cloudImageService.getTransformationUrl(_, SPONSOR_LOGO_TRANSFORMATION_PROPS))
-              	Some(s)
-            case _ => None        
-      }
-      val hackathon = sponsor.map { sponsor => sponsor.hackathon }.getOrElse { model.Hackathon.lookup(hid) }
+      val sponsor = model.dto.SponsorWithLogo.lookup(id)
+      val hackathon = model.Hackathon.lookup(hid)
+      
       Ok(views.html.sponsors.viewH(hackathon, sponsor, request.user))
     }
   }
@@ -99,7 +130,7 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
   def create = SecuredAction() { implicit request =>
     transaction {
       helpers.Security.verifyIfAllowed(request.user)
-      val sponsor = new model.Sponsor(None)
+      val sponsor = new model.dto.SponsorWithLogo()
       Ok(views.html.sponsors.create(sponsorForm.fill(sponsor), request.user))
     }
   }
@@ -110,7 +141,7 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
       hackathon.map { h =>
         helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
       }
-      val sponsor = new model.Sponsor(Some(hid))
+      val sponsor = new model.dto.SponsorWithLogo(new model.Sponsor(Some(hid)), None)
       Ok(views.html.sponsors.createH(hackathon, sponsorForm.fill(sponsor), request.user))
     }
   }
@@ -120,10 +151,10 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
       errors => transaction {
         BadRequest(views.html.sponsors.create(errors, request.user))
       },
-      sponsor => transaction {
+      sponsorWithLogo => transaction {
         helpers.Security.verifyIfAllowed(request.user)
-        model.Sponsor.insert(sponsor)
-        Redirect(routes.Sponsor.index).flashing("status" -> "added", "title" -> sponsor.name)
+        model.Sponsor.insert(sponsorWithLogo.sponsor)
+        Redirect(routes.Sponsor.index).flashing("status" -> "added", "title" -> sponsorWithLogo.sponsor.name)
       })
   }
 
@@ -132,20 +163,21 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
       errors => transaction {
         BadRequest(views.html.sponsors.createH(model.Hackathon.lookup(hid), errors, request.user))
       },
-      sponsor => transaction {
+      sponsorWithLogo => transaction {
         model.Hackathon.lookup(hid).map { h =>
           helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
-        }
-        model.Sponsor.insert(sponsor)
-        Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "added", "title" -> sponsor.name)
+        }  
+        model.Sponsor.insert(sponsorWithLogo.sponsor)
+        
+        Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "added", "title" -> sponsorWithLogo.sponsor.name)
       })
   }
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Sponsor.lookup(id).map { sponsor =>
+      model.dto.SponsorWithLogo.lookup(id).map { sponsorWithLogo =>
         helpers.Security.verifyIfAllowed(request.user)
-        Ok(views.html.sponsors.edit(id, sponsorForm.fill(sponsor), request.user))
+        Ok(views.html.sponsors.edit(id, sponsorForm.fill(sponsorWithLogo), request.user))
       }.getOrElse {
         // no sponsor found
         Redirect(routes.Sponsor.view(id)).flashing()
@@ -155,14 +187,15 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
 
   def editH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Sponsor.lookup(id).map { sponsor =>
-        helpers.Security.verifyIfAllowed(Some(hid) == sponsor.hackathonId)(request.user)
-        sponsor.hackathon.map { h =>
+      model.dto.SponsorWithLogo.lookup(id).map { sponsorWithLogo =>
+        helpers.Security.verifyIfAllowed(Some(hid) == sponsorWithLogo.sponsor.hackathonId)(request.user)
+        val hackathon = model.Hackathon.lookup(hid)
+        hackathon.map { h =>
           helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
         }.getOrElse {
           helpers.Security.verifyIfAllowed()(request.user)
         }
-        Ok(views.html.sponsors.editH(sponsor.hackathon, id, sponsorForm.fill(sponsor), request.user))
+        Ok(views.html.sponsors.editH(hackathon, id, sponsorForm.fill(sponsorWithLogo), request.user))
       }.getOrElse {
         // no sponsor found
         Redirect(routes.Sponsor.viewH(hid, id)).flashing()
@@ -175,10 +208,10 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
       errors => transaction {
         BadRequest(views.html.sponsors.edit(id, errors, request.user))
       },
-      sponsor => transaction {
+      sponsorWithLogo => transaction {
         helpers.Security.verifyIfAllowed(request.user)
-        model.Sponsor.update(id, sponsor)
-        Redirect(routes.Sponsor.index).flashing("status" -> "updated", "title" -> sponsor.name)
+        model.Sponsor.update(id, sponsorWithLogo.sponsor)
+        Redirect(routes.Sponsor.index).flashing("status" -> "updated", "title" -> sponsorWithLogo.sponsor.name)
       })
   }
 
@@ -187,17 +220,18 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
       errors => transaction {
         BadRequest(views.html.sponsors.editH(model.Hackathon.lookup(hid), id, errors, request.user))
       },
-      sponsor => transaction {
-        model.Sponsor.lookup(id).map { sponsor =>
-          helpers.Security.verifyIfAllowed(Some(hid) == sponsor.hackathonId)(request.user)
-          sponsor.hackathon.map { h =>
+      sponsorWithLogo => transaction {
+        model.dto.SponsorWithLogo.lookup(id).map { sponsorWithLogo =>
+          helpers.Security.verifyIfAllowed(Some(hid) == sponsorWithLogo.sponsor.hackathonId)(request.user)
+          val hackathon = model.Hackathon.lookup(hid)
+          hackathon.map { h =>
             helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
           }.getOrElse {
             helpers.Security.verifyIfAllowed(request.user)
           }
         }
-        model.Sponsor.update(id, sponsor)
-        Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "updated", "title" -> sponsor.name)
+        model.Sponsor.update(id, sponsorWithLogo.sponsor)
+        Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "updated", "title" -> sponsorWithLogo.sponsor.name)
       })
   }
 
@@ -224,6 +258,12 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
     Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "deleted")
   }
 
+  private def logoDetailsAsJson(url : String, resourceId : Long) = {
+    toJson(Seq(JsObject(List(
+		            "url" -> JsString(transformLogo(url)),
+		            "resourceId" -> JsNumber(resourceId)))))
+  }
+  
   def uploadLogo = UserAwareAction(parse.multipartFormData) { implicit request =>
     var temporaryHandle = request.body.file("files").get
     val temporaryFile = temporaryHandle.ref.file
@@ -234,37 +274,35 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
     in.close()
     
     val maxSize = Play.current.configuration.getString("sponsors.logo.maxsize").getOrElse("0").toLong * 1024
-
-    if(bytes.length > maxSize) {
-      Ok(uploadError("js.fileupload.filetoobig", lang))
-    } else {
+    
+	{
+		if(bytes.length > maxSize) {
+	  		Ok(uploadError("js.fileupload.filetoobig", lang))
+		 } else {
 	
-	    val filename = temporaryHandle.filename
-	    val response = cloudImageService.upload(filename, bytes)
-
-	    response match {
-	      case success: CloudImageSuccessResponse =>
-	        transaction {
-	          val resource = model.Resource(success.url, success.publicId);
-	          model.Resource.insert(resource)
-	          val result = Ok(toJson((Seq(JsObject(List(
-	            "url" -> JsString(cloudImageService.getTransformationUrl(resource.url, SPONSOR_LOGO_TRANSFORMATION_PROPS)),
-	            "resourceId" -> JsNumber(resource.id)))))))
-	          result.withHeaders(CONTENT_TYPE -> "text/plain")
-	        }
-	      case error: CloudImageErrorResponse =>
-	        Logger.debug("Sponsor - cloudinaryService - error: " + error.message)
-	        Ok(uploadError("fileupload.server.error", lang)).withHeaders(CONTENT_TYPE -> "text/plain")
-	    }
-    }
+		    val filename = temporaryHandle.filename
+		    val response = cloudImageService.upload(filename, bytes)
+	
+		    response match {
+		      case success: CloudImageSuccessResponse =>
+		        transaction {
+		          val resource = model.Resource(success.url, success.publicId);
+		          model.Resource.insert(resource)
+		          Ok(logoDetailsAsJson(resource.url, resource.id))
+		        }
+		      case error: CloudImageErrorResponse =>
+		        Logger.debug("Sponsor - cloudinaryService - error: " + error.message)
+		        Ok(uploadError("fileupload.server.error", lang))
+		    }
+		 }
+    }.withHeaders(CONTENT_TYPE -> "text/plain")
   }
 
   def getLogoDetails(id: Long) = UserAwareAction { implicit request =>
     transaction {
-      val r = model.Resource.lookup(id).get
-      Ok(JsArray(Seq(JsObject(List(
-        "url" -> JsString(cloudImageService.getTransformationUrl(r.url, SPONSOR_LOGO_TRANSFORMATION_PROPS)),
-        "resourceId" -> JsNumber(r.id))))))
+      Ok(model.Resource.lookup(id).map {
+    	r =>  logoDetailsAsJson(r.url, r.id)  
+      }.get)
     }
   }
 }
