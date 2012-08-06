@@ -14,8 +14,7 @@
     <div class="container">
 
 		@hackathon.map { hackathon =>
-
-		  	<div>
+		  	<div class="page-header">
 				<h1>@hackathon.subject
 					<small>@Messages("hackathons.hackathonStatus." + hackathon.status)</small>
 					@user.map { user =>
