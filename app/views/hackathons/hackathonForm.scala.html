@@ -36,6 +36,12 @@
 	    '_showConstraints -> false
 	)
 	
+	@textarea(
+	    hackathonForm("description"),
+	    '_label -> Messages("hackathons.description.label"),
+	    '_showConstraints -> false
+	)
+	
     @select(
 	    hackathonForm("status"),
 	    model.HackathonStatus.values.map{ s => s.toString -> s.toString}.toSeq,

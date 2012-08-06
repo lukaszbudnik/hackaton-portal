@@ -38,6 +38,7 @@ CREATE TABLE hackathons (
     id integer NOT NULL DEFAULT nextval('hackathon_id_seq'),
     creation_timestamp timestamp NOT NULL DEFAULT now(),
     date timestamp,
+    description text,
     subject varchar(255),
     status integer NOT NULL,
     

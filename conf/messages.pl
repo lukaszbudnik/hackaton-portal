@@ -99,6 +99,7 @@ hackathons.notFound = Hackaton nie znaleziony
 hackathons.subject.label = Temat
 hackathons.status.label = Status
 hackathons.date.label = Data
+hackathons.description.label = Opis
 hackathons.organiser.label = Organizator
 hackathons.location.label = Miejsce
 hackathons.view.title = Hackaton

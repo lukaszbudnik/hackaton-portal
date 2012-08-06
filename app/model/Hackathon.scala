@@ -16,13 +16,14 @@ import org.squeryl.dsl.CompositeKey2
 case class Hackathon(subject: String,
   status: HackathonStatus.Value,
   date: Date,
+  description: String,
   @Column("organiser_id") organiserId: Long,
   @Column("location_id") locationId: Long,
   @(Transient @field) var locationName: String) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  def this() = this("", HackathonStatus.Planning, new Date(), 0, 0, "") // need for status enumeration
-  def this(organiserId: Long) = this("", HackathonStatus.Planning, new Date(), organiserId, 0, "")
+  def this() = this("", HackathonStatus.Planning, new Date(), "", 0, 0, "") // need for status enumeration
+  def this(organiserId: Long) = this("", HackathonStatus.Planning, new Date(), "", organiserId, 0, "")
 
   private lazy val organiserRel: ManyToOne[User] = Hackathon.organiserToHackathons.right(this)
   private lazy val locationRel: ManyToOne[Location] = Hackathon.locationToHackathons.right(this)
@@ -103,6 +104,7 @@ object Hackathon extends Schema {
           h.subject := hackathon.subject,
           h.status := hackathon.status,
           h.organiserId := hackathon.organiserId,
+          h.description := hackathon.description,
           h.date := hackathon.date,
           h.locationId := hackathon.locationId))
   }

@@ -34,6 +34,7 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
       "subject" -> nonEmptyText,
       "status" -> enum(model.HackathonStatus),
       "date" -> date(Messages("global.dateformat")),
+      "description" -> nonEmptyText,
       "organizerId" -> longNumber,
       "locationId" -> longNumber,
       "locationName" -> nonEmptyText)(model.Hackathon.apply)(model.Hackathon.unapply))
