@@ -25,7 +25,10 @@
   					<dd>@tags.dateFormat(hackathon.date)</dd>
 
   				<dt>@Messages("hackathons.organiser.label")</dt>
-  					<dd>@hackathon.organiser.name</dd>
+  					<dd>@if(hackathon.organiser.avatarUrl) { 
+						<img src="@hackathon.organiser.avatarUrl" alt="@hackathon.organiser.name" height="40px" width="40px" />    				
+					} 
+					@hackathon.organiser.name</dd>
 
   			</dl>
 		</div>
