@@ -42,6 +42,27 @@
 		@Html(hackathon.description)
 	</div>
 	
+	<div>
+		
+		@Option(hackathon.members).filterNot(_.isEmpty).map { members =>
+			<h2>@Messages("hackathons.members.label") 
+				<small>@Messages("global.total"): @hackathon.members.size</small>
+			</h2>
+			<ul style="list-style:none;">
+				@members.map { member =>
+				<li>@if(member.avatarUrl) { 
+						<img src="@member.avatarUrl" alt="@member.name" height="40px" width="40px" />    				
+					}
+					@member.name
+				</li>
+				}
+			</ul>
+		}.getOrElse {
+    	    <h3>@Messages("hackathons.noMembers")</h3>
+	    }
+		
+	</div>
+	
 	<p>&nbsp;</p>
     
   }
