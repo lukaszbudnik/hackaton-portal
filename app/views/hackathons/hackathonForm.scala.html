@@ -1,4 +1,4 @@
-@(hackathonForm: Form[model.Hackathon], action: play.api.mvc.Call, location: Option[model.Location], actionMessage: String)(implicit request: Request[AnyContent], lang: Lang)
+@(hackathonForm: Form[model.dto.HackathonWithLocations], action: play.api.mvc.Call, actionMessage: String)(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -6,9 +6,11 @@
 @implicitFieldConstructor = @{ FieldConstructor(forms.twitterBootstrapInput.f) }
 
 <script type="text/javascript">
-	new HackathonLocations({ findLocationAction : '/locations/find',
+ new HackathonLocations({ findLocationAction : '/locations/find',
 		createLocationAction: '@routes.Location.create',
 		saveLocationAction: '@routes.Location.save',
+		addHackathonLocationAction : '@routes.Hackathon.addLocation',
+		deleteHackathonLocationAction : '/hackathons/deleteLocation/',
 		noMatchFoundText : '@Messages("locations.nomatchfound")'
 	});
 </script>
@@ -21,14 +23,8 @@
 	    '_showConstraints -> false
 	)
 	
-	@inputText(
-	    hackathonForm("locationName"),
-	    '_label -> Messages("hackathons.location.label"),
-	    '_showConstraints -> false,
-	    'autocomplete -> "off"
-	)
-
-    @forms.hidden(field = hackathonForm("locationId"))    
+	@locationsContainer(hackathonForm)
+ 
     
 	@forms.inputDate(
 	    hackathonForm("date"),
@@ -51,6 +47,7 @@
     
 	@forms.hidden(hackathonForm("organizerId"))
 	
+
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
         <a href="@routes.Hackathon.index" class="btn">@Messages("global.cancel")</a>

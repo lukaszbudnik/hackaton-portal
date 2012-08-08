@@ -20,7 +20,7 @@ class HackathonSpec extends Specification {
 
           hackathonDb.isEmpty must beFalse
           
-          hackathonDb.get.location.fullAddress must not beNull
+         // hackathonDb.get.location.fullAddress must not beNull
         }
       }
     }

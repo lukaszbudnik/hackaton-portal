@@ -13,33 +13,31 @@ initialize = () ->
 
     google.maps.event.addListenerOnce(map, 'tilesloaded', addMarkers(map, markerImages))
 
-hackathonDescription = (subject, date, city, fullAddress, id) ->
-	"<b>#{subject}</b>  (#{date}) <br/>
-	#{city} #{fullAddress}<br/>
-	&raquo;  <a href=\"/hackathons/#{id}\">#{Messages('js.infobubble.more')}</a>"  
-	
 addMarkers = (map, markerImages) ->
     $.getJSON('/hackathons.json', (data) ->
         latlngbounds = new google.maps.LatLngBounds()
-        $.each(data, (key, val) ->
-            latLng = new google.maps.LatLng(val.location.latitude, val.location.longitude);
-            marker = new google.maps.Marker(position: latLng, map: map, icon: markerImages[val.status])
-            latlngbounds.extend(latLng)
-            infoBubble = new InfoBubble({map: map, 
-            content:  hackathonDescription(val.subject, val.date,
-             val.location.city, val.location.fullAddress, 
-             val.id)
-            shadowStyle: 1,
-            minHeight: 70,
-            minWidth: 230,
-            arrowPosition: 30,
-            padding: 15,
-            arrowSize: 6
-            })
+        $.each(data, (key, hInfo) ->
+        	i = 0
+        	for lc in hInfo.locations
+	            latLng = new google.maps.LatLng(lc.latitude, lc.longitude)
+	            marker = new google.maps.Marker(position: latLng, map: map, icon: markerImages[hInfo.status])
+	            latlngbounds.extend(latLng)
+	            infoBubble = new InfoBubble({map: map, 
+	            content:  tmpl("hackathonDescTmpl", {idx : i, h : hInfo, map : map}),
+	            shadowStyle: 1,
+	            minHeight: 70,
+	            minWidth: 230,
+	            arrowPosition: 30,
+	            padding: 15,
+	            arrowSize: 6
+	            })
+	            i++
+	            ((m, b) -> 
+	            	google.maps.event.addListener(m, 'click', () ->
+	            		b.open(map, m) if !b.isOpen()
+	            	)
+	            )(marker, infoBubble)
                       
-            google.maps.event.addListener(marker, 'click', () ->
-            	infoBubble.open(map, marker) if !infoBubble.isOpen()
-            )
         )
         map.fitBounds(latlngbounds)
     )

@@ -1,34 +1,89 @@
 package controllers
 
+import java.text.SimpleDateFormat
 import org.squeryl.PrimitiveTypeMode.transaction
+import core.LangAwareController
 import helpers.Forms.enum
+import model.dto.HackathonWithLocations
 import play.api.data.Forms.date
+import play.api.data.Forms.list
+import play.api.data.Forms.of
 import play.api.data.Forms.longNumber
 import play.api.data.Forms.mapping
+import play.api.data.Forms.text
 import play.api.data.Forms.nonEmptyText
 import play.api.data.Form
+import play.api.i18n.Messages
 import play.api.libs.json.Json.toJson
+import play.api.libs.json.JsValue
 import play.api.mvc.Action
 import play.api.mvc.Controller
-import core.LangAwareController
-import play.api.i18n.Messages
+import scala.collection.mutable.ListBuffer
+import play.api.Logger
+
 
 object Hackathon extends LangAwareController with securesocial.core.SecureSocial {
 
+  private def hackathonWithLocations2Json(h : model.dto.HackathonWithLocations) : JsValue  = {
+    
+    toJson(Map(
+      "id" -> toJson(h.hackathon.id),
+      "subject" -> toJson(h.hackathon.subject),
+      "status" -> toJson(h.hackathon.status.id.toString),
+      "date" -> toJson(new SimpleDateFormat(Messages("global.dateformat")).format(h.hackathon.date)),
+      "locations" -> toJson(h.locations.map {
+    	  l => toJson(Map(
+    	  	"id" -> toJson(l.id),
+    	  	"city" -> toJson(l.city),
+    	  	"country" -> toJson(l.country),
+    	  	"fullAddress" ->toJson(l.fullAddress),
+    	  	"name" -> toJson(l.name),
+    	  	"postalCode" -> toJson(l.postalCode),
+    	  	"latitude" -> toJson(l.latitude),
+    	  	"longitude" -> toJson(l.longitude)
+        ))}.toSeq )))
+	 
+  }
+
   def hackathonsJson = Action {
     transaction {
-      val hackathons = model.Hackathon.all.toList
-      Ok(toJson(hackathons))
+      val hackathons = model.dto.HackathonWithLocations.all
+ 
+      Ok(toJson(hackathons.map {
+        hWl => hackathonWithLocations2Json(hWl)
+      }.toSeq))
     }
   }
   
   def hackathonJson(id: Long) = Action {
     transaction {
-      val hackathon = model.Hackathon.lookup(id)
-      Ok(toJson(hackathon.get))
+      Ok(model.dto.HackathonWithLocations.lookup(id) match {
+        case Some(h)  =>
+          	  hackathonWithLocations2Json(h)
+        case _ =>
+        	toJson("")
+      }) 
     }
   }
 
+  
+ 
+  val locationsSubForm = Form(
+	  "locations" -> list(mapping(
+	          "id" -> longNumber,
+	          "name" -> text,
+	          "city" -> text,
+	          "country" -> text,
+	          "fullAddress" -> text)
+	          // apply location
+		          ((id, name, city, country, fullAddress) => 
+		                new model.Location(id, country, city,  "", fullAddress, name, 0, 0))
+		          // unapply location
+		          ((l : model.Location) => 
+		            Some(l.id , l.name, l.city, l.country, l.fullAddress)))
+	          )    
+  
+  
   val hackathonForm = Form(
     mapping(
       "subject" -> nonEmptyText,
@@ -36,9 +91,61 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
       "date" -> date(Messages("global.dateformat")),
       "description" -> nonEmptyText,
       "organizerId" -> longNumber,
-      "locationId" -> longNumber,
-      "locationName" -> nonEmptyText)(model.Hackathon.apply)(model.Hackathon.unapply))
+      "locations" -> list(mapping(
+          "id" -> longNumber,
+          "name" -> nonEmptyText,
+          "city" -> nonEmptyText,
+          "country" -> nonEmptyText,
+          "fullAddress" -> nonEmptyText)
+          // apply location
+	          ((id, name, city, country, fullAddress) => 
+	                new model.Location(id, country, city, "" , fullAddress, name, 0, 0))
+	          // unapply location
+	          ((l : model.Location) => 
+	            Some(l.id, l.name , l.city, l.country, l.fullAddress)))
+          )
+       // apply HackathonWithLocations
+      ((subject, status, date, description, organizerId, locations) => 
+        new HackathonWithLocations(
+            new model.Hackathon(subject, status, date, description, organizerId), locations)
+        ) // unapply HackathonWithLocations
+      ((hWl : HackathonWithLocations) => 
+        Some(hWl.hackathon.subject , hWl.hackathon.status , hWl.hackathon.date, hWl.hackathon.description, hWl.hackathon.organiserId , hWl.locations.toList)
+            )
+      )
 
+  
+      
+  def addLocation = UserAwareAction { implicit request =>
+    val lb = ListBuffer[model.Location]()
+	locationsSubForm.bindFromRequest.fold(
+	  				errors => {
+	  				 	Logger.error("deleteLocation - should never happen!")
+	  				}
+	  				,locations  => transaction {
+					   lb ++= locations
+					   lb += new model.Location()		
+			   }
+	  		)  	
+    Ok(views.html.hackathons.locationsContainer(
+       hackathonForm.fill(HackathonWithLocations(new model.Hackathon(), lb.toList))))	  		
+  }
+      
+  def deleteLocation(idx : Int) = UserAwareAction { implicit request =>
+  	val lb = ListBuffer[model.Location]()
+	locationsSubForm.bindFromRequest.fold(
+		errors => {
+		 	Logger.error("deleteLocation - should never happen!")
+		}
+		,locations  => transaction {
+		   lb ++= locations
+		   lb.remove(idx)
+	   }
+	)
+	   Ok(views.html.hackathons.locationsContainer(
+	       hackathonForm.fill(HackathonWithLocations(new model.Hackathon(), lb.toList))))
+  }
+      
   def index = UserAwareAction { implicit request =>
     transaction {
       Ok(views.html.hackathons.index(model.Hackathon.all, request.user))
@@ -59,30 +166,34 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
 
   def create = SecuredAction() { implicit request =>
     transaction {
-      val hackathon = new model.Hackathon(request.user.hackathonUserId)
-      Ok(views.html.hackathons.create(hackathonForm.fill(hackathon), None, request.user))
+    
+      val hackathon = new model.dto.HackathonWithLocations(new model.Hackathon(request.user.hackathonUserId)
+      , List[model.Location](new model.Location)) 
+      Ok(views.html.hackathons.create(hackathonForm.fill(hackathon), request.user))
     }
   }
 
   def save = SecuredAction() { implicit request =>
     hackathonForm.bindFromRequest.fold(
-      errors => transaction {
-        val location: Option[model.Location] = hackathonForm.data.get("locationId")
-          .map(l => model.Location.lookup(l.toLong).get)
-        BadRequest(views.html.hackathons.create(errors, location, request.user))
+      errors => transaction { 
+        BadRequest(views.html.hackathons.create(errors, request.user))
       },
-      hackathon => transaction {
-        model.Hackathon.insert(hackathon)
-        Redirect(routes.Hackathon.index).flashing("status" -> "added", "title" -> hackathon.subject)
+      hackathonWithLocations => transaction {
+        val newH = model.Hackathon.insert(hackathonWithLocations.hackathon)
+        hackathonWithLocations.locations.map {
+        	location =>
+        	  newH.addLocation(location)
+        }
+        Redirect(routes.Hackathon.index).flashing("status" -> "added", "title" -> newH.subject)
       })
   }
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Hackathon.lookup(id).map { hackathon =>
-        helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
-     	hackathon.locationName = hackathon.location.name
-        Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathon), model.Location.lookup(hackathon.locationId), request.user))
+      model.dto.HackathonWithLocations.lookup(id).map { hackathonWithL =>
+        helpers.Security.verifyIfAllowed(hackathonWithL.hackathon.organiserId)(request.user)
+     
+        Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathonWithL),  request.user))
       }.getOrElse {
         // no hackathon found
         Redirect(routes.Hackathon.view(id)).flashing()
@@ -93,16 +204,20 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
   def update(id: Long) = SecuredAction() { implicit request =>
     hackathonForm.bindFromRequest.fold(
       errors => transaction {
-        val location: Option[model.Location] = hackathonForm.data.get("locationId")
-          .map(l => model.Location.lookup(l.toLong).get)
-        BadRequest(views.html.hackathons.edit(id, errors, location, request.user))
+        BadRequest(views.html.hackathons.edit(id, errors, request.user))
       },
-      hackathon => transaction {
+      hackathonWithL => transaction {
         model.Hackathon.lookup(id).map { hackathon =>
           helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
-        }
-        model.Hackathon.update(id, hackathon)
-        Redirect(routes.Hackathon.index).flashing("status" -> "updated", "title" -> hackathon.subject)
+          model.Hackathon.update(id, hackathonWithL.hackathon)
+          hackathon.deleteLocations()
+          hackathonWithL.locations.map {
+							            location => 
+							              	hackathon.addLocation(location)
+          }
+      }
+        
+        Redirect(routes.Hackathon.index).flashing("status" -> "updated", "title" -> hackathonWithL.hackathon.subject)
       })
   }
 

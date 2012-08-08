@@ -1,0 +1,52 @@
+@(hackathonForm: Form[model.dto.HackathonWithLocations])(implicit request: Request[AnyContent], lang: Lang)
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@implicitFieldConstructor = @{ FieldConstructor(forms.twitterBootstrapInput.f) }
+
+   <div id="locationsContainer">
+   
+        @maxLocations = @{play.api.Play.current.configuration.getInt("hackathons.maxlocations").getOrElse(1)}
+		@views.forms.repeatWithIndex(hackathonForm("locations"), min = 1) { (idx, endIdx, location) =>
+		  <div class="locationContainer" data-index="@idx">
+			@locationItem(
+				    location("name"),
+				    '_dataIndex -> idx,
+				    '_showAdd -> (idx == endIdx && idx + 1 < maxLocations),
+				    '_showDelete -> (idx != 0),    
+				    '_label -> (Messages("hackathons.location.label") + " " + (idx + 1)),
+				    '_showConstraints -> false,
+				    'autocomplete -> "off"
+				)(implicitFieldConstructor, lang)
+				
+		        @forms.hidden(field = location("id"))
+		        @forms.hidden(field = location("fullAddress"))  
+		        @forms.hidden(field = location("city"))
+		        @forms.hidden(field = location("country"))
+		    </div>      
+		}
+	</div>
+	
+<!-- 	
+
+format address (idxOfContainer, data : array)
+formatujemy kontenery gdy:
+1) przeladujemy strone,
+2) przeladujemy lokacje
+3) wybierzemy wartosc z typeahead
+4) dodamy nowa lokalizacje
+
+1) po zakonczeniu ladowania szukamy locationContainer i dla kazdego indeksu locationContainer wolamy formatAdditional
+2) po przeladowaniu lokazji szukamy locationContainer i wolamy format
+3) po wybraniu lokacji szukamy locationContainer i przeladowujemy jedno
+4) po dodaniu lokalizacji szukamy locationContainer i przeladowujemy.
+
+Na wejsciu mamy albo jeden locationContainer albo wiele.
+
+findLocationContainer(
+
+
+
+
+-->

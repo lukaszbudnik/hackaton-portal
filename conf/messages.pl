@@ -110,7 +110,7 @@ hackathons.edit.title = Edytuj hackaton
 hackathons.status.added = Hackaton %s dodany pomyślnie!
 hackathons.status.updated = Hackaton %s zaktualizowany pomyślnie!
 hackathons.status.deleted = Hackaton usunięty
-
+hackathons.infobubble.otherlocations = Pozostałe lokalizacje:
 locations.title = Lokalizacja
 locations.addLocation = Dodaj lokalizację
 locations.name.label = Nazwa

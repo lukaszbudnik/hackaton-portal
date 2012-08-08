@@ -2,6 +2,105 @@ class HackathonLocations
   constructor: (@params) ->
   	@init(@params)
   
+  formatAdditionalHelp : (locationContainer) ->
+  	retArr = []
+  	fullAddress = locationContainer.find('[name$=".fullAddress"]').val()
+  	retArr.push(fullAddress) if fullAddress
+  	
+  	city = locationContainer.find('[name$=".city"]').val()
+  	retArr.push(city) if city
+  	
+  	country = locationContainer.find('[name$=".country"]').val()
+  	retArr.push(country) if country
+  	
+  	if retArr.length > 0
+  		text = retArr.join(", ")
+  		locationContainer.find('.help-block *:not(:has("*"))').text(text)
+  
+  locationContainerOf : (element) ->
+  	element.closest('.locationContainer')
+  
+  isLocationContainerSet : (container) ->
+  	container.find('[name$=".id"]').val() != '0'
+  	
+  rememberName : (container) ->
+  	container.attr('old-name', container.find('[name$=".name"]').val())
+  
+  revertName : (container) ->
+  	container.find('[name$=".name"]').val(container.attr('old-name'))
+  	
+  setCurrentValue : (container, value) ->
+  	container.data('current-value', value)
+  
+  getCurrentValue : (container) ->
+  	container.data('current-value');
+  	
+  
+  locationContainerByIndex : (idx) ->
+  	$('#locationsContainer .locationContainer[data-index="' + idx + '"]')
+
+  initTypeahead : () ->
+    thisObj = this
+    params = this.params
+    lsc = $('#locationsContainer')
+    lsc.find('.locationContainer').each () ->
+    	thisObj.formatAdditionalHelp($(this))
+    	thisObj.rememberName($(this))
+    	
+    inputs = lsc.find('[name$=".name"]')
+    inputs.typeahead
+    	delay : 400
+    	,sorter : (items) ->
+    		items
+    	, source : (typeahead, query) ->
+    		term = $.trim query
+    		$.getJSON params.findLocationAction
+    			, term : term
+    		, (data) ->
+    			typeahead.process data
+    	, onselect: (item, previous_items) ->
+    		lc = thisObj.locationContainerOf(this.$element)
+    		lc.find('[name$=".id"]').val(item.id)
+    		lc.find('[name$=".city"]').val(item.city)
+    		lc.find('[name$=".country"]').val(item.country)		
+    		lc.find('[name$=".fullAddress"]').val(item.fullAddress)
+    		thisObj.formatAdditionalHelp(lc)
+    		thisObj.rememberName(lc)
+    	, noMatchFoundText: params.noMatchFoundText
+    	, onlookup : (query) ->
+    		thisObj.setCurrentValue(thisObj.locationContainerOf(this.$element), query)
+    	, onblur : () ->
+    		lc = thisObj.locationContainerOf(this.$element)
+    		if thisObj.isLocationContainerSet(lc)
+    			thisObj.revertName(lc)
+    	, onNoMatchFoundClick: () ->
+	    	hlModal = $('.hackathon-location-modal')
+	    	lc = thisObj.locationContainerOf(this.$element)
+	    	hlModal.attr('data-lc-id', lc.attr('data-index'))
+	    	$('.hackathon-location-modal').modal 'show'
+	    	$('#locationBox').load params.createLocationAction, () ->
+	    		$('#locationForm').find('#name').val(thisObj.getCurrentValue(lc))
+	    	thisObj.initLocationsMap()
+
+	    	
+	    
+	    , render: (items) ->
+	    	that = this
+	    	items = $(items).map (i, item) ->
+	    		i = $(that.options.item).attr('data-value', JSON.stringify item)
+	    		if item.nomatchfound
+	    			i.find('a').html item.value
+	    		else
+	    			i.find('a').html(that.highlighter(item.value)).append($("<p>")
+	    			.addClass("hackathon-typeahead-address")
+	    			.html('('+ that.highlighter(item.fullAddress) + ', ' + that.highlighter(item.city) + ', ' + that.highlighter(item.country) + ')'))
+	    		i[0]
+	    	items.first().addClass('active')
+	    	this.$menu.html(items)
+	    	this
+	    , matcher : () ->
+	    	true
+  
   initLocationsMap : () ->
   	
   	positionMarker = (latLng) ->
@@ -53,69 +152,59 @@ class HackathonLocations
     	positionMarker(new google.maps.LatLng(currentLat, currentLng))
     else
     	if navigator.geolocation
-    		navigator.geolocation.getCurrentPosition(successAutoGeoLocation, errorAutoGeoLocation)  	
-  init : (params) ->
-  	that = this
-  	$(document).ready () ->
-  		$('#submitLocation').click () ->
-  			$.ajax
-  				type: 'POST',
-  				url: params.saveLocationAction,
-  				data: $('#locationForm').serialize(),
-  				dataType : 'html',
-  				complete : (xhr, textStatus) ->
+    		navigator.geolocation.getCurrentPosition(successAutoGeoLocation, errorAutoGeoLocation)
+    		
+  initLocationButtons : () ->
+  		params = this.params
+  		thisObj = that = this
+  		
+	  	$('#locationsContainer').on 'click', '.delete-hackathon-location', (evt) ->
+	  		idx = thisObj.locationContainerOf($(this)).attr('data-index')
+	  		target = $(evt.delegateTarget)
+	  		target.load params.deleteHackathonLocationAction + idx
+	  		, target.find(':input').serializeObject()
+	  		, () ->
+	  			thisObj.initTypeahead()
+	 
+	  	$('#locationsContainer').on 'click', '.add-hackathon-location', (evt) ->
+	  		target = $(evt.delegateTarget)
+	  		target.load params.addHackathonLocationAction
+	  		, target.find(':input').serializeObject()
+	  		, () ->
+	  			thisObj.initTypeahead()
+	  						
+	  	$('#submitLocation').click () ->
+	  		$.ajax
+	  			type: 'POST',
+	  			url: params.saveLocationAction,
+	  			data: $('#locationForm').serialize(),
+	  			dataType : 'html',
+	  			complete : (xhr, textStatus) ->
+	  		
+  					responseText = xhr.responseText
+  					xhr.done((r) ->
+  						responseText = r)
   					if textStatus is 'error'
-  						$('#locationBox').html($("<div>").append(xhr.responseText).html())
-  						HackathonLocations.prototype.initLocationsMap.call(this)
+
+  						$('#locationBox').html($("<div>").append(responseText).html())
+  						that.initLocationsMap()
   					else
-  						$('#cancelLocation').trigger('click')
-  						locationName = $('#locationName')
-  						locationName.val($('#locationForm').find('#name').val())
-  						locationName.typeahead('lookup')
-  			false
-  				
-  		$('#hackathon-form').click () ->
-  			if $('#locationId').val is '0'
-  				$('#locationName').val ""
-  		$('#locationName').typeahead
-  			
-  			sorter : (items) -> 
-  				items
-  			
-  			, source : (typeahead, query) ->
-  				term = $.trim query
-  				$.getJSON params.findLocationAction
-  					, term : term
-  				, (data) ->
-  					typeahead.process data
-  			
-  			, onselect: (item, previous_items) ->
-  				$('#locationId').val item.id
-  				
-  			, noMatchFoundText: params.noMatchFoundText
-  			
-  			, onNoMatchFoundClick: () ->
-  				$('.hackathon-location-modal').modal 'show'
-  				$('#locationBox').load params.createLocationAction
-  				HackathonLocations.prototype.initLocationsMap.call(this)
-  				
-  			, render: (items) ->
-  				that = this
-  				items = $(items).map (i, item) ->
-  					i = $(that.options.item).attr('data-value', JSON.stringify item)
-  					if item.nomatchfound
-  						i.find('a').html item.value
-  					else
-  						i.find('a').html(that.highlighter(item.value)).append($("<p>")
-  						.addClass("hackathon-typeahead-address")
-  						.html('('+ that.highlighter(item.fullAddress) + ', ' + that.highlighter(item.city) + ', ' + that.highlighter(item.country) + ')'))
-  					i[0]
-  				items.first().addClass('active')
-  				this.$menu.html(items)
-  				this
-  			
-  			, matcher : () ->
-  				true
+  						hlm = $('.hackathon-location-modal')
+  						hlm.modal('hide')
+  						lc = thisObj.locationContainerByIndex(hlm.attr('data-lc-id'))
+  						nameInput = lc.find('[name$=".name"]')
+  						nameInput.val($('#locationForm').find('[name="name"]').val())
+  						nameInput.typeahead('lookup')
+	  		false
+
+
+  init : (params) ->
+  	thisObj = this
+  	$(document).ready () ->
+  		thisObj.initLocationButtons()
+  		thisObj.initTypeahead()
+
+	
   
   
   	  

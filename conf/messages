@@ -4,6 +4,7 @@ years = 2012
 error.date = Wrong date
 error.unknown = Unknown error occured
 
+
 fileupload.server.error = Error occured while uploading a file
 js.fileupload.filetoobig = File is too big
 js.fileupload.filetoosmall = File is too small
@@ -122,6 +123,7 @@ hackathons.hackathonStatus.Planning = Planning
 hackathons.hackathonStatus.InProgress = In Progress
 hackathons.hackathonStatus.Finished = Finished
 hackathons.hackathonStatus.Unverified = Unverified
+hackathons.infobubble.otherlocations = Other locations:
 
 locations.title = Locations
 locations.addLocation = Add a location

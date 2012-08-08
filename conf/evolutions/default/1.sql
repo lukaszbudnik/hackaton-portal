@@ -40,15 +40,25 @@ CREATE TABLE hackathons (
     date timestamp,
     description text,
     subject varchar(255),
-    status integer NOT NULL,
-    
+    status integer NOT NULL,  
     organiser_id integer NOT NULL,
-    location_id integer NOT NULL,
-    
     FOREIGN KEY (organiser_id) REFERENCES users(id),
-    FOREIGN KEY (location_id) REFERENCES locations(id),
     PRIMARY KEY (id)
 );
+
+CREATE SEQUENCE hackathon_location_id_seq;
+CREATE TABLE hackathons_locations (
+  id integer NOT NULL DEFAULT nextval('hackathon_location_id_seq'),
+  creation_timestamp timestamp NOT NULL DEFAULT now(),
+  hackathon_id INTEGER NOT NULL,
+  location_id INTEGER NOT NULL,
+	
+  FOREIGN KEY (hackathon_id) REFERENCES hackathons(id) ON DELETE CASCADE,
+  FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE,
+  UNIQUE (hackathon_id, location_id),
+  PRIMARY KEY (id)   
+);
+
 
 CREATE SEQUENCE problem_id_seq;
 CREATE TABLE problems (
@@ -207,6 +217,9 @@ DROP SEQUENCE team_id_seq;
 
 DROP TABLE problems CASCADE;
 DROP SEQUENCE problem_id_seq;
+
+DROP TABLE hackathons_locations;
+DROP SEQUENCE hackathon_location_id_seq;
 
 DROP TABLE hackathons CASCADE;
 DROP SEQUENCE hackathons_id_seq;

@@ -33,7 +33,9 @@
 					  <a class="btn btn-warning pull-right" href="@routes.Hackathon.join(hackathon.id)">@Messages("hackathons.join.label")</a>
 					}
 				</h1>
-            	<p>@hackathon.location.city @hackathon.date</p>
+			
+				<p>@hackathon.date @for((location, idx) <- hackathon.locations.zipWithIndex) {@if(idx >0){, } @location.city}</p>
+			
 			</div>
 			
 		  	<div class="subnav">

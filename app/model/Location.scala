@@ -5,16 +5,19 @@ import org.squeryl.KeyedEntity
 import org.squeryl.Schema
 import org.squeryl.annotations.Column
 
-case class Location(country: String,
+case class Location(id : Long, 
+  country: String,
   city: String,
   @Column("postal_code") postalCode: String,
   @Column("full_address") fullAddress: String,
   name: String,
   latitude: Double,
   longitude: Double) extends KeyedEntity[Long] {
-  val id: Long = 0L
+
   
-   def this() = this("", "", "", "","",  0, 0) // need for status enumeration
+   def this() = this(0, "", "", "", "","",  0, 0) // need for status enumeration
+   def this(id : Long, name : String) = this(0, "", "", "", "", name, 0, 0)
+
 }
 
 object Location extends Schema {

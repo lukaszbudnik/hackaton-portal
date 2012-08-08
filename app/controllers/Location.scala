@@ -19,6 +19,7 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
 
   val locationForm = Form(
     mapping(
+      "id" -> ignored(0L),
       "country" -> nonEmptyText,
       "city" -> nonEmptyText,
       "postalCode" -> nonEmptyText,

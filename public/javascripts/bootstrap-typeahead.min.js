@@ -1,21 +1,3 @@
-/* =============================================================
- * bootstrap-typeahead.js v2.0.0
- * http://twitter.github.com/bootstrap/javascript.html#typeahead
- * =============================================================
- * Copyright 2012 Twitter, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ============================================================ */
 
 !function( $ ){
 
@@ -38,17 +20,26 @@
     this.noMatchFoundObj['nomatchfound'] = 'x';
     this.noMatchFoundObj[this.options.property] = this.options.noMatchFoundText;
     this.onNoMatchFoundClick = this.options.onNoMatchFoundClick
+    this.onlookup = this.options.onlookup || this.onlookup
+    this.onblur = this.options.onblur || this.onblur
     this.minLength = this.options.minLength || this.minLength
+    this.delay = this.options.delay
     this.onselect = this.options.onselect
     this.strings = true
     this.shown = false
+    this.searching = ""
     this.listen()
   }
 
   Typeahead.prototype = {
 
     constructor: Typeahead
-
+  , onlookup : function(query) {
+	  
+  }
+  , onblur : function (elem) {
+	  
+  }
   , select: function () {
       var val = JSON.parse(this.$menu.find('.active').attr('data-value'))
         , text
@@ -97,9 +88,11 @@
         , items
         , q
         , value
-
+        
+     
       this.query = this.$element.val()
-
+      this.onlookup(this.query)  
+ 
       if (typeof this.source == "function") {
         value = this.source(this, this.query)
         if (value) this.process(value)
@@ -112,7 +105,8 @@
       var that = this
         , items
         , q
-
+      
+       
       if (results.length && typeof results[0] != "string")
           this.strings = false
  
@@ -256,7 +250,17 @@
         default:
         if(this.$element.val().length >= this.minLength)  {
         	
-        	this.lookup()
+        	if(this.searching) {
+        		clearTimeout(this.searching)
+        	}
+        	var that = this
+        	this.hide();
+        	this.searching = setTimeout(function() {
+        		if(that.$element.val().length >= that.minLength) {
+        			that.lookup()
+        		}
+        	}, this.delay)
+        	
         } else {
         	this.hide();
         }
@@ -292,6 +296,10 @@
       var that = this
       e.stopPropagation()
       e.preventDefault()
+      if(this.searching) {
+    	  clearTimeout(this.searching)
+      }
+      this.onblur(this);
       setTimeout(function () { that.hide() }, 150)
     }
 
@@ -330,6 +338,7 @@
   , onselect: null
   , property: 'value'
   , minLength: 2
+  , delay : 1000
   }
 
   $.fn.typeahead.Constructor = Typeahead

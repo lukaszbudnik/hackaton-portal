@@ -50,6 +50,12 @@ GET     /hackathons/:id/edit		controllers.Hackathon.edit(id: Long)
 POST    /hackathons/:id/update		controllers.Hackathon.update(id: Long)
 # Delete
 POST    /hackathons/:id/delete		controllers.Hackathon.delete(id: Long)
+
+# Delete location
+POST   /hackathons/deleteLocation/:id controllers.Hackathon.deleteLocation(id:Int)
+# Add location
+POST   /hackathons/addLocation 		 controllers.Hackathon.addLocation
+
 # Join
 GET    	/hackathons/:id/join			controllers.Hackathon.join(id: Long)
 GET    	/hackathons/:id/disconnect		controllers.Hackathon.disconnect(id: Long)

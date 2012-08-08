@@ -17,31 +17,29 @@ case class Hackathon(subject: String,
   status: HackathonStatus.Value,
   date: Date,
   description: String,
-  @Column("organiser_id") organiserId: Long,
-  @Column("location_id") locationId: Long,
-  @(Transient @field) var locationName: String) extends KeyedEntity[Long] {
+  @Column("organiser_id") organiserId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  def this() = this("", HackathonStatus.Planning, new Date(), "", 0, 0, "") // need for status enumeration
-  def this(organiserId: Long) = this("", HackathonStatus.Planning, new Date(), "", organiserId, 0, "")
+  def this() = this("", HackathonStatus.Planning, new Date(),"", 0) // need for status enumeration
+  def this(organiserId: Long) = this("", HackathonStatus.Planning, new Date(), "", organiserId)
 
   private lazy val organiserRel: ManyToOne[User] = Hackathon.organiserToHackathons.right(this)
-  private lazy val locationRel: ManyToOne[Location] = Hackathon.locationToHackathons.right(this)
   private lazy val teamsRel = Team.hackathonToTeams.left(this)
   private lazy val problemsRel = Problem.hackathonToProblems.left(this)
   private lazy val prizeRel = Prize.hackathonToPrizes.left(this)
   private lazy val newsRel = News.hackathonToNews.left(this)
   private lazy val sponsorsRel = Sponsor.hackathonToSponsors.left(this)
   private lazy val membersRel = Hackathon.hackathonsToUsers.left(this)
+  private lazy val locationsRel = Hackathon.hackathonLocations.left(this)
 
   def organiser = organiserRel.head
-  def location = locationRel.head
   def teams = teamsRel.toIterable
   def problems = problemsRel.toIterable
   def prizes = prizeRel.toIterable
   def news = newsRel.toIterable
   def sponsors = from(sponsorsRel)(s => select(s) orderBy (s.order asc)).toSeq
   def members = membersRel.toIterable
+  def locations = locationsRel.toIterable
 
   def hasMember(userId: Long): Boolean = {
     membersRel.exists(u => u.id == userId)
@@ -54,10 +52,23 @@ case class Hackathon(subject: String,
   def addMember(user: User, teamId: Long) = {
     membersRel.associate(user, new HackathonUser(0, 0, Some(teamId)))
   }
-
+  
   def deleteMember(user: User) = {
     membersRel.dissociate(user)
   }
+  
+  def addLocation(location : Location) =  {
+   locationsRel.associate(location) 
+  }
+  
+  def deleteLocations() = {
+   locationsRel.dissociateAll 
+  }
+  
+  def hasLocation(locationId : Long) = {
+   locationsRel.exists(l => l.id == locationId) 
+  }
+  
 }
 
 case class HackathonUser(
@@ -66,6 +77,13 @@ case class HackathonUser(
   @Column("team_id") teamId: Option[Long] = None) extends KeyedEntity[CompositeKey2[Long, Long]] {
   def id = compositeKey(hackathonId, userId)
 }
+
+case class HackathonLocation(
+  @Column("hackathon_id") hackathonId: Long,
+  @Column("location_id") locationId: Long) extends KeyedEntity[CompositeKey2[Long, Long]] {
+  def id = compositeKey(hackathonId, locationId)
+}
+
 
 object HackathonStatus extends Enumeration {
   val Planning = Value(1, "Planning")
@@ -79,8 +97,10 @@ object Hackathon extends Schema {
   on(hackathons)(h => declare(h.id is (primaryKey, autoIncremented("hackathon_id_seq"))))
 
   protected[model] val organiserToHackathons = oneToManyRelation(User.users, hackathons).via((u, h) => u.id === h.organiserId)
-  protected[model] val locationToHackathons = oneToManyRelation(Location.locations, hackathons).via((l, h) => l.id === h.locationId)
-
+  protected[model] val hackathonLocations = manyToManyRelation(hackathons, model.Location.locations, "hackathons_locations")
+  		.via[HackathonLocation](f = (h, l, hl)  => (h.id === hl.hackathonId, l.id === hl.locationId))
+  
+  
   protected[model] val hackathonsToUsers =
     manyToManyRelation(hackathons, User.users, "hackathons_users").
       via[HackathonUser](f = (h, u, hu) => (h.id === hu.hackathonId, u.id === hu.userId))
@@ -97,6 +117,8 @@ object Hackathon extends Schema {
     hackathons.insert(hackathon)
   }
 
+  
+
   def update(id: Long, hackathon: Hackathon): Int = {
     hackathons.update(h =>
       where(h.id === id)
@@ -105,31 +127,12 @@ object Hackathon extends Schema {
           h.status := hackathon.status,
           h.organiserId := hackathon.organiserId,
           h.description := hackathon.description,
-          h.date := hackathon.date,
-          h.locationId := hackathon.locationId))
+          h.date := hackathon.date))
   }
 
   def delete(id: Long): Int = {
     hackathons.deleteWhere(h => h.id === id)
   }
 
-  implicit object HackathonFormat extends Format[Hackathon] {
-    def reads(json: JsValue): Hackathon = new Hackathon()
 
-    def writes(h: Hackathon): JsValue = JsObject(List(
-      "id" -> JsNumber(h.id),
-      "subject" -> JsString(h.subject),
-      "status" -> JsString(h.status.id.toString),
-      "date" -> JsString(new SimpleDateFormat(Messages("global.dateformat")).format(h.date)),
-      "organiserName" -> JsString(h.organiser.name),
-      "location" -> JsObject(List(
-        "id" -> JsNumber(h.location.id),
-        "city" -> JsString(h.location.city),
-        "country" -> JsString(h.location.country),
-        "fullAddress" -> JsString(h.location.fullAddress),
-        "name" -> JsString(h.location.name),
-        "postalCode" -> JsString(h.location.postalCode),
-        "latitude" -> JsNumber(h.location.latitude),
-        "longitude" -> JsNumber(h.location.longitude)))))
-  }
 }

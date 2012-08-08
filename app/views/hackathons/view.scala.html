@@ -15,12 +15,13 @@
     <div class="row">
   		<div class="span4">
   			<dl data-hackathon-id="@hackathon.id">
-  				<dt>@Messages("hackathons.location.label")</dt>
-  					<dd>@hackathon.location.name</dd>
-       				<dd>@hackathon.location.fullAddress</dd>
-       				<dd>@hackathon.location.city, @hackathon.location.postalCode</dd>
-  					<dd>@hackathon.location.country</dd>
-
+  				@for((location, idx) <- hackathon.locations.zipWithIndex) {
+  				<dt>@Messages("hackathons.location.label") @(idx + 1)</dt>
+  					<dd>@location.name</dd>
+       				<dd>@location.fullAddress</dd>
+       				<dd>@location.city, @location.postalCode</dd>
+  					<dd>@location.country</dd>
+				}
  				<dt>@Messages("hackathons.date.label")</dt>
   					<dd>@tags.dateFormat(hackathon.date)</dd>
 

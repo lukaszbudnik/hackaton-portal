@@ -1,0 +1,15 @@
+@(field: play.api.data.Field, args: (Symbol,Any)*)(implicit handler: helper.FieldConstructor, lang: play.api.i18n.Lang)
+
+@showAdd = @{args.toMap.get('_showAdd).getOrElse(false)}
+@showDelete = @{args.toMap.get('_showDelete).getOrElse(false)}
+
+
+@helper.input(field, args:_*) { (id, name, value, htmlArgs) =>
+    <input type="text" id="@id" name="@name" value="@value" @toHtmlArgs(htmlArgs)>
+	@if(showDelete.asInstanceOf[Boolean]) {
+		<span class="btn btn-danger delete-hackathon-location" title="Remove location"><i class="icon-remove icon-white"></i></span>
+	}
+	@if(showAdd.asInstanceOf[Boolean]){
+		<span class="btn btn-primary add-hackathon-location" title="Add another location"><i class="icon-plus icon-white"></i></span>
+	}
+}

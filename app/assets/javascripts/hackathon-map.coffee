@@ -19,9 +19,13 @@ initialize = (a) ->
 
 addMarker = (hackathonId, map, markerImages) ->
     $.getJSON('/hackathon.json/' + hackathonId, (data) ->
-        latLng = new google.maps.LatLng(data.location.latitude, data.location.longitude);
-        marker = new google.maps.Marker(position: latLng, map: map, icon: markerImages[data.status])
-        map.setCenter(latLng)
+        latlngbounds = new google.maps.LatLngBounds()
+        for lc in data.locations
+        	latLng = new google.maps.LatLng(lc.latitude, lc.longitude)
+        	latlngbounds.extend(latLng)
+        	marker = new google.maps.Marker(position: latLng, map: map, icon: markerImages[data.status])
+        map.fitBounds(latlngbounds)
+ 			  	
     )
 
 google.maps.event.addDomListener(window, 'load', initialize);
