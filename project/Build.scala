@@ -20,13 +20,5 @@ object ApplicationBuild extends Build {
       "net.databinder" %% "dispatch-json" % "0.8.7"
     )
 
-    val secureSocial = PlayProject(
-        appName + "-securesocial", appVersion, mainLang = SCALA, path = file("modules/securesocial")
-    )
-    val jsMessages = PlayProject(
-	appName + "-jsmessages", appVersion, mainLang = SCALA, path = file("modules/jsmessages")
-    )
-
-    val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(coffeescriptOptions := Seq("bare")
-    ).dependsOn(secureSocial, jsMessages).aggregate(secureSocial, jsMessages)
+    val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(coffeescriptOptions := Seq("bare"))
 }
