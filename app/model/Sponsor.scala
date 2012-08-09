@@ -10,23 +10,18 @@ import org.squeryl.Schema
 import org.squeryl.annotations.Column
 import org.squeryl.dsl.ast.LogicalBoolean
 
-
-
-
-
 case class Sponsor(name: String,
   title: String,
   description: String,
   website: String,
   @Column("sponsor_order") order: Int,
   @Column("hackathon_id") hackathonId: Option[Long],
-  @Column("logo_resource_id") logoResourceId: Option[Long]
-) extends KeyedEntity[Long] {
+  @Column("logo_resource_id") logoResourceId: Option[Long]) extends KeyedEntity[Long] {
   val id: Long = 0L
 
   def this(hackathonId: Option[Long]) = this("", "", "", "", 1, hackathonId, None)
   def this() = this(None)
-  
+
   private lazy val hackathonRel: ManyToOne[Hackathon] = Sponsor.hackathonToSponsors.right(this)
   private lazy val logoResourceRel: ManyToOne[Resource] = Sponsor.resourceToSponsors.right(this)
 
@@ -41,19 +36,17 @@ object Sponsor extends Schema {
   protected[model] val hackathonToSponsors = oneToManyRelation(Hackathon.hackathons, Sponsor.sponsors).via((h, s) => h.id === s.hackathonId)
   protected[model] val resourceToSponsors = oneToManyRelation(Resource.resources, Sponsor.sponsors).via((r, s) => r.id === s.logoResourceId)
 
-  def all(): Seq[Sponsor] = {    
-	 from(sponsors)(s =>     
-	  where(s.hackathonId isNull)        
-	  select (s)        
-	  orderBy (s.order)).toSeq  
-	 } 
-  
- def lookup(id: Long): Option[Sponsor] = {    
-   sponsors.lookup(id)  
-   }
+  def all(): Seq[Sponsor] = {
+    from(sponsors)(s =>
+      where(s.hackathonId isNull)
+        select (s)
+        orderBy (s.order)).toSeq
+  }
 
-  
- 
+  def lookup(id: Long): Option[Sponsor] = {
+    sponsors.lookup(id)
+  }
+
   def insert(sponsor: Sponsor): Sponsor = {
     sponsors.insert(sponsor)
   }
