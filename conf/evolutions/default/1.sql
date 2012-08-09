@@ -37,10 +37,10 @@ CREATE SEQUENCE hackathon_id_seq;
 CREATE TABLE hackathons (
     id integer NOT NULL DEFAULT nextval('hackathon_id_seq'),
     creation_timestamp timestamp NOT NULL DEFAULT now(),
-    date timestamp,
-    description text,
-    subject varchar(255),
-    status integer NOT NULL,  
+    date timestamp NOT NULL,
+	description text NOT NULL,
+    subject varchar(255) NOT NULL,
+    status integer NOT NULL,
     organiser_id integer NOT NULL,
     FOREIGN KEY (organiser_id) REFERENCES users(id),
     PRIMARY KEY (id)

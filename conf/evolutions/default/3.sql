@@ -11,7 +11,7 @@ insert into locations (country, city, postal_code, full_address, name, latitude,
 
 
 insert into hackathons (subject, date, description, status, organiser_id) values ('Hackaton testowy 1', '2012-01-02', '<p>Super mega hackathon!!</p> <p>Short info, etc here</p>', 1, 1);
-insert into hackathons (subject, date, status, organiser_id) values ('Hackaton testowy 2', '2012-03-04', 2, 2);
+insert into hackathons (subject, date, description, status, organiser_id) values ('Hackaton testowy 2', '2012-03-04', 'Opis', 2, 2);
 
 insert into hackathons_locations(hackathon_id, location_id) values(1,1);
 insert into hackathons_locations(hackathon_id, location_id) values(2,2);
