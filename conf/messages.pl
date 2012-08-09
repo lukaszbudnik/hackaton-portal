@@ -35,6 +35,7 @@ navigation.news     = Aktualności
 navigation.hackathons = Hackatony
 navigation.problems = Problemy
 navigation.sponsors = Sponsorzy
+navigation.locations = Lokalizacje
 navigation.teams    = Zespoły
 navigation.users    = Użytkownicy
 navigation.changeLanguage = Zmień język

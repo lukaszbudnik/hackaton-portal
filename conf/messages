@@ -28,6 +28,7 @@ navigation.about = About
 navigation.contact = Contact
 navigation.prizes = Prizes
 navigation.sponsors = Sponsors
+navigation.locations = Locations
 navigation.login = Sign in
 navigation.users = Users
 navigation.changeLanguage = Change Language

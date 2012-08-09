@@ -28,25 +28,21 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
       "latitude" -> helpers.Forms.real,
       "longitude" -> helpers.Forms.real)(model.Location.apply)(model.Location.unapply))
 
-  def index = UserAwareAction { implicit request =>
+  def index = SecuredAction() { implicit request =>
     transaction {
-      Ok(views.html.locations.index(model.Location.all.toList, request.user))
+      helpers.Security.verifyIfAllowed(request.user)
+      Ok(views.html.locations.index(model.Location.all, Some(request.user)))
     }
   }
 
-  def view(id: Long) = UserAwareAction { implicit request =>
+  def view(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      Ok(views.html.locations.view(model.Location.lookup(id), request.user))
+      helpers.Security.verifyIfAllowed(request.user)
+      Ok(views.html.locations.view(model.Location.lookup(id), Some(request.user)))
     }
   }
 
   def create = SecuredAction() { implicit request =>
-    transaction {
-      Ok(views.html.locations.locationForm(routes.Location.save, locationForm))
-    }
-  }
-
-  def createInWindow = SecuredAction() { implicit request =>
     transaction {
       Ok(views.html.locations.locationForm(routes.Location.save, locationForm))
     }
