@@ -42,6 +42,8 @@ CREATE TABLE hackathons (
     subject varchar(255) NOT NULL,
     status integer NOT NULL,
     organiser_id integer NOT NULL,
+    new_problems_off bool DEFAULT false,
+    new_teams_off bool DEFAULT false,
     FOREIGN KEY (organiser_id) REFERENCES users(id),
     PRIMARY KEY (id)
 );

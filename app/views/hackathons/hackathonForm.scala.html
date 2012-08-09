@@ -44,7 +44,19 @@
 	    '_label -> Messages("hackathons.status.label"),
 	    '_showConstraints -> false
 	)
-    
+	
+	@checkbox(
+		hackathonForm("new_problems_disabled"),
+		'_label -> Messages("hackathons.newProblemsDisabled.label"),
+		'_showConstraints -> false
+		)
+		
+    @checkbox(
+		hackathonForm("new_teams_disabled"),
+		'_label -> Messages("hackathons.newTeamsDisabled.label"),
+		'_showConstraints -> false
+		)
+		
 	@forms.hidden(hackathonForm("organizerId"))
 	
 

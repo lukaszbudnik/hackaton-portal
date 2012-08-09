@@ -127,6 +127,8 @@ locations.status.added = Lokalizacja %s dodana pomyślnie!
 locations.status.updated = Lokalizacja  %s zaktualizowana pomyślnie!
 locations.status.deleted = Lokalizacja usunięta!
 locations.nomatchfound = Nie znaleziono! » Dodaj nową
+hackathons.newProblemsDisabled.label = Blokuj dodawania problemów 
+hackathons.newTeamsDisabled.label = Blokuj dodawania zespołów
 
 problems.title = Problemy
 problems.addProblem = Dodaj problem

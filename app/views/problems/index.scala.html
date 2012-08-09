@@ -4,7 +4,16 @@
 
   @hackathon.map { hackathon =>
 
-		<a class="btn btn-success" href="@routes.Problem.create(hackathon.id)">@Messages("problems.addProblem")</a>
+		@*
+		 * Display add problem when:
+		 * User is admin 
+		 * or hackathon organiser
+		 *  or normal user and hackathon configuration allows new problem creation
+		 *@
+		 
+        @if((user.isDefined && (user.get.isAdmin || user.get.hackathonUserId == hackathon.organiserId || !hackathon.newProblemsDisabled ) )) {
+			<a class="btn btn-success" href="@routes.Problem.create(hackathon.id)">@Messages("problems.addProblem")</a>
+		}
 
     	@hackathon.problems.map { problem =>
     	  

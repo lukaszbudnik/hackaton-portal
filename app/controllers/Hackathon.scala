@@ -7,6 +7,7 @@ import helpers.Forms.enum
 import model.dto.HackathonWithLocations
 import play.api.data.Forms.date
 import play.api.data.Forms.list
+import play.api.data.Forms.boolean
 import play.api.data.Forms.of
 import play.api.data.Forms.longNumber
 import play.api.data.Forms.mapping
@@ -91,6 +92,8 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
       "date" -> date(Messages("global.dateformat")),
       "description" -> nonEmptyText,
       "organizerId" -> longNumber,
+      "new_problems_disabled" -> boolean,
+      "new_teams_disabled" -> boolean,
       "locations" -> list(mapping(
           "id" -> longNumber,
           "name" -> nonEmptyText,
@@ -105,12 +108,19 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
 	            Some(l.id, l.name , l.city, l.country, l.fullAddress)))
           )
        // apply HackathonWithLocations
-      ((subject, status, date, description, organizerId, locations) => 
+      ((subject, status, date, description, organizerId, newProblemsDisabled, newTeamsDisabled, locations) => 
         new HackathonWithLocations(
-            new model.Hackathon(subject, status, date, description, organizerId), locations)
+            new model.Hackathon(subject, status, date, description, organizerId, newProblemsDisabled, newTeamsDisabled), locations)
         ) // unapply HackathonWithLocations
       ((hWl : HackathonWithLocations) => 
-        Some(hWl.hackathon.subject , hWl.hackathon.status , hWl.hackathon.date, hWl.hackathon.description, hWl.hackathon.organiserId , hWl.locations.toList)
+        Some(hWl.hackathon.subject
+            , hWl.hackathon.status
+            , hWl.hackathon.date
+            , hWl.hackathon.description
+            , hWl.hackathon.organiserId
+            , hWl.hackathon.newProblemsDisabled
+            , hWl.hackathon.newTeamsDisabled
+            , hWl.locations.toList)
             )
       )
 
