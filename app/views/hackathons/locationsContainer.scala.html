@@ -8,7 +8,7 @@
    <div id="locationsContainer">
    
         @maxLocations = @{play.api.Play.current.configuration.getInt("hackathons.maxlocations").getOrElse(1)}
-		@views.forms.repeatWithIndex(hackathonForm("locations"), min = 1) { (idx, endIdx, location) =>
+		@helpers.RepeatWithIndex(hackathonForm("locations"), min = 1) { (idx, endIdx, location) =>
 		  <div class="locationContainer" data-index="@idx">
 			@locationItem(
 				    location("name"),

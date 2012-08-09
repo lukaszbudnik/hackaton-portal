@@ -1,7 +1,8 @@
-package views.forms
+package helpers
+
 import play.api.templates.Html
 
-object repeatWithIndex {
+object RepeatWithIndex {
   
 	def apply(field: play.api.data.Field, min: Int)(f: (Int, Int, play.api.data.Field) => Html) = {
 	  
