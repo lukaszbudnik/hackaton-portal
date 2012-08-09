@@ -14,7 +14,11 @@
 		<div class="row">
 			<div class="span12">
 				<p>@Messages("problems.description.label"): @problem.description</p>
-				<p>@Messages("problems.submitter.label"): @problem.submitter.name</p>
+				<p>@Messages("problems.submitter.label"):
+				@if(problem.submitter.avatarUrl) { 
+					<img src="@problem.submitter.avatarUrl" alt="@problem.submitter.name" height="40px" width="40px" />    				
+				}
+				@problem.submitter.name</p>
 	    	</div>
 	   	</div> 
 	  
