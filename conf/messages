@@ -124,6 +124,8 @@ hackathons.hackathonStatus.InProgress = In Progress
 hackathons.hackathonStatus.Finished = Finished
 hackathons.hackathonStatus.Unverified = Unverified
 hackathons.infobubble.otherlocations = Other locations:
+hackathons.newProblemsDisabled.label = New problems disabled
+hackathons.newTeamsDisabled.label = New teams disabled
 
 locations.title = Locations
 locations.addLocation = Add a location

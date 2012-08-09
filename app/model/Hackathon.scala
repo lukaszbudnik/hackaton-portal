@@ -17,7 +17,9 @@ case class Hackathon(subject: String,
   status: HackathonStatus.Value,
   date: Date,
   description: String,
-  @Column("organiser_id") organiserId: Long) extends KeyedEntity[Long] {
+  @Column("organiser_id") organiserId: Long,
+  @Column("new_problems_off") newProblemsDisabled : Boolean = false,
+  @Column("new_teams_off") newTeamsDisabled: Boolean = false) extends KeyedEntity[Long] {
   val id: Long = 0L
 
   def this() = this("", HackathonStatus.Planning, new Date(),"", 0) // need for status enumeration
@@ -127,7 +129,9 @@ object Hackathon extends Schema {
           h.status := hackathon.status,
           h.organiserId := hackathon.organiserId,
           h.description := hackathon.description,
-          h.date := hackathon.date))
+          h.date := hackathon.date,
+          h.newProblemsDisabled := hackathon.newProblemsDisabled,
+          h.newTeamsDisabled := hackathon.newTeamsDisabled))
   }
 
   def delete(id: Long): Int = {
