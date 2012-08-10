@@ -13,7 +13,7 @@
 	  		<div class="form-actions">
 	  			@form(routes.Sponsor.deleteH(hackathon.get.id, s.sponsor.id)) {
 	  				<a class="btn btn-success" href="@routes.Sponsor.editH(hackathon.get.id, s.sponsor.id)">@Messages("global.edit")</a>
-	  				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+	  				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger confirm-action" />
 	  			}
 	  		</div>
 			}

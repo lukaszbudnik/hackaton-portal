@@ -26,6 +26,9 @@ global.learnMore   = Dowiedz się więcej »
 global.readMore    = Czytaj więcej »
 global.update      = Zapisz
 global.viewDetails = Zobacz szczegóły »
+global.confirm = Czy jesteś pewny/a?
+global.ok = OK
+global.cancel = Anuluj
 
 navigation.about    = O hackatonach
 navigation.contact  = Kontakt
@@ -128,8 +131,8 @@ locations.status.added = Lokalizacja %s dodana pomyślnie!
 locations.status.updated = Lokalizacja  %s zaktualizowana pomyślnie!
 locations.status.deleted = Lokalizacja usunięta!
 locations.nomatchfound = Nie znaleziono! » Dodaj nową
-hackathons.newProblemsDisabled.label = Blokuj dodawania problemów 
-hackathons.newTeamsDisabled.label = Blokuj dodawania zespołów
+hackathons.newProblemsDisabled.label = Blokuj dodawanie problemów 
+hackathons.newTeamsDisabled.label = Blokuj dodawanie zespołów
 
 problems.title = Problemy
 problems.addProblem = Dodaj problem

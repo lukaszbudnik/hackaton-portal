@@ -16,7 +16,7 @@
 		  			<div class="form-actions">
 		  				@form(routes.News.delete(news.id)) {
 		  					<a class="btn btn-success" href="@routes.News.edit(news.id)">@Messages("global.edit")</a>
-		  					<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+		  					<input type="submit" value="@Messages("global.delete")" class="btn btn-danger confirm-action" />
 		  				}
 		  			</div>
 		  		}

@@ -26,7 +26,7 @@
 							  	}
 								@if(user.isAdmin || hackathon.organiserId == user.hackathonUserId) {
 								<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.id)">@Messages("global.edit")</a>
-								<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" style="font-weight: bold" />
+								<input type="submit" value="@Messages("global.delete")" class="btn btn-danger confirm-action" style="font-weight: bold" />
 								}
 							}
 					}.getOrElse{

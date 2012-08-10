@@ -11,7 +11,7 @@ $ ->
     					updateEntity(entity, hackathonId, entityId, action, $(this))
 					)
 
-updateEntity = (entity, hackathonId, entityId, action, source) ->
+doUpdateEntity = (entity, hackathonId, entityId, action, source) ->
 	entities = entity + 's'
 	$.ajax '/hackathons/' + hackathonId + '/' + entities + '/' + entityId + '/' + action,
 		type: 'POST'
@@ -42,7 +42,19 @@ updateEntity = (entity, hackathonId, entityId, action, source) ->
 					do (s) ->
 						$("div." + entity + "[data-" + entity + "-id='" + entityId + "'] ." + entity + "-" + s).remove()
 		error: (data, textStatus, errorThrown) ->
-			alert(Messages(entities + '.update.error'))
+			alert(Messages(entities + '.update.error'))	
+						
+
+updateEntity = (entity, hackathonId, entityId, action, source) ->
+
+	if action == 'delete'
+		HConfirmationModal.askConfirm.call this, (result) ->
+			if result
+				doUpdateEntity(entity, hackathonId, entityId, action, source)
+	else
+		doUpdateEntity(entity, hackathonId, entityId, action, source)
+	
+	
 
 updateStatusMessage = (entity, entityId, message) ->
 	selector = "div." + entity + "[data-" + entity + "-id='" + entityId + "'] ." + entity + "-status"

@@ -49,6 +49,9 @@ global.update = Update
 global.none = None
 global.status.error = Can''t perform this operation
 global.dateformat = dd-MM-yyyy
+global.confirm = Are you sure?
+global.ok = Yes
+global.cancel = Cancel
 
 pagination.previous = &larr; Previous
 pagination.next = Next &rarr;

@@ -28,7 +28,7 @@
 					<div class="form-actions">
 						@form(routes.Prize.delete(hackathon.get.id, prize.id)) {
 							<a class="btn btn-success" href="@routes.Prize.edit(hackathon.get.id, prize.id)">@Messages("global.edit")</a>
-							<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+							<input type="submit" value="@Messages("global.delete")" class="btn btn-danger confirm-action" />
 						}
 					</div>
 					}

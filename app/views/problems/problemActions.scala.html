@@ -25,7 +25,7 @@
 				<a class="btn btn-danger problem-delete" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@Messages("global.delete")</a>
 			} else {
 				@form(routes.Problem.delete(hackathon.id, problem.id), 'style -> "display: inline" ) {
-					<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" style="font-weight: bold" />
+					<input type="submit" value="@Messages("global.delete")" class="btn btn-danger confirm-action" style="font-weight: bold" />
 				}
 			}
 		}
