@@ -1,6 +1,6 @@
 language: java
 env:
-  - PLAY_VERSION=2.0.1 CLOUDINARY_URL=mock MAILGUN_SMTP_LOGIN=mock TWILIO_APPLICATION_SID=mock
+  - PLAY_VERSION=2.0.3 CLOUDINARY_URL=mock MAILGUN_SMTP_LOGIN=mock TWILIO_APPLICATION_SID=mock
 before_script: 
   - wget http://download.playframework.org/releases/play-${PLAY_VERSION}.zip
   - unzip -q play-${PLAY_VERSION}.zip 

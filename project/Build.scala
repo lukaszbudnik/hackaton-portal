@@ -13,7 +13,7 @@ object ApplicationBuild extends Build {
 
     val appDependencies = Seq(
       "org.squeryl" %% "squeryl" % "0.9.5-2",
-      "com.h2database" % "h2" % "1.3.167",
+      "com.h2database" % "h2" % "1.3.168",
       "postgresql" % "postgresql" % "9.1-901.jdbc4",
       "net.databinder" %% "dispatch-http" % "0.8.7",
       "net.databinder" %% "dispatch-mime" % "0.8.7",
