@@ -5,9 +5,9 @@ import play.api.Play.current
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import org.apache.commons.codec.digest.DigestUtils
+import core.LangAwareController
 
-object JsMessagesFeed extends Controller  {
-
+object JsMessagesFeed extends LangAwareController  {
 
  def jsMessages = Action { implicit request =>
 
