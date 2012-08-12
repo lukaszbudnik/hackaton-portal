@@ -12,7 +12,8 @@ import play.api.libs.json.JsString
 import securesocial.core.SocialUser
 import securesocial.core.UserId
 import securesocial.core.AuthenticationMethod
-
+import helpers.URL
+import helpers.EmailSender
 
 object Team extends LangAwareController with securesocial.core.SecureSocial {
 
@@ -26,7 +27,6 @@ object Team extends LangAwareController with securesocial.core.SecureSocial {
 
   def index(hid: Long) = UserAwareAction { implicit request =>
     transaction {
-      //val user = SocialUser(UserId("qw", "qwqw"), "displayName", Some("email"), Some("avatarUrl"), AuthenticationMethod.OpenId, None, None, 1, true)
       Ok(views.html.teams.index(model.Hackathon.lookup(hid), request.user))
     }
   }
@@ -54,7 +54,14 @@ object Team extends LangAwareController with securesocial.core.SecureSocial {
       },
       team => transaction {
         // insert team and add creator as a member
-        model.Team.insert(team).addMember(team.creator)
+        val dbTeam = model.Team.insert(team)
+        dbTeam.addMember(team.creator)
+
+        val url = URL.externalUrl(routes.Team.view(hid, team.id))
+        val params = Seq(team.name, url)
+
+        EmailSender.sendEmailToHackathonOrganiser(dbTeam.hackathon, "notifications.email.team.created.subject", "notifications.email.team.created.body", params)
+
         Redirect(routes.Team.index(hid)).flashing("status" -> "added", "title" -> team.name)
       })
   }
@@ -84,92 +91,118 @@ object Team extends LangAwareController with securesocial.core.SecureSocial {
           helpers.Security.verifyIfAllowed(hid == team.hackathonId)(request.user)
           helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
         }
-        
+
         model.Team.update(id, team.copy(status = dbTeam.get.status))
         Redirect(routes.Team.index(hid)).flashing("status" -> "updated", "title" -> team.name)
       })
   }
-  
+
   def verify(hid: Long, id: Long) = SecuredAction() { implicit request =>
-	  transaction {
-	    model.Team.lookup(id).map { team =>
-	      implicit val user = request.user
-	      helpers.Security.verifyIfAllowed(hid == team.hackathonId)
-	      helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.hackathonUserId)
-	      model.Team.update(id, team.copy(status = TeamStatus.Approved))
-	      
-	      Ok(JsArray(Seq(JsObject(List(
-        	"status" -> JsString("ok"))))))
-	      
-	    }.getOrElse {
-	      NotFound(JsArray(Seq(JsObject(List(
-        	"status" -> JsString("error"))))))
-	    }
-	  }
+    transaction {
+      model.Team.lookup(id).map { team =>
+        implicit val user = request.user
+        helpers.Security.verifyIfAllowed(hid == team.hackathonId)
+        helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.hackathonUserId)
+        model.Team.update(id, team.copy(status = TeamStatus.Approved))
+
+        val url = URL.externalUrl(routes.Team.view(hid, team.id))
+        val params = Seq(team.name, url)
+
+        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.verified.subject", "notifications.email.team.verified.body", params)
+
+        Ok(JsArray(Seq(JsObject(List(
+          "status" -> JsString("ok"))))))
+
+      }.getOrElse {
+        NotFound(JsArray(Seq(JsObject(List(
+          "status" -> JsString("error"))))))
+      }
+    }
   }
-  
+
   def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
-	  transaction {
-	    model.Team.lookup(id).map { team =>
-	      implicit val user = request.user
-	      helpers.Security.verifyIfAllowed(hid == team.hackathonId)
-	      helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.hackathonUserId || team.creatorId == user.hackathonUserId)
-	      model.Team.update(id, team.copy(status = TeamStatus.Approved))
-	      
-	      Ok(JsArray(Seq(JsObject(List(
-        	"status" -> JsString("ok"))))))
-	      
-	    }.getOrElse {
-	      NotFound(JsArray(Seq(JsObject(List(
-        	"status" -> JsString("error"))))))
-	    }
-	  }
+    transaction {
+      model.Team.lookup(id).map { team =>
+        implicit val user = request.user
+        helpers.Security.verifyIfAllowed(hid == team.hackathonId)
+        helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.hackathonUserId || team.creatorId == user.hackathonUserId)
+        model.Team.update(id, team.copy(status = TeamStatus.Approved))
+
+        val url = URL.externalUrl(routes.Team.view(hid, team.id))
+        val params = Seq(team.name, url)
+
+        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.approved.subject", "notifications.email.team.approved.body", params)
+
+        Ok(JsArray(Seq(JsObject(List(
+          "status" -> JsString("ok"))))))
+
+      }.getOrElse {
+        NotFound(JsArray(Seq(JsObject(List(
+          "status" -> JsString("error"))))))
+      }
+    }
   }
 
   def suspend(hid: Long, id: Long) = SecuredAction() { implicit request =>
-	  transaction {
-	    model.Team.lookup(id).map { team =>
-	      implicit val user = request.user
-	      
-	      helpers.Security.verifyIfAllowed(hid == team.hackathonId)
-	      helpers.Security.verifyIfAllowed(user.isAdmin || team.creatorId == user.hackathonUserId || team.hackathon.organiserId == user.hackathonUserId)
-	      model.Team.update(id, team.copy(status = TeamStatus.Suspended))
-	      
-	      Ok(JsArray(Seq(JsObject(List(
-        	"status" -> JsString("ok"))))))
-	      
-	    }.getOrElse {
-	      NotFound(JsArray(Seq(JsObject(List(
-        	"status" -> JsString("error"))))))
-	    }
-	  }
+    transaction {
+      model.Team.lookup(id).map { team =>
+        implicit val user = request.user
+
+        helpers.Security.verifyIfAllowed(hid == team.hackathonId)
+        helpers.Security.verifyIfAllowed(user.isAdmin || team.creatorId == user.hackathonUserId || team.hackathon.organiserId == user.hackathonUserId)
+        model.Team.update(id, team.copy(status = TeamStatus.Suspended))
+
+        val url = URL.externalUrl(routes.Team.view(hid, team.id))
+        val params = Seq(team.name, url)
+
+        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.suspended.subject", "notifications.email.team.suspended.body", params)
+
+        Ok(JsArray(Seq(JsObject(List(
+          "status" -> JsString("ok"))))))
+
+      }.getOrElse {
+        NotFound(JsArray(Seq(JsObject(List(
+          "status" -> JsString("error"))))))
+      }
+    }
   }
-  
+
   def block(hid: Long, id: Long) = SecuredAction() { implicit request =>
-	  transaction {
-	    model.Team.lookup(id).map { team =>
-	      implicit val user = request.user
-	      helpers.Security.verifyIfAllowed(hid == team.hackathonId)
-	      helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.hackathonUserId)
-	      model.Team.update(id, team.copy(status = TeamStatus.Blocked))
-	      
-	      Ok(JsArray(Seq(JsObject(List(
-        	"status" -> JsString("ok"))))))
-	      
-	    }.getOrElse {
-	      NotFound(JsArray(Seq(JsObject(List(
-        	"status" -> JsString("error"))))))
-	    }
-	  }
+    transaction {
+      model.Team.lookup(id).map { team =>
+        implicit val user = request.user
+        helpers.Security.verifyIfAllowed(hid == team.hackathonId)
+        helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.hackathonUserId)
+        model.Team.update(id, team.copy(status = TeamStatus.Blocked))
+        
+        val url = URL.externalUrl(routes.Team.view(hid, team.id))
+        val params = Seq(team.name, url)
+
+        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.blocked.subject", "notifications.email.team.blocked.body", params)
+
+        Ok(JsArray(Seq(JsObject(List(
+          "status" -> JsString("ok"))))))
+
+      }.getOrElse {
+        NotFound(JsArray(Seq(JsObject(List(
+          "status" -> JsString("error"))))))
+      }
+    }
   }
-  
+
   def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Team.lookup(id).map { team =>
         helpers.Security.verifyIfAllowed(hid == team.hackathonId)(request.user)
         helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
+        
+        val url = URL.externalUrl(routes.Hackathon.view(hid))
+        val params = Seq(team.name, url)
+
+        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.deleted.subject", "notifications.email.team.deleted.body", params)
+        
+        model.Team.delete(id)
       }
-      model.Team.delete(id)
       Redirect(routes.Team.index(hid)).flashing("status" -> "deleted")
     }
   }

@@ -272,6 +272,42 @@ users.updateIsBlocked.label = Change Blocked
 users.update.error = Failed to update user
 users.update.success = Successfully updated user
 
+notifications.email.problem.added.subject = A new problem has been added
+notifications.email.problem.added.body = Hello,\n\n"{0}" problem has just been added.\n\nPlease go to your hackathon page and verify or delete this problem: {1}.\n\nBest regards\nHackaton.pl Team
+
+notifications.email.problem.verified.subject = Your problem has been verified
+notifications.email.problem.verified.body = Congratulations,\n\n"{0}" problem has just been verified and approved.\n\nTo view your problem go to the hackathon page: {1}.\n\nBest regards\nHackaton.pl Team
+
+notifications.email.problem.approved.subject = Your problem has been approved
+notifications.email.problem.approved.body = Congratulations,\n\n"{0}" problem has just been approved.\n\nTo view your problem go to the hackathon page: {1}.\n\nBest regards\nHackaton.pl Team
+
+notifications.email.problem.blocked.subject = Your problem has been blocked
+notifications.email.problem.blocked.body = Hello,\n\n"{0}" problem has just been blocked.\n\nTo view your problem go to the hackathon page: {1}.\n\nPlease contact hackathon organiser for more information about it.\n\nBest regards\nHackaton.pl Team
+
+notifications.email.problem.suspended.subject = Your problem has been suspended 
+notifications.email.problem.suspended.body = Hello,\n\n"{0}" problem has just been suspended.\n\nTo view your problem go to the hackathon page: {1}.\n\nBest regards\nHackaton.pl Team
+
+notifications.email.problem.deleted.subject = Your problem has been deleted
+notifications.email.problem.deleted.body = Hello,\n\n"{0}" problem has just been deleted.\n\nGo to hackathon page {1} to create a new one.\n\nBest regards\nHackaton.pl Team
+
+notifications.email.team.created.subject = A new team has been added
+notifications.email.team.created.body = Hello,\n\n"{0}" team has just been created.\n\nPlease go to your hackathon page and verify or delete this team: {1}.\n\nBest regards\nHackaton.pl Team 
+
+notifications.email.team.verified.subject = Your team has been verified
+notifications.email.team.verified.body = Congratulations,\n\n"{0}" team has just been verified and approved.\n\nTo view your team go to the hackathon page: {1}.\n\nBest regards\nHackaton.pl Team
+
+notifications.email.team.approved.subject = Your team has been approved
+notifications.email.team.approved.body = Congratulations,\n\n"{0}" team has just been approved.\n\nTo view your team go to the hackathon page: {1}.\n\nBest regards\nHackaton.pl Team
+
+notifications.email.team.blocked.subject = Your team has been blocked
+notifications.email.team.blocked.body = Hello,\n\n"{0}" team has just been blocked.\n\nThe team is no longer visible on the hackathon page. Please consider leaving this team or creating a new one.\n\nTo view your team go directly to the team page: {1}.\n\nOf course we will notify you when the status of your team will be updated.\n\nBest regards\nHackaton.pl Team
+
+notifications.email.team.suspended.subject = Your team has been suspended 
+notifications.email.team.suspended.body = Hello,\n\n"{0}" team has just been suspended.\n\nSuspended state is a temporary state when the team is not visible on the hackathon page. In case it will remain longer in this state, please consider leaving this team or creating a new one. To view your team go directly to the team page: {1}.\n\nBest regards\nHackaton.pl Team
+
+notifications.email.team.deleted.subject = Your team has been deleted
+notifications.email.team.deleted.body = Hello,\n\n"{0}" team has just been deleted\n\nGo to hackathon page {1} and join another team or create a new one.\n\nBest regards\nHackaton.pl Team
+
 # App name
 securesocial.appName=SecureSocial 2
 
