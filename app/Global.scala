@@ -62,10 +62,7 @@ object Global extends GlobalSettings {
   }
 
   override def onRouteRequest(request: RequestHeader): Option[Handler] = {
-    if (play.Play.isProd() &&
-      (request.path.contains("hackathons") ||
-        request.path.contains("sponsors") ||
-        request.path.contains("locations"))) {
+    if (play.Play.isProd() && request.path.contains("sponsors")) {
       return None
     }
     super.onRouteRequest(request)
