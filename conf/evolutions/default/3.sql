@@ -3,8 +3,6 @@
 
 # --- !Ups 
 
-
-insert into users (name, email, github_username, open_id, avatar_url, is_admin) values ('Daniel Bykowski','d.bykowski@kainos.com', 'test', '102068228977340999495google', 'https://lh4.googleusercontent.com/-_qzaBoetBfc/AAAAAAAAAAI/AAAAAAAAENc/q3rBQpasMfI/photo.jpg', true);
 insert into users (name, email, github_username, open_id, is_admin) values ('Przemek','email', 'test', '103280383330259834711google', true);
 insert into users (name, email, github_username, open_id) values ('test user','email', 'test', 'open_id_test');
 
