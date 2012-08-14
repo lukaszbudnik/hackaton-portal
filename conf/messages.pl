@@ -133,6 +133,7 @@ locations.status.deleted = Lokalizacja usunięta!
 locations.nomatchfound = Nie znaleziono! » Dodaj nową
 hackathons.newProblemsDisabled.label = Blokuj dodawanie problemów 
 hackathons.newTeamsDisabled.label = Blokuj dodawanie zespołów
+locations.status.label = Status
 
 problems.title = Problemy
 problems.addProblem = Dodaj problem

@@ -21,7 +21,7 @@
 
 			<div class="form-actions">
 	    		@form(routes.Location.delete(location.get.id)) {
-		    	<a class="btn btn-success" href="@routes.Location.edit(location.get.id)">@Messages("global.edit")</a>
+		    	<a class="btn btn-success" href="@routes.Location.editA(location.get.id)">@Messages("global.edit")</a>
 	            <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
 	    		}
             </div>

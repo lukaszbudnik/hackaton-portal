@@ -9,6 +9,7 @@ import play.api.data.Forms.date
 import play.api.data.Forms.list
 import play.api.data.Forms.boolean
 import play.api.data.Forms.of
+import play.api.data.Forms._
 import play.api.data.Forms.longNumber
 import play.api.data.Forms.mapping
 import play.api.data.Forms.text
@@ -46,6 +47,18 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
 	 
   }
 
+  /***
+   * Jesli pole jest wypelnione, tj, jesli locationId jest ustawione to submitterId tez musi byc ustawione.
+   * W momencie ustawienia musimy sprawdzic czy submitterId = currentuserHackathonId.
+   * Ustawiamy to:
+   * po przeladowaniu strony
+   * po przeladowaniu lokacji
+   * po dodaniu lokacji
+   * 
+   * Wniosek mamy kilka triggerow. W momencie ustawiania wartosci nalezy zawolac zdarzenie onSet na kazdym polu
+   * ktore wywola akcje typu
+   */
+  
   def hackathonsJson = Action {
     transaction {
       val hackathons = model.dto.HackathonWithLocations.all
@@ -75,13 +88,14 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
 	          "name" -> text,
 	          "city" -> text,
 	          "country" -> text,
-	          "fullAddress" -> text)
+	          "fullAddress" -> text,
+	          "submitterId" -> longNumber)
 	          // apply location
-		          ((id, name, city, country, fullAddress) => 
-		                new model.Location(id, country, city,  "", fullAddress, name, 0, 0))
+		          ((id, name, city, country, fullAddress, submitterId) => 
+		                new model.Location(id, country, city,  "", fullAddress, name, 0, 0, submitterId, model.LocationStatus.Unverified))
 		          // unapply location
 		          ((l : model.Location) => 
-		            Some(l.id , l.name, l.city, l.country, l.fullAddress)))
+		            Some(l.id , l.name, l.city, l.country, l.fullAddress, l.submitterId)))
 	          )    
   
   
@@ -99,13 +113,14 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
           "name" -> nonEmptyText,
           "city" -> nonEmptyText,
           "country" -> nonEmptyText,
-          "fullAddress" -> nonEmptyText)
+          "fullAddress" -> nonEmptyText,
+          "submitterId" -> longNumber)
           // apply location
-	          ((id, name, city, country, fullAddress) => 
-	                new model.Location(id, country, city, "" , fullAddress, name, 0, 0))
+	          ((id, name, city, country, fullAddress, submitterId) => 
+	                new model.Location(id, country, city, "" , fullAddress, name, 0, 0, submitterId, model.LocationStatus.Unverified))
 	          // unapply location
 	          ((l : model.Location) => 
-	            Some(l.id, l.name , l.city, l.country, l.fullAddress)))
+	            Some(l.id, l.name , l.city, l.country, l.fullAddress, l.submitterId)))
           )
        // apply HackathonWithLocations
       ((subject, status, date, description, organizerId, newProblemsDisabled, newTeamsDisabled, locations) => 
@@ -220,10 +235,20 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
         model.Hackathon.lookup(id).map { hackathon =>
           helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
           model.Hackathon.update(id, hackathonWithL.hackathon)
+          
+          // we have to restore previous statuses
+          val locationsMap = hackathon.locations.map { t => (t.id, t) }.toMap
           hackathon.deleteLocations()
           hackathonWithL.locations.map {
 							            location => 
-							              	hackathon.addLocation(location)
+							               
+							                val lookupLoc = locationsMap.get(location.id)
+							                if(lookupLoc.isDefined) {
+							                  hackathon.addLocation(location.copy(status = lookupLoc.get.status))
+							                } else {
+							                  hackathon.addLocation(location)
+							                }
+							              	
           }
       }
         

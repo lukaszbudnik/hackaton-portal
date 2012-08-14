@@ -1,3 +1,4 @@
+
 # Database model
  
 # --- !Ups
@@ -29,7 +30,8 @@ CREATE TABLE locations (
     name varchar(255),
 	latitude float8,
 	longitude float8,
-	    
+	submitter_id integer NOT NULL,
+	status integer NOT NULL,
     PRIMARY KEY (id)
 );
 

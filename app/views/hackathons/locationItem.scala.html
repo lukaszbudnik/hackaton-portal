@@ -5,7 +5,12 @@
 
 
 @helper.input(field, args:_*) { (id, name, value, htmlArgs) =>
-    <input type="text" id="@id" name="@name" value="@value" @toHtmlArgs(htmlArgs)>
+    
+
+     <input type="text" id="@id" name="@name" value="@value" @toHtmlArgs(htmlArgs)>
+     <span class="btn btn-info edit-hackathon-location" title="Edit location" style="display:none"><i class="icon-edit icon-white"></i></span>
+
+              
 	@if(showDelete.asInstanceOf[Boolean]) {
 		<span class="btn btn-danger delete-hackathon-location" title="Remove location"><i class="icon-remove icon-white"></i></span>
 	}

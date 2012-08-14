@@ -6,8 +6,8 @@
 insert into users (name, email, github_username, open_id, is_admin) values ('Przemek','email', 'test', '103280383330259834711google', true);
 insert into users (name, email, github_username, open_id) values ('test user','email', 'test', 'open_id_test');
 
-insert into locations (country, city, postal_code, full_address, name, latitude, longitude) values ('Polska', 'Gdańsk', '80-000', 'Ul. Długa 55', 'Hackaton Gdansk!', 54.366667, 18.633333);
-insert into locations (country, city, postal_code, full_address, name, latitude, longitude) values ('Polska', 'Warszawa', '80-000', 'Ul. Krótka 5', 'Hackaton Warszawa!', 52.2323, 21.008433);
+insert into locations (country, city, postal_code, full_address, name, latitude, longitude, submitter_id, status) values ('Polska', 'Gdańsk', '80-000', 'Ul. Długa 55', 'Hackaton Gdansk!', 54.366667, 18.633333, 3, 1);
+insert into locations (country, city, postal_code, full_address, name, latitude, longitude, submitter_id, status) values ('Polska', 'Warszawa', '80-000', 'Ul. Krótka 5', 'Hackaton Warszawa!', 52.2323, 21.008433, 3, 1);
 
 
 insert into hackathons (subject, date, description, status, organiser_id) values ('Hackaton testowy 1', '2012-01-02', '<p>Super mega hackathon!!</p> <p>Short info, etc here</p>', 1, 1);

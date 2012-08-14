@@ -1,4 +1,4 @@
-@(hackathonForm: Form[model.dto.HackathonWithLocations], action: play.api.mvc.Call, actionMessage: String)(implicit request: Request[AnyContent], lang: Lang)
+@(hackathonForm: Form[model.dto.HackathonWithLocations], action: play.api.mvc.Call, user: securesocial.core.SocialUser, actionMessage: String)(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -6,13 +6,15 @@
 @implicitFieldConstructor = @{ FieldConstructor(forms.twitterBootstrapInput.f) }
 
 <script type="text/javascript">
- new HackathonLocations({ findLocationAction : '/locations/find',
+ new Locations({ 
+	 	findLocationAction : '/locations/find',
 		createLocationAction: '@routes.Location.create',
 		saveLocationAction: '@routes.Location.save',
 		addHackathonLocationAction : '@routes.Hackathon.addLocation',
-		deleteHackathonLocationAction : '/hackathons/deleteLocation/',
-		noMatchFoundText : '@Messages("locations.nomatchfound")'
-	});
+		deleteHackathonLocationAction : '/hackathons/deleteLocation',		
+		noMatchFoundText : '@Messages("locations.nomatchfound")',
+		userHackathonId : '@user.hackathonUserId'
+	}).initHackathonLocations();
 </script>
 
 @form(action, 'id -> "hackathon-form",'class -> "form-horizontal") {
@@ -59,6 +61,7 @@
 		
 	@forms.hidden(hackathonForm("organizerId"))
 	
+	<input type="hidden" id="isAdmin" value="@user.isAdmin"/>
 
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
@@ -70,18 +73,17 @@
 
     <div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">×</button>
-    	<h3>@Messages("locations.create.title")</h3>
+    	<h3 class="modal-title">@Messages("locations.create.title")</h3>
     </div>
 
 	<div class="modal-body">
    	   	<div class="row">
-       		<div id="locationBox" class="span5"></div>
-    		<div id="map-canvas" style="width:400px; height:360px" class="span5"></div>
+       		<div id="locationBox""></div>
     	</div>
     </div>
 	
 	 <div class="modal-footer">
-		<a id="submitLocation" href="#" class="btn btn-primary">@Messages("global.add")</a>
+		<a id="submitLocation" href="#" class="btn btn-primary">@Messages("global.save")</a>
 		<a id="cancelLocation" href="#" class="btn" data-dismiss="modal">@Messages("global.cancel")</a>
 	</div>    	
 

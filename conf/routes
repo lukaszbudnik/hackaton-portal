@@ -162,13 +162,17 @@ GET    	/sponsors/:id/delete		controllers.Sponsor.delete(id: Long)
 GET		/locations/find				controllers.Location.findByPattern(term : String)
 # Create
 GET     /locations/new              controllers.Location.create
+GET     /locations/newA             controllers.Location.createA
 POST    /locations                  controllers.Location.save
+POST    /locations/newA             controllers.Location.saveA
 # Retrieve
 GET     /locations                  controllers.Location.index
 GET     /locations/:id              controllers.Location.view(id: Long)
 # Update
 GET     /locations/:id/edit         controllers.Location.edit(id: Long)
+GET     /locations/:id/editA         controllers.Location.editA(id: Long)
 POST    /locations/:id/update       controllers.Location.update(id: Long)
+POST    /locations/:id/updateA       controllers.Location.updateA(id: Long)
 # Delete
 POST    /locations/:id/delete       controllers.Location.delete(id: Long)
 

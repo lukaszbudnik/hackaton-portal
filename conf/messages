@@ -147,6 +147,7 @@ locations.status.added = Location %s successfully added
 locations.status.updated = Location %s successfully updated
 locations.status.deleted = Location deleted
 locations.nomatchfound = No match found! » Add new location
+locations.status.label = Status
 
 problems.title = Problems
 problems.addProblem = Add a problem

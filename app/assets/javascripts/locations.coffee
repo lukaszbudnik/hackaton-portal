@@ -1,6 +1,37 @@
-class HackathonLocations
+class Locations
   constructor: (@params) ->
-  	@init(@params)
+  
+  MODE_CREATE = 0
+  
+  MODE_EDIT = 1
+  
+  LOCATION_MODAL_SELECTOR = '.hackathon-location-modal'
+  LOCATIONS_CONTAINER_SELECTOR = '#locationsContainer'
+  LOCATION_CONTAINER_IDX_ATTR = 'data-lc-id'
+
+  initHackathonLocations : () ->
+  	thisObj = this
+  	$(document).ready () ->
+  		thisObj.initLocationButtons()
+  		thisObj.initTypeahead()
+  		$(LOCATION_MODAL_SELECTOR).on 'show', () ->
+  			lc = thisObj.locationContainerByIndex($(this).attr(LOCATION_CONTAINER_IDX_ATTR))
+  			btnSubmit = $('#submitLocation')
+  			modalTitle = $('.modal-title')
+  			if thisObj.mode == MODE_EDIT
+  				btnSubmit.text(Messages('global.update'))
+  				modalTitle.text(Messages('locations.edit.title'))
+  			else
+  				btnSubmit.text(Messages('global.add'))
+  				modalTitle.text(Messages('locations.create.title'))						
+  
+  initStandaloneLocations : () ->
+  	thisObj = this
+  	$(document).ready () ->
+  		map = thisObj.initLocationsMap()
+
+  isAdmin : () ->
+  	$('#isAdmin').val() == "true"
   
   formatAdditionalHelp : (locationContainer) ->
   	retArr = []
@@ -16,6 +47,9 @@ class HackathonLocations
   	if retArr.length > 0
   		text = retArr.join(", ")
   		locationContainer.find('.help-block *:not(:has("*"))').text(text)
+
+  locationContainerByIndex : (idx) ->
+  	$(LOCATIONS_CONTAINER_SELECTOR + ' .locationContainer[data-index="' + idx + '"]')
   
   locationContainerOf : (element) ->
   	element.closest('.locationContainer')
@@ -35,14 +69,27 @@ class HackathonLocations
   getCurrentValue : (container) ->
   	container.data('current-value');
   	
-  
-  locationContainerByIndex : (idx) ->
-  	$('#locationsContainer .locationContainer[data-index="' + idx + '"]')
 
+  invalidateEditButtons : () ->
+    thisObj = this
+    userId = this.params.userHackathonId 
+    lsc = $(LOCATIONS_CONTAINER_SELECTOR)
+    lsc.find('.locationContainer').each () ->
+    	idField = $(this).find('[name$=".submitterId"]')
+    	editHackathonLocation = $(this).find('.edit-hackathon-location')
+    	if idField.val() is '0' or (idField.val() != userId and not thisObj.isAdmin())
+    		editHackathonLocation.hide()
+    	else
+    		editHackathonLocation.show()
+    		
+    	
   initTypeahead : () ->
     thisObj = this
     params = this.params
-    lsc = $('#locationsContainer')
+    
+    this.invalidateEditButtons()
+    
+    lsc = $(LOCATIONS_CONTAINER_SELECTOR)
     lsc.find('.locationContainer').each () ->
     	thisObj.formatAdditionalHelp($(this))
     	thisObj.rememberName($(this))
@@ -64,26 +111,34 @@ class HackathonLocations
     		lc.find('[name$=".city"]').val(item.city)
     		lc.find('[name$=".country"]').val(item.country)		
     		lc.find('[name$=".fullAddress"]').val(item.fullAddress)
+    		lc.find('[name$=".submitterId"]').val(item.submitterId)
+    		
     		thisObj.formatAdditionalHelp(lc)
     		thisObj.rememberName(lc)
+    		thisObj.invalidateEditButtons()
+    		
     	, noMatchFoundText: params.noMatchFoundText
+    	
     	, onlookup : (query) ->
+    	
     		thisObj.setCurrentValue(thisObj.locationContainerOf(this.$element), query)
+    		
     	, onblur : () ->
+    	
     		lc = thisObj.locationContainerOf(this.$element)
-    		if thisObj.isLocationContainerSet(lc)
-    			thisObj.revertName(lc)
+    		thisObj.revertName(lc)
+    			
     	, onNoMatchFoundClick: () ->
-	    	hlModal = $('.hackathon-location-modal')
+    	
+	    	thisObj.mode = MODE_CREATE 
+	    	hlModal = $(LOCATION_MODAL_SELECTOR)
 	    	lc = thisObj.locationContainerOf(this.$element)
-	    	hlModal.attr('data-lc-id', lc.attr('data-index'))
-	    	$('.hackathon-location-modal').modal 'show'
+	    	hlModal.attr(LOCATION_CONTAINER_IDX_ATTR, lc.attr('data-index'))
+	    	hlModal.modal 'show'
 	    	$('#locationBox').load params.createLocationAction, () ->
 	    		$('#locationForm').find('#name').val(thisObj.getCurrentValue(lc))
-	    	thisObj.initLocationsMap()
+	    		thisObj.initLocationsMap()
 
-	    	
-	    
 	    , render: (items) ->
 	    	that = this
 	    	items = $(items).map (i, item) ->
@@ -104,7 +159,6 @@ class HackathonLocations
   initLocationsMap : () ->
   	
   	positionMarker = (latLng) ->
-  		coords = ''
   		map.setCenter(latLng)
   		map.setZoom(8)
   		marker.setOptions(position: latLng, map: map)
@@ -125,6 +179,8 @@ class HackathonLocations
   		center: new google.maps.LatLng(0, 0),
   		zoom: 2,
   		mapTypeId: google.maps.MapTypeId.ROADMAP
+  	
+  
   	google.maps.event.addListener(map, 'click', (event) ->
     	$("input[name='latitude']").val(event.latLng.lat())
     	$("input[name='longitude']").val(event.latLng.lng())
@@ -153,30 +209,52 @@ class HackathonLocations
     else
     	if navigator.geolocation
     		navigator.geolocation.getCurrentPosition(successAutoGeoLocation, errorAutoGeoLocation)
-    		
+    map
+  
+  	 	
+  
   initLocationButtons : () ->
   		params = this.params
-  		thisObj = that = this
+  		thisObj = this
   		
-	  	$('#locationsContainer').on 'click', '.delete-hackathon-location', (evt) ->
+  		locationsContainer = $(LOCATIONS_CONTAINER_SELECTOR)
+  		
+	  	locationsContainer.on 'click', '.delete-hackathon-location', (evt) ->
 	  		idx = thisObj.locationContainerOf($(this)).attr('data-index')
 	  		target = $(evt.delegateTarget)
-	  		target.load params.deleteHackathonLocationAction + idx
+	  		target.load params.deleteHackathonLocationAction + "/" + idx
 	  		, target.find(':input').serializeObject()
 	  		, () ->
 	  			thisObj.initTypeahead()
-	 
-	  	$('#locationsContainer').on 'click', '.add-hackathon-location', (evt) ->
+	  	locationsContainer.on 'click', '.edit-hackathon-location', (evt) ->
+	  		thisObj.mode = MODE_EDIT
+	  		lc = thisObj.locationContainerOf($(this))
+	  		hlModal = $(LOCATION_MODAL_SELECTOR)	
+	  		hlModal.attr(LOCATION_CONTAINER_IDX_ATTR, lc.attr('data-index'))
+	  		hlModal.modal 'show'
+	  		
+	  		$('#locationBox').load '/locations/' +  lc.find('[name$=".id"]').val() + '/edit', () ->
+	  			thisObj.initLocationsMap()
+		
+
+	  	locationsContainer.on 'click', '.add-hackathon-location', (evt) ->
 	  		target = $(evt.delegateTarget)
 	  		target.load params.addHackathonLocationAction
 	  		, target.find(':input').serializeObject()
 	  		, () ->
 	  			thisObj.initTypeahead()
 	  						
-	  	$('#submitLocation').click () ->
+	  	$('#submitLocation').click (evt) ->
+	  		
+	  		if thisObj.mode == MODE_CREATE
+	  			action = params.saveLocationAction
+	  		else
+	  			hlm = $(LOCATION_MODAL_SELECTOR)
+	  			lc = thisObj.locationContainerByIndex(hlm.attr(LOCATION_CONTAINER_IDX_ATTR))		
+	  			action = '/locations/' + lc.find('[name$=".id"]').val() + '/update'	
 	  		$.ajax
 	  			type: 'POST',
-	  			url: params.saveLocationAction,
+	  			url: action,
 	  			data: $('#locationForm').serialize(),
 	  			dataType : 'html',
 	  			complete : (xhr, textStatus) ->
@@ -186,27 +264,23 @@ class HackathonLocations
   						responseText = r)
   					if textStatus is 'error'
 
-  						$('#locationBox').html($("<div>").append(responseText).html())
-  						that.initLocationsMap()
+  						$('#locationBox').html($("<div>").append(responseText).html())  						
+  						thisObj.initLocationsMap()
+  						
   					else
-  						hlm = $('.hackathon-location-modal')
+  						hlm = $(LOCATION_MODAL_SELECTOR)
   						hlm.modal('hide')
-  						lc = thisObj.locationContainerByIndex(hlm.attr('data-lc-id'))
+  						lc = thisObj.locationContainerByIndex(hlm.attr(LOCATION_CONTAINER_IDX_ATTR))
+  						lcForm = $('#locationForm')
   						nameInput = lc.find('[name$=".name"]')
-  						nameInput.val($('#locationForm').find('[name="name"]').val())
-  						nameInput.typeahead('lookup')
+  						nameInput.val(lcForm.find('[name="name"]').val())
+  						if thisObj.mode == MODE_CREATE
+  							nameInput.typeahead('lookup')
+  						else
+  							lc.find('[name$=".city"]').val(lcForm.find('[name="city"]').val())
+  							lc.find('[name$=".country"]').val(lcForm.find('[name="country"]').val())
+  							lc.find('[name$=".postalCode"]').val(lcForm.find('[name="postalCode"]').val())
+  							lc.find('[name$=".fullAddress"]').val(lcForm.find('[name="fullAddress"]').val())
+  							thisObj.rememberName(lc)
+  							thisObj.formatAdditionalHelp(lc)
 	  		false
-
-
-  init : (params) ->
-  	thisObj = this
-  	$(document).ready () ->
-  		thisObj.initLocationButtons()
-  		thisObj.initTypeahead()
-
-	
-  
-  
-  	  
-				
- 

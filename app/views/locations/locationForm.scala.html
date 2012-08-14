@@ -1,10 +1,12 @@
-@(action: play.api.mvc.Call, locationForm: Form[model.Location], scripts: Html = Html(""))(implicit request: Request[AnyContent], lang: Lang)
+@(action: play.api.mvc.Call, locationForm: Form[model.Location], adminView : Boolean = true, scripts: Html = Html(""))(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import helper.twitterBootstrap._
 
 @implicitFieldConstructor = @{ FieldConstructor(forms.twitterBootstrapInput.f) }
 
+<div class="row">
+<div class="span6">
 @form(action, 'id -> "locationForm", 'class -> "form-horizontal") {
  
 	@inputText(
@@ -47,5 +49,30 @@
 	    locationForm("longitude"),
 	    '_label -> Messages("locations.longitude.label"),
 	    '_showConstraints -> false
-	)	  
+	)
+	@if(adminView) {
+	
+	    @select(
+		    locationForm("status"),
+		    model.LocationStatus.values.map{ s => s.toString -> s.toString}.toSeq,
+		    '_label -> Messages("locations.status.label"),
+		    '_showConstraints -> false
+		)
+			
+		@locationFormButtons()
+		
+	} else {
+		
+		@if(locationForm("status").value.isDefined) {
+			@forms.hidden(locationForm("status"))
+		} else{
+			<input type="hidden" name="status" value="@model.LocationStatus.Unverified"/>
+		}
+		
+		
+	} 
 }
+</div>
+<div id="map-canvas" style="width:400px; height:360px" class="span5"></div>
+
+</div>
