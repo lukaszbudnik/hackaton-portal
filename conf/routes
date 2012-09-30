@@ -22,6 +22,7 @@ POST    /signup                     securesocial.controllers.Registration.handle
 
 # Authentication
 GET     /authenticate/:provider     securesocial.controllers.LoginPage.authenticate(provider)
+POST    /authenticate/:provider     securesocial.controllers.LoginPage.authenticateByPost(provider)
 
 # News routes
 # Create

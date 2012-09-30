@@ -14,7 +14,7 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
     users.get(id.id + id.providerId)
   }
 
-  def save(socialUser: SocialUser): SocialUser = {
+  def save(socialUser: SocialUser) = {
 
     val alreadyLoggedInSocialUser = find(socialUser.id)
 
@@ -23,7 +23,6 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
         Logger.debug("Already logged in updating users maps" + socialUser)
       }
       users = users + (socialUser.id.id + socialUser.id.providerId -> socialUser)
-      return socialUser
     }
 
     transaction {
@@ -32,7 +31,6 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
       val hackathonSocialUser = socialUser.copy(hackathonUserId = dbUser.id, isAdmin = dbUser.isAdmin)
 
       users = users + (hackathonSocialUser.id.id + hackathonSocialUser.id.providerId -> hackathonSocialUser)
-      hackathonSocialUser
     }
   }
 

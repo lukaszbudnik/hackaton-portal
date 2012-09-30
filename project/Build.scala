@@ -17,8 +17,17 @@ object ApplicationBuild extends Build {
       "postgresql" % "postgresql" % "9.1-901.jdbc4",
       "net.databinder" %% "dispatch-http" % "0.8.7",
       "net.databinder" %% "dispatch-mime" % "0.8.7",
-      "net.databinder" %% "dispatch-json" % "0.8.7"
+      "net.databinder" %% "dispatch-json" % "0.8.7",
+      "com.typesafe" %% "play-plugins-util" % "2.0.1",
+      "org.mindrot" % "jbcrypt" % "0.3m"
     )
-
-    val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(coffeescriptOptions := Seq("bare"))
+    
+    val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA)
+    .settings(
+      coffeescriptOptions := Seq("bare"),
+      resolvers ++= Seq(
+        "jBCrypt Repository" at "http://repo1.maven.org/maven2/org/",
+        "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+      )
+    )
 }
