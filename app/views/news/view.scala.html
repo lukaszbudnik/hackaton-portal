@@ -3,7 +3,7 @@
 @import helper._
 @import tags._
 
-@main(Messages("news.title"), user, nav = "news") {
+@main(Messages("news.title"), user, nav = "news", feed(routes.News.index)) {
 	
 	<div class="container">
 

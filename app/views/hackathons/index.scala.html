@@ -9,7 +9,7 @@
     <script src="@routes.Assets.at("javascripts/hackathons-map.js")" type="text/javascript"></script>
     <script type="text/javascript" src="@routes.JsMessagesFeed.jsMessages"></script>
     <script src="@routes.Assets.at("javascripts/tmpl.min.js")" type="text/javascript"></script>
-    
+    @feed(routes.Hackathon.index)
 }
 
 @main(Messages("hackathons.title"), user, nav = "hackathons", scripts) {

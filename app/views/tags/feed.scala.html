@@ -1,0 +1,9 @@
+@(call: play.api.mvc.Call, feeds: Iterable[String] = Seq("atom", "rss"))
+
+AAA
+
+@feeds.map { f =>
+  <link href="/@f/@call.toString().substring(1)" rel="alternate" title="@f" type="application/xml" />
+}
+
+BBB
