@@ -15,6 +15,7 @@ object ApplicationBuild extends Build {
       "org.squeryl" %% "squeryl" % "0.9.5-2",
       "com.h2database" % "h2" % "1.3.168",
       "postgresql" % "postgresql" % "9.1-901.jdbc4",
+      "rome" % "rome" % "1.0",
       "net.databinder" %% "dispatch-http" % "0.8.7",
       "net.databinder" %% "dispatch-mime" % "0.8.7",
       "net.databinder" %% "dispatch-json" % "0.8.7",

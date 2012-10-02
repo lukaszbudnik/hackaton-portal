@@ -12,6 +12,10 @@ GET     /changeLanguage/:lang       controllers.Application.changeLanguage(lang:
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
+GET		/:feed/news					controllers.Feed.news(feed: String)
+GET		/:feed/hackathons			controllers.Feed.hackathons(feed: String)
+GET     /:feed/hackathons/:hid/news	controllers.Feed.newsH(hid: Long, feed: String)
+
 # Login page
 GET     /login                      securesocial.controllers.LoginPage.login
 GET     /logout                     securesocial.controllers.LoginPage.logout

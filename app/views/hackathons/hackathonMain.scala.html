@@ -7,6 +7,9 @@
 	<link rel="stylesheet" href="@routes.Assets.at("stylesheets/docs.css")">
   	<script src="@routes.Assets.at("javascripts/subnav.js")" type="text/javascript"></script>
 	<script src="@routes.Assets.at("javascripts/entities-update.js")" type="text/javascript"></script>
+	@hackathon.map { hackathon =>
+		@feed(routes.News.indexH(hackathon.id))
+	}
 }
 
 @main(Messages("hackathons.view.title"), user, nav = "hackathons", scripts) {

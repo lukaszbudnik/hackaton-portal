@@ -12,7 +12,6 @@ import core.LangAwareController
 object Application extends LangAwareController with securesocial.core.SecureSocial {
 
   def index = UserAwareAction { implicit request =>
-    this.lang(request)
     Ok(views.html.index(request.user))
   }
 
@@ -29,7 +28,7 @@ object Application extends LangAwareController with securesocial.core.SecureSoci
   }
 
   def changeLanguage(lang: String) = UserAwareAction { implicit request =>
-    Redirect(request.headers.get("referer").getOrElse("/")).withSession(request.session + (SESSION_LANG_KEY -> lang))
+    Redirect(request.headers.get(REFERER).getOrElse("/")).withSession(request.session + (SESSION_LANG_KEY -> lang))
   }
 
 }
