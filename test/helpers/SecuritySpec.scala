@@ -15,7 +15,7 @@ class SecuritySpec extends Specification {
     }
     
     "should throw SecurityAbuseException when user is not an admin" in {
-      implicit val socialUser = SocialUser(UserId("id", "providerId"), "displayName", Some("email"), Some("avatarUrl"), AuthenticationMethod.OpenId, None, None, 123, false)
+      implicit val socialUser = SocialUser(UserId("id", "providerId"), "displayName", Some("email"), Some("avatarUrl"), AuthenticationMethod.OpenId)
       
       Security.verifyIfAllowed() must throwA[SecurityAbuseException]
     }

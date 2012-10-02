@@ -27,7 +27,7 @@ import play.api.{Logger, Plugin, Application}
  */
 trait UserService {
   /**
-   * Finds a SocialUser that matches the specified id
+   * Finds a SocialUser that maches the specified id
    *
    * @param id the user id
    * @return an optional user
@@ -39,7 +39,7 @@ trait UserService {
    * This is your chance to save the user information in your backing store.
    * @param user
    */
-  def save(user: SocialUser):SocialUser
+  def save(user: SocialUser)
 }
 
 /**
