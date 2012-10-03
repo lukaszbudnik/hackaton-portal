@@ -19,7 +19,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
       "text" -> nonEmptyText,
       "labelsAsString" -> nonEmptyText,
       "authorId" -> longNumber,
-      "publishedDate" -> date(Messages("global.dateformat")),
+      "publishedDate" -> date("dd-MM-yyyy"),
       "hackathonId" -> optional(longNumber))(model.News.apply)(model.News.unapply))
 
   def index = UserAwareAction { implicit request =>
