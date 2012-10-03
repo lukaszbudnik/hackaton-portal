@@ -3,6 +3,7 @@ project/project
 project/target
 bin
 target
+.target
 tmp
 .history
 dist
