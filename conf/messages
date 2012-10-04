@@ -309,7 +309,7 @@ notifications.email.team.deleted.subject = Your team has been deleted
 notifications.email.team.deleted.body = Hello,<br><br>"{0}" team has just been deleted<br>Go to hackathon page {1} and join another team or create a new one.<br><br>Best regards,<br>Hackaton.pl Team
 
 # App name
-securesocial.appName=SecureSocial 2
+securesocial.appName=hackaton.pl
 
 # Login page
 securesocial.login.title=Login
