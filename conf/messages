@@ -82,7 +82,8 @@ about.credits.title = Credits
 contact.title = Contact
 contact.text = For any queries regarding the hackaton.pl or hackaton-portal please contact Łukasz Budnik at l.budnik@kainos.com. If you wish to ask about a specific hackathon please go to its home page and see contact details.
 
-profile.title = Your profile
+profile.title   = Your profile
+profile.welcome = Welcome
 
 news.title = News
 news.addNews = Add a news
