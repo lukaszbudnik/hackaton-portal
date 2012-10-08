@@ -4,7 +4,6 @@ years = 2012
 error.date = Wrong date
 error.unknown = Unknown error occured
 
-
 fileupload.server.error = Error occured while uploading a file
 js.fileupload.filetoobig = File is too big
 js.fileupload.filetoosmall = File is too small
@@ -71,14 +70,8 @@ home.news3.title = Become a sponsor
 home.news3.text = If you wish to become a sponsor do not hesitate to contact us. A full list of our sponsors is here.
 
 about.title = About Hackathons
-about.idea.title = About Hackathons
-about.idea.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
+about.text = Hackathons are all about charity. Programers, consultants, managers and people from charity/non-commercial organisations/health/public sector gather together and try to address issues by writing a dedicated software. For free!
  
-about.platform.title = About hackaton-portal
-about.platform.text = Hackton-portal (a platform which powers this site) is an open-source project licensed under Apache License 2.0. Feel free to fork and contribute using GitHub: <a href="http://github.com/lukasz-budnik/hackaton-portal" target="_blank">hackaton-portal</a>.
-
-about.credits.title = Credits
-
 contact.title = Contact
 contact.text = For any queries regarding the hackaton.pl or hackaton-portal please contact Łukasz Budnik at l.budnik@kainos.com. If you wish to ask about a specific hackathon please go to its home page and see contact details.
 
