@@ -8,10 +8,18 @@ import play.api.Logger
 import play.api.mvc.RequestHeader
 import play.api.i18n.Lang
 import core.LangAwareController
+import play.api.cache.Cache
 
 object Application extends LangAwareController with securesocial.core.SecureSocial {
 
+  val key = "key"
+  val value = "this is a text"
+  // in seconds
+  val expiration = 100
+
   def index = UserAwareAction { implicit request =>
+    Cache.set(key, value, expiration)
+    val valueOption = Cache.getAs[String](key)
     Ok(views.html.index(request.user))
   }
 

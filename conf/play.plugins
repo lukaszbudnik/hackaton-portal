@@ -1,3 +1,4 @@
+5000:com.github.mumoshu.play2.memcached.MemcachedPlugin
 9998:service.UserService
 10000:securesocial.core.providers.TwitterProvider
 10001:securesocial.core.providers.FacebookProvider
