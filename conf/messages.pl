@@ -68,7 +68,8 @@ about.text  = <h2>Idea</h2><p>Hackatony to charytatywne imprezy na których prog
 contact.text  = <p>W razie jakichkolwiek pytań dotyczących portalu hackaton.pl, sponsoringu bądź platformy hackaton-portal, prosimy o kontakt z:</p><ul><li>Łukasz Budnik, l.budnik@kainos.com</li><li>Daniel Bykowski, d.bykowski@kainos.com</li></ul><p>W razie jakichkolwiek pytań dotyczących konkretnego hackatonu należy przejść na stronę danego hackatonu, gdzie podane są dane kontaktowe organizatora.</p>
 contact.title = Kontakt
 
-profile.title = Twoje konto
+profile.title   = Twoje konto
+profile.welcome = Witaj
 
 news.title = Aktualności
 news.addNews = Dodaj wiadomość

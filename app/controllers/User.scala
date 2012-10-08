@@ -3,6 +3,8 @@ package controllers
 import play.api.Play.current
 import play.api.mvc.Action
 import play.api.mvc.Controller
+import play.api.data._
+import play.api.data.Forms._
 import org.squeryl.PrimitiveTypeMode.transaction
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
@@ -13,6 +15,15 @@ import core.LangAwareController
 
 object User extends LangAwareController with securesocial.core.SecureSocial {
   
+  val userForm = Form(
+    mapping(
+      "name" -> text,
+      "email" -> text
+    )
+    ((name, email) => model.User(name, email, "", "", "", "", false, false))
+    ((user: model.User) => Some(user.name, user.email))
+  )
+
   private val PAGE_SIZE = 20
 
   def index(page: Int, orderBy: Int, filter: String) = SecuredAction() { implicit request =>
@@ -53,7 +64,7 @@ object User extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
     
-    def updateIsBlocked(userId: Int, isBlocked: Boolean) = SecuredAction() { implicit request =>
+  def updateIsBlocked(userId: Int, isBlocked: Boolean) = SecuredAction() { implicit request =>
     transaction {
       
       implicit val socialUser = request.user
@@ -73,4 +84,15 @@ object User extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
+  def profile = SecuredAction() { 
+    implicit request => transaction {
+      val id = request.user.hackathonUserId;
+      val user = model.User.lookup(id)
+      user.map { u =>
+        Ok(views.html.users.profile(userForm.fill(u), request.user))
+      }.getOrElse {
+        Redirect(securesocial.controllers.routes.LoginPage.login).flashing()
+      }
+    }
+  }
 }

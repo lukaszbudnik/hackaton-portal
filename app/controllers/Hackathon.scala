@@ -32,7 +32,7 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
       "id" -> toJson(h.hackathon.id),
       "subject" -> toJson(h.hackathon.subject),
       "status" -> toJson(h.hackathon.status.id.toString),
-      "date" -> toJson(new SimpleDateFormat(Messages("global.dateformat")).format(h.hackathon.date)),
+      "date" -> toJson(new SimpleDateFormat("dd-MM-yyyy").format(h.hackathon.date)),
       "locations" -> toJson(h.locations.map {
     	  l => toJson(Map(
     	  	"id" -> toJson(l.id),
@@ -103,7 +103,7 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
     mapping(
       "subject" -> nonEmptyText,
       "status" -> enum(model.HackathonStatus),
-      "date" -> date(Messages("global.dateformat")),
+      "date" -> date("dd-MM-yyyy"),
       "description" -> nonEmptyText,
       "organizerId" -> longNumber,
       "new_problems_disabled" -> boolean,
@@ -194,7 +194,8 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
     
       val hackathon = new model.dto.HackathonWithLocations(new model.Hackathon(request.user.hackathonUserId)
       , List[model.Location](new model.Location)) 
-      Ok(views.html.hackathons.create(hackathonForm.fill(hackathon), request.user))
+      val formData = hackathonForm.fill(hackathon)
+      Ok(views.html.hackathons.create(formData, request.user))
     }
   }
 
