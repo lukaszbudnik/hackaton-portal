@@ -188,3 +188,6 @@ POST    /users/:id/isBlocked/:isBlocked controllers.User.updateIsBlocked(id: Int
 
 # jsmessages subproject
 GET     /messages.js                controllers.JsMessagesFeed.jsMessages
+
+# Content manipulation
+GET		/content					controllers.Content.index
