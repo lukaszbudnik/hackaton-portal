@@ -1,0 +1,21 @@
+@(entries: Seq[cms.dto.Entry])
+
+@import helper._
+
+
+	<table class="table table-condensed">
+		<tr>
+			<th>Key</th>
+			<th>Type</th>
+			<th>Contents</th>
+		<tr>
+		@entries.map { e =>
+			<tr>
+				<td>@e.key</td>
+				<td>@e.entryType</td>
+				<td>@e.contents.size element(s)</td>
+				<td><a href="@routes.Content.view(e.key)">View Entry</a>
+			</tr>
+		}
+	</table>
+
