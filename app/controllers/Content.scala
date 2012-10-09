@@ -11,6 +11,7 @@ object Content extends core.LangAwareController {
 	}
 	
 	def view(key: String) = Action{
-	  Ok("in progress, in future will fetch details for entry "+key)
+	  var entry = ContentManager.find(key).get
+	  Ok(views.html.content.view(entry))
 	}
 }
