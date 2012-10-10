@@ -12,8 +12,6 @@ import play.api.cache.Cache
 import org.squeryl.PrimitiveTypeMode.transaction
 import play.api.data.Forms._
 import play.api.data.Form
-//import model.User
-//import model.User$
 
 object Application extends LangAwareController with securesocial.core.SecureSocial {
 
@@ -25,14 +23,7 @@ object Application extends LangAwareController with securesocial.core.SecureSoci
       "twitter_account" -> nonEmptyText,
       "avatar_url" -> text)((name, email, github_username, twitter_account, avatar_url) => model.User(name, email, github_username, twitter_account, avatar_url, "", false, false))((user: model.User) => Some(user.name, user.email, user.githubUsername, user.twitterAccount, user.avatarUrl)))
 
-  val key = "key"
-  val value = "this is a text"
-  // in seconds
-  val expiration = 100
-
   def index = UserAwareAction { implicit request =>
-    Cache.set(key, value, expiration)
-    val valueOption = Cache.getAs[String](key)
     Ok(views.html.index(request.user))
   }
 

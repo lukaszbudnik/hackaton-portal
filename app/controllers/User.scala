@@ -15,8 +15,6 @@ import core.LangAwareController
 
 object User extends LangAwareController with securesocial.core.SecureSocial {
   
-
-
   private val PAGE_SIZE = 20
 
   def index(page: Int, orderBy: Int, filter: String) = SecuredAction() { implicit request =>
