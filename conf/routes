@@ -191,4 +191,4 @@ GET     /messages.js                controllers.JsMessagesFeed.jsMessages
 
 # Content manipulation
 GET		/content					controllers.Content.index
-GET     /content/:key    			controllers.Content.view(key: String)
+GET     /content/:key    			controllers.Content.view(key: String, mode: String = "view")
