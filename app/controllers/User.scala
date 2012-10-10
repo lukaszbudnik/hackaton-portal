@@ -15,14 +15,7 @@ import core.LangAwareController
 
 object User extends LangAwareController with securesocial.core.SecureSocial {
   
-  val userForm = Form(
-    mapping(
-      "name" -> text,
-      "email" -> text
-    )
-    ((name, email) => model.User(name, email, "", "", "", "", false, false))
-    ((user: model.User) => Some(user.name, user.email))
-  )
+
 
   private val PAGE_SIZE = 20
 
@@ -84,15 +77,5 @@ object User extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def profile = SecuredAction() { 
-    implicit request => transaction {
-      val id = request.user.hackathonUserId;
-      val user = model.User.lookup(id)
-      user.map { u =>
-        Ok(views.html.users.profile(userForm.fill(u), request.user))
-      }.getOrElse {
-        Redirect(securesocial.controllers.routes.LoginPage.login).flashing()
-      }
-    }
-  }
+
 }

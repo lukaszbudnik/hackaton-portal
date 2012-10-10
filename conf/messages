@@ -77,6 +77,7 @@ contact.text = For any queries regarding the hackaton.pl or hackaton-portal plea
 
 profile.title   = Your profile
 profile.welcome = Welcome
+profile.updated = Profile updated
 
 news.title = News
 news.addNews = Add a news

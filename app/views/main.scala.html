@@ -59,9 +59,9 @@
                   <li class="@("active".when(nav == "users"))"><a href="@routes.User.index()">@Messages("navigation.users")</a></li>
                   <li class="@("active".when(nav == "locations"))"><a href="@routes.Location.index()">@Messages("navigation.locations")</a></li>
                 }
-                <li class="@("active".when(nav == "profile"))"><a href="@routes.User.profile">@user.displayName</a></li>
+                <li class="@("active".when(nav == "profile"))"><a href="@routes.Application.profile">@user.displayName</a></li>
               }.getOrElse {
-                <li><a href="@routes.User.profile">@Messages("navigation.login")</a></li>
+                <li><a href="@routes.Application.profile">@Messages("navigation.login")</a></li>
               }
 			</ul>
 			<ul class="nav pull-right">
