@@ -1,0 +1,39 @@
+@(eForm: Form[cms.dto.Entry], actionToRun: play.api.mvc.Call, edit: Boolean)
+
+@import helper._
+
+
+@form(action = actionToRun, 'id -> "entryForm"){
+	@if(edit){
+		@inputText(eForm("key"),
+		'_label -> "Key",
+		'_showConstraints -> false,
+		'readonly -> "readonly"
+		)
+	}else{
+		@inputText(eForm("key"),
+		'_label -> "New Key",
+		'_showConstraints -> false
+		)
+	}
+	 
+	@select(eForm("entryType"),
+		cms.dto.EntryType.values.map{ s => s.toString -> s.toString }.toSeq,
+		'_label -> "Entry type",
+		'_showConstraints -> false
+	)
+	<table>
+	@repeat(eForm("content"), min = 1) { contentField =>
+		<tr>
+			<td>@inputText(contentField("lang"),
+			'_label -> "lang")</td>
+			<td> @inputText(contentField("value"),
+			'_label -> "value")</td>
+		</tr> 
+	}
+	</table>
+	
+	<input type="submit" />
+}
+
+

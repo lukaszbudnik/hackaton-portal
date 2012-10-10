@@ -1,37 +1,15 @@
-@(entry: Option[cms.dto.Entry], mode: String) @import helper._
+@(entry: Option[cms.dto.Entry], edit: Boolean) @import helper._
 
-
-<div id="entryInfo">
 	@entry.map { e =>
-	<form id="entryInfoForm">
-		<div>
-			<label for="key">Entry's key</label> <input id="key" value="@e.key" @if(mode == "view" || mode == "edit") {readonly = "readonly"}/>
-		</div>
-		<div>
-			<label for="entryType">Entry's type</label> <input id="entryType" value="@e.entryType" @if(mode == "view") {readonly = "readonly"}/>
-		</div>
-		<div>
-			<h4>Entry's content</h4>
-			<input id="addRow" type="button" onclick="alert('not implemented')" value="Add row" />
-			<table>
-				<tr>
-					<th>Lang</th>
-					<th>Value</th>
-				</tr>
-				@e.contents.map { c =>
-					<tr>
-						<td>@c.lang</td>
-						<td>@c.value</td>
-						<td><input id="deleteRow" type="button" onclick="alert('not implemented')" value="-" /></td>
-					</tr>
-				}
-			</table>
-		</div>
-	</form>
+		@if(edit){	
+			@entryForm(controllers.Content.entryForm.fill(e),routes.Content.update(e.key),edit)
+		}else{
+			@entryForm(controllers.Content.entryForm.fill(e),routes.Content.save,edit)
+		}
 	}.getOrElse {
 		<p>entry not found</p>
 	}
-</div>
+
 
 
 
