@@ -1,48 +1,21 @@
-@(user: securesocial.core.SocialUser)(implicit request: Request[AnyContent], lang: Lang)
-
+@(userForm: Form[model.User],user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@import tags._
 @main(Messages("profile.title"), Some(user), nav = "profile") {
   
 <div class="container">
 
-	<div class="page-header">
-    	<h2>@if(user.avatarUrl) { <img src="@user.avatarUrl" alt="@user.displayName" width="40px" height="40px"/> } Welcome @user.displayName</h2>
-    </div>
-
-    <div class="clearfix">
-    	<h2>User Details</h2>
-
-    <ul>
-        <li>User Id: @user.id.id</li>
-    	<li>User Hackathone Id: @user.hackathonUserId</li>
-        <li>User: @user</li>
-        <li>Logged in from: @user.id.providerId</li>
-        <li>Email: @user.email.map { email => @email }.getOrElse("Not Available")</li>
-        <li>Is admin: @user.isAdmin</li>
-        <li>Authentication method: @user.authMethod</li>
-    </ul>
-
-        @user.oAuth1Info.map { info =>
-        	<h2>OAuth1 Info</h2>
-
-        	<ul>
-            	<li>Token: @info.token</li>
-            	<li>Secret: @info.secret</li>
-        	</ul>
-        }
-
-        @user.oAuth2Info.map { info =>
-        	<h2>OAuth2 Info</h2>
-
-        	<ul>
-            	<li>Access Token: @info.accessToken</li>
-        		@info.tokenType.map { t => <li>Token Type: @t</li> }
-        		@info.expiresIn.map { exp => <li>Expires in: @exp seconds</li>}
-        		@info.refreshToken.map { rt => <li>Refresh Token: @rt</li>}
-        	</ul>
-        }
-        
-        <hr><a class="btn" href="@securesocial.controllers.routes.LoginPage.logout()">Logout</a>
-
+	 <div class="container">
+        <div class="page-header">
+            <h2>
+                @if(user.avatarUrl) { 
+                    <img src="@user.avatarUrl" alt="@user.displayName" width="40px" height="40px"/> 
+                }
+                @Messages("profile.welcome") @user.displayName !
+            </h2>
+        </div>
+        @flashing("profile")
+        @form(userForm, routes.Application.updateProfile)
     </div>
 </div>
+                
 }

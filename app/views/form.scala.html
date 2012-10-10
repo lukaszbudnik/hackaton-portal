@@ -1,0 +1,33 @@
+@(userForm: Form[model.User], action: play.api.mvc.Call)
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@helper.form(action){
+	@inputText(
+        userForm("name"),
+        '_label -> "Name",
+        '_showConstraints -> false
+    )
+    @inputText(
+        userForm("email"),
+        '_label -> "E-mail",
+        '_showConstraints -> false
+    )
+    @inputText(
+        userForm("github_username"),
+        '_label -> "GitHub user name",
+        '_showConstraints -> false
+    )
+    @inputText(
+        userForm("twitter_account"),
+        '_label -> "Twitter account",
+        '_showConstraints -> false
+    )
+    @inputText(
+        userForm("avatar_url"),
+        '_label -> "Avatar URL",
+        '_showConstraints -> false
+    )
+    <button type="submit" class="btn">@Messages("global.submit")</button>
+}
