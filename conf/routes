@@ -191,7 +191,7 @@ GET     /messages.js                controllers.JsMessagesFeed.jsMessages
 
 # Content manipulation
 GET		/content					controllers.Content.index
-GET     /content/create 			controllers.Content.create
+GET     /content/new	 			controllers.Content.create
+POST 	/content					controllers.Content.save
 POST	/content/:key/update		controllers.Content.update(key: String)
-GET		/content/:key/edit			controllers.Content.view(key: String)
-POST 	/content/save				controllers.Content.save
+GET		/content/:key/edit			controllers.Content.edit(key: String)

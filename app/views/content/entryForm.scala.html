@@ -1,16 +1,14 @@
-@(eForm: Form[cms.dto.Entry], actionToRun: play.api.mvc.Call, edit: Boolean)
+@(eForm: Form[cms.dto.Entry], actionToRun: play.api.mvc.Call, create: Boolean = false)
 
 @import helper._
 
-
 @form(action = actionToRun, 'id -> "entryForm"){
-	@if(edit){
+	@if(create) {
 		@inputText(eForm("key"),
 		'_label -> "Key",
-		'_showConstraints -> false,
-		'readonly -> "readonly"
+		'_showConstraints -> false
 		)
-	}else{
+	} else {
 		@inputText(eForm("key"),
 		'_label -> "New Key",
 		'_showConstraints -> false
