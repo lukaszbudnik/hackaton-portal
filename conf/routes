@@ -195,3 +195,4 @@ GET     /content/new	 			controllers.Content.create
 POST 	/content					controllers.Content.save
 POST	/content/:key/update		controllers.Content.update(key: String)
 GET		/content/:key/edit			controllers.Content.edit(key: String)
+GET    	/content/:key/delete		controllers.Content.delete(key: String)

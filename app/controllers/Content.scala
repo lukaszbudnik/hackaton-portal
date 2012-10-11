@@ -66,6 +66,13 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
 
   }
 
-  def delete(key: String) = TODO
-
+  def delete(key: String) = SecuredAction() { implicit request =>
+    val entry = ContentManager.find(key)
+    entry.map { entry =>
+          ContentManager.remove(entry)
+          Redirect(routes.Content.index)
+    }.getOrElse {
+    	Redirect(routes.Content.index)
+    	}
+  	}
 }
