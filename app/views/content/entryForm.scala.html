@@ -1,4 +1,4 @@
-@(eForm: Form[cms.dto.Entry], actionToRun: play.api.mvc.Call, create: Boolean = false)
+@(eForm: Form[cms.dto.Entry], actionToRun: play.api.mvc.Call, create: Boolean = false)(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
 
@@ -33,5 +33,6 @@
 	
 	<input type="submit" />
 }
+
 
 

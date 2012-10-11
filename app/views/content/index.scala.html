@@ -1,8 +1,9 @@
-@(entries: Seq[cms.dto.Entry])
+@(entries: Seq[cms.dto.Entry], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
+@import tags._
 
-
+@main("CMS - Content Editor", user, nav="cms") {
 	<table>
 		<tr>
 			<th>Key</th>
@@ -18,4 +19,5 @@
 			</tr>
 		}
 	</table>
+}
 
