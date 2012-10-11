@@ -4,20 +4,29 @@
 @import tags._
 
 @main("CMS - Content Editor", user, nav="cms") {
-	<table>
-		<tr>
-			<th>Key</th>
-			<th>Type</th>
-			<th>Contents</th>
-		<tr>
-		@entries.map { e =>
+	<p>
+		<a id="addNewEntry" class="btn btn-primary" href="@routes.Content.create">@Messages("add_new_entry")</a>
+	</p>
+	<div>
+		<table id="entryTable">
+			<thead>
 			<tr>
-				<td>@e.key</td>
-				<td>@e.entryType</td>
-				<td>@e.contents.size element(s)</td>
-				<td><a href="@routes.Content.edit(e.key)">Edit Entry</a>
+				<th>Key</th>
+				<th>Type</th>
+				<th>Contents</th>
 			</tr>
-		}
-	</table>
+			</thead>
+			@entries.map { e =>
+			<tbody>
+				<tr>
+					<td>@e.key</td>
+					<td>@e.entryType</td>
+					<td>@e.contents.size element(s)</td>
+					<td><a href="@routes.Content.edit(e.key)">Edit Entry</a>
+				</tr>
+			}
+			</tbody>
+		</table>
+	</div>	
 }
 
