@@ -70,6 +70,7 @@ contact.title = Kontakt
 
 profile.title   = Twoje konto
 profile.welcome = Witaj
+profile.updated = Zapisano profil
 
 news.title = Aktualności
 news.addNews = Dodaj wiadomość
