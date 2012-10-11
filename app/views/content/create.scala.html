@@ -1,9 +1,9 @@
-@(eForm: Form[cms.dto.Entry])
+@(eForm: Form[cms.dto.Entry], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
-
-@entryForm(eForm, routes.Content.save, true)
-
+@main("CMS - Content Editor", user, nav="cms") {
+	@entryForm(eForm, routes.Content.save, true)
+}
 
 
 
