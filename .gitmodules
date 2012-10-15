@@ -1,0 +1,3 @@
+[submodule "modules/play-cloud-plugins"]
+	path = modules/play-cloud-plugins
+	url = git@github.com:lukasz-budnik/play-cloud-plugins.git
