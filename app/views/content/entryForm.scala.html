@@ -2,6 +2,37 @@
 
 @import helper._
 
+<script type="text/javascript">
+	var addRow = function () {		
+		var newIndex = document.getElementsByName("entryRow").length;
+		var tableD = document.getElementById("langContentTable");
+		var tableBody = document.getElementById("langContentTable").getElementsByTagName("tbody")[0];
+		var endIndex=parseInt(tableD.getAttribute("endIndex"));
+		if(endIndex >= newIndex){
+			newIndex =  endIndex + 1;
+		}
+		tableBody.innerHTML = tableBody.innerHTML + '<tr name=entryRow id=entryRowcontent['+newIndex+']><td><input id=content[' + newIndex + '].lang name=content[' + newIndex +'].lang type=text /></td>' +
+		'<td><input id=content[' + newIndex + '].value name=content[' + newIndex +'].value type=text /></td></tr>'
+		tableD.removeAttribute("endIndex");
+		tableD.setAttribute("endIndex",newIndex);
+		
+	}
+	var removeRow = function (rowId) {
+		var rowToRemove = document.getElementById(rowId);
+		if( rowToRemove != null && rowToRemove != undefined){
+			var numberOfRows = document.getElementsByName("entryRow").length;
+			var tableD = document.getElementById("langContentTable");
+			var endIndex=parseInt(tableD.getAttribute("endIndex"));
+			if(endIndex < numberOfRows){
+				tableD.removeAttribute("endIndex");
+				tableD.setAttribute("endIndex",numberOfRows);
+			}
+			var tableBody = document.getElementById("langContentTable").getElementsByTagName("tbody")[0];
+			tableBody.removeChild(rowToRemove);
+		}
+	}
+</script>
+
 @form(action = actionToRun, 'id -> "entryForm"){
 	@if(create) {
 		@inputText(eForm("key"),
@@ -11,7 +42,8 @@
 	} else {
 		@inputText(eForm("key"),
 		'_label -> "New Key",
-		'_showConstraints -> false
+		'_showConstraints -> false,
+		'readonly -> "readonly"
 		)
 	}
 	 
@@ -20,18 +52,20 @@
 		'_label -> "Entry type",
 		'_showConstraints -> false
 	)
-	<table>
+	<table id="langContentTable" endIndex="-1">
+		<th>Lang</th>
+		<th>Value</th>
 	@repeat(eForm("content"), min = 1) { contentField =>
-		<tr>
-			<td>@inputText(contentField("lang"),
-			'_label -> "lang")</td>
-			<td> @inputText(contentField("value"),
-			'_label -> "value")</td>
+		<tr name="entryRow" id="entryRow@contentField.name">
+			<td><input id='@contentField("lang").name' name='@contentField("lang").name' type="text" value='@contentField("lang").value' /></td>
+			<td><input id='@contentField("value").name' name='@contentField("value").name' type="text" value='@contentField("value").value' /></td>
+			<td><input value='REMOVE (broken)' onclick='removeRow("entryRow@contentField.name")' type="button" class="btn"/></td>
 		</tr> 
 	}
 	</table>
+	<input type="button" onclick="addRow()" value="+ Row" class="btn"/>
 	
-	<input type="submit" />
+	<input type="submit" class="btn btn-primary"/>
 }
 
 
