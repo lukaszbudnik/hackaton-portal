@@ -42,10 +42,6 @@ object ContentManager {
 
   def cache[A](key: String)(f: => A): A = {
     val fullKey = "entries_" + key
-    
-    if (key == "all") {
-      println(Cache.get(fullKey))
-    }
 
     Cache.get(fullKey) match {
       case Some(e: A) if e != None => {
