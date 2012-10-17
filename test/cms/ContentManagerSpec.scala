@@ -14,20 +14,21 @@ import play.api.Play
 class ContentManagerSpec extends Specification {
 
   running(FakeApplication()) {
-	  val skipAll = Play.current.configuration.getString("mongodb.uri").get == "mock"
-	  args(skipAll = skipAll)
+    val skipAll = Play.current.configuration.getString("mongodb.uri").get == "mock"
+    args(skipAll = skipAll)
   }
-  
+
   "ContentManager" should {
 
     "remove entries" in {
       running(FakeApplication()) {
-        
-        
         for (e <- ContentManager.all) {
           ContentManager.remove(e)
+          // should be flushed from cache as well
+          val old = ContentManager.find(e.key)
+          old must beNone
         }
-        utils.AA.importRecords
+
         ContentManager.all.size must equalTo(0)
       }
     }
@@ -68,7 +69,6 @@ class ContentManagerSpec extends Specification {
           }
         }
       }
-
     }
 
     "find entry by key" in {
@@ -77,6 +77,15 @@ class ContentManagerSpec extends Specification {
         val entry = ContentManager.find(key)
 
         entry must beSome.which {
+          _ match {
+            case e: Entry if e.key == key && e.contents.map(_.lang) == List("pl", "en") => true
+            case _ => false
+          }
+        }
+
+        val entry2 = ContentManager.find(key)
+
+        entry2 must beSome.which {
           _ match {
             case e: Entry if e.key == key && e.contents.map(_.lang) == List("pl", "en") => true
             case _ => false
@@ -91,7 +100,7 @@ class ContentManagerSpec extends Specification {
         val messages = ContentManager.filtered(EntryType.Message)
 
         messages.size must equalTo(1)
-        
+
         val html = ContentManager.filtered(EntryType.HTML)
 
         html.size must equalTo(2)

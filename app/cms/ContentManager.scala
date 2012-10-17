@@ -11,8 +11,10 @@ import play.api.cache.Cache
 import cms.dto.EntryType
 
 object ContentManager {
-  
+
   val defaultLanguage = "en"
+  // in seconds
+  val defaultTTL = 1000
 
   import play.api.Play.current
   import com.mongodb.casbah.Imports._
@@ -38,12 +40,32 @@ object ContentManager {
 
   private lazy val entries = mongoDB("entries")
 
-  private def addToCache(key: String, c: Any) = {
-    Cache.set("entries_find_" + key, c, 1000)
+  def cache[A](key: String)(f: => A): A = {
+    val fullKey = "entries_" + key
+    
+    if (key == "all") {
+      println(Cache.get(fullKey))
+    }
+
+    Cache.get(fullKey) match {
+      case Some(e: A) if e != None => {
+        e
+      }
+      case _ => {
+        val e = f
+        Cache.set(fullKey, e, defaultTTL)
+        e
+      }
+    }
   }
 
   def remove(entry: Entry) = {
     entries.remove(grater[Entry].asDBObject(entry))
+    // invalidate cache
+    println("invalidate cache")
+    Cache.set("entries_" + entry.key, None, defaultTTL)
+    Cache.set("entries_all", None, defaultTTL)
+    Cache.set("entries_filtered_" + entry.entryType, None, defaultTTL)
   }
 
   def create(entry: Entry) = {
@@ -51,50 +73,31 @@ object ContentManager {
   }
 
   def update(entry: Entry) = {
-    val cacheKey = "entry_" + entry.key
-
     val q = MongoDBObject("key" -> entry.key)
     val oldEntry = entries.findOne(q).get
     entries.update(oldEntry, grater[Entry].asDBObject(entry))
-
-    addToCache(cacheKey, entry)
+    // update cache with newly updated entry
+    val fullKey = "entries_" + entry.key
+    Cache.set(fullKey, Some(entry), defaultTTL)
   }
 
   def find(key: String) = {
-    val cacheKey = "entry_" + key
-
-    Cache.getAs[Entry](cacheKey) match {
-      case c: Entry => Option(c)
-      case None => {
-        val q = MongoDBObject("key" -> key)
-        val opC = entries.findOne(q).map(grater[Entry].asObject(_))
-        opC.map {
-          c => addToCache(cacheKey, c)
-        }
-        opC
-      }
+    cache(key) {
+      val q = MongoDBObject("key" -> key)
+      entries.findOne(q).map(grater[Entry].asObject(_))
     }
-
   }
 
   def all = {
-    Cache.getAs[Seq[Entry]]("entries_all").getOrElse {
-      val c = entries.map(grater[Entry].asObject(_)).toSeq
-      if (!c.isEmpty) {
-        addToCache("entries_all", c)
-      }
-      c
+    cache("all") {
+      entries.map(grater[Entry].asObject(_)).toList
     }
   }
 
   def filtered(entryType: EntryType.Value) = {
-    Cache.getAs[Seq[Entry]]("entries_filtered_" + entryType).getOrElse {
+    cache("filtered_" + entryType) {
       val q = MongoDBObject("entryType" -> entryType.toString())
-      val c = entries.find(q).map(grater[Entry].asObject(_)).toSeq
-      if (!c.isEmpty) {
-        addToCache("entries_filtered_" + entryType, c)
-      }
-      c
+      entries.find(q).map(grater[Entry].asObject(_)).toList
     }
   }
 
