@@ -1,13 +1,13 @@
 @(ex: java.lang.Throwable)
 
-@error(Messages("generalError.title")) {
+@error(helpers.CmsMessages("generalError.title")) {
 
 	<div class="container">
     
 	    <div class="page-header">
-	    <h1>@Messages("generalError.title")</h1>
+	    <h1>@helpers.CmsMessages("generalError.title")</h1>
 		<br/>
-		@Html(Messages("generalError.text"))
+		@Html(helpers.CmsMessages("generalError.text"))
 	    </div>
 
     </div>

@@ -12,7 +12,7 @@
 		 *@
 		 
         @if((user.isDefined && (user.get.isAdmin || user.get.hackathonUserId == hackathon.organiserId || !hackathon.newProblemsDisabled ) )) {
-			<a class="btn btn-success" href="@routes.Problem.create(hackathon.id)">@Messages("problems.addProblem")</a>
+			<a class="btn btn-success" href="@routes.Problem.create(hackathon.id)">@helpers.CmsMessages("problems.addProblem")</a>
 		}
 
     	@hackathon.problems.map { problem =>
@@ -29,8 +29,8 @@
 
     			<div class="page-header problem" data-problem-id="@problem.id">
     				<h2>@problem.name @problemActions(hackathon, problem, user)</h2>
-    				<p>@Messages("problems.submitter.label"): @problem.submitter.name</p>
-    				<p><a class="btn" href="@routes.Problem.view(hackathon.id, problem.id)">@Messages("global.readMore")</a></p>
+    				<p>@helpers.CmsMessages("problems.submitter.label"): @problem.submitter.name</p>
+    				<p><a class="btn" href="@routes.Problem.view(hackathon.id, problem.id)">@helpers.CmsMessages("global.readMore")</a></p>
     			</div>
     		  
     		}
@@ -47,7 +47,7 @@
 
 		 @if(hackathon.problems.size == 0 || (user.isEmpty && hackathon.problems.filter(_.status == model.ProblemStatus.Approved).size == 0)  || (user.isDefined && hackathon.problems.filterNot(_.status == model.ProblemStatus.Approved).filterNot(_.submitterId == user.get.hackathonUserId).size == hackathon.problems.size)) {
     		<div class="page-header">
-            	<h2>@Messages("problems.empty.text")</h2>
+            	<h2>@helpers.CmsMessages("problems.empty.text")</h2>
         	</div>
     	}
 

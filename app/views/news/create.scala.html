@@ -1,10 +1,10 @@
 @(newsForm: Form[model.News], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent], lang: Lang)
 
-@main(Messages("news.create.title"), Some(user), nav = "news") {
+@main(helpers.CmsMessages("news.create.title"), Some(user), nav = "news") {
 	<div class="container">
 
     	<div class="page-header">
-    		<h2>@Messages("news.create.title")</h2>
+    		<h2>@helpers.CmsMessages("news.create.title")</h2>
 		</div>
   
     	@news.newsForm(None, newsForm, routes.News.save, "news.publish")

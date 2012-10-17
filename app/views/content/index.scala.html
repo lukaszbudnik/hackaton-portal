@@ -5,7 +5,7 @@
 
 @main("CMS - Content Editor", user, nav="cms") {
 	<p>
-		<a id="addNewEntry" class="btn btn-primary" href="@routes.Content.create">@Messages("add_new_entry")</a>
+		<a id="addNewEntry" class="btn btn-primary" href="@routes.Content.create">@helpers.CmsMessages("add_new_entry")</a>
 	</p>
 	<div>
 		<table id="entryTable">

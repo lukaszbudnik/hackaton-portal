@@ -200,6 +200,7 @@ teams.suspend.label = Suspend
 teams.approve.label = Approve
 teams.verify.label = Verify
 teams.block.label = Block
+teams.delete.label = Delete
 teams.update.success = Team successfully updated
 teams.delete.success = Team successfully deleted
 teams.update.error = Failed to update team

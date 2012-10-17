@@ -10,7 +10,7 @@
 @main("locations.edit.title", Some(user), "locations",scripts) {
 	<div class="container">
     	<div class="page-header">
-    		<h2>@Messages("locations.edit.title")</h2>
+    		<h2>@helpers.CmsMessages("locations.edit.title")</h2>
 		</div>
 
 		@locations.locationForm(action, locationForm)

@@ -11,21 +11,32 @@ import play.api.cache.Cache
 import cms.dto.EntryType
 
 object ContentManager {
+  
+  val defaultLanguage = "en"
 
-  private val parsingRegex = """mongodb://(.+)[:](.+)[@](.+)[:](\d+)[/](.+)""".r
+  import play.api.Play.current
+  import com.mongodb.casbah.Imports._
+  import com.mongodb.casbah.MongoURI
 
-  private lazy val entries = {
+  private val fullParsingRegex = """mongodb://(.+)[:](.+)[@](.+)[:](\d+)[/](.+)""".r
+  private val simpleParsingRegex = """mongodb://(.+)[/](.+)""".r
+
+  lazy val mongoDB = {
     val mongoUri = current.configuration.getString("mongodb.uri").getOrElse {
       throw new RuntimeException("mongodb.uri could not be resolved")
     }
     mongoUri match {
-      case parsingRegex(username, password, server, port, database) => {
-        //        MongoConnection(MongoURI(mongoUri))(database)("entries")
-        MongoConnection()("test")("entries")
+      case fullParsingRegex(username, password, server, port, database) => {
+        val db = MongoConnection(MongoURI(mongoUri))(database)
+        db.authenticate(username, password)
+        db
       }
-      case _ => throw new RuntimeException("Not able to parse MONGOHQ_URL")
+      case simpleParsingRegex(server, database) => MongoConnection(MongoURI(mongoUri))(database)
+      case _ => throw new RuntimeException("Not able to parse mongodb.uri")
     }
   }
+
+  private lazy val entries = mongoDB("entries")
 
   private def addToCache(key: String, c: Any) = {
     Cache.set("entries_find_" + key, c, 1000)

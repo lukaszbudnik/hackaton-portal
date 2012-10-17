@@ -97,7 +97,7 @@ object LoginPage extends Controller
           })
         } catch {
           case ex: AccessDeniedException => Logger.warn("User declined access using provider " + provider)
-          Redirect(routes.LoginPage.login()).flashing("error" -> Messages("securesocial.login.accessDenied"))
+          Redirect(routes.LoginPage.login()).flashing("error" -> helpers.CmsMessages("securesocial.login.accessDenied"))
         }
       }
       case _ => NotFound

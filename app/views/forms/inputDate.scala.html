@@ -15,5 +15,5 @@
 @(field: play.api.data.Field, args: (Symbol,Any)*)(implicit handler: helper.FieldConstructor, lang: play.api.i18n.Lang)
 
 @helper.input(field, args:_*) { (id, name, value, htmlArgs) =>
-    <input type="text" id="@id" name="@name" data-toggle="date" data-format="@Messages("global.dateformat")" value="@value" @toHtmlArgs(htmlArgs)>
+    <input type="text" id="@id" name="@name" data-toggle="date" data-format="@helpers.CmsMessages("global.dateformat")" value="@value" @toHtmlArgs(htmlArgs)>
 }

@@ -3,12 +3,12 @@
 @import helper._
 @import tags._
 
-@main(Messages("locations.title"), user, nav = "locations") {
+@main(helpers.CmsMessages("locations.title"), user, nav = "locations") {
 <div class="container">
   
     <div class="page-header">
-		<a class="btn btn-success pull-right" href="@routes.Location.createA">@Messages("locations.addLocation")</a>
-    	<h1>@Messages("locations.title")</h1>
+		<a class="btn btn-success pull-right" href="@routes.Location.createA">@helpers.CmsMessages("locations.addLocation")</a>
+    	<h1>@helpers.CmsMessages("locations.title")</h1>
     </div>
 	
 	@flashing("locations.status")
@@ -16,7 +16,7 @@
 	@locations.map { location =>
 		<div class="page-header">
     		<h2>@location.name</h2>
-    		<p><a class="btn" href="@routes.Location.view(location.id)">@Messages("global.readMore")</a></p>
+    		<p><a class="btn" href="@routes.Location.view(location.id)">@helpers.CmsMessages("global.readMore")</a></p>
   		</div>
     }     
     

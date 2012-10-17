@@ -2,30 +2,30 @@
 
 @import helper._
 
-<small class="problem-status">@Messages("problems.problemStatus." + problem.status)</small>
+<small class="problem-status">@helpers.CmsMessages("problems.problemStatus." + problem.status)</small>
 					
 @user.map { user =>
 	<div class="pull-right">
 		
 		@if(user.isAdmin || user.hackathonUserId == hackathon.organiserId || user.hackathonUserId == problem.submitterId) {
-			<a class="btn btn-success" href="@routes.Problem.edit(hackathon.id, problem.id)">@Messages("global.edit")</a>
+			<a class="btn btn-success" href="@routes.Problem.edit(hackathon.id, problem.id)">@helpers.CmsMessages("global.edit")</a>
 			@if((problem.status == model.ProblemStatus.Unverified || problem.status == model.ProblemStatus.Blocked) && (user.isAdmin || user.hackathonUserId == hackathon.organiserId)) {
-				<a class="btn btn-success problem-verify" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@Messages("problems.verify.label")</a>
+				<a class="btn btn-success problem-verify" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@helpers.CmsMessages("problems.verify.label")</a>
 			}
 			@if(problem.status == model.ProblemStatus.Approved) {
-				<a class="btn btn-danger problem-suspend" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@Messages("problems.suspend.label")</a>
+				<a class="btn btn-danger problem-suspend" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@helpers.CmsMessages("problems.suspend.label")</a>
 			}
 			@if(problem.status == model.ProblemStatus.Suspended) {
-				<a class="btn btn-success problem-approve" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@Messages("problems.approve.label")</a>
+				<a class="btn btn-success problem-approve" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@helpers.CmsMessages("problems.approve.label")</a>
 			}
 			@if((problem.status != model.ProblemStatus.Unverified && problem.status != model.ProblemStatus.Blocked) && (user.isAdmin || user.hackathonUserId == hackathon.organiserId)) {
-				<a class="btn btn-danger problem-block" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@Messages("problems.block.label")</a>
+				<a class="btn btn-danger problem-block" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@helpers.CmsMessages("problems.block.label")</a>
 			}
 			@if(ajaxDelete) {
-				<a class="btn btn-danger problem-delete" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@Messages("global.delete")</a>
+				<a class="btn btn-danger problem-delete" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@helpers.CmsMessages("global.delete")</a>
 			} else {
 				@form(routes.Problem.delete(hackathon.id, problem.id), 'style -> "display: inline" ) {
-					<input type="submit" value="@Messages("global.delete")" class="btn btn-danger confirm-action" style="font-weight: bold" />
+					<input type="submit" value="@helpers.CmsMessages("global.delete")" class="btn btn-danger confirm-action" style="font-weight: bold" />
 				}
 			}
 		}

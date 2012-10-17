@@ -9,11 +9,11 @@
 		<script src="@routes.Assets.at("javascripts/locations.min.js")" type="text/javascript"></script>
 }
 
-@main(Messages("hackathons.create.title"),  Some(user), nav = "hackathons", scripts) {
+@main(helpers.CmsMessages("hackathons.create.title"),  Some(user), nav = "hackathons", scripts) {
   	<div class="container">
 
     	<div class="page-header">
-    		<h2>@Messages("hackathons.create.title")</h2>
+    		<h2>@helpers.CmsMessages("hackathons.create.title")</h2>
 		</div>
   
 		@hackathons.hackathonForm(hackathonForm, routes.Hackathon.save, user, "global.add")

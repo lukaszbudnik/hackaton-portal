@@ -15,7 +15,7 @@ class NewsSpec extends Specification {
         val result = controllers.News.index(FakeRequest())
 
         status(result) must equalTo(OK)
-        contentAsString(result) must contain(Messages("news.title"))
+        contentAsString(result) must contain(helpers.CmsMessages("news.title"))
       }
     }
     
@@ -24,7 +24,7 @@ class NewsSpec extends Specification {
         val result = routeAndCall(FakeRequest(GET, "/news/1")).get
 
         status(result) must equalTo(OK)
-        contentAsString(result) must contain(Messages("news.title"))
+        contentAsString(result) must contain(helpers.CmsMessages("news.title"))
       }
     }
     

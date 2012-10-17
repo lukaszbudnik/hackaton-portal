@@ -11,7 +11,7 @@
 	  
 		<div class="row">
 			<div class="span12">
-				<p>@Messages("prizes.description.label"): @prize.description</p>
+				<p>@helpers.CmsMessages("prizes.description.label"): @prize.description</p>
 
 				@prize.founderName.map { name =>
 					<p>Founded by 
@@ -27,8 +27,8 @@
 					@if(user.isAdmin || user.hackathonUserId == hackathon.get.organiserId ) {
 					<div class="form-actions">
 						@form(routes.Prize.delete(hackathon.get.id, prize.id)) {
-							<a class="btn btn-success" href="@routes.Prize.edit(hackathon.get.id, prize.id)">@Messages("global.edit")</a>
-							<input type="submit" value="@Messages("global.delete")" class="btn btn-danger confirm-action" />
+							<a class="btn btn-success" href="@routes.Prize.edit(hackathon.get.id, prize.id)">@helpers.CmsMessages("global.edit")</a>
+							<input type="submit" value="@helpers.CmsMessages("global.delete")" class="btn btn-danger confirm-action" />
 						}
 					</div>
 					}
@@ -38,7 +38,7 @@
 				
 	}.getOrElse{
 		<div class="page-header">
-			<h2>@Messages("prizes.notFound")</h2>
+			<h2>@helpers.CmsMessages("prizes.notFound")</h2>
 		</div>
 		
 	}

@@ -3,7 +3,7 @@
 @hackathons.hackathonMain(hackathon, Some(user), "sponsors", "sponsors.status", false) {
 	
 	<div class="page-header">
-		<h2>@Messages("sponsors.edit.title")</h2>
+		<h2>@helpers.CmsMessages("sponsors.edit.title")</h2>
 	</div>
 
 	@sponsors.sponsorForm(hackathon, sponsorForm, routes.Sponsor.updateH(hackathon.get.id, id), "global.update")

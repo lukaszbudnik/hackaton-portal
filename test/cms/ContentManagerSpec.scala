@@ -22,9 +22,12 @@ class ContentManagerSpec extends Specification {
 
     "remove entries" in {
       running(FakeApplication()) {
+        
+        
         for (e <- ContentManager.all) {
           ContentManager.remove(e)
         }
+        utils.AA.importRecords
         ContentManager.all.size must equalTo(0)
       }
     }

@@ -1,13 +1,13 @@
 @(ex: core.SecurityAbuseException)
 
-@error(Messages("securityAbuse.title")) {
+@error(helpers.CmsMessages("securityAbuse.title")) {
 
 	<div class="container">
     
 	    <div class="page-header">
-	    <h1>@Messages("securityAbuse.title")</h1>
+	    <h1>@helpers.CmsMessages("securityAbuse.title")</h1>
 		<br/>
-		@Html(Messages("securityAbuse.text", ex.socialUser.displayName))
+		@Html(helpers.CmsMessages("securityAbuse.text", ex.socialUser.displayName))
 	    </div>
 
     </div>

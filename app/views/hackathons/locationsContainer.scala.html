@@ -15,7 +15,7 @@
 				    '_dataIndex -> idx,
 				    '_showAdd -> (idx == endIdx && idx + 1 < maxLocations),
 				    '_showDelete -> (idx != 0),    
-				    '_label -> (Messages("hackathons.location.label") + " " + (idx + 1)),
+				    '_label -> (helpers.CmsMessages("hackathons.location.label") + " " + (idx + 1)),
 				    '_showConstraints -> false,
 				    'autocomplete -> "off"
 				)(implicitFieldConstructor, lang)

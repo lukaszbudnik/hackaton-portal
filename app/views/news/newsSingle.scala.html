@@ -11,13 +11,13 @@
 			@n.hackathon.map { h => @h.subject: } @n.title
 		</h2>
 		<p>@Html(n.text)</p>
-	    <p>@Messages("news.author.label"): @n.author.name @Messages("news.publishedDate.label"): @tags.dateFormat(n.publishedDate)</p>
-	    <p>@Messages("news.labels.label"):
+	    <p>@helpers.CmsMessages("news.author.label"): @n.author.name @helpers.CmsMessages("news.publishedDate.label"): @tags.dateFormat(n.publishedDate)</p>
+	    <p>@helpers.CmsMessages("news.labels.label"):
 			@for(l <- n.labels) {
 				<a href="@routes.News.search(l.value)" style="text-decoration: none"><span class="label">@l.value</span></a>
 			}
 		</p>
    	</div>
 }.getOrElse {
-	<h2>@Messages("news.notFound")</h2>
+	<h2>@helpers.CmsMessages("news.notFound")</h2>
 }

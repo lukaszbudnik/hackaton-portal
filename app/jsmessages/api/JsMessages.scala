@@ -2,6 +2,9 @@ package jsmessages.api
 
 import play.api.i18n._
 import play.api.Application
+import cms.ContentManager
+import cms.dto.EntryType
+import cms.dto.Entry
 
 object JsMessages {
   /**
@@ -63,6 +66,11 @@ object JsMessages {
     )
   }
 
-  private def allMessages(implicit app: Application, lang: Lang) =
+  private def allMessages(implicit app: Application, lang: Lang) = {
     Messages.messages.get("default").getOrElse(Map.empty) ++ Messages.messages.get(lang.code).getOrElse(Map.empty)
+    
+    val seq: Seq[Entry] = ContentManager.filtered(EntryType.Message)
+    seq.map {e => (e.key, helpers.CmsMessages.getMessage(e.key))}.toMap
+  }
+    
 }

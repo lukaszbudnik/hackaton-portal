@@ -2,38 +2,38 @@
 
 @import helper._
 
-<small class="team-status">@Messages("teams.teamStatus." + team.status)</small>
+<small class="team-status">@helpers.CmsMessages("teams.teamStatus." + team.status)</small>
 					
 <div class="pull-right">
 	@user.map { user =>
 		@if(team.hasMember(user.hackathonUserId)){
-			<a class="btn btn-warning" href="@routes.Team.disconnect(hackathon.id, team.id)">@Messages("teams.leave.label")</a>
+			<a class="btn btn-warning" href="@routes.Team.disconnect(hackathon.id, team.id)">@helpers.CmsMessages("teams.leave.label")</a>
 		} else {
-			<a class="btn btn-warning" href="@routes.Team.join(hackathon.id, team.id)">@Messages("teams.join.label")</a>  
+			<a class="btn btn-warning" href="@routes.Team.join(hackathon.id, team.id)">@helpers.CmsMessages("teams.join.label")</a>  
 		}
 		@if(user.isAdmin || user.hackathonUserId == hackathon.organiserId || user.hackathonUserId == team.creatorId) {
-			<a class="btn btn-success" href="@routes.Team.edit(hackathon.id, team.id)">@Messages("global.edit")</a>
+			<a class="btn btn-success" href="@routes.Team.edit(hackathon.id, team.id)">@helpers.CmsMessages("global.edit")</a>
 			@if((team.status == model.TeamStatus.Unverified || team.status == model.TeamStatus.Blocked) && (user.isAdmin || user.hackathonUserId == hackathon.organiserId)) {
-				<a class="btn btn-success team-verify" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@Messages("teams.verify.label")</a>
+				<a class="btn btn-success team-verify" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@helpers.CmsMessages("teams.verify.label")</a>
 			}
 			@if(team.status == model.TeamStatus.Approved) {
-				<a class="btn btn-danger team-suspend" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@Messages("teams.suspend.label")</a>
+				<a class="btn btn-danger team-suspend" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@helpers.CmsMessages("teams.suspend.label")</a>
 			}
 			@if(team.status == model.TeamStatus.Suspended) {
-				<a class="btn btn-success team-approve" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@Messages("teams.approve.label")</a>
+				<a class="btn btn-success team-approve" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@helpers.CmsMessages("teams.approve.label")</a>
 			}
 			@if((team.status != model.TeamStatus.Unverified && team.status != model.TeamStatus.Blocked) && (user.isAdmin || user.hackathonUserId == hackathon.organiserId)) {
-				<a class="btn btn-danger team-block" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@Messages("teams.block.label")</a>
+				<a class="btn btn-danger team-block" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@helpers.CmsMessages("teams.block.label")</a>
 			}
 			@if(ajaxDelete) {
-				<a class="btn btn-danger team-delete" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@Messages("global.delete")</a>
+				<a class="btn btn-danger team-delete" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@helpers.CmsMessages("global.delete")</a>
 			} else {
 				@form(routes.Team.delete(hackathon.id, team.id), 'style -> "display: inline" ) {
-					<input type="submit" value="@Messages("global.delete")" class="btn btn-danger confirm-action" style="font-weight: bold" />
+					<input type="submit" value="@helpers.CmsMessages("global.delete")" class="btn btn-danger confirm-action" style="font-weight: bold" />
 				}
 			}
 		}
 	}.getOrElse{
-	  <a class="btn btn-warning" href="@routes.Team.join(hackathon.id, team.id)">@Messages("teams.join.label")</a>
+	  <a class="btn btn-warning" href="@routes.Team.join(hackathon.id, team.id)">@helpers.CmsMessages("teams.join.label")</a>
 	}
 </div>

@@ -37,7 +37,7 @@
           <img src="@routes.Assets.at("images/logo.png")" class="brand" style="padding: 0px;"/>
           <div class="nav-collapse">
             <ul class="nav">
-              <li><a href="/">@Messages("navigation.home")</a></li>
+              <li><a href="/">@helpers.CmsMessages("navigation.home")</a></li>
             </ul>
           </div>
         </div>
@@ -48,7 +48,7 @@
         
         <footer>
 		    <p style="clear:both"></p>
-		    <p style="text-align: center">&copy; @Messages("brand") @Messages("years")</p>
+		    <p style="text-align: center">&copy; @helpers.CmsMessages("brand") @helpers.CmsMessages("years")</p>
 		</footer>
         
     </body>

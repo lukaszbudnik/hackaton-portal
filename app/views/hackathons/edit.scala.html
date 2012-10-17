@@ -10,11 +10,11 @@
 }
 
 
-@main(Messages("hackathons.edit.title"),  Some(user), nav = "hackathons", scripts) {
+@main(helpers.CmsMessages("hackathons.edit.title"),  Some(user), nav = "hackathons", scripts) {
   	<div class="container">
 
     	<div class="page-header">
-    		<h2>@Messages("hackathons.edit.title")</h2>
+    		<h2>@helpers.CmsMessages("hackathons.edit.title")</h2>
 		</div>
   
 		@hackathons.hackathonForm(hackathonForm, routes.Hackathon.update(id), user, "global.update")

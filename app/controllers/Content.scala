@@ -1,13 +1,13 @@
 package controllers
 
 import play.mvc.Controller
-
 import cms.ContentManager
 import cms.dto.Entry
 import play.api.data.Forms._
 import play.api.data._
 import play.api.data.validation.Constraints._
 import org.squeryl.PrimitiveTypeMode.transaction
+import play.api.mvc.Action
 
 object Content extends core.LangAwareController with securesocial.core.SecureSocial {
 
@@ -19,21 +19,20 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
         "lang" -> text,
         "value" -> text)(cms.dto.Content.apply)(cms.dto.Content.unapply)))(Entry.apply)(Entry.unapply))
 
-  def index = SecuredAction() { implicit request =>
+  def index = Action { implicit request =>
     val entityList = ContentManager.all
-    Ok(views.html.content.index(entityList, Some(request.user)))
-
+    
+    Ok(views.html.content.index(entityList, None))
   }
 
-  def create = SecuredAction() { implicit request =>
+  def create = Action { implicit request =>
     val entry = Entry("", cms.dto.EntryType.HTML, List.empty)
-    Ok(views.html.content.create(entryForm.fill(entry), Some(request.user)))
-
+    Ok(views.html.content.create(entryForm.fill(entry), None))
   }
 
-  def save = SecuredAction() { implicit request =>
+  def save = Action { implicit request =>
     entryForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.content.create(errors, Some(request.user))),
+      errors => BadRequest(views.html.content.create(errors, None)),
       entry => {
         ContentManager.create(entry)
         Redirect(routes.Content.index)
@@ -41,21 +40,21 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
 
   }
 
-  def edit(key: String) = SecuredAction() { implicit request =>
+  def edit(key: String) = Action { implicit request =>
     val entry = ContentManager.find(key)
     entry.map { entry =>
-      Ok(views.html.content.edit(key, entryForm.fill(entry), Some(request.user)))
+      Ok(views.html.content.edit(key, entryForm.fill(entry), None))
     }.getOrElse {
       Redirect(routes.Content.index)
     }
 
   }
 
-  def update(key: String) = SecuredAction() { implicit request =>
+  def update(key: String) = Action { implicit request =>
     val entry = ContentManager.find(key)
     entry.map { entry =>
       entryForm.bindFromRequest.fold(
-        errors => BadRequest(views.html.content.edit(key, errors, Some(request.user))),
+        errors => BadRequest(views.html.content.edit(key, errors, None)),
         entry => {
           ContentManager.update(entry)
           Redirect(routes.Content.index)
@@ -66,7 +65,7 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
 
   }
 
-  def delete(key: String) = SecuredAction() { implicit request =>
+  def delete(key: String) = Action { implicit request =>
     val entry = ContentManager.find(key)
     entry.map { entry =>
       ContentManager.remove(entry)

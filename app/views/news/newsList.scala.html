@@ -19,17 +19,17 @@
 				@Html(n.text)
 			}
    		</p>
-	    <p>@Messages("news.author.label"): @n.author.name @Messages("news.publishedDate.label"): @tags.dateFormat(n.publishedDate)</p>
-	    <p>@Messages("news.labels.label"):
+	    <p>@helpers.CmsMessages("news.author.label"): @n.author.name @helpers.CmsMessages("news.publishedDate.label"): @tags.dateFormat(n.publishedDate)</p>
+	    <p>@helpers.CmsMessages("news.labels.label"):
 			@for(l <- n.labels) {
 				<a href="@routes.News.search(l.value)" style="text-decoration: none"><span class="label">@l.value</span></a>
 			}
 		</p>
 	    <p>
 	    @n.hackathon.map { h =>
-			<a class="btn" href="@routes.News.viewH(h.id, n.id)#disqus_thread">@Messages("global.readMore")</a>
+			<a class="btn" href="@routes.News.viewH(h.id, n.id)#disqus_thread">@helpers.CmsMessages("global.readMore")</a>
 	    }.getOrElse {
-	    	<a class="btn" href="@routes.News.view(n.id)#disqus_thread">@Messages("global.readMore")</a>
+	    	<a class="btn" href="@routes.News.view(n.id)#disqus_thread">@helpers.CmsMessages("global.readMore")</a>
 	    }
 	    </p>
 	</div>

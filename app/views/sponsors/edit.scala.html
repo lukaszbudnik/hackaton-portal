@@ -3,11 +3,11 @@
 @import helper._
 @import helper.twitterBootstrap._
 
-@main(Messages("sponsors.edit.title"), Some(user), nav = "sponsors") {
+@main(helpers.CmsMessages("sponsors.edit.title"), Some(user), nav = "sponsors") {
 	<div class="container">
     
 		<div class="page-header">
-    		<h2>@Messages("sponsors.edit.title")</h2>
+    		<h2>@helpers.CmsMessages("sponsors.edit.title")</h2>
 		</div>
     
     	@sponsors.sponsorForm(None, sponsorForm, routes.Sponsor.update(id), "global.update")

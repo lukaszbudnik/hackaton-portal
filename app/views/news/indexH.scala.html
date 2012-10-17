@@ -8,7 +8,7 @@
 		
 		@user.map { user =>
 	  		@if(user.isAdmin || user.hackathonUserId == h.organiserId) {
- 				<a class="btn btn-success" href="@routes.News.createH(h.id)">@Messages("news.addNews")</a>
+ 				<a class="btn btn-success" href="@routes.News.createH(h.id)">@helpers.CmsMessages("news.addNews")</a>
 	  		}
 		}
 		

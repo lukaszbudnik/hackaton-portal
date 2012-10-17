@@ -3,7 +3,7 @@
 @import helper._
 @import tags._
 
-@main(Messages("sponsors.title"), user, nav = "sponsors") {
+@main(helpers.CmsMessages("sponsors.title"), user, nav = "sponsors") {
     
     <div class="container">
 	
@@ -14,8 +14,8 @@
 		  		@if(user.isAdmin) {
 		  			<div class="form-actions">
 		  				@form(routes.Sponsor.delete(s.sponsor.id)) {
-		  					<a class="btn btn-success" href="@routes.Sponsor.edit(s.sponsor.id)">@Messages("global.edit")</a>
-		  					<input type="submit" value="@Messages("global.delete")" class="btn btn-danger confirm-action" />
+		  					<a class="btn btn-success" href="@routes.Sponsor.edit(s.sponsor.id)">@helpers.CmsMessages("global.edit")</a>
+		  					<input type="submit" value="@helpers.CmsMessages("global.delete")" class="btn btn-danger confirm-action" />
 		  				}
 		  			</div>
 		  		}

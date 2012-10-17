@@ -82,7 +82,7 @@ trait SecureSocial extends Controller {
         if ( apiClient ) {
           apiClientForbidden(request)
         } else {
-          Redirect(routes.LoginPage.login()).flashing("error" -> Messages("securesocial.loginRequired")).withSession(
+          Redirect(routes.LoginPage.login()).flashing("error" -> helpers.CmsMessages("securesocial.loginRequired")).withSession(
             session + (SecureSocial.OriginalUrlKey -> request.uri)
           )
         }

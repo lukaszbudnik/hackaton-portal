@@ -3,7 +3,7 @@
 @import helper._
 @import tags._
 
-@main(Messages("news.title"), user, nav = "news", feed(routes.News.index)) {
+@main(helpers.CmsMessages("news.title"), user, nav = "news", feed(routes.News.index)) {
     
     <div class="container">
 
@@ -13,14 +13,14 @@
     
 				<div class="page-header">
 				  	@if(user.isDefined && user.get.isAdmin) {
-				  		<a class="btn btn-success pull-right" href="@routes.News.create">@Messages("news.addNews")</a>
+				  		<a class="btn btn-success pull-right" href="@routes.News.create">@helpers.CmsMessages("news.addNews")</a>
 				  	}
-				  	<h1>@Messages("news.title")</h1>
+				  	<h1>@helpers.CmsMessages("news.title")</h1>
 		    	</div>
 
 				@if(label) {
 				<div class="alert alert-info">
-		       		<strong>@Messages("news.search").format(news.size, label)</strong>
+		       		<strong>@helpers.CmsMessages("news.search").format(news.size, label)</strong>
 				</div>
 				}
     

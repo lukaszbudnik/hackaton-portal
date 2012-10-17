@@ -11,43 +11,43 @@
  
 	@inputText(
 	    locationForm("name"),
-	    '_label -> Messages("locations.name.label"),
+	    '_label -> helpers.CmsMessages("locations.name.label"),
 	    '_showConstraints -> false
 	)
 	
 	@inputText(
 	    locationForm("country"),
-	    '_label -> Messages("locations.country.label"),
+	    '_label -> helpers.CmsMessages("locations.country.label"),
 	    '_showConstraints -> false
 	)
 	
 	@inputText(
 	    locationForm("city"),
-	    '_label -> Messages("locations.city.label"),
+	    '_label -> helpers.CmsMessages("locations.city.label"),
 	    '_showConstraints -> false
 	)
 	
 	@inputText(
 	    locationForm("postalCode"),
-	    '_label -> Messages("locations.postalCode.label"),
+	    '_label -> helpers.CmsMessages("locations.postalCode.label"),
 	    '_showConstraints -> false
 	)
 	
 	@inputText(
 	    locationForm("fullAddress"),
-	    '_label -> Messages("locations.fullAddress.label"),
+	    '_label -> helpers.CmsMessages("locations.fullAddress.label"),
 	    '_showConstraints -> false
 	)
 	
 	@inputText(
 	    locationForm("latitude"),
-	    '_label -> Messages("locations.latitude.label"),
+	    '_label -> helpers.CmsMessages("locations.latitude.label"),
 	    '_showConstraints -> false
 	)
 
 	@inputText(
 	    locationForm("longitude"),
-	    '_label -> Messages("locations.longitude.label"),
+	    '_label -> helpers.CmsMessages("locations.longitude.label"),
 	    '_showConstraints -> false
 	)
 	@if(adminView) {
@@ -55,7 +55,7 @@
 	    @select(
 		    locationForm("status"),
 		    model.LocationStatus.values.map{ s => s.toString -> s.toString}.toSeq,
-		    '_label -> Messages("locations.status.label"),
+		    '_label -> helpers.CmsMessages("locations.status.label"),
 		    '_showConstraints -> false
 		)
 			

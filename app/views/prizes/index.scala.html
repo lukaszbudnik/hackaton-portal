@@ -6,7 +6,7 @@
 
   		@user.map { user =>
 	  		@if(user.isAdmin || user.hackathonUserId == hackathon.organiserId) {
-  				<a class="btn btn-success" href="@routes.Prize.create(hackathon.id)">@Messages("prizes.addPrize")</a>
+  				<a class="btn btn-success" href="@routes.Prize.create(hackathon.id)">@helpers.CmsMessages("prizes.addPrize")</a>
 	  		}
     	}
         	
@@ -25,7 +25,7 @@
 					</h3>
 				}
 
-    			<p><a class="btn" href="@routes.Prize.view(hackathon.id, prize.id)">@Messages("global.readMore")</a></p>
+    			<p><a class="btn" href="@routes.Prize.view(hackathon.id, prize.id)">@helpers.CmsMessages("global.readMore")</a></p>
   			</div>
     	}
     	

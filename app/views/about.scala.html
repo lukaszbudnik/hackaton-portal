@@ -4,16 +4,16 @@
 @import helper.twitterBootstrap._
 @import tags._
 
-@main(Messages("about.title"), user, nav = "about") {
+@main(helpers.CmsMessages("about.title"), user, nav = "about") {
 
 	<div class="container">
 
 		<div class="content">
 
 		 	<div class="page-header">
-			    <h1>@Messages("about.title")</h1>
+			    <h1>@helpers.CmsMessages("about.title")</h1>
 				<br/>
-				@Html(Messages("about.text"))
+				@Html(helpers.CmsMessages("about.text"))
 		    </div>
 	
 		</div>

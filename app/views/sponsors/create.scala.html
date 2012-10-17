@@ -1,10 +1,10 @@
 @(sponsorForm: Form[model.dto.SponsorWithLogo], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent], lang: Lang)
 
-@main(Messages("sponsors.create.title"), Some(user), nav = "sponsors") {
+@main(helpers.CmsMessages("sponsors.create.title"), Some(user), nav = "sponsors") {
 	<div class="container">
 
     	<div class="page-header">
-    		<h2>@Messages("sponsors.create.title")</h2>
+    		<h2>@helpers.CmsMessages("sponsors.create.title")</h2>
 		</div>
   
     	@sponsors.sponsorForm(None, sponsorForm, routes.Sponsor.save, "global.add")

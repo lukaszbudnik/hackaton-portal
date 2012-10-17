@@ -9,31 +9,31 @@
         
     @inputText(
     	prizeForm("name"),
-	    '_label -> Messages("prizes.name.label"),
+	    '_label -> helpers.CmsMessages("prizes.name.label"),
 	    '_showConstraints -> false
     ) 
         
     @textarea(
     	prizeForm("description"),
-    	'_label -> Messages("prizes.description.label"),
+    	'_label -> helpers.CmsMessages("prizes.description.label"),
 	    '_showConstraints -> false
     )
 
     @inputText(
     	prizeForm("order"),
-	    '_label -> Messages("prizes.order.label"),
+	    '_label -> helpers.CmsMessages("prizes.order.label"),
 	    '_showConstraints -> false
     )
            
     @inputText(
     	prizeForm("founderName"),
-	    '_label -> Messages("prizes.founderName.label"),
+	    '_label -> helpers.CmsMessages("prizes.founderName.label"),
 	    '_showConstraints -> false
     )
     
     @inputText(
     	prizeForm("founderWebPage"),
-	    '_label -> Messages("prizes.founderWebPage.label"),
+	    '_label -> helpers.CmsMessages("prizes.founderWebPage.label"),
 	    '_showConstraints -> false
     )
     
@@ -41,7 +41,7 @@
      
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
-        <a href="@routes.Prize.index(hackathon.id)" class="btn">@Messages("global.cancel")</a>
+        <a href="@routes.Prize.index(hackathon.id)" class="btn">@helpers.CmsMessages("global.cancel")</a>
   	</div>
         
 }

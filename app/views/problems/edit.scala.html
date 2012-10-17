@@ -3,7 +3,7 @@
 @hackathons.hackathonMain(hackathon, Some(user), "problems", "problems.status", false) {
 	
 	<div class="page-header">
-		<h2>@Messages("problems.edit.title")</h2>
+		<h2>@helpers.CmsMessages("problems.edit.title")</h2>
 	</div>
   
 	@problems.problemForm(hackathon.get, problemForm, routes.Problem.update(hackathon.get.id, id), "global.update")

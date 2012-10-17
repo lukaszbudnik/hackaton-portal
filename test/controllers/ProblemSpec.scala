@@ -16,7 +16,7 @@ class ProblemSpec extends Specification {
         val result = controllers.Problem.index(1)(FakeRequest())
 
         status(result) must equalTo(OK)
-        contentAsString(result) must contain(Messages("problems.title"))
+        contentAsString(result) must contain(helpers.CmsMessages("hackathons.view.title"))
       }
     }
     
@@ -25,7 +25,7 @@ class ProblemSpec extends Specification {
         val result = routeAndCall(FakeRequest(GET, "/hackathons/1/problems/1")).get
 
         status(result) must equalTo(OK)
-        contentAsString(result) must contain(Messages("problems.title"))
+        contentAsString(result) must contain(helpers.CmsMessages("hackathons.view.title"))
       }
     }
     

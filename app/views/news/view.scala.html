@@ -3,7 +3,7 @@
 @import helper._
 @import tags._
 
-@main(Messages("news.title"), user, nav = "news", feed(routes.News.index)) {
+@main(helpers.CmsMessages("news.title"), user, nav = "news", feed(routes.News.index)) {
 	
 	<div class="container">
 
@@ -15,8 +15,8 @@
 		  		@if(user.isAdmin || news.authorId == user.hackathonUserId) {
 		  			<div class="form-actions">
 		  				@form(routes.News.delete(news.id)) {
-		  					<a class="btn btn-success" href="@routes.News.edit(news.id)">@Messages("global.edit")</a>
-		  					<input type="submit" value="@Messages("global.delete")" class="btn btn-danger confirm-action" />
+		  					<a class="btn btn-success" href="@routes.News.edit(news.id)">@helpers.CmsMessages("global.edit")</a>
+		  					<input type="submit" value="@helpers.CmsMessages("global.delete")" class="btn btn-danger confirm-action" />
 		  				}
 		  			</div>
 		  		}

@@ -9,25 +9,25 @@
   
   	@inputText(
 	    newsForm("title"),
-	    '_label -> Messages("news.title.label"),
+	    '_label -> helpers.CmsMessages("news.title.label"),
 	    '_showConstraints -> false
 	)
 	
 	@textarea(
 	    newsForm("text"),
-	    '_label -> Messages("news.text.label"),
+	    '_label -> helpers.CmsMessages("news.text.label"),
 	    '_showConstraints -> false
 	)
 	
     @inputText(
 	    newsForm("labelsAsString"),
-	    '_label -> Messages("news.labels.label"),
+	    '_label -> helpers.CmsMessages("news.labels.label"),
 	    '_showConstraints -> false
 	)    
     
   	@forms.inputDate(
 	    newsForm("publishedDate"),
-	    '_label -> Messages("news.publishedDate.label"),
+	    '_label -> helpers.CmsMessages("news.publishedDate.label"),
 	    '_showConstraints -> false
 	)
 	
@@ -38,9 +38,9 @@
         <button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
   		
   		@hackathon.map { hackathon =>
-        <a href="@routes.News.indexH(hackathon.id)" class="btn">@Messages("global.cancel")</a>
+        <a href="@routes.News.indexH(hackathon.id)" class="btn">@helpers.CmsMessages("global.cancel")</a>
   		}.getOrElse{
-  	    <a href="@routes.News.index" class="btn">@Messages("global.cancel")</a>
+  	    <a href="@routes.News.index" class="btn">@helpers.CmsMessages("global.cancel")</a>
   		}
     </div>
 }

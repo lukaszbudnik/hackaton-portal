@@ -2,27 +2,27 @@
 
 @import helper._
 
-@main(Messages("locations.view.title"), user, nav = "locations") {
+@main(helpers.CmsMessages("locations.view.title"), user, nav = "locations") {
     
     <div class="container">
     
 		<div class="page-header">
 
 		@if(location.isEmpty) {
-		    <h2>@Messages("locations.notFound")</h2>
+		    <h2>@helpers.CmsMessages("locations.notFound")</h2>
     	} else {
     		<h2>@location.get.name</h2>
-            <p>@Messages("locations.country.label"): @location.get.country</p>
-            <p>@Messages("locations.city.label"): @location.get.city</p>
-            <p>@Messages("locations.postalCode.label"): @location.get.postalCode</p>
-            <p>@Messages("locations.fullAddress.label"): @location.get.fullAddress</p>
-            <p>@Messages("locations.latitude.label"): @location.get.latitude </p>
-            <p>@Messages("locations.longitude.label"): @location.get.longitude </p>
+            <p>@helpers.CmsMessages("locations.country.label"): @location.get.country</p>
+            <p>@helpers.CmsMessages("locations.city.label"): @location.get.city</p>
+            <p>@helpers.CmsMessages("locations.postalCode.label"): @location.get.postalCode</p>
+            <p>@helpers.CmsMessages("locations.fullAddress.label"): @location.get.fullAddress</p>
+            <p>@helpers.CmsMessages("locations.latitude.label"): @location.get.latitude </p>
+            <p>@helpers.CmsMessages("locations.longitude.label"): @location.get.longitude </p>
 
 			<div class="form-actions">
 	    		@form(routes.Location.delete(location.get.id)) {
-		    	<a class="btn btn-success" href="@routes.Location.editA(location.get.id)">@Messages("global.edit")</a>
-	            <input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+		    	<a class="btn btn-success" href="@routes.Location.editA(location.get.id)">@helpers.CmsMessages("global.edit")</a>
+	            <input type="submit" value="@helpers.CmsMessages("global.delete")" class="btn btn-danger" />
 	    		}
             </div>
     	}

@@ -11,7 +11,7 @@
 		 *@
 		 
         @if((user.isDefined && (user.get.isAdmin || user.get.hackathonUserId == hackathon.organiserId || !hackathon.newTeamsDisabled ) )) {
-  			<a class="btn btn-success" href="@routes.Team.create(hackathon.id)">@Messages("teams.addTeam")</a>
+  			<a class="btn btn-success" href="@routes.Team.create(hackathon.id)">@helpers.CmsMessages("teams.addTeam")</a>
   		}
 
     	@hackathon.teams.map { team =>
@@ -27,9 +27,9 @@
     		@if((user.isDefined && user.get.isAdmin) || team.status == model.TeamStatus.Approved || (user.isDefined && (user.get.hackathonUserId == hackathon.organiserId || user.get.hackathonUserId == team.creatorId))) {
 	    	  	<div class="page-header team" data-team-id="@team.id">
 					<h2>@team.name @teamActions(hackathon, team, user)</h2>
-	   				<p>@Messages("teams.creator.label"): @team.creator.name</p>
-					<p>@Messages("teams.members.label"): @team.members.size</p>
-	    			<p><a class="btn" href="@routes.Team.view(hackathon.id, team.id)">@Messages("global.readMore")</a></p>
+	   				<p>@helpers.CmsMessages("teams.creator.label"): @team.creator.name</p>
+					<p>@helpers.CmsMessages("teams.members.label"): @team.members.size</p>
+	    			<p><a class="btn" href="@routes.Team.view(hackathon.id, team.id)">@helpers.CmsMessages("global.readMore")</a></p>
 	  			</div>
   			}
     	}
@@ -45,7 +45,7 @@
 
 		@if(hackathon.teams.size == 0 || (user.isEmpty && hackathon.teams.filter(_.status == model.TeamStatus.Approved).size == 0)  || (user.isDefined && hackathon.teams.filterNot(_.status == model.TeamStatus.Approved).filterNot(_.creatorId == user.get.hackathonUserId).size == hackathon.teams.size)) {
 			<div class="page-header">
-				<h2>@Messages("teams.empty.text")</h2>
+				<h2>@helpers.CmsMessages("teams.empty.text")</h2>
         	</div>
 		}
 		 
