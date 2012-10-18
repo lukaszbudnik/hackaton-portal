@@ -8,12 +8,12 @@ import play.api.Play
 
 class JsMessageFeedSpec extends Specification {
 
-  "JsMessageFeed" should {
+  running(FakeApplication()) {
+    val skipAll = Play.current.configuration.getString("mongodb.uri").get == "mock"
+    args(skipAll = skipAll)
+  }
 
-    running(FakeApplication()) {
-      val skipAll = Play.current.configuration.getString("mongodb.uri").get == "mock"
-      args(skipAll = skipAll)
-    }
+  "JsMessageFeed" should {
 
     "set ETAG header in response and send the messages to the browser" in {
       running(FakeApplication()) {
