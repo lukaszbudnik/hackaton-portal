@@ -76,19 +76,19 @@ CMS.createNewRow = function(rowId) {
 
 @form(action = actionToRun, 'id -> "entryForm"){
 	@inputText(eForm("key"),
-	'_label -> handlers.CmsMessages("contents.forms.key.label"),
+	'_label -> helpers.CmsMessages("contents.forms.key.label"),
 	'_showConstraints -> false
 	)
 	 
 	@select(eForm("entryType"),
 		cms.dto.EntryType.values.map{ s => s.toString -> s.toString }.toSeq,
-		'_label -> handlers.CmsMessages("contents.forms.entryType.label"),
+		'_label -> helpers.CmsMessages("contents.forms.entryType.label"),
 		'_showConstraints -> false
 	)
 	<table id="contents" data-last-index="-1">
 		<tr>
-		<th>@handlers.CmsMessages("contents.forms.contents.lang.label")</th>
-		<th>@handlers.CmsMessages("contents.forms.contents.value.label")</th>
+		<th>@helpers.CmsMessages("contents.forms.contents.lang.label")</th>
+		<th>@helpers.CmsMessages("contents.forms.contents.value.label")</th>
 		</tr>
 		@repeat(eForm("content"), min = 1) { contentField =>
 		<tr name="contentRow" id="entryRow@contentField.name">

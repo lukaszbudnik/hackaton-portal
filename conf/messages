@@ -33,17 +33,18 @@ navigation.users = Users
 navigation.changeLanguage = Change Language
 navigation.chat = Chat
 navigation.details = Details
+navigation.contents = Contents
 
+global.add = Add
+global.cancel = Cancel
+global.delete = Delete
+global.edit = Edit
 global.learnMore = Learn more »
 global.viewDetails = View details »
 global.readMore = Read more »
 global.total = Total
 global.submit = Submit
-global.cancel = Cancel
-global.add = Add
-global.edit = Edit
 global.create = Create
-global.delete = Delete
 global.update = Update
 global.none = None
 global.status.error = Can''t perform this operation
@@ -122,8 +123,8 @@ hackathons.hackathonStatus.InProgress = In Progress
 hackathons.hackathonStatus.Finished = Finished
 hackathons.hackathonStatus.Unverified = Unverified
 hackathons.infobubble.otherlocations = Other locations:
-hackathons.newProblemsDisabled.label = New problems disabled
-hackathons.newTeamsDisabled.label = New teams disabled
+hackathons.newProblemsDisabled.label = Disable adding new problems
+hackathons.newTeamsDisabled.label = Disable adding new teams
 
 locations.title = Locations
 locations.addLocation = Add a location
@@ -268,6 +269,28 @@ users.updateIsBlocked.label = Change Blocked
 users.update.error = Failed to update user
 users.update.success = Successfully updated user
 
+securesocial.appName=hackaton.pl
+
+securesocial.login.title=Login
+securesocial.login.instructions=Use your existing account on one of the following networks to log in.
+securesocial.login.useEmailAndPassword=Use email and password.
+securesocial.login.accessDenied=You denied access to your account. Please grant it to log in.
+
+securesocial.login.signUp=Sign up
+securesocial.login.here= here
+
+securesocial.signup.title=Signup
+securesocial.signup.username=Username
+securesocial.signup.fullName=Full Name
+securesocial.signup.email1=Email
+securesocial.signup.email2=Email confirmation
+securesocial.signup.password1=Password
+securesocial.signup.password2=Password confirmation
+securesocial.signup.createAccount=Create Account
+securesocial.signup.cancel=Cancel
+
+securesocial.loginRequired=You need to log in to access that page.
+
 notifications.email.problem.added.subject = A new problem has been added
 notifications.email.problem.added.body = Hello,<br><br>"{0}" problem has just been added.<br>Please go to your hackathon page and verify or delete this problem: {1}.<br><br>Best regards,<br>Hackaton.pl Team
 
@@ -304,27 +327,3 @@ notifications.email.team.suspended.body = Hello,<br><br>"{0}" team has just been
 notifications.email.team.deleted.subject = Your team has been deleted
 notifications.email.team.deleted.body = Hello,<br><br>"{0}" team has just been deleted<br>Go to hackathon page {1} and join another team or create a new one.<br><br>Best regards,<br>Hackaton.pl Team
 
-# App name
-securesocial.appName=hackaton.pl
-
-# Login page
-securesocial.login.title=Login
-securesocial.login.instructions=Use your existing account on one of the following networks to log in.
-securesocial.login.useEmailAndPassword=Use email and password.
-securesocial.login.accessDenied=You denied access to your account. Please grant it to log in.
-
-securesocial.login.signUp=Sign up
-securesocial.login.here= here
-# Sign up page
-securesocial.signup.title=Signup
-securesocial.signup.username=Username
-securesocial.signup.fullName=Full Name
-securesocial.signup.email1=Email
-securesocial.signup.email2=Email confirmation
-securesocial.signup.password1=Password
-securesocial.signup.password2=Password confirmation
-securesocial.signup.createAccount=Create Account
-securesocial.signup.cancel=Cancel
-
-#
-securesocial.loginRequired=You need to log in to access that page.
