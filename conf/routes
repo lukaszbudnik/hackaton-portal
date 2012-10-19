@@ -191,9 +191,9 @@ POST    /users/:id/isBlocked/:isBlocked controllers.User.updateIsBlocked(id: Int
 GET     /messages.js                controllers.JsMessagesFeed.jsMessages
 
 # Content manipulation
-GET		/content					controllers.Content.index
-GET     /content/new	 			controllers.Content.create
-POST 	/content					controllers.Content.save
-POST	/content/:key/update		controllers.Content.update(key: String)
-GET		/content/:key/edit			controllers.Content.edit(key: String)
-POST	/content/:key/delete		controllers.Content.delete(key: String)
+GET		/contents					controllers.Content.index
+GET     /contents/new	 			controllers.Content.create
+POST 	/contents					controllers.Content.save
+POST	/contents/:key/update		controllers.Content.update(key: String)
+GET		/contents/:key/edit			controllers.Content.edit(key: String)
+GET		/contents/:key/delete		controllers.Content.delete(key: String)

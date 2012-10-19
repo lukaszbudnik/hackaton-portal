@@ -66,6 +66,8 @@ object ContentManager {
 
   def create(entry: Entry) = {
     entries += grater[Entry].asDBObject(entry)
+    Cache.set("entries_all", None, defaultTTL)
+    Cache.set("entries_filtered_" + entry.entryType, None, defaultTTL)
   }
 
   def update(entry: Entry) = {

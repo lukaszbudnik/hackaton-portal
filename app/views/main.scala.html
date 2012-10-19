@@ -57,7 +57,8 @@
               @user.map { user =>
                 @if(user.isAdmin) { 
                   <li class="@("active".when(nav == "users"))"><a href="@routes.User.index()">@helpers.CmsMessages("navigation.users")</a></li>
-                  <li class="@("active".when(nav == "locations"))"><a href="@routes.Location.index()">@helpers.CmsMessages("navigation.locations")</a></li>
+                  <li class="@("active".when(nav == "contents"))"><a href="@routes.Content.index">@helpers.CmsMessages("navigation.contents")</a></li>
+                  <li class="@("active".when(nav == "locations"))"><a href="@routes.Location.index">@helpers.CmsMessages("navigation.locations")</a></li>
                 }
                 <li class="@("active".when(nav == "profile"))"><a href="@routes.Application.profile">@user.displayName</a></li>
               }.getOrElse {

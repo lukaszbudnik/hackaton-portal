@@ -1,8 +1,18 @@
 @(eForm: Form[cms.dto.Entry], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
-@main("CMS - Content Editor", user, nav="cms") {
-	@entryForm(eForm, routes.Content.save, true)
+@main(helpers.CmsMessages("contents.create.title"), user, nav="contents") {
+  
+	<div class="container">
+
+    	<div class="page-header">
+    		<h2>@helpers.CmsMessages("contents.create.title")</h2>
+		</div>
+  
+		@entryForm(eForm, routes.Content.save, true)
+
+	</div>
+
 }
 
 

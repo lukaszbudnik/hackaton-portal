@@ -115,7 +115,7 @@ object AA {
     }
 
     def getLanguage(fileName: String): String = {
-      if (fileName == "messages") "default" else fileName.split('.').last
+      if (fileName == "messages") "en" else fileName.split('.').last
     }
 
     def analyzeLine(line: String, language: String) {

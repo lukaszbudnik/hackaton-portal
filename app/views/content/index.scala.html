@@ -3,31 +3,52 @@
 @import helper._
 @import tags._
 
-@main("CMS - Content Editor", user, nav="cms") {
-	<p>
-		<a id="addNewEntry" class="btn btn-primary" href="@routes.Content.create">@helpers.CmsMessages("add_new_entry")</a>
-	</p>
-	<div>
-		<table id="entryTable">
-			<thead>
-			<tr>
-				<th>Key</th>
-				<th>Type</th>
-				<th>Contents</th>
-			</tr>
-			</thead>
-			@entries.map { e =>
-			<tbody>
-				<tr>
-					<td>@e.key</td>
-					<td>@e.entryType</td>
-					<td>@e.contents.size element(s)</td>
-					<td><a href="@routes.Content.edit(e.key)">Edit Entry</a>
-					<td><a href="@routes.Content.delete(e.key)">Delete Entry</a>
-				</tr>
-			}
-			</tbody>
-		</table>
-	</div>	
-}
+@main(helpers.CmsMessages("contents.title"), user, nav="contents") {
+  
+  <div class="container">
 
+		<div class="page-header">
+			<h1>@helpers.CmsMessages("contents.title")</h1>
+    	</div>
+    	
+		<div class="actions">
+			<p><a id="addNewEntry" class="btn btn-primary" href="@routes.Content.create">@helpers.CmsMessages("contents.add.label")</a></p>
+		</div>
+
+		@Option(entries).filterNot(_.isEmpty).map { entries =>
+		  
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th>@helpers.CmsMessages("contents.key.label")</th>
+								<th>@helpers.CmsMessages("contents.type.label")</th>
+								<th>@helpers.CmsMessages("contents.contents.label")</th>
+								<th>@helpers.CmsMessages("contents.actions.label")</th>
+							</tr>
+						</thead>
+						@entries.map { e =>
+						<tbody>
+							<tr>
+							<td>@e.key</td>
+							<td>@e.entryType</td>
+							<td>@e.contents.size</td>
+							<td><a href="@routes.Content.edit(e.key)"><i class="icon-pencil"></i>@helpers.CmsMessages("contents.edit.label")</a>
+							<a href="@routes.Content.delete(e.key)"><i class="icon-trash"></i>@helpers.CmsMessages("contents.delete.label")</a></td>
+							</tr>
+						}
+						</tbody>
+					</table>
+
+		}.getOrElse {
+
+        <div class="well">
+            <em>@helpers.CmsMessages("contents.empty.text")</em>
+        </div>
+
+		}
+
+		@footer(false)
+	
+	</div>
+  
+}
