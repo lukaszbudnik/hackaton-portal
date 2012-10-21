@@ -10,6 +10,15 @@ object Security {
       throw new SecurityAbuseException(socialUser)
     }
   }
+
+  def secured(f: => Result)(implicit socialUser: securesocial.core.SocialUser) : Result = {
+    if (!socialUser.isAdmin) {
+      throw new SecurityAbuseException(socialUser)
+    }
+    else {
+      f
+    }
+  }
   
   def verifyIfAllowed(condition: Boolean)(implicit socialUser: securesocial.core.SocialUser) = {
     if (!condition) {
