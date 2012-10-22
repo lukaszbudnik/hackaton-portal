@@ -286,6 +286,13 @@ contents.edit.label = Edytuj
 contents.delete.label = Usuń
 contents.empty.text = Nie dodano jeszcze żadnego contentu
 
+profile.name.label = Imię i nazwisko
+profile.email.label = Email
+profile.language.label = Język
+profile.gitHubUsername.label = Login na GitHubie
+profile.twitterAccoun.label = Konto na Twitterze
+profile.avatarUrl.label = URL awatara
+
 language.updated = Język zmieniony i zapisany w Twoim profilu
 
 securesocial.appName=hackaton.pl

@@ -286,6 +286,13 @@ contents.edit.label = Edit
 contents.delete.label = Delete
 contents.empty.text = There is no content yet
 
+profile.name.label = Full name
+profile.email.label = Email
+profile.language.label = Language
+profile.gitHubUsername.label = GitHub username
+profile.twitterAccoun.label = Twitter account
+profile.avatarUrl.label = Avatar URL
+
 language.updated = Language updated and saved in your profile
 
 securesocial.appName=hackaton.pl
