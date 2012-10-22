@@ -38,7 +38,7 @@ object AA {
 
     checkMessages
 
-//    sendMessages("127.0.0.1", "/content", 9000);
+    sendMessages("127.0.0.1", "/content", 9000);
     //sendSingleKey(keyMap.keySet.toList.head, "127.0.0.1", "/content", 9000)
 
     def sendMessages(url: String, path: String, port: Int) {
@@ -65,7 +65,6 @@ object AA {
         if (value.indexOf("<p>") >= 0 || value.indexOf("<br") >= 0 || value.indexOf("<li>") >= 0 || value.indexOf("<a") >= 0) {
           entryTypeString = "HTML"
           entryType = EntryType.HTML
-          println("zmieniam typ dla " + key)
         }
 
       }
@@ -73,7 +72,7 @@ object AA {
       values.add(new BasicNameValuePair("entryType", entryTypeString));
       //          sendEntity(new UrlEncodedFormEntity(values), url, path, port);
       val entry = Entry(key, entryType, contents)
-            cms.ContentManager.create(entry)
+      cms.ContentManager.create(entry)
     }
 
     def sendEntity(entity: HttpEntity, url: String, path: String, port: Int) {
@@ -120,15 +119,20 @@ object AA {
 
     def analyzeLine(line: String, language: String) {
       if (!isComment(line)) {
-        val splittedLine = line.trim().split("=");
-        val key = splittedLine.head trim
-        val value = splittedLine.tail.mkString("").trim();
+
+        val trimmed = line.trim()
+        
+        val index = trimmed.indexOf("=")
+
+        val key = trimmed.substring(0, index).trim
+        val value = trimmed.substring(index + 1, trimmed.length()).trim
+
         putInMap(language, key, value);
       }
     }
 
     def isComment(line: String): Boolean = {
-      return line.trim().startsWith("#");
+      return line.trim().startsWith("#") || line.trim().isEmpty()
     }
 
     def putInMap(language: String, key: String, value: String) {
