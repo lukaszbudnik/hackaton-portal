@@ -37,10 +37,13 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
 
       
   def index = SecuredAction() { implicit request =>
-    helpers.Security.verifyIfAllowed()(request.user)
+    //helpers.Security.verifyIfAllowed()(request.user)
     transaction {
-      helpers.Security.verifyIfAllowed(request.user)
-      Ok(views.html.locations.index(model.Location.all, Some(request.user)))
+      //helpers.Security.verifyIfAllowed(request.user)
+      implicit val user = request.user
+      helpers.Security.secured {
+        Ok(views.html.locations.index(model.Location.all, Some(request.user)))
+      }
     }
     
   }
