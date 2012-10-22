@@ -20,8 +20,8 @@ object Application extends LangAwareController with securesocial.core.SecureSoci
       "name" -> nonEmptyText,
       "email" -> nonEmptyText,
       "language" -> nonEmptyText,
-      "github_username" -> nonEmptyText,
-      "twitter_account" -> nonEmptyText,
+      "github_username" -> text,
+      "twitter_account" -> text,
       "avatar_url" -> text)((name, email, language, github_username, twitter_account, avatar_url) => model.User(name, email, language, github_username, twitter_account, avatar_url, "", false, false))((user: model.User) => Some(user.name, user.email, user.language, user.githubUsername, user.twitterAccount, user.avatarUrl)))
 
   def index = UserAwareAction { implicit request =>
@@ -39,7 +39,7 @@ object Application extends LangAwareController with securesocial.core.SecureSoci
   def profile = SecuredAction() {
     implicit request =>
       transaction {
-        val id = request.user.hackathonUserId;
+        val id = request.user.hackathonUserId
         val user = model.User.lookup(id)
         user.map { u =>
           Ok(views.html.profile(userForm.fill(u), request.user))
@@ -56,7 +56,8 @@ object Application extends LangAwareController with securesocial.core.SecureSoci
       },
       user => transaction {
         model.User.update(request.user.hackathonUserId, user)
-        Redirect(routes.Application.profile).flashing("status" -> "updated", "title" -> user.name)
+        println(user)
+        Redirect(routes.Application.profile).flashing("status" -> "updated", "title" -> user.name).withSession(request.session + (LangAwareController.SESSION_LANG_KEY -> user.language))
       })
   }
 

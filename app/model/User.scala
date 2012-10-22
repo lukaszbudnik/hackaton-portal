@@ -82,6 +82,7 @@ object User extends Schema {
         set (
           u.avatarUrl := userToBeUpdated.avatarUrl,
           u.email := userToBeUpdated.email,
+          u.language := userToBeUpdated.language,
           u.githubUsername := userToBeUpdated.githubUsername,
           u.isAdmin := userToBeUpdated.isAdmin,
           u.isBlocked := userToBeUpdated.isBlocked,

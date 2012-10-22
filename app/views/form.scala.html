@@ -14,6 +14,12 @@
         '_label -> "E-mail",
         '_showConstraints -> false
     )
+    @select(
+        userForm("language"),
+        play.Play.application.configuration.getString("application.langs").split(",").map{ l => l.trim -> l.trim }.toSeq,
+        '_label -> "Language",
+        '_showConstraints -> false
+    )
     @inputText(
         userForm("github_username"),
         '_label -> "GitHub user name",
