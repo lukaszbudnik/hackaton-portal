@@ -1,4 +1,4 @@
-@(id: Long, sponsorForm: Form[model.dto.SponsorWithLogo], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent], lang: Lang)
+@(id: Long, sponsorForm: Form[model.dto.SponsorWithLogo], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import helper.twitterBootstrap._

@@ -35,15 +35,12 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
   }
 
   private def addNewUserToDatabase(socialUser: SocialUser): User = {
-    inTransaction {
-
-      if (Logger.isDebugEnabled) {
-        Logger.debug("Adding a new user for social user " + socialUser)
-      }
-
-      val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), "", "", socialUser.avatarUrl.getOrElse(""), socialUser.id.id + socialUser.id.providerId)
-      model.User.insert(newUser)
+    if (Logger.isDebugEnabled) {
+      Logger.debug("Adding a new user for social user " + socialUser)
     }
+
+    val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), core.LangAwareController.DEFAULT_LANG, "", "", socialUser.avatarUrl.getOrElse(""), socialUser.id.id + socialUser.id.providerId)
+    model.User.insert(newUser)
   }
 
 }

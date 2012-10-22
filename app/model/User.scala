@@ -9,6 +9,7 @@ import org.squeryl.dsl.ast.ExpressionNode
 
 case class User(name: String,
   email: String,
+  language: String,
   @Column("github_username") githubUsername: String,
   @Column("twitter_account") twitterAccount: String,
   @Column("avatar_url") avatarUrl: String,

@@ -1,4 +1,4 @@
-@(id: Long, hackathonForm: Form[model.dto.HackathonWithLocations], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent], lang: Lang)
+@(id: Long, hackathonForm: Form[model.dto.HackathonWithLocations], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @scripts = {
 		<script src="@routes.Assets.at("javascripts/bootstrap-typeahead.min.js")" type="text/javascript"></script>

@@ -1,4 +1,4 @@
-@(entries: Seq[cms.dto.Entry], user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent], lang: Lang)
+@(entries: Seq[cms.dto.Entry], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import tags._

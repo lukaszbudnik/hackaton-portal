@@ -1,4 +1,4 @@
-@(sponsorForm: Form[model.dto.SponsorWithLogo], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent], lang: Lang)
+@(sponsorForm: Form[model.dto.SponsorWithLogo], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @main(helpers.CmsMessages("sponsors.create.title"), Some(user), nav = "sponsors") {
 	<div class="container">

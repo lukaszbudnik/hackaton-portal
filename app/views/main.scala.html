@@ -1,4 +1,4 @@
-@(title: String, user: Option[securesocial.core.SocialUser], nav: String = "",scripts: Html = Html(""))(content: Html)(implicit request: Request[AnyContent], lang: Lang)
+@(title: String, user: Option[securesocial.core.SocialUser], nav: String = "",scripts: Html = Html(""))(content: Html)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 <!DOCTYPE html>
 
@@ -79,6 +79,16 @@
         </div>
       </div>
     </div>
+
+
+    <div class="container">
+    @flash.get("language.status").map { status =>
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert">×</button>
+			<strong>@Messages(status)</strong>
+		</div>
+	}
+	</div>
 
     @content
 

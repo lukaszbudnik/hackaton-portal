@@ -38,7 +38,7 @@ object AA {
 
     checkMessages
 
-    sendMessages("127.0.0.1", "/content", 9000);
+//    sendMessages("127.0.0.1", "/content", 9000);
     //sendSingleKey(keyMap.keySet.toList.head, "127.0.0.1", "/content", 9000)
 
     def sendMessages(url: String, path: String, port: Int) {

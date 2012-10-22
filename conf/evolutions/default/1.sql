@@ -8,6 +8,7 @@ CREATE TABLE users (
     id integer NOT NULL DEFAULT nextval('user_id_seq'),
     creation_timestamp timestamp NOT NULL DEFAULT now(),
     name varchar(255),
+    language varchar(5) NOT NULL DEFAULT 'en',
     email varchar(255) NOT NULL,
 	avatar_url text,    
     open_id varchar(255),

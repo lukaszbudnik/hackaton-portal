@@ -19,9 +19,10 @@ object Application extends LangAwareController with securesocial.core.SecureSoci
     mapping(
       "name" -> nonEmptyText,
       "email" -> nonEmptyText,
+      "language" -> nonEmptyText,
       "github_username" -> nonEmptyText,
       "twitter_account" -> nonEmptyText,
-      "avatar_url" -> text)((name, email, github_username, twitter_account, avatar_url) => model.User(name, email, github_username, twitter_account, avatar_url, "", false, false))((user: model.User) => Some(user.name, user.email, user.githubUsername, user.twitterAccount, user.avatarUrl)))
+      "avatar_url" -> text)((name, email, language, github_username, twitter_account, avatar_url) => model.User(name, email, language, github_username, twitter_account, avatar_url, "", false, false))((user: model.User) => Some(user.name, user.email, user.language, user.githubUsername, user.twitterAccount, user.avatarUrl)))
 
   def index = UserAwareAction { implicit request =>
     Ok(views.html.index(request.user))
@@ -60,7 +61,21 @@ object Application extends LangAwareController with securesocial.core.SecureSoci
   }
 
   def changeLanguage(lang: String) = UserAwareAction { implicit request =>
-    Redirect(request.headers.get(REFERER).getOrElse("/")).withSession(request.session + (SESSION_LANG_KEY -> lang))
+    val result = Redirect(request.headers.get(REFERER).getOrElse("/")).withSession(request.session + (LangAwareController.SESSION_LANG_KEY -> lang))
+
+    request.user match {
+      case Some(user: securesocial.core.SocialUser) => {
+        transaction {
+          model.User.lookup(user.hackathonUserId).map { hackatonUser =>
+            val newUser = hackatonUser.copy(language = lang)
+            model.User.update(user.hackathonUserId, newUser)
+          }
+        }
+        result.flashing("language.status" -> "language.updated")
+      }
+      case _ => result
+    }
+
   }
 
 }

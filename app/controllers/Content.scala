@@ -22,17 +22,17 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
   def index = Action { implicit request =>
     val entityList = ContentManager.all
     
-    Ok(views.html.content.index(entityList, None))
+    Ok(views.html.contents.index(entityList, None))
   }
 
   def create = Action { implicit request =>
     val entry = Entry("", cms.dto.EntryType.HTML, List.empty)
-    Ok(views.html.content.create(entryForm.fill(entry), None))
+    Ok(views.html.contents.create(entryForm.fill(entry), None))
   }
 
   def save = Action { implicit request =>
     entryForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.content.create(errors, None)),
+      errors => BadRequest(views.html.contents.create(errors, None)),
       entry => {
         ContentManager.create(entry)
         Redirect(routes.Content.index)
@@ -43,7 +43,7 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
   def edit(key: String) = Action { implicit request =>
     val entry = ContentManager.find(key)
     entry.map { entry =>
-      Ok(views.html.content.edit(key, entryForm.fill(entry), None))
+      Ok(views.html.contents.edit(key, entryForm.fill(entry), None))
     }.getOrElse {
       Redirect(routes.Content.index)
     }
@@ -54,7 +54,7 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
     val entry = ContentManager.find(key)
     entry.map { entry =>
       entryForm.bindFromRequest.fold(
-        errors => BadRequest(views.html.content.edit(key, errors, None)),
+        errors => BadRequest(views.html.contents.edit(key, errors, None)),
         entry => {
           ContentManager.update(entry)
           Redirect(routes.Content.index)

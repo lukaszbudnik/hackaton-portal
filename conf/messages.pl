@@ -269,6 +269,25 @@ users.updateIsBlocked.label = Zmień zablokowany
 users.update.error = Wystąpił błąd podczas aktualizacji użytkownika 
 users.update.success = Użytkownik został zaktualizowany
 
+contents.create.title = Dodaj content
+contents.edit.title = Edytuj content
+contents.forms.key.label = Klucz
+contents.forms.entryType.label = Typ
+contents.forms.contents.lang.label = Język
+contents.forms.contents.value.label = Wartość
+contents.save.label = Zapisz
+contents.title = CMS
+contents.add.label = Dodaj
+contents.key.label = Klucz
+contents.type.label = Typ
+contents.contents.label = Zawartość
+contents.actions.label = Akcje
+contents.edit.label = Edytuj
+contents.delete.label = Usuń
+contents.empty.text = Nie dodano jeszcze żadnego contentu
+
+language.updated = Język zmieniony i zapisany w Twoim profilu
+
 securesocial.appName=hackaton.pl
 
 securesocial.login.title=Zaloguj się

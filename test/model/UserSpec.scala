@@ -11,7 +11,7 @@ class UserSpec extends Specification {
     "be insertable" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!", true)
+          val user = User("Łukasz Budnik", "email", "pl", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!", true)
           model.User.insert(user)
 
           user.isPersisted must beTrue
@@ -22,7 +22,7 @@ class UserSpec extends Specification {
     "be retrivable by id" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
-          val user = User("Łukasz Budnik", "email", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!", true)
+          val user = User("Łukasz Budnik", "email", "pl", "lukasz-budnik", "lukasz-budnik", "avatar", "openIdHere!", true)
           model.User.insert(user)
 
           user.isPersisted must beTrue
