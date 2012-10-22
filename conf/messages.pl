@@ -309,3 +309,39 @@ securesocial.signup.createAccount=Stwórz konto
 securesocial.signup.cancel=Anuluj
 
 securesocial.loginRequired=Musisz się zalogować aby zobaczyć tę stronę.
+
+notifications.email.problem.added.subject = Dodano nowy problem
+notifications.email.problem.added.body = Hej,<br><br>Problem "{0}" został dodany.<br>Przejdź do swojego hackatonu aby zatwierdzić bądź usunąć ten problem: {1}.<br><br>pozdrawiamy,<br>Zespół Hackaton.pl
+
+notifications.email.problem.verified.subject = Twój problem został zweryfikowany
+notifications.email.problem.verified.body = Gratulacje,<br><br>Problem "{0}" został właśnie zatwierdzony i zaakceptorwany.<br>Przejdź do swojego problemu tu: {1}.<br><br>pozdrawiamy,<br>Zespół Hackaton.pl
+
+notifications.email.problem.approved.subject = Twój problem został zatwierdzony
+notifications.email.problem.approved.body = Gratulacje,<br><br>Problem "{0}" został zatwierdzony.<br>Przejdź do swojego problemu tu: {1}.<br><br>pozdrawiamy,<br>Zespół Hackaton.pl
+
+notifications.email.problem.blocked.subject = Twój problem został zablokowany
+notifications.email.problem.blocked.body = Hej,<br><br>Problem "{0}" został zablokowany.<br>Przejdź do swojego problemu tu: {1}.<br>Skontaktuj się z organizatorem hackatonu aby poznać szczegóły decyzji.<br><br>pozdrawiamy,<br>Zespół Hackaton.pl
+
+notifications.email.problem.suspended.subject = Twój problem został zawieszony 
+notifications.email.problem.suspended.body = Hej,<br><br>Problem "{0}" został zawieszony.<br>Przejdź do swojego problemu tu: {1}.<br><br>pozdrawiamy,<br>Zespół Hackaton.pl
+
+notifications.email.problem.deleted.subject = Twój problem został usunięty
+notifications.email.problem.deleted.body = Hej,<br><br>Problem "{0}" został usunięty.<br>Przejdź do hackatonu {1} aby dodać nowy problem.<br><br>pozdrawiamy,<br>Zespół Hackaton.pl
+
+notifications.email.team.created.subject = Dodano nowy zespół
+notifications.email.team.created.body = Hej,<br><br>Zespół "{0}" został dodany.<br>Przejdź do swojego hackatonu aby zatwierdzić bądź usunąć ten zespół: {1}.<br><br>pozdrawiamy,<br>Zespół Hackaton.pl 
+
+notifications.email.team.verified.subject = Twój zespół został zweryfikowany
+notifications.email.team.verified.body = Gratulacje,<br><br>Zespół "{0}" został zatwierdziony i zaakceptowany.<br>Przejdź do swojego zespołu tu: {1}.<br><br>pozdrawiamy,<br>Zespół Hackaton.pl
+
+notifications.email.team.approved.subject = Twój zespół został zatwierdzony
+notifications.email.team.approved.body = Gratulacje,<br><br>Zespół "{0}" został zatwierdzony.<br>Przejdź do swojego zespołu tu: {1}.<br><br>pozdrawiamy,<br>Zespół Hackaton.pl
+
+notifications.email.team.blocked.subject = Twój zespół został zablokowany
+notifications.email.team.blocked.body = Hej,<br><br>Zespół "{0}" został zablokowany.<br>Twój zespół nie jest obecnie widoczny na stronie hackatonu. Rozważ opuszczenie tego zespołu bądź stwórz nowy. <br>Przejdź do swojego zespołu tu: {1}.<br>Oczywiście zostaniesz powiadomiony gdy status twojego zespołu ulegnie zmianie.<br><br>pozdrawiamy,<br>Zespół Hackaton.pl
+
+notifications.email.team.suspended.subject = Twój zespół został zawieszony 
+notifications.email.team.suspended.body = Hej,<br><br>Zespół "{0}" został zawieszony.<br>W stanie zawieszenia zespół jest tymczasowo nie widoczny na stronie hackatonu. Jeśli pozostanie dłużej w tym stanie rozważ opuszczenie tego zespołu bądź stwórz nowy.<br>Przejdź do swojego zespołu: {1}.<br><br>pozdrawiamy,<br>Zespół Hackaton.pl
+
+notifications.email.team.deleted.subject = Twój zespół został usunięty
+notifications.email.team.deleted.body = Hej,<br><br>Zespół "{0}" został usuniety.<br>Przejdź do strony hackatonu {1} aby przyłączyć się do innego zespołu lub aby założyć nowy zespół.<br><br>pozdrawiamy,<br>Zespół Hackaton.pl
