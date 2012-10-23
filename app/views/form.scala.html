@@ -1,4 +1,4 @@
-@(userForm: Form[model.User], action: play.api.mvc.Call)
+@(userForm: Form[model.User], action: play.api.mvc.Call)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import helper.twitterBootstrap._
