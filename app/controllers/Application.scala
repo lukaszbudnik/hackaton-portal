@@ -56,7 +56,6 @@ object Application extends LangAwareController with securesocial.core.SecureSoci
       },
       user => transaction {
         model.User.update(request.user.hackathonUserId, user)
-        println(user)
         Redirect(routes.Application.profile).flashing("status" -> "updated", "title" -> user.name).withSession(request.session + (LangAwareController.SESSION_LANG_KEY -> user.language))
       })
   }
