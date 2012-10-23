@@ -66,13 +66,13 @@ object ContentManager {
   }
 
   def all = {
-    cached("all") {
+    cached("entries_all") {
       entries.map(grater[Entry].asObject(_)).toList
     }
   }
 
   def filtered(entryType: EntryType.Value) = {
-    cached("filtered_" + entryType) {
+    cached("entries_filtered_" + entryType) {
       val q = MongoDBObject("entryType" -> entryType.toString())
       entries.find(q).map(grater[Entry].asObject(_)).toList
     }

@@ -8,26 +8,26 @@ object Cache {
   val defaultTTL = 1000
   val minTTL = 1
 
-  def cached[A](key: String)(f: => A): A = {
-    val fullKey = "entries_" + key
+  def cached[A](key: String, ttl: Int = defaultTTL)(a: A): A = {
 
-    play.api.cache.Cache.get(fullKey) match {
-      case Some(e: A) if e != None => e
+    play.api.cache.Cache.get(key) match {
+      case Some(a: A) if a != None => a
       case _ => {
-        play.api.cache.Cache.set(fullKey, f, defaultTTL)
-        f
+        play.api.cache.Cache.set(key, a, ttl)
+        a
       }
     }
+
   }
 
-  def updateCache(key: String, entry: Any) = {
-    play.api.cache.Cache.set(key, entry, defaultTTL)
+  def updateCache(key: String, entry: Any, ttl: Int = defaultTTL) = {
+    play.api.cache.Cache.set(key, entry, ttl)
   }
 
   /**
    * There is no invalidation in Play
    * invalidate by setting the value to None
-   * cached function takes that into account
+   * cached function takes that into account (if a != None)
    */
   def invalidateCache(key: String) = {
     play.api.cache.Cache.set(key, None, minTTL)
