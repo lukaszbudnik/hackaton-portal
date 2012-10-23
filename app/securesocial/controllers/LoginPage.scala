@@ -16,21 +16,21 @@
  */
 package securesocial.controllers
 
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{ Action, Controller }
 import play.api.i18n.Messages
 import securesocial.core._
-import play.api.{Play, Logger}
+import play.api.{ Play, Logger }
 import Play.current
 import play.api.data._
 import play.api.data.Forms._
 import play.api.data.validation.Constraints._
-
+import core.LangAwareController
+import org.squeryl.PrimitiveTypeMode.transaction
 
 /**
  * The Login page controller
  */
-object LoginPage extends Controller
-{
+object LoginPage extends LangAwareController {
   /**
    * The property that specifies the page the user is redirected to if there is no original URL saved in
    * the session.
@@ -46,8 +46,6 @@ object LoginPage extends Controller
    * The root path
    */
   val Root = "/"
-
-
 
   /**
    * Renders the login page
@@ -81,29 +79,45 @@ object LoginPage extends Controller
     ProviderRegistry.get(provider) match {
       case Some(p) => {
         try {
-          p.authenticate().fold( result => result , {
+          p.authenticate().fold(result => result, {
             user =>
-              if ( Logger.isDebugEnabled ) {
+              if (Logger.isDebugEnabled) {
                 Logger.debug("User logged in : [" + user + "]")
               }
               val toUrl = session.get(SecureSocial.OriginalUrlKey).getOrElse(
-                Play.configuration.getString(onLoginGoTo).getOrElse(Root)
-              )
-              Redirect(toUrl).withSession { session +
+                Play.configuration.getString(onLoginGoTo).getOrElse(Root))
+
+              val newSession = session +
                 (SecureSocial.UserKey -> user.id.id) +
                 (SecureSocial.ProviderKey -> user.id.providerId) -
                 SecureSocial.OriginalUrlKey
+
+              val hackathonUser = transaction {
+                model.User.lookupByOpenId(user.id.id + user.id.providerId)
               }
+
+              println("@@@@@@@@@@@@@")
+              println(hackathonUser)
+
+              val newSessionWithLang = hackathonUser match {
+                case Some(user) => {
+                  newSession + (LangAwareController.SESSION_LANG_KEY -> user.language)
+                }
+                case _ => {
+                  newSession
+                }
+              }
+              Redirect(toUrl).withSession { newSessionWithLang }
+              
           })
         } catch {
-          case ex: AccessDeniedException => Logger.warn("User declined access using provider " + provider)
-          Redirect(routes.LoginPage.login()).flashing("error" -> helpers.CmsMessages("securesocial.login.accessDenied"))
+          case ex: AccessDeniedException =>
+            Logger.warn("User declined access using provider " + provider)
+            Redirect(routes.LoginPage.login()).flashing("error" -> helpers.CmsMessages("securesocial.login.accessDenied"))
         }
       }
       case _ => NotFound
     }
   }
-
-
 
 }
