@@ -52,7 +52,7 @@ object Global extends GlobalSettings {
         case app => views.html.errors.notFound.f
       }.getOrElse(views.html.errors.notFound.f)(request, Play.maybeApplication.flatMap(_.routes)))
   }
-  
+
   override def onBadRequest(request: RequestHeader, error: String): Result = {
     BadRequest(
       Play.maybeApplication.map {
@@ -63,15 +63,16 @@ object Global extends GlobalSettings {
 
   override def onRouteRequest(request: RequestHeader): Option[Handler] = {
     if (play.Play.isProd() && request.path.contains("sponsors")) {
-      return None
+      None
+    } else {
+      super.onRouteRequest(request)
     }
-    super.onRouteRequest(request)
   }
-  
+
   private def getSession(adapter: DatabaseAdapter, app: Application) = {
     val session = Session.create(DB.getConnection()(app), adapter)
     if (!play.Play.isProd) {
-    	session.setLogger(msg => Logger.debug(msg))
+      session.setLogger(msg => Logger.debug(msg))
     }
     session
   }
