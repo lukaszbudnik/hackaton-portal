@@ -14,14 +14,14 @@ object ContentManager {
 
   val defaultLanguage = "en"
 
-  import play.api.Play.current
+  private val cachePrefix = "entries_"
 
   private val fullParsingRegex = """mongodb://(.+)[:](.+)[@](.+)[:](\d+)[/](.+)""".r
   private val simpleParsingRegex = """mongodb://(.+)[/](.+)""".r
 
-  lazy val mongoDB = {
+  private lazy val mongoDB = {
     val mongoUri = current.configuration.getString("mongodb.uri").getOrElse {
-      throw new RuntimeException("mongodb.uri could not be resolved")
+      sys.error("mongodb.uri could not be resolved")
     }
     mongoUri match {
       case fullParsingRegex(username, password, server, port, database) => {
@@ -30,7 +30,7 @@ object ContentManager {
         db
       }
       case simpleParsingRegex(server, database) => MongoConnection(MongoURI(mongoUri))(database)
-      case _ => throw new RuntimeException("Not able to parse mongodb.uri")
+      case _ => sys.error("Not able to parse mongodb.uri")
     }
   }
 
@@ -38,15 +38,15 @@ object ContentManager {
 
   def remove(entry: Entry) = {
     entries.remove(grater[Entry].asDBObject(entry))
-    invalidateCache("entries_" + entry.key)
-    invalidateCache("entries_all")
-    invalidateCache("entries_filtered_" + entry.entryType)
+    invalidateCache(cachePrefix + entry.key)
+    invalidateCache(cachePrefix + "all")
+    invalidateCache(cachePrefix + "filtered_" + entry.entryType)
   }
 
   def create(entry: Entry) = {
     entries += grater[Entry].asDBObject(entry)
-    invalidateCache("entries_all")
-    invalidateCache("entries_filtered_" + entry.entryType)
+    invalidateCache(cachePrefix + "all")
+    invalidateCache(cachePrefix + "filtered_" + entry.entryType)
   }
 
   def update(entry: Entry) = {
@@ -54,25 +54,28 @@ object ContentManager {
     val oldEntry = entries.findOne(q).get
     entries.update(oldEntry, grater[Entry].asDBObject(entry))
     // update cache with newly updated entry
-    val fullKey = "entries_" + entry.key
+    val fullKey = cachePrefix + entry.key
     updateCache(fullKey, Some(entry))
+    invalidateCache(cachePrefix + "all")
+    invalidateCache(cachePrefix + "filtered_" + entry.entryType)
   }
 
   def find(key: String) = {
-    cached(key) {
+    val fullKey = cachePrefix + key
+    cached(fullKey) {
       val q = MongoDBObject("key" -> key)
       entries.findOne(q).map(grater[Entry].asObject(_))
     }
   }
 
   def all = {
-    cached("entries_all") {
+    cached(cachePrefix + "all") {
       entries.map(grater[Entry].asObject(_)).toList
     }
   }
 
   def filtered(entryType: EntryType.Value) = {
-    cached("entries_filtered_" + entryType) {
+    cached(cachePrefix + "filtered_" + entryType) {
       val q = MongoDBObject("entryType" -> entryType.toString())
       entries.find(q).map(grater[Entry].asObject(_)).toList
     }
