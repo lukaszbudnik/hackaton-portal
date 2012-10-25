@@ -1,13 +1,11 @@
 package model
 
 import java.util.Date
-
 import org.specs2.mutable.Specification
 import org.squeryl.PrimitiveTypeMode.transaction
-
-import play.api.test.FakeApplication
 import play.api.test.Helpers.inMemoryDatabase
 import play.api.test.Helpers.running
+import play.api.test.FakeApplication
 
 class HackathonSpec extends Specification {
 
@@ -55,6 +53,174 @@ class HackathonSpec extends Specification {
 
           hackathonDb.isEmpty must beFalse
           hackathonDb.get.organiser.name must not beNull
+        }
+      }
+    }
+
+    "be retrivable with problem relationship" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        transaction {
+          val hackathonDb: Option[Hackathon] = Hackathon.lookup(1L)
+
+          hackathonDb.isEmpty must beFalse
+          hackathonDb.get.problems must not beEmpty
+        }
+      }
+    }
+
+    "be retrivable with member relationship" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        transaction {
+          val hackathon: Hackathon = new Hackathon("Hackathon Subject", HackathonStatus.Planning, new Date(), "Hackathon Desc", 1L, false, false)
+          Hackathon.insert(hackathon)
+          hackathon.isPersisted must beTrue
+
+          val user1: Option[User] = User.lookup(1L)
+          hackathon.addMember(user1.get)
+
+          val hackathonDb: Option[Hackathon] = Hackathon.lookup(hackathon.id)
+          hackathonDb.isEmpty must beFalse
+          hackathonDb.get.members must not beEmpty
+
+          hackathon.deleteMember(user1.get)
+
+          val hackathonDbNoUsers: Option[Hackathon] = Hackathon.lookup(hackathon.id)
+          hackathonDbNoUsers.isEmpty must beFalse
+          hackathonDbNoUsers.get.members must beEmpty
+        }
+      }
+    }
+
+    "be retrivable with member-team relationship" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        transaction {
+          val hackathon: Hackathon = new Hackathon("Hackathon Subject", HackathonStatus.Planning, new Date(), "Hackathon Desc", 1L, false, false)
+          Hackathon.insert(hackathon)
+          hackathon.isPersisted must beTrue
+
+          val user1: Option[User] = User.lookup(1L)
+          hackathon.addMember(user1.get, 1L)
+
+          val hackathonDb: Option[Hackathon] = Hackathon.lookup(hackathon.id)
+          hackathonDb.isEmpty must beFalse
+          hackathonDb.get.members must not beEmpty
+        }
+      }
+    }
+
+    "be retrievable with team relationship" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        transaction {
+          val hackathon: Hackathon = new Hackathon("Hackathon Subject", HackathonStatus.Planning, new Date(), "Hackathon Desc", 1L, false, false)
+          Hackathon.insert(hackathon)
+          hackathon.isPersisted must beTrue
+
+          val team: Team = new Team("New team", TeamStatus.Unverified, 1L, hackathon.id, None)
+          Team.insert(team)
+          team.isPersisted must beTrue
+
+          val hackathonDb: Option[Hackathon] = Hackathon.lookup(hackathon.id)
+          hackathonDb.isEmpty must beFalse
+          hackathonDb.get.teams must not beEmpty
+        }
+      }
+    }
+
+    "be retrievable with problem relationship" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        transaction {
+          val hackathon: Hackathon = new Hackathon("Hackathon Subject", HackathonStatus.Planning, new Date(), "Hackathon Desc", 1L, false, false)
+          Hackathon.insert(hackathon)
+          hackathon.isPersisted must beTrue
+
+          val problem: Problem = new Problem("New problem", "New problem description", ProblemStatus.Unverified, 1L, hackathon.id)
+          Problem.insert(problem)
+          problem.isPersisted must beTrue
+
+          val hackathonDb: Option[Hackathon] = Hackathon.lookup(hackathon.id)
+          hackathonDb.isEmpty must beFalse
+          hackathonDb.get.problems must not beEmpty
+        }
+      }
+    }
+
+    "be retrievable with prize relationship" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        transaction {
+          val hackathon: Hackathon = new Hackathon("Hackathon Subject", HackathonStatus.Planning, new Date(), "Hackathon Desc", 1L, false, false)
+          Hackathon.insert(hackathon)
+          hackathon.isPersisted must beTrue
+
+          val prize: Prize = new Prize("Prize name", "Prize description", 1, Some("Founder name"), Some("www.founder.com"), hackathon.id)
+          Prize.insert(prize)
+          prize.isPersisted must beTrue
+
+          val hackathonDb: Option[Hackathon] = Hackathon.lookup(hackathon.id)
+          hackathonDb.isEmpty must beFalse
+          hackathonDb.get.prizes must not beEmpty
+        }
+      }
+    }
+
+    "be retrievable with news relationship" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        transaction {
+          val hackathon: Hackathon = new Hackathon("Hackathon Subject", HackathonStatus.Planning, new Date(), "Hackathon Desc", 1L, false, false)
+          Hackathon.insert(hackathon)
+          hackathon.isPersisted must beTrue
+
+          val news: News = new News("title", "text", "", 1L, new Date(), Some(hackathon.id))
+          News.insert(news)
+          news.isPersisted must beTrue
+
+          val hackathonDb: Option[Hackathon] = Hackathon.lookup(hackathon.id)
+          hackathonDb.isEmpty must beFalse
+          hackathonDb.get.news must not beEmpty
+        }
+      }
+    }
+
+    "be retrievable with sponsor relationship" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        transaction {
+          val hackathon: Hackathon = new Hackathon("Hackathon Subject", HackathonStatus.Planning, new Date(), "Hackathon Desc", 1L, false, false)
+          Hackathon.insert(hackathon)
+          hackathon.isPersisted must beTrue
+
+          val sponsor: Sponsor = new Sponsor("Sponsor name", "Sponsor title", "Sponsor description", "Sponsor website", 1, Some(hackathon.id), None)
+          Sponsor.insert(sponsor)
+          sponsor.isPersisted must beTrue
+
+          val hackathonDb: Option[Hackathon] = Hackathon.lookup(hackathon.id)
+          hackathonDb.isEmpty must beFalse
+          hackathonDb.get.sponsors must not beEmpty
+        }
+      }
+    }
+
+    "be retrievable with location relationship" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        transaction {
+          val hackathon: Hackathon = new Hackathon("Hackathon Subject", HackathonStatus.Planning, new Date(), "Hackathon Desc", 1L, false, false)
+          Hackathon.insert(hackathon)
+          hackathon.isPersisted must beTrue
+
+          val locationDb: Option[Location] = Location.lookup(1L)
+          locationDb.isEmpty must beFalse
+
+          hackathon.addLocation(locationDb.get)
+
+          val hackathonDb: Option[Hackathon] = Hackathon.lookup(hackathon.id)
+          hackathonDb.isEmpty must beFalse
+          hackathonDb.get.locations.isEmpty must beFalse
+          hackathonDb.get.hasLocation(locationDb.get.id) must beTrue
+
+          val result: Int = hackathon.deleteLocations()
+
+          val hackathonDbNoLocations: Option[Hackathon] = Hackathon.lookup(hackathon.id)
+          hackathonDbNoLocations.isEmpty must beFalse
+          hackathonDbNoLocations.get.locations.isEmpty must beTrue
+          hackathonDbNoLocations.get.hasLocation(locationDb.get.id) must beFalse
         }
       }
     }
