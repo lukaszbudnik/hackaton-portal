@@ -8,20 +8,26 @@ import play.api.Play
 import play.api.Mode
 
 object CmsMessages {
-  
+
   def apply(key: String, args: Any*)(implicit lang: Lang) = {
-    
+
     Play.current.mode match {
       case Mode.Test => key
-      case _ => getMessage(key).format(args)
+      case _ => {
+        if (args.size > 0) {
+          getMessage(key).format(args)
+        } else {
+          getMessage(key)
+        }
+      }
     }
-    
+
   }
-  
+
   def getMessage(key: String)(implicit lang: Lang) = {
-    
+
     val opEntry: Option[Entry] = ContentManager.find(key)
-    
+
     opEntry match {
       case Some(e: Entry) => {
         e.contents.find(_.lang == lang.language).orElse(e.contents.find(_.lang == ContentManager.defaultLanguage)) match {
