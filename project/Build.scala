@@ -2,14 +2,15 @@ import sbt._
 import Keys._
 import PlayProject._
 import com.typesafe.sbteclipse.core.EclipsePlugin.EclipseKeys
+import de.johoop.jacoco4sbt.JacocoPlugin._
 
 object ApplicationBuild extends Build {
 
   val appName = "hackaton-portal"
   val appVersion = "0.2-SNAPSHOT"
 
-  override def settings = super.settings ++ Seq(
-    EclipseKeys.skipParents in ThisBuild := false)
+  val newSettings = Defaults.defaultSettings ++ Seq(
+    EclipseKeys.skipParents in ThisBuild := false) ++ Seq(jacoco.settings: _*)
 
   val appDependencies = Seq(
     "org.squeryl" %% "squeryl" % "0.9.5-2",
@@ -25,8 +26,9 @@ object ApplicationBuild extends Build {
     "com.mongodb.casbah" %% "casbah" % "2.1.5-1",
     "com.novus" %% "salat-core" % "0.0.8-SNAPSHOT")
 
-  val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA)
+  val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA, settings = newSettings)
     .settings(
+      parallelExecution in jacoco.Config := false,
       coffeescriptOptions := Seq("bare"),
       resolvers ++= Seq(
         "jBCrypt Repository" at "http://repo1.maven.org/maven2/org/",
