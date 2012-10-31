@@ -3,6 +3,8 @@ import Keys._
 import PlayProject._
 import com.typesafe.sbteclipse.core.EclipsePlugin.EclipseKeys
 import de.johoop.jacoco4sbt.JacocoPlugin._
+import de.johoop.cpd4sbt.CopyPasteDetector._
+import de.johoop.findbugs4sbt.FindBugs._
 
 object ApplicationBuild extends Build {
 
@@ -10,7 +12,8 @@ object ApplicationBuild extends Build {
   val appVersion = "0.2-SNAPSHOT"
 
   val newSettings = Defaults.defaultSettings ++ Seq(
-    EclipseKeys.skipParents in ThisBuild := false) ++ Seq(jacoco.settings: _*)
+    EclipseKeys.skipParents in ThisBuild := false) ++ Seq(jacoco.settings: _*) ++
+    Seq(cpdSettings : _*) ++ Seq(findbugsSettings : _*)
 
   val appDependencies = Seq(
     "org.squeryl" %% "squeryl" % "0.9.5-2",
