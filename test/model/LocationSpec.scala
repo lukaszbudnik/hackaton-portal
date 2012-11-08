@@ -50,7 +50,7 @@ class LocationSpec extends Specification {
     }
 
 
-    "be retrivable in bulk" in new trees {
+    "be retrivable in bulk" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         transaction {
           println("asdasd")
@@ -104,25 +104,5 @@ class LocationSpec extends Specification {
 
   }
 
-  trait trees extends Before {
-    def before = {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        transaction {
-          deleteAll
-
-        }
-      }
-    }
-  }
-
-  def deleteAll = {
-    val locationList: Iterable[Location] = Location.all
-    locationList.foreach(location => {
-      println(location.id)
-      println(location.city)
-      Location.delete(location.id)
-    })
-
-  }
 }
 
