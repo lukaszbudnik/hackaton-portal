@@ -1,7 +1,7 @@
-@(eForm: Form[cms.dto.Entry], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(eForm: Form[cms.dto.Entry], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
-@main(helpers.CmsMessages("contents.create.title"), user, nav="contents") {
+@main(helpers.CmsMessages("contents.create.title"), Some(user), nav="contents") {
   
 	<div class="container">
 
@@ -9,7 +9,7 @@
     		<h2>@helpers.CmsMessages("contents.create.title")</h2>
 		</div>
   
-		@entryForm(eForm, routes.Content.save, true)
+		@entryForm(eForm, routes.Content.save)
 
 	</div>
 

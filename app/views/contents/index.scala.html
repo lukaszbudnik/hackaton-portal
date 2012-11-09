@@ -1,9 +1,9 @@
-@(entries: Seq[cms.dto.Entry], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(entries: Seq[cms.dto.Entry], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import tags._
 
-@main(helpers.CmsMessages("contents.title"), user, nav="contents") {
+@main(helpers.CmsMessages("contents.title"), Some(user), nav="contents") {
   
   <div class="container">
 
