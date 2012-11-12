@@ -7,7 +7,18 @@ import play.api.i18n.Messages
 import play.api.test.FakeRequest$
 import org.squeryl.PrimitiveTypeMode.transaction
 import helpers.CmsMessages
-import org.specs2.matcher.DataTables;
+import org.specs2.matcher.DataTables
+import securesocial.core.ProviderRegistry
+
+import securesocial.core.SecureSocial
+import securesocial.core.UserService
+import securesocial.core.SocialUser
+import securesocial.core.UserId
+import securesocial.core.AuthenticationMethod
+import play.api.mvc.Request
+import play.api.mvc.AnyContent
+import play.api.mvc.Result
+import helpers.SecureSocialUtils
 
 class HackathonSpec extends Specification with DataTables {
 
@@ -88,8 +99,25 @@ class HackathonSpec extends Specification with DataTables {
         }
       }
     }
+    
+    
+    "display add hackathon form when logged in" in {
+      
+    		val fakeapp = FakeApplication(additionalConfiguration = inMemoryDatabase())
+              running(fakeapp) {
+               
+            	val action = "/hackathons/new"
+            	// adding userId 
+            	val result = SecureSocialUtils.fakeAuth(FakeRequest(GET, action)) 
+
+                status(result) must equalTo(OK)
+            	contentAsString(result) must contain(helpers.CmsMessages("hackathons.create.title"))
+              }
+    }
 
     "redirect to Login Page if user not logged in" in {
+      
+      
       "" | "httpMethod" | "action" |
         1 ! GET ! "/hackathons/new" |
         1 ! POST ! "/hackathons" |
@@ -102,6 +130,7 @@ class HackathonSpec extends Specification with DataTables {
           (justIgnoreMe, httpMethod, action) =>
             {
               running(FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))) {
+
                 val result = routeAndCall(FakeRequest(httpMethod, action)).get
 
                 status(result) must equalTo(SEE_OTHER)
@@ -110,5 +139,9 @@ class HackathonSpec extends Specification with DataTables {
             }
         }
     }
+    
   }
+
+ 
+  
 }
