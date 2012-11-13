@@ -25,7 +25,7 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
     implicit val user = request.user
     Security.verifyIfAllowed
 
-    val entityList = ContentManager.all
+    val entityList = ContentManager.all.sortWith(_.key < _.key)
 
     Ok(views.html.contents.index(entityList, user))
   }
