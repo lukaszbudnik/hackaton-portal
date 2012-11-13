@@ -32,6 +32,7 @@ class HackathonSpec extends Specification with DataTables {
         contentAsString(result) must contain(helpers.CmsMessages("hackathons.title"))
       }
     }
+    
 
     "display hackathon details on GET /hackathons/id" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
