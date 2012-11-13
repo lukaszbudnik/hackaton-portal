@@ -46,7 +46,7 @@
 			@forms.hidden(field = sponsorForm("logoResourceId"))
             	
 			<div class="form-actions">
-				<button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
+				<button type="submit" class="btn btn-primary">@helpers.CmsMessages(actionMessage)</button>
 				
 				@hackathon.map { hackathon =>
 				<a href="@routes.Sponsor.indexH(hackathon.id)" class="btn">@helpers.CmsMessages("global.cancel")</a>

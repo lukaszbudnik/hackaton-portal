@@ -25,7 +25,7 @@
     @forms.hidden(teamForm("creatorId"))
         
 	<div class="form-actions">
-		<button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
+		<button type="submit" class="btn btn-primary">@helpers.CmsMessages(actionMessage)</button>
 		<a href="@routes.Team.index(hackathon.id)" class="btn">@helpers.CmsMessages("global.cancel")</a>
 	</div>
 }

@@ -64,7 +64,7 @@
 	<input type="hidden" id="isAdmin" value="@user.isAdmin"/>
 
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
+        <button type="submit" class="btn btn-primary">@helpers.CmsMessages(actionMessage)</button>
         <a href="@routes.Hackathon.index" class="btn">@helpers.CmsMessages("global.cancel")</a>
   	</div>
 }
