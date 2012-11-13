@@ -29,8 +29,13 @@ insert into teams (name, status, creator_id, hackathon_id) values ('Team 2', 2, 
 
 insert into hackathons_users (hackathon_id, user_id, team_id) values (1, 2, 2);
 
-insert into news (title, text, published_date, author_id, hackathon_id) values ( 'Tytuł 1', 'This is an example <!--more-->of multiline news', '2012-01-01 00:00:00', 1, 1);
-insert into news (title, text, published_date, author_id, hackathon_id) values ( 'Tytuł 2', 'This is an example <!--more-->of multiline news', '2012-01-02 00:00:00', 1, 1);
+
+insert into news (title, text, published_date, author_id, hackathon_id) values ('Hackathon News 1', 'This is an example <!--more-->of multiline news', '2012-01-01 00:00:00', 1, 1);
+insert into news (title, text, published_date, author_id, hackathon_id) values ('Hackathon News 2', 'This is an example <!--more-->of multiline news', '2012-01-02 00:00:00', 1, 1);
+
+
+insert into news (title, text, published_date, author_id) values ( 'Tytuł 1', 'This is an example <!--more-->of multiline news', '2012-01-01 00:00:00', 1);
+insert into news (title, text, published_date, author_id) values ( 'Tytuł 2', 'This is an example <!--more-->of multiline news', '2012-01-02 00:00:00', 1);
 
 insert into labels (value) values ('test_label_1');
 insert into labels (value) values ('test_label_2');
@@ -43,8 +48,6 @@ insert into news_labels (news_id, label_id) values (2, 1);
 insert into news_labels (news_id, label_id) values (2, 2);
 
 
-insert into news (title, text, published_date, author_id, hackathon_id) values ('Hackathon News 1', 'This is an example <!--more-->of multiline news', '2012-01-01 00:00:00', 1, 1);
-insert into news (title, text, published_date, author_id, hackathon_id) values ('Hackathon News 2', 'This is an example <!--more-->of multiline news', '2012-01-02 00:00:00', 1, 1);
 
 insert into labels (value) values ('hackathon_1_test_label_1');
 insert into labels (value) values ('hackathon_1_test_label_2');
@@ -63,7 +66,7 @@ insert into sponsors (name, title, description, website, sponsor_order, hackatho
 insert into sponsors (name, title, description, website, sponsor_order, hackathon_id) values ('Hackaton Sponsor 3', 'Bronze', 'Hackaton sponsor description 1', 'www.google.com', 3, 1);
 
 
-insert into resources(id, publicId, url) values(1, '1', 'http://fake')
+insert into resources(publicId, url) values('1', 'http://fake')
 
 # --- !Downs
 
