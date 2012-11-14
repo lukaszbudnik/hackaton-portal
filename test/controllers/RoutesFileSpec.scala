@@ -9,6 +9,7 @@ import helpers.SecureSocialUtils
 import org.specs2.matcher.MatchResult
 import scala.collection.Map
 import scala.xml.XML
+import play.api.Play
 
 
 class RoutesFileSpec extends Specification {
@@ -41,19 +42,26 @@ class RoutesFileSpec extends Specification {
       ("action renders correctly: " + tuple) >> {
         val fakeApp = FakeApplication(additionalConfiguration = inMemoryDatabase())
         running(fakeApp) {
-        	val httpMethod = tuple._1
+          val httpMethod = tuple._1
         	var action = tuple._2
+            
+        	val skipAll = Play.current.configuration.getString("mongodb.uri").get == "mock"
+            
+        	  
+        	// skipping tests  
+        	if (skipAll && (action.startsWith("/contents") || action.startsWith("/messages.js"))) {
+              skipped("skipping test for mock mongodb")
+            } 
+            		  
         	
         	idMap.map(id => action = action.replaceAll(id._1, id._2))
         	
         	
         	
         	val result = SecureSocialUtils.fakeAuth(FakeRequest(httpMethod, action), fakeApp)
-//        	println(contentAsString(result))
-//        	XML.loadString(contentAsString(result))
         	status(result) must beOneOf(OK, SEE_OTHER)     
         	
-        	
+
         }
       }
       
