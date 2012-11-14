@@ -45,6 +45,7 @@ class RoutesFileSpec extends Specification {
           val httpMethod = tuple._1
         	var action = tuple._2
             
+        	
         	val skipAll = Play.current.configuration.getString("mongodb.uri").get == "mock"
             
         	  
