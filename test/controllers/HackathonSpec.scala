@@ -32,6 +32,7 @@ class HackathonSpec extends Specification with DataTables {
         contentAsString(result) must contain(helpers.CmsMessages("hackathons.title"))
       }
     }
+    
 
     "display hackathon details on GET /hackathons/id" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
@@ -40,7 +41,7 @@ class HackathonSpec extends Specification with DataTables {
 
           val hackathonDb: Option[model.Hackathon] = model.Hackathon.lookup(1L)
           hackathonDb.isEmpty must beFalse
-
+          
           status(result) must equalTo(OK)
           contentAsString(result) must contain(helpers.CmsMessages("hackathons.organiser.label"))
         }
@@ -108,7 +109,7 @@ class HackathonSpec extends Specification with DataTables {
                
             	val action = "/hackathons/new"
             	// adding userId 
-            	val result = SecureSocialUtils.fakeAuth(FakeRequest(GET, action)) 
+            	val result = SecureSocialUtils.fakeAuth(FakeRequest(GET, action), fakeapp) 
 
                 status(result) must equalTo(OK)
             	contentAsString(result) must contain(helpers.CmsMessages("hackathons.create.title"))
