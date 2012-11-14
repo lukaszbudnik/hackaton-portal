@@ -35,7 +35,7 @@
 	@forms.hidden(newsForm("authorId"))
 	
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
+        <button type="submit" class="btn btn-primary">@helpers.CmsMessages(actionMessage)</button>
   		
   		@hackathon.map { hackathon =>
         <a href="@routes.News.indexH(hackathon.id)" class="btn">@helpers.CmsMessages("global.cancel")</a>

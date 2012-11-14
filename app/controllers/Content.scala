@@ -22,30 +22,30 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
 
   def index = SecuredAction() { implicit request =>
 
-    implicit val socialUser = request.user
-    Security.verifyIfAllowed(socialUser)
+    implicit val user = request.user
+    Security.verifyIfAllowed
 
-    val entityList = ContentManager.all
+    val entityList = ContentManager.all.sortWith(_.key < _.key)
 
-    Ok(views.html.contents.index(entityList, None))
+    Ok(views.html.contents.index(entityList, user))
   }
 
   def create = SecuredAction() { implicit request =>
 
-    implicit val socialUser = request.user
-    Security.verifyIfAllowed(socialUser)
+    implicit val user = request.user
+    Security.verifyIfAllowed
 
     val entry = Entry("", cms.dto.EntryType.HTML, List.empty)
-    Ok(views.html.contents.create(entryForm.fill(entry), None))
+    Ok(views.html.contents.create(entryForm.fill(entry), user))
   }
 
   def save = SecuredAction() { implicit request =>
 
-    implicit val socialUser = request.user
-    Security.verifyIfAllowed(socialUser)
+    implicit val user = request.user
+    Security.verifyIfAllowed
 
     entryForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.contents.create(errors, None)),
+      errors => BadRequest(views.html.contents.create(errors, user)),
       entry => {
         ContentManager.create(entry)
         Redirect(routes.Content.index)
@@ -55,12 +55,12 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
 
   def edit(key: String) = SecuredAction() { implicit request =>
 
-    implicit val socialUser = request.user
-    Security.verifyIfAllowed(socialUser)
+    implicit val user = request.user
+    Security.verifyIfAllowed
 
     val entry = ContentManager.find(key)
     entry.map { entry =>
-      Ok(views.html.contents.edit(key, entryForm.fill(entry), None))
+      Ok(views.html.contents.edit(key, entryForm.fill(entry), user))
     }.getOrElse {
       Redirect(routes.Content.index)
     }
@@ -69,13 +69,13 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
 
   def update(key: String) = SecuredAction() { implicit request =>
 
-    implicit val socialUser = request.user
-    Security.verifyIfAllowed(socialUser)
+    implicit val user = request.user
+    Security.verifyIfAllowed
 
     val entry = ContentManager.find(key)
     entry.map { entry =>
       entryForm.bindFromRequest.fold(
-        errors => BadRequest(views.html.contents.edit(key, errors, None)),
+        errors => BadRequest(views.html.contents.edit(key, errors, user)),
         entry => {
           ContentManager.update(entry)
           Redirect(routes.Content.index)
@@ -88,8 +88,8 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
 
   def delete(key: String) = SecuredAction() { implicit request =>
 
-    implicit val socialUser = request.user
-    Security.verifyIfAllowed(socialUser)
+    implicit val user = request.user
+    Security.verifyIfAllowed
 
     val entry = ContentManager.find(key)
     entry.map { entry =>
