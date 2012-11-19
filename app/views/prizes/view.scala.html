@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], prize: Option[model.Prize], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], prize: Option[model.Prize], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 
@@ -24,7 +24,7 @@
 				}
 
 				@user.map { user =>
-					@if(user.isAdmin || user.hackathonUserId == hackathon.get.organiserId ) {
+					@if(user.isAdmin || user.id == hackathon.get.organiserId ) {
 					<div class="form-actions">
 						@form(routes.Prize.delete(hackathon.get.id, prize.id)) {
 							<a class="btn btn-success" href="@routes.Prize.edit(hackathon.get.id, prize.id)">@helpers.CmsMessages("global.edit")</a>

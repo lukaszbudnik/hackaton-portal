@@ -22,8 +22,9 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
 
   def index = SecuredAction() { implicit request =>
 
-    implicit val user = request.user
-    Security.verifyIfAllowed
+    Security.verifyIfAllowed(request.user)
+    
+    val user = userFromRequest(request)
 
     val entityList = ContentManager.all.sortWith(_.key < _.key)
 
@@ -32,8 +33,8 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
 
   def create = SecuredAction() { implicit request =>
 
-    implicit val user = request.user
-    Security.verifyIfAllowed
+    Security.verifyIfAllowed(request.user)
+    val user =  userFromRequest(request)
 
     val entry = Entry("", cms.dto.EntryType.HTML, List.empty)
     Ok(views.html.contents.create(entryForm.fill(entry), user))
@@ -41,8 +42,9 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
 
   def save = SecuredAction() { implicit request =>
 
-    implicit val user = request.user
-    Security.verifyIfAllowed
+    Security.verifyIfAllowed(request.user)
+    
+    val user = userFromRequest(request)
 
     entryForm.bindFromRequest.fold(
       errors => BadRequest(views.html.contents.create(errors, user)),
@@ -55,8 +57,8 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
 
   def edit(key: String) = SecuredAction() { implicit request =>
 
-    implicit val user = request.user
-    Security.verifyIfAllowed
+    Security.verifyIfAllowed(request.user)
+    val user = userFromRequest(request)
 
     val entry = ContentManager.find(key)
     entry.map { entry =>
@@ -69,8 +71,8 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
 
   def update(key: String) = SecuredAction() { implicit request =>
 
-    implicit val user = request.user
-    Security.verifyIfAllowed
+    Security.verifyIfAllowed(request.user)
+    val user =  userFromRequest(request)
 
     val entry = ContentManager.find(key)
     entry.map { entry =>
@@ -88,8 +90,8 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
 
   def delete(key: String) = SecuredAction() { implicit request =>
 
-    implicit val user = request.user
-    Security.verifyIfAllowed
+    Security.verifyIfAllowed(request.user)
+    val user = userFromRequest(request)
 
     val entry = ContentManager.find(key)
     entry.map { entry =>

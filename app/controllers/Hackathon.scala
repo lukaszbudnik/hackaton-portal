@@ -135,37 +135,37 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
 
   def index = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.hackathons.index(model.Hackathon.all.toSeq.sortWith((a, b) => a.date.after(b.date)), request.user))
+      Ok(views.html.hackathons.index(model.Hackathon.all.toSeq.sortWith((a, b) => a.date.after(b.date)), userFromRequest(request)))
     }
   }
 
   def view(id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.hackathons.view(model.Hackathon.lookup(id), request.user))
+      Ok(views.html.hackathons.view(model.Hackathon.lookup(id), userFromRequest(request)))
     }
   }
 
   def chat(id: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.hackathons.chat(model.Hackathon.lookup(id), request.user))
+      Ok(views.html.hackathons.chat(model.Hackathon.lookup(id), userFromRequest(request)))
     }
   }
 
   def create = SecuredAction() { implicit request =>
     transaction {
-      model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
-        val hackathon = new model.dto.HackathonWithLocations(new model.Hackathon(user.id), List[model.Location](new model.Location))
-        val formData = hackathonForm.fill(hackathon)
-        Ok(views.html.hackathons.create(formData, request.user))
-      }.getOrElse(Redirect(routes.Hackathon.index))
+
+      val user = userFromRequest(request)
+
+      val hackathon = new model.dto.HackathonWithLocations(new model.Hackathon(user.id), List[model.Location](new model.Location))
+      val formData = hackathonForm.fill(hackathon)
+      Ok(views.html.hackathons.create(formData, request.user))
+
     }
   }
 
   def save = SecuredAction() { implicit request =>
     hackathonForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.hackathons.create(errors, request.user))
-      },
+      errors => BadRequest(views.html.hackathons.create(errors, request.user)),
       hackathonWithLocations => transaction {
         val newH = model.Hackathon.insert(hackathonWithLocations.hackathon)
         hackathonWithLocations.locations.map {
@@ -181,7 +181,9 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
       model.dto.HackathonWithLocations.lookup(id).map { hackathonWithL =>
         helpers.Security.verifyIfAllowed(hackathonWithL.hackathon.organiserId)(request.user)
 
-        Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathonWithL), request.user))
+        val user = userFromRequest(request)
+
+        Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathonWithL), user))
       }.getOrElse {
         // no hackathon found
         Redirect(routes.Hackathon.view(id)).flashing()
@@ -191,9 +193,7 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
 
   def update(id: Long) = SecuredAction() { implicit request =>
     hackathonForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.hackathons.edit(id, errors, request.user))
-      },
+      errors => BadRequest(views.html.hackathons.edit(id, errors, request.user)),
       hackathonWithL => transaction {
         model.Hackathon.lookup(id).map { hackathon =>
           helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
@@ -223,50 +223,45 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
     transaction {
       model.Hackathon.lookup(id).map { hackathon =>
         helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
+        model.Hackathon.delete(id)
       }
-      model.Hackathon.delete(id)
       Redirect(routes.Hackathon.index).flashing("status" -> "deleted")
     }
   }
 
   def join(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      var status = "error"
-      model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
-        model.Hackathon.lookup(id).map { hackathon =>
-          if (!hackathon.hasMember(user.id)) {
-            hackathon.addMember(user)
-            status = "joined"
-          }
+      val user = userFromRequest(request)
+      val status = model.Hackathon.lookup(id).map { hackathon =>
+        if (!hackathon.hasMember(user.id)) {
+          hackathon.addMember(user)
         }
-      }
+        "joined"
+      }.getOrElse("error")
       Redirect(routes.Hackathon.view(id)).flashing("status" -> status)
     }
   }
 
   def disconnect(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      var status = "error"
-      model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
-        model.Hackathon.lookup(id).map { hackathon =>
-          hackathon.deleteMember(user)
-          status = "disconnected"
-        }
-      }
+      val user = userFromRequest(request)
+      val status = model.Hackathon.lookup(id).map { hackathon =>
+        hackathon.deleteMember(user)
+        "disconnected"
+      }.getOrElse("error")
       Redirect(routes.Hackathon.view(id)).flashing("status" -> status)
     }
   }
 
   def disconnectUser(id: Long, userId: Long) = SecuredAction() { implicit request =>
     transaction {
-      var status = "error"
-      model.User.lookup(userId).map { user =>
-        model.Hackathon.lookup(id).map { hackathon =>
-          helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
-          hackathon.deleteMember(user)
-          status = "disconnectedUser"
-        }
-      }
+      val user = userFromRequest(request)
+
+      val status = model.Hackathon.lookup(id).map { hackathon =>
+        helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
+        hackathon.deleteMember(user)
+        "disconnectedUser"
+      }.getOrElse("error")
       Redirect(routes.Hackathon.view(id)).flashing("status" -> status)
     }
   }

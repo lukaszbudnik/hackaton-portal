@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @hackathons.hackathonMain(hackathon, user, "problems", "problems.status", true) {
 
@@ -11,7 +11,7 @@
 		 *  or normal user and hackathon configuration allows new problem creation
 		 *@
 		 
-        @if((user.isDefined && (user.get.isAdmin || user.get.hackathonUserId == hackathon.organiserId || !hackathon.newProblemsDisabled ) )) {
+        @if((user.isDefined && (user.get.isAdmin || user.get.id == hackathon.organiserId || !hackathon.newProblemsDisabled ) )) {
 			<a class="btn btn-success" href="@routes.Problem.create(hackathon.id)">@helpers.CmsMessages("problems.addProblem")</a>
 		}
 
@@ -25,7 +25,7 @@
     		 *
     		 *@
 
-    		@if((user.isDefined && user.get.isAdmin) || problem.status == model.ProblemStatus.Approved || (user.isDefined && (user.get.hackathonUserId == hackathon.organiserId || user.get.hackathonUserId == problem.submitterId))) {
+    		@if((user.isDefined && user.get.isAdmin) || problem.status == model.ProblemStatus.Approved || (user.isDefined && (user.get.id == hackathon.organiserId || user.get.id == problem.submitterId))) {
 
     			<div class="page-header problem" data-problem-id="@problem.id">
     				<h2>@problem.name @problemActions(hackathon, problem, user)</h2>
@@ -45,7 +45,7 @@
 		  *
 		  *@
 
-		 @if(hackathon.problems.size == 0 || (user.isEmpty && hackathon.problems.filter(_.status == model.ProblemStatus.Approved).size == 0)  || (user.isDefined && hackathon.problems.filterNot(_.status == model.ProblemStatus.Approved).filterNot(_.submitterId == user.get.hackathonUserId).size == hackathon.problems.size)) {
+		 @if(hackathon.problems.size == 0 || (user.isEmpty && hackathon.problems.filter(_.status == model.ProblemStatus.Approved).size == 0)  || (user.isDefined && hackathon.problems.filterNot(_.status == model.ProblemStatus.Approved).filterNot(_.submitterId == user.get.id).size == hackathon.problems.size)) {
     		<div class="page-header">
             	<h2>@helpers.CmsMessages("problems.empty.text")</h2>
         	</div>

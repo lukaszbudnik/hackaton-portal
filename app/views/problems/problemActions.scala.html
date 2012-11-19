@@ -1,4 +1,4 @@
-@(hackathon: model.Hackathon, problem: model.Problem, user: Option[securesocial.core.SocialUser], ajaxDelete: Boolean = true)(implicit request: Request[AnyContent], lang: Lang)
+@(hackathon: model.Hackathon, problem: model.Problem, user: Option[model.User], ajaxDelete: Boolean = true)(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
 
@@ -7,9 +7,9 @@
 @user.map { user =>
 	<div class="pull-right">
 		
-		@if(user.isAdmin || user.hackathonUserId == hackathon.organiserId || user.hackathonUserId == problem.submitterId) {
+		@if(user.isAdmin || user.id == hackathon.organiserId || user.id == problem.submitterId) {
 			<a class="btn btn-success" href="@routes.Problem.edit(hackathon.id, problem.id)">@helpers.CmsMessages("global.edit")</a>
-			@if((problem.status == model.ProblemStatus.Unverified || problem.status == model.ProblemStatus.Blocked) && (user.isAdmin || user.hackathonUserId == hackathon.organiserId)) {
+			@if((problem.status == model.ProblemStatus.Unverified || problem.status == model.ProblemStatus.Blocked) && (user.isAdmin || user.id == hackathon.organiserId)) {
 				<a class="btn btn-success problem-verify" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@helpers.CmsMessages("problems.verify.label")</a>
 			}
 			@if(problem.status == model.ProblemStatus.Approved) {
@@ -18,7 +18,7 @@
 			@if(problem.status == model.ProblemStatus.Suspended) {
 				<a class="btn btn-success problem-approve" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@helpers.CmsMessages("problems.approve.label")</a>
 			}
-			@if((problem.status != model.ProblemStatus.Unverified && problem.status != model.ProblemStatus.Blocked) && (user.isAdmin || user.hackathonUserId == hackathon.organiserId)) {
+			@if((problem.status != model.ProblemStatus.Unverified && problem.status != model.ProblemStatus.Blocked) && (user.isAdmin || user.id == hackathon.organiserId)) {
 				<a class="btn btn-danger problem-block" data-hackathon-id="@hackathon.id" data-problem-id="@problem.id">@helpers.CmsMessages("problems.block.label")</a>
 			}
 			@if(ajaxDelete) {

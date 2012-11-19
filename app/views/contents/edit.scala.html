@@ -1,4 +1,4 @@
-@(key: String, eForm: Form[cms.dto.Entry], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(key: String, eForm: Form[cms.dto.Entry], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @main(helpers.CmsMessages("contents.edit.title"), Some(user), nav="contents"){
