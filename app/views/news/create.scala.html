@@ -1,4 +1,4 @@
-@(newsForm: Form[model.News], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(newsForm: Form[model.News], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @main(helpers.CmsMessages("news.create.title"), Some(user), nav = "news") {
 	<div class="container">

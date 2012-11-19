@@ -1,4 +1,4 @@
-@(user: Option[securesocial.core.SocialUser], hackathonId: Long, teamId: Option[Long] = None)(implicit request: Request[AnyContent], lang: Lang)
+@(user: Option[model.User], hackathonId: Long, teamId: Option[Long] = None)(implicit request: Request[AnyContent], lang: Lang)
 
 @user.map { user =>
 

@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], id: Long, prizeForm: Form[model.Prize], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], id: Long, prizeForm: Form[model.Prize], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @hackathons.hackathonMain(hackathon, Some(user), "prizes", "prizes.status", false) {
 	

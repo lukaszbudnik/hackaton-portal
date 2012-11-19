@@ -1,4 +1,4 @@
-@(news: Iterable[model.News], user: Option[securesocial.core.SocialUser], label: String = "")(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(news: Iterable[model.News], user: Option[model.User], label: String = "")(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import tags._

@@ -25,34 +25,28 @@ object Application extends LangAwareController with securesocial.core.SecureSoci
       "avatar_url" -> text)((name, email, language, github_username, twitter_account, avatar_url) => model.User(name, email, language, github_username, twitter_account, avatar_url, "", false, false))((user: model.User) => Some(user.name, user.email, user.language, user.githubUsername, user.twitterAccount, user.avatarUrl)))
 
   def index = UserAwareAction { implicit request =>
-    Ok(views.html.index(request.user))
+    Ok(views.html.index(userFromRequest))
   }
 
   def about = UserAwareAction { implicit request =>
-    Ok(views.html.about(request.user))
+    Ok(views.html.about(userFromRequest))
   }
 
   def contact = UserAwareAction { implicit request =>
-    Ok(views.html.contact(request.user))
+    Ok(views.html.contact(userFromRequest))
   }
 
   def profile = SecuredAction() {
     implicit request =>
       transaction {
-        val user = model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId)
-        user.map { u =>
-          Ok(views.html.profile(userForm.fill(u), request.user))
-        }.getOrElse {
-          Redirect(securesocial.controllers.routes.LoginPage.login).flashing()
-        }
+        val user = userFromRequest(request)
+        Ok(views.html.profile(userForm.fill(user), user))
       }
   }
 
   def updateProfile = SecuredAction() { implicit request =>
     userForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.profile(errors, request.user))
-      },
+      errors => BadRequest(views.html.profile(errors, userFromRequest(request))),
       user => transaction {
         model.User.update(request.user.id.id + request.user.id.providerId, user)
         Redirect(routes.Application.profile).flashing("status" -> "updated", "title" -> user.name).withSession(request.session + (LangAwareController.SESSION_LANG_KEY -> user.language))
