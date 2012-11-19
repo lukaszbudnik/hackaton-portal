@@ -41,7 +41,7 @@
 	    	</div>
 	   	</div>
 
-		@user.filter(u => team.hasMember(u.id) || team.creatorId == u.id).map {
+		@{user.filter(u => team.hasMember(u.id) || team.creatorId == u.id)}.map {
 		<div class="page-header">
 			<h2>@helpers.CmsMessages("teams.chat")</h2>
 		</div>  

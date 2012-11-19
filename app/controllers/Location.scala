@@ -34,12 +34,11 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
       "status" -> enum(model.LocationStatus))(model.Location.apply)(model.Location.unapply))
 
   def index = SecuredAction() { implicit request =>
-    //helpers.Security.verifyIfAllowed()(request.user)
     transaction {
-      //helpers.Security.verifyIfAllowed(request.user)
-      implicit val user = request.user
+      implicit val socialUser = request.user
       helpers.Security.secured {
-        Ok(views.html.locations.index(model.Location.all, Some(request.user)))
+        val user = userFromRequest(request)
+        Ok(views.html.locations.index(model.Location.all, user))
       }
     }
 
@@ -48,8 +47,8 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
   def view(id: Long) = SecuredAction() { implicit request =>
     helpers.Security.verifyIfAllowed()(request.user)
     transaction {
-      helpers.Security.verifyIfAllowed(request.user)
-      Ok(views.html.locations.view(model.Location.lookup(id), Some(request.user)))
+      val user = userFromRequest(request)
+      Ok(views.html.locations.view(model.Location.lookup(id), user))
     }
   }
 
@@ -60,21 +59,19 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
   }
 
   def createA = SecuredAction() { implicit request =>
+    helpers.Security.verifyIfAllowed()(request.user)
     transaction {
-      helpers.Security.verifyIfAllowed()(request.user)
-      Ok(views.html.locations.create(routes.Location.saveA, locationForm, request.user))
+      val user = userFromRequest(request)
+      Ok(views.html.locations.create(routes.Location.saveA, locationForm, user))
     }
   }
 
   def save = SecuredAction() { implicit request =>
     locationForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.locations.locationForm(routes.Location.save, errors, false))
-      },
+      errors => BadRequest(views.html.locations.locationForm(routes.Location.save, errors, false)),
       location => transaction {
-        model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
-          model.Location.insert(location.copy(submitterId = user.id, status = LocationStatus.Unverified))
-        }
+        val user = userFromRequest(request)
+        model.Location.insert(location.copy(submitterId = user.id, status = LocationStatus.Unverified))
 
         Ok("")
       })
@@ -84,15 +81,13 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
 
     helpers.Security.verifyIfAllowed()(request.user)
 
+    val user = userFromRequest(request)
+
     locationForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.locations.create(routes.Location.saveA, errors, request.user))
-      },
+      errors => BadRequest(views.html.locations.create(routes.Location.saveA, errors, user)),
       location => transaction {
 
-        model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
-          model.Location.insert(location.copy(submitterId = user.id))
-        }
+        model.Location.insert(location.copy(submitterId = user.id))
 
         Redirect(routes.Location.index).flashing("status" -> "added", "title" -> location.name)
       })
@@ -102,12 +97,13 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
 
     helpers.Security.verifyIfAllowed()(request.user)
 
+    val user = userFromRequest(request)
+
     transaction {
       model.Location.lookup(id).map { location =>
-        Ok(views.html.locations.edit(id, routes.Location.updateA(id), locationForm.fill(location), request.user))
+        Ok(views.html.locations.edit(id, routes.Location.updateA(id), locationForm.fill(location), user))
       }.getOrElse {
-        // no location found
-        Redirect(routes.Location.view(id)).flashing()
+        Redirect(routes.Location.view(id))
       }
     }
   }
@@ -126,9 +122,7 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
 
   def update(id: Long) = SecuredAction() { implicit request =>
     locationForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.locations.locationForm(routes.Location.edit(id), errors, false))
-      },
+      errors => BadRequest(views.html.locations.locationForm(routes.Location.edit(id), errors, false)),
       location => transaction {
         model.Location.lookup(id).map { dbLocation =>
           helpers.Security.verifyIfAllowed(dbLocation.submitterId)(request.user)
@@ -140,14 +134,11 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
 
   def updateA(id: Long) = SecuredAction() { implicit request =>
     helpers.Security.verifyIfAllowed()(request.user)
+    val user = userFromRequest(request)
     locationForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.locations.edit(id, routes.Location.editA(id), errors, request.user))
-      },
+      errors => BadRequest(views.html.locations.edit(id, routes.Location.editA(id), errors, user)),
       location => transaction {
-        model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
-          model.Location.update(id, location.copy(submitterId = user.id))
-        }
+        model.Location.update(id, location.copy(submitterId = user.id))
         Redirect(routes.Location.index).flashing("status" -> "updated", "title" -> location.name)
       })
   }
