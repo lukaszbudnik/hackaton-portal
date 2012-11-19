@@ -1,4 +1,4 @@
-@(hackathons: Iterable[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathons: Iterable[model.Hackathon], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import tags._
@@ -31,7 +31,7 @@
 				<small>@helpers.CmsMessages("hackathons.hackathonStatus." + hackathon.status)</small>
 			</h2>
 			
-				<p>@hackathon.date @for((location, idx) <- hackathon.locations.zipWithIndex) {@if(idx>0){, } @location.city}</p>
+			<p>@hackathon.date @for((location, idx) <- hackathon.locations.zipWithIndex) {@if(idx>0){, } @location.city}</p>
 			
     		<p><a class="btn" href="@routes.Hackathon.view(hackathon.id)">@helpers.CmsMessages("global.readMore")</a></p>
   		</div>

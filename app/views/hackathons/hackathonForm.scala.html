@@ -1,4 +1,4 @@
-@(hackathonForm: Form[model.dto.HackathonWithLocations], action: play.api.mvc.Call, user: securesocial.core.SocialUser, actionMessage: String)(implicit request: Request[AnyContent], lang: Lang)
+@(hackathonForm: Form[model.dto.HackathonWithLocations], action: play.api.mvc.Call, user: model.User, actionMessage: String)(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -13,7 +13,7 @@
 		addHackathonLocationAction : '@routes.Hackathon.addLocation',
 		deleteHackathonLocationAction : '/hackathons/deleteLocation',		
 		noMatchFoundText : '@helpers.CmsMessages("locations.nomatchfound")',
-		userHackathonId : '@user.hackathonUserId'
+		userHackathonId : '@user.id'
 	}).initHackathonLocations();
 </script>
 
@@ -78,7 +78,7 @@
 
 	<div class="modal-body">
    	   	<div class="row">
-       		<div id="locationBox""></div>
+       		<div id="locationBox"></div>
     	</div>
     </div>
 	

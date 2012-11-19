@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], id: Long, teamForm: Form[model.Team], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], id: Long, teamForm: Form[model.Team], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @hackathons.hackathonMain(hackathon, Some(user), "teams", "teams.status", false) {
 	

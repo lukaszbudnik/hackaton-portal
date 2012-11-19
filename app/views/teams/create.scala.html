@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], teamForm: Form[model.Team], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], teamForm: Form[model.Team], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @hackathons.hackathonMain(hackathon, Some(user), "teams", "teams.status", false) {
 	
@@ -6,6 +6,6 @@
 		<h2>@helpers.CmsMessages("teams.create.title")</h2>
 	</div>
   
-	@teams.teamForm(hackathon.get, teamForm, routes.Team.save(hackathon.get.id), "global.add")
+	@teams.teamForm(hackathon, teamForm, routes.Team.save(hackathon.id), "global.add")
 
 }
