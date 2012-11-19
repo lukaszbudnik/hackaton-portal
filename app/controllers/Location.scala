@@ -18,7 +18,6 @@ import helpers.Forms.enum
 import model.LocationStatus
 import org.squeryl.PrimitiveTypeMode._
 
-
 object Location extends LangAwareController with securesocial.core.SecureSocial {
 
   val locationForm = Form(
@@ -34,8 +33,6 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
       "submitterId" -> ignored(0L),
       "status" -> enum(model.LocationStatus))(model.Location.apply)(model.Location.unapply))
 
-
-      
   def index = SecuredAction() { implicit request =>
     //helpers.Security.verifyIfAllowed()(request.user)
     transaction {
@@ -45,7 +42,7 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
         Ok(views.html.locations.index(model.Location.all, Some(request.user)))
       }
     }
-    
+
   }
 
   def view(id: Long) = SecuredAction() { implicit request =>
@@ -61,7 +58,7 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
       Ok(views.html.locations.locationForm(routes.Location.save, locationForm, false))
     }
   }
-  
+
   def createA = SecuredAction() { implicit request =>
     transaction {
       helpers.Security.verifyIfAllowed()(request.user)
@@ -69,37 +66,42 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
     }
   }
 
-  
   def save = SecuredAction() { implicit request =>
     locationForm.bindFromRequest.fold(
       errors => transaction {
         BadRequest(views.html.locations.locationForm(routes.Location.save, errors, false))
       },
       location => transaction {
-        model.Location.insert(location.copy(submitterId = request.user.hackathonUserId, status = LocationStatus.Unverified))
+        model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
+          model.Location.insert(location.copy(submitterId = user.id, status = LocationStatus.Unverified))
+        }
+
         Ok("")
       })
   }
-  
+
   def saveA = SecuredAction() { implicit request =>
-    
+
     helpers.Security.verifyIfAllowed()(request.user)
-    
+
     locationForm.bindFromRequest.fold(
       errors => transaction {
         BadRequest(views.html.locations.create(routes.Location.saveA, errors, request.user))
       },
       location => transaction {
-        model.Location.insert(location.copy(submitterId = request.user.hackathonUserId))
-         Redirect(routes.Location.index).flashing("status" -> "added", "title" -> location.name)
+
+        model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
+          model.Location.insert(location.copy(submitterId = user.id))
+        }
+
+        Redirect(routes.Location.index).flashing("status" -> "added", "title" -> location.name)
       })
   }
-  
 
   def editA(id: Long) = SecuredAction() { implicit request =>
-    
+
     helpers.Security.verifyIfAllowed()(request.user)
-    
+
     transaction {
       model.Location.lookup(id).map { location =>
         Ok(views.html.locations.edit(id, routes.Location.updateA(id), locationForm.fill(location), request.user))
@@ -109,16 +111,15 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
       }
     }
   }
-  
-  
+
   def edit(id: Long) = SecuredAction() { implicit request =>
-        
+
     transaction {
-      model.Location.lookup(id).map { dbLocation =>       
-        helpers.Security.verifyIfAllowed(dbLocation.submitterId)(request.user)   
-        Ok(views.html.locations.locationForm(routes.Location.edit(id), locationForm.fill(dbLocation), false))       
+      model.Location.lookup(id).map { dbLocation =>
+        helpers.Security.verifyIfAllowed(dbLocation.submitterId)(request.user)
+        Ok(views.html.locations.locationForm(routes.Location.edit(id), locationForm.fill(dbLocation), false))
       }.getOrElse {
-    	Ok(views.html.locations.locationForm(routes.Location.edit(id), locationForm, false))      
+        Ok(views.html.locations.locationForm(routes.Location.edit(id), locationForm, false))
       }
     }
   }
@@ -130,21 +131,23 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
       },
       location => transaction {
         model.Location.lookup(id).map { dbLocation =>
-        	helpers.Security.verifyIfAllowed(dbLocation.submitterId)(request.user) 
-        	model.Location.update(id, location)
+          helpers.Security.verifyIfAllowed(dbLocation.submitterId)(request.user)
+          model.Location.update(id, location)
         }
         Ok("")
       })
   }
-  
- def updateA(id: Long) = SecuredAction() { implicit request =>
-   helpers.Security.verifyIfAllowed()(request.user)
+
+  def updateA(id: Long) = SecuredAction() { implicit request =>
+    helpers.Security.verifyIfAllowed()(request.user)
     locationForm.bindFromRequest.fold(
       errors => transaction {
         BadRequest(views.html.locations.edit(id, routes.Location.editA(id), errors, request.user))
       },
       location => transaction {
-        model.Location.update(id, location.copy(submitterId = request.user.hackathonUserId))
+        model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
+          model.Location.update(id, location.copy(submitterId = user.id))
+        }
         Redirect(routes.Location.index).flashing("status" -> "updated", "title" -> location.name)
       })
   }
@@ -171,9 +174,12 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
           "city" -> JsString(l.city)))
       }
 
-      val locations: List[model.Location] = model.Location.findByPattern("%" + term + "%",
-          (l) => l.status === LocationStatus.Approved or request.user.hackathonUserId === l.submitterId
-          or request.user.isAdmin === true).toList
+      val locations: List[model.Location] =
+        model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
+          model.Location.findByPattern("%" + term + "%",
+            (l) => l.status === LocationStatus.Approved or user.id === l.submitterId
+              or user.isAdmin === true).toList
+        }.getOrElse(Nil)
       Ok(toJson(locations))
     }
   }

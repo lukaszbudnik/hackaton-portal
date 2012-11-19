@@ -57,9 +57,10 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
   def create = SecuredAction() { implicit request =>
     helpers.Security.verifyIfAllowed(request.user)
     transaction {
-      helpers.Security.verifyIfAllowed(request.user)
-      val news = new model.News(request.user.hackathonUserId)
-      Ok(views.html.news.create(newsForm.fill(news), request.user))
+      model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
+        val news = new model.News(user.id)
+        Ok(views.html.news.create(newsForm.fill(news), request.user))
+      }.getOrElse(Redirect(routes.News.index))
     }
   }
 
@@ -69,8 +70,10 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
       hackathon.map { hackathon =>
         helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
       }
-      val news = new model.News(request.user.hackathonUserId, Some(hid))
+      model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
+      val news = new model.News(user.id, Some(hid))
       Ok(views.html.news.createH(hackathon, newsForm.fill(news), request.user))
+      }.getOrElse(Redirect(routes.News.indexH(hid)))
     }
   }
 

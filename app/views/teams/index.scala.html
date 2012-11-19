@@ -1,30 +1,16 @@
-@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @hackathons.hackathonMain(hackathon, user, "teams", "teams.status", true) {
 
   @hackathon.map { hackathon =>
-    	@*
-		 * Display add teams when:
-		 * User is admin 
-		 * or hackathon organiser
-		 *  or normal user and hackathon configuration allows new teams creation
-		 *@
 		 
-        @if((user.isDefined && (user.get.isAdmin || user.get.hackathonUserId == hackathon.organiserId || !hackathon.newTeamsDisabled ) )) {
+        @if(security.Hackathon.canAddTeam(hackathon, user)) {
   			<a class="btn btn-success" href="@routes.Team.create(hackathon.id)">@helpers.CmsMessages("teams.addTeam")</a>
   		}
 
     	@hackathon.teams.map { team =>
 
-    		@*
-    		 * Display teams when:
-    		 *		1. user is admin
-    		 *		2. team is verified
-    		 *		3. user is hackathon organiser or team creator
-    		 *
-    		 *@
-
-    		@if((user.isDefined && user.get.isAdmin) || team.status == model.TeamStatus.Approved || (user.isDefined && (user.get.hackathonUserId == hackathon.organiserId || user.get.hackathonUserId == team.creatorId))) {
+    		@if(security.Hackathon.canRenderTeam(hackathon, team, user)) {
 	    	  	<div class="page-header team" data-team-id="@team.id">
 					<h2>@team.name @teamActions(hackathon, team, user)</h2>
 	   				<p>@helpers.CmsMessages("teams.creator.label"): @team.creator.name</p>
@@ -43,7 +29,7 @@
 		  *
 		  *@
 
-		@if(hackathon.teams.size == 0 || (user.isEmpty && hackathon.teams.filter(_.status == model.TeamStatus.Approved).size == 0)  || (user.isDefined && hackathon.teams.filterNot(_.status == model.TeamStatus.Approved).filterNot(_.creatorId == user.get.hackathonUserId).size == hackathon.teams.size)) {
+		@if(hackathon.teams.size == 0 || (user.isEmpty && hackathon.teams.filter(_.status == model.TeamStatus.Approved).size == 0)  || (user.isDefined && hackathon.teams.filterNot(_.status == model.TeamStatus.Approved).filterNot(_.creatorId == user.get.id).size == hackathon.teams.size)) {
 			<div class="page-header">
 				<h2>@helpers.CmsMessages("teams.empty.text")</h2>
         	</div>

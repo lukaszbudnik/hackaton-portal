@@ -17,21 +17,14 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
   def save(socialUser: SocialUser) = {
 
     val alreadyLoggedInSocialUser = find(socialUser.id)
-
-    if (alreadyLoggedInSocialUser.isDefined) {
-      if (Logger.isDebugEnabled) {
-        Logger.debug("Already logged in updating users maps" + socialUser)
-      }
-      users = users + (socialUser.id.id + socialUser.id.providerId -> socialUser)
+    
+    if (alreadyLoggedInSocialUser.isEmpty) {
+      // user not logged in, see if user is already stored in our database
+      model.User.lookupByOpenId(socialUser.id.id + socialUser.id.providerId).getOrElse(addNewUserToDatabase(socialUser))
     }
 
-    transaction {
-      val dbUser: User = model.User.lookupByOpenId(socialUser.id.id + socialUser.id.providerId).getOrElse(addNewUserToDatabase(socialUser))
-
-      val hackathonSocialUser = socialUser.copy(hackathonUserId = dbUser.id, isAdmin = dbUser.isAdmin)
-
-      users = users + (hackathonSocialUser.id.id + hackathonSocialUser.id.providerId -> hackathonSocialUser)
-    }
+    // refresh users map
+    users = users + (socialUser.id.id + socialUser.id.providerId -> socialUser)
   }
 
   private def addNewUserToDatabase(socialUser: SocialUser): User = {
@@ -39,7 +32,8 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
       Logger.debug("Adding a new user for social user " + socialUser)
     }
 
-    val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), core.LangAwareController.DEFAULT_LANG, "", "", socialUser.avatarUrl.getOrElse(""), socialUser.id.id + socialUser.id.providerId)
+    val openId = socialUser.id.id + socialUser.id.providerId;
+    val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), core.LangAwareController.DEFAULT_LANG, "", "", socialUser.avatarUrl.getOrElse(""), openId)
     model.User.insert(newUser)
   }
 

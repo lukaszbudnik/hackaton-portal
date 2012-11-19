@@ -153,10 +153,11 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
 
   def create = SecuredAction() { implicit request =>
     transaction {
-
-      val hackathon = new model.dto.HackathonWithLocations(new model.Hackathon(request.user.hackathonUserId), List[model.Location](new model.Location))
-      val formData = hackathonForm.fill(hackathon)
-      Ok(views.html.hackathons.create(formData, request.user))
+      model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
+        val hackathon = new model.dto.HackathonWithLocations(new model.Hackathon(user.id), List[model.Location](new model.Location))
+        val formData = hackathonForm.fill(hackathon)
+        Ok(views.html.hackathons.create(formData, request.user))
+      }.getOrElse(Redirect(routes.Hackathon.index))
     }
   }
 
@@ -231,7 +232,7 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
   def join(id: Long) = SecuredAction() { implicit request =>
     transaction {
       var status = "error"
-      model.User.lookup(request.user.hackathonUserId).map { user =>
+      model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
         model.Hackathon.lookup(id).map { hackathon =>
           if (!hackathon.hasMember(user.id)) {
             hackathon.addMember(user)
@@ -246,7 +247,7 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
   def disconnect(id: Long) = SecuredAction() { implicit request =>
     transaction {
       var status = "error"
-      model.User.lookup(request.user.hackathonUserId).map { user =>
+      model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
         model.Hackathon.lookup(id).map { hackathon =>
           hackathon.deleteMember(user)
           status = "disconnected"

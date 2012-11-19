@@ -4,7 +4,7 @@ import play.api.mvc.Controller
 import play.api.mvc.RequestHeader
 import play.api.i18n.Lang
 
-class LangAwareController extends Controller {
+class LangAwareController extends BaseController {
 
   implicit override def lang(implicit request: RequestHeader) = {
     request.session.get(LangAwareController.SESSION_LANG_KEY).map { langString =>

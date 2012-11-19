@@ -15,7 +15,6 @@ import play.api.Application
  * Util class for secure social framework
  */
 object SecureSocialUtils {
-
   
   /**
    * Makes call on given request, faking authentication first. Method usefull when testing secured content/ functionality
@@ -27,7 +26,7 @@ object SecureSocialUtils {
    def fakeAuth[T](request: FakeRequest[AnyContent], application: Application ): Result = {
      // saving user information, this information is then retrieved in SecuredAction when authenticating
     transaction {
-      val socialUser = new SocialUser(new UserId("mockId", "mockProvider"), "mockUser", None, None, AuthenticationMethod.UserPassword, true, None, None, None, 0, true)
+      val socialUser = SocialUser(UserId("mockId", "mockProvider"), "mockUser", None, None, AuthenticationMethod.UserPassword, true, None, None, None)
       val service = new UserService(application)
       securesocial.core.UserService.save(socialUser)
     }
