@@ -82,7 +82,7 @@ class FeedSpec extends Specification {
           val atomXML = XML.loadString(contentAsString(result))
           (atomXML \\ "title").head.text must equalTo("hackaton.pl")
           (atomXML \\ "entry").size must equalTo(2)
-          (atomXML \\ "entry" \\ "title").head.text must equalTo("Hackathon News 1")
+          (atomXML \\ "entry" \\ "title").head.text must equalTo("Hackathon News 2")
           atomXML.namespace must equalTo("http://www.w3.org/2005/Atom")
           (atomXML \\ "entry" \\ "author").head must beEqualToIgnoringSpace(<author><name>Łukasz Budnik</name></author>)
           
@@ -98,7 +98,7 @@ class FeedSpec extends Specification {
           val atomXML = XML.loadString(contentAsString(result))
           (atomXML \\ "title").head.text must equalTo("hackaton.pl")
           (atomXML \\ "item").size must equalTo(2)
-          (atomXML \\ "item" \\ "title").head.text must equalTo("Hackathon News 1")
+          (atomXML \\ "item" \\ "title").head.text must equalTo("Hackathon News 2")
           (atomXML \\ "item" \\ "creator").head must beEqualToIgnoringSpace(<dc:creator>Łukasz Budnik</dc:creator>)
           
           status(result) must equalTo(OK)
