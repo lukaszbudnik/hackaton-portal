@@ -38,8 +38,8 @@ case class Hackathon(subject: String,
   def teams = teamsRel.toIterable
   def problems = problemsRel.toIterable
   def prizes = prizeRel.toIterable
-  def news = newsRel.toIterable
-  def sponsors = from(sponsorsRel)(s => select(s) orderBy (s.order asc)).toSeq
+  def news = from(newsRel)(n => select(n) orderBy(n.publishedDate desc))
+  def sponsors = from(sponsorsRel)(s => select(s) orderBy (s.order asc))
   def members = membersRel.toIterable
   def locations = locationsRel.toIterable
 
