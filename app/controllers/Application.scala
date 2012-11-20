@@ -45,10 +45,11 @@ object Application extends LangAwareController with securesocial.core.SecureSoci
   }
 
   def updateProfile = SecuredAction() { implicit request =>
+    val requestUser = userFromRequest(request)
     userForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.profile(errors, userFromRequest(request))),
+      errors => BadRequest(views.html.profile(errors, requestUser)),
       user => transaction {
-        model.User.update(request.user.id.id + request.user.id.providerId, user)
+        model.User.update(requestUser.id, user)
         Redirect(routes.Application.profile).flashing("status" -> "updated", "title" -> user.name).withSession(request.session + (LangAwareController.SESSION_LANG_KEY -> user.language))
       })
   }
