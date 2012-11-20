@@ -19,7 +19,7 @@ object Prize extends LangAwareController with securesocial.core.SecureSocial {
 
   def index(hid: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.prizes.index(model.Hackathon.lookup(hid), request.user))
+      Ok(views.html.prizes.index(model.Hackathon.lookup(hid), userFromRequest))
     }
   }
 
@@ -27,7 +27,7 @@ object Prize extends LangAwareController with securesocial.core.SecureSocial {
     transaction {
       val prize = model.Prize.lookup(id)
       val hackathon = prize.map { p => Some(p.hackathon) }.getOrElse { model.Hackathon.lookup(hid) }
-      Ok(views.html.prizes.view(hackathon, prize, request.user))
+      Ok(views.html.prizes.view(hackathon, prize, userFromRequest))
     }
   }
 
@@ -37,21 +37,22 @@ object Prize extends LangAwareController with securesocial.core.SecureSocial {
       hackathon.map { h =>
         helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
       }
+      val user = userFromRequest(request)
       val prize = new model.Prize(1, hid)
-      Ok(views.html.prizes.create(hackathon, prizeForm.fill(prize), request.user))
+      Ok(views.html.prizes.create(hackathon, prizeForm.fill(prize), user))
     }
   }
 
   def save(hid: Long) = SecuredAction() { implicit request =>
+    val user = userFromRequest(request)
     prizeForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.prizes.create(model.Hackathon.lookup(hid), errors, request.user))
+      errors => transaction { 
+        BadRequest(views.html.prizes.create(model.Hackathon.lookup(hid), errors, user))
       },
       prize => transaction {
         model.Hackathon.lookup(hid).map { h =>
           helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
         }
-        //TODO check if added
         model.Prize.insert(prize)
         Redirect(routes.Prize.index(hid)).flashing("status" -> "added", "title" -> prize.name)
       })
@@ -62,25 +63,25 @@ object Prize extends LangAwareController with securesocial.core.SecureSocial {
       model.Prize.lookup(id).map { prize =>
         helpers.Security.verifyIfAllowed(hid == prize.hackathonId)(request.user)
         helpers.Security.verifyIfAllowed(prize.hackathon.organiserId)(request.user)
-        Ok(views.html.prizes.edit(Some(prize.hackathon), id, prizeForm.fill(prize), request.user))
+        val user = userFromRequest(request)
+        Ok(views.html.prizes.edit(Some(prize.hackathon), id, prizeForm.fill(prize), user))
       }.getOrElse {
-        // no prize found
-        Redirect(routes.Prize.view(hid, id)).flashing()
+        Redirect(routes.Prize.index(hid)).flashing()
       }
     }
   }
 
   def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
+    val user = userFromRequest(request)
     prizeForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.prizes.edit(model.Hackathon.lookup(hid), id, errors, request.user))
+        BadRequest(views.html.prizes.edit(model.Hackathon.lookup(hid), id, errors, user))
       },
       prize => transaction {
         model.Prize.lookup(id).map { prize =>
           helpers.Security.verifyIfAllowed(hid == prize.hackathonId)(request.user)
           helpers.Security.verifyIfAllowed(prize.hackathon.organiserId)(request.user)
         }
-        //TODO check if updated
         model.Prize.update(id, prize)
         Redirect(routes.Prize.index(hid)).flashing("status" -> "updated", "title" -> prize.name)
       })
@@ -92,7 +93,6 @@ object Prize extends LangAwareController with securesocial.core.SecureSocial {
         helpers.Security.verifyIfAllowed(hid == prize.hackathonId)(request.user)
         helpers.Security.verifyIfAllowed(prize.hackathon.organiserId)(request.user)
       }
-      //TODO check if deleted
       model.Prize.delete(id)
       Redirect(routes.Prize.index(hid)).flashing("status" -> "deleted")
     }

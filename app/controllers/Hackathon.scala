@@ -158,14 +158,15 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
 
       val hackathon = new model.dto.HackathonWithLocations(new model.Hackathon(user.id), List[model.Location](new model.Location))
       val formData = hackathonForm.fill(hackathon)
-      Ok(views.html.hackathons.create(formData, request.user))
+      Ok(views.html.hackathons.create(formData, user))
 
     }
   }
 
   def save = SecuredAction() { implicit request =>
+    val user = userFromRequest(request)
     hackathonForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.hackathons.create(errors, request.user)),
+      errors => BadRequest(views.html.hackathons.create(errors, user)),
       hackathonWithLocations => transaction {
         val newH = model.Hackathon.insert(hackathonWithLocations.hackathon)
         hackathonWithLocations.locations.map {
@@ -185,15 +186,15 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
 
         Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathonWithL), user))
       }.getOrElse {
-        // no hackathon found
         Redirect(routes.Hackathon.view(id)).flashing()
       }
     }
   }
 
   def update(id: Long) = SecuredAction() { implicit request =>
+    val user = userFromRequest(request)
     hackathonForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.hackathons.edit(id, errors, request.user)),
+      errors => BadRequest(views.html.hackathons.edit(id, errors, user)),
       hackathonWithL => transaction {
         model.Hackathon.lookup(id).map { hackathon =>
           helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)

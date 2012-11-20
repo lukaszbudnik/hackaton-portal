@@ -43,8 +43,8 @@ object Team extends LangAwareController with securesocial.core.SecureSocial {
     transaction {
       val user = userFromRequest(request)
       val team = new model.Team(user.id, hid)
-      val hackaton = model.Hackathon.lookup(hid)
-      Ok(views.html.teams.create(hackaton, teamForm.fill(team), user))
+      val hackathon = model.Hackathon.lookup(hid)
+      Ok(views.html.teams.create(hackathon, teamForm.fill(team), user))
     }
   }
 

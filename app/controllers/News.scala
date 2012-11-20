@@ -64,11 +64,11 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
   }
 
   def createH(hid: Long) = SecuredAction() { implicit request =>
-    val hackathon = model.Hackathon.lookup(hid)
-    hackathon.map { hackathon =>
-      helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
-    }
     transaction {
+      val hackathon = model.Hackathon.lookup(hid)
+      hackathon.map { hackathon =>
+        helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
+      }
       val user = userFromRequest(request)
       val news = new model.News(user.id, Some(hid))
       Ok(views.html.news.createH(hackathon, newsForm.fill(news), user))
@@ -106,8 +106,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
         helpers.Security.verifyIfAllowed(news.authorId)(request.user)
         Ok(views.html.news.edit(id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), user))
       }.getOrElse {
-        // no news found
-        Redirect(routes.News.view(id))
+        Redirect(routes.News.index).flashing()
       }
     }
   }
