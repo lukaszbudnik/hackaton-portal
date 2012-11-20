@@ -49,11 +49,12 @@ object Team extends LangAwareController with securesocial.core.SecureSocial {
   }
 
   def save(hid: Long) = SecuredAction() { implicit request =>
+    val user = userFromRequest(request)
     teamForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.teams.create(model.Hackathon.lookup(hid), errors, userFromRequest(request))),
+      errors => BadRequest(views.html.teams.create(model.Hackathon.lookup(hid), errors, user)),
       team => transaction {
         // insert team and add creator as a member
-        val dbTeam = model.Team.insert(team)
+        val dbTeam = model.Team.insert(team.copy(creatorId = user.id))
         dbTeam.addMember(team.creator)
 
         val url = URL.externalUrl(routes.Team.view(hid, team.id))
