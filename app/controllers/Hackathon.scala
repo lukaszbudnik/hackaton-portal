@@ -168,7 +168,7 @@ object Hackathon extends LangAwareController with securesocial.core.SecureSocial
     hackathonForm.bindFromRequest.fold(
       errors => BadRequest(views.html.hackathons.create(errors, user)),
       hackathonWithLocations => transaction {
-        val newH = model.Hackathon.insert(hackathonWithLocations.hackathon)
+        val newH = model.Hackathon.insert(hackathonWithLocations.hackathon.copy(organiserId = user.id))
         hackathonWithLocations.locations.map {
           location =>
             newH.addLocation(location)
