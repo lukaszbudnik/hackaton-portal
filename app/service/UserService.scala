@@ -20,7 +20,9 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
     
     if (alreadyLoggedInSocialUser.isEmpty) {
       // user not logged in, see if user is already stored in our database
-      model.User.lookupByOpenId(socialUser.id.id + socialUser.id.providerId).getOrElse(addNewUserToDatabase(socialUser))
+      transaction {
+    	  model.User.lookupByOpenId(socialUser.id.id + socialUser.id.providerId).getOrElse(addNewUserToDatabase(socialUser))
+      }
     }
 
     // refresh users map
