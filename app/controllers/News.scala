@@ -81,22 +81,24 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
     newsForm.bindFromRequest.fold(
       errors => BadRequest(views.html.news.create(errors, user)),
       news => transaction {
-        model.News.insert(news)
+        model.News.insert(news.copy(authorId = user.id))
         Redirect(routes.News.index).flashing("status" -> "added", "title" -> news.title)
       })
   }
 
   def saveH(hid: Long) = SecuredAction() { implicit request =>
     val user = userFromRequest(request)
-    model.Hackathon.lookup(hid).map { hackathon =>
-      helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
+    transaction {
+      model.Hackathon.lookup(hid).map { hackathon =>
+        helpers.Security.verifyIfAllowed(hackathon.organiserId)(request.user)
+        newsForm.bindFromRequest.fold(
+          errors => BadRequest(views.html.news.createH(model.Hackathon.lookup(hid), errors, user)),
+          news => {
+            model.News.insert(news.copy(authorId = user.id))
+            Redirect(routes.News.indexH(hid)).flashing("status" -> "added", "title" -> news.title)
+          })
+      }.getOrElse(Redirect(routes.Hackathon.view(hid)))
     }
-    newsForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.news.createH(model.Hackathon.lookup(hid), errors, user)),
-      news => transaction {
-        model.News.insert(news)
-        Redirect(routes.News.indexH(hid)).flashing("status" -> "added", "title" -> news.title)
-      })
   }
 
   def edit(id: Long) = SecuredAction() { implicit request =>
@@ -106,7 +108,8 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
         helpers.Security.verifyIfAllowed(news.authorId)(request.user)
         Ok(views.html.news.edit(id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), user))
       }.getOrElse {
-        Redirect(routes.News.index).flashing()
+        // news view will handle not found cases 
+        Redirect(routes.News.view(id)).flashing()
       }
     }
   }
