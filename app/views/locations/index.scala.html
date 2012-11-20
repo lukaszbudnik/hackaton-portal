@@ -1,9 +1,9 @@
-@(locations: Iterable[model.Location], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(locations: Iterable[model.Location], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import tags._
 
-@main(helpers.CmsMessages("locations.title"), user, nav = "locations") {
+@main(helpers.CmsMessages("locations.title"), Some(user), nav = "locations") {
 <div class="container">
   
     <div class="page-header">

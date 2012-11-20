@@ -21,7 +21,7 @@ object User extends LangAwareController with securesocial.core.SecureSocial {
     transaction {
 
       implicit val socialUser = request.user
-      Security.verifyIfAllowed(socialUser)
+      Security.verifyIfAllowed
 
       val offset = PAGE_SIZE * page
 
@@ -31,7 +31,9 @@ object User extends LangAwareController with securesocial.core.SecureSocial {
 
       val currentPage = Page(users, page, offset, totalUsers)
 
-      Ok(views.html.users.index(currentPage, socialUser, orderBy, filter))
+      val user = userFromRequest(request)
+
+      Ok(views.html.users.index(currentPage, user, orderBy, filter))
     }
   }
 
@@ -39,7 +41,7 @@ object User extends LangAwareController with securesocial.core.SecureSocial {
     transaction {
 
       implicit val socialUser = request.user
-      Security.verifyIfAllowed(socialUser)
+      Security.verifyIfAllowed
 
       val user = model.User.lookup(userId)
 
@@ -59,7 +61,7 @@ object User extends LangAwareController with securesocial.core.SecureSocial {
     transaction {
 
       implicit val socialUser = request.user
-      Security.verifyIfAllowed(socialUser)
+      Security.verifyIfAllowed
 
       val user = model.User.lookup(userId)
 

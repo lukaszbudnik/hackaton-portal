@@ -24,7 +24,7 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
 
   def index(hid: Long) = UserAwareAction { implicit request =>
     transaction {
-      Ok(views.html.problems.index(model.Hackathon.lookup(hid), request.user))
+      Ok(views.html.problems.index(model.Hackathon.lookup(hid), userFromRequest))
     }
   }
 
@@ -32,27 +32,27 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
     transaction {
       val problem = model.Problem.lookup(id)
       val hackathon = problem.map { p => Some(p.hackathon) }.getOrElse { model.Hackathon.lookup(hid) }
-      Ok(views.html.problems.view(hackathon, problem, request.user))
+      Ok(views.html.problems.view(hackathon, problem, userFromRequest))
     }
   }
 
   def create(hid: Long) = SecuredAction() { implicit request =>
     transaction {
       val hackathon = model.Hackathon.lookup(hid)
-      model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
-        val problem = new model.Problem(user.id, hid)
-        Ok(views.html.problems.create(hackathon, problemForm.fill(problem), request.user))
-      }.getOrElse(Redirect(routes.Problem.index(hid)))
+      val user = userFromRequest(request)
+      val problem = new model.Problem(user.id, hid)
+      Ok(views.html.problems.create(hackathon, problemForm.fill(problem), user))
     }
   }
 
   def save(hid: Long) = SecuredAction() { implicit request =>
+    val user = userFromRequest(request)
     problemForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.problems.create(model.Hackathon.lookup(hid), errors, request.user))
+        BadRequest(views.html.problems.create(model.Hackathon.lookup(hid), errors, user))
       },
       problem => transaction {
-        val dbProblem = model.Problem.insert(problem)
+        val dbProblem = model.Problem.insert(problem.copy(submitterId = user.id))
 
         val url = URL.externalUrl(routes.Problem.view(hid, dbProblem.id))
         val params = Seq(dbProblem.name, url)
@@ -68,9 +68,9 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
       model.Problem.lookup(id).map { problem =>
         helpers.Security.verifyIfAllowed(hid == problem.hackathonId)(request.user)
         helpers.Security.verifyIfAllowed(problem.submitterId, problem.hackathon.organiserId)(request.user)
-        Ok(views.html.problems.edit(Some(problem.hackathon), id, problemForm.fill(problem), request.user))
+        val user = userFromRequest(request)
+        Ok(views.html.problems.edit(Some(problem.hackathon), id, problemForm.fill(problem), user))
       }.getOrElse {
-        // no problem found
         Redirect(routes.Problem.view(hid, id)).flashing()
       }
     }
@@ -79,7 +79,8 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
   def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
     problemForm.bindFromRequest.fold(
       errors => transaction {
-        BadRequest(views.html.problems.edit(model.Hackathon.lookup(hid), id, errors, request.user))
+        val user = userFromRequest(request)
+        BadRequest(views.html.problems.edit(model.Hackathon.lookup(hid), id, errors, user))
       },
       problem => transaction {
         val dbProblem = model.Problem.lookup(id)
@@ -97,27 +98,22 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
 
   def verify(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      val result =
-        for (
-          user <- model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId);
-          problem <- model.Problem.lookup(id)
-        ) yield {
+      model.Problem.lookup(id).map { problem =>
 
-          implicit val socialUser = request.user
-          helpers.Security.verifyIfAllowed(hid == problem.hackathonId)
-          helpers.Security.verifyIfAllowed(user.isAdmin || problem.hackathon.organiserId == user.id)
-          model.Problem.update(id, problem.copy(status = ProblemStatus.Approved))
+        implicit val socialUser = request.user
+        val user = userFromRequest(request)
+        helpers.Security.verifyIfAllowed(hid == problem.hackathonId)
+        helpers.Security.verifyIfAllowed(user.isAdmin || problem.hackathon.organiserId == user.id)
+        model.Problem.update(id, problem.copy(status = ProblemStatus.Approved))
 
-          val url = URL.externalUrl(routes.Problem.view(hid, problem.id))
-          val params = Seq(problem.name, url)
+        val url = URL.externalUrl(routes.Problem.view(hid, problem.id))
+        val params = Seq(problem.name, url)
 
-          EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.verified.subject", "notifications.email.problem.verified.body", params)
+        EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.verified.subject", "notifications.email.problem.verified.body", params)
 
-          Ok(JsArray(Seq(JsObject(List(
-            "status" -> JsString("ok"))))))
-        }
-
-      result.getOrElse {
+        Ok(JsArray(Seq(JsObject(List(
+          "status" -> JsString("ok"))))))
+      }.getOrElse {
         NotFound(JsArray(Seq(JsObject(List(
           "status" -> JsString("error"))))))
       }
@@ -126,31 +122,26 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
 
   def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
+      model.Problem.lookup(id).map { problem =>
 
-      val result =
-        for (
-          user <- model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId);
-          problem <- model.Problem.lookup(id)
-        ) yield {
+        implicit val socialUser = request.user
+        val user = userFromRequest(request)
 
-          implicit val socialUser = request.user
-          helpers.Security.verifyIfAllowed(hid == problem.hackathonId)
-          helpers.Security.verifyIfAllowed(user.isAdmin || problem.hackathon.organiserId == user.id || problem.submitterId == user.id)
-          model.Problem.update(id, problem.copy(status = ProblemStatus.Approved))
+        helpers.Security.verifyIfAllowed(hid == problem.hackathonId)
+        helpers.Security.verifyIfAllowed(user.isAdmin || problem.hackathon.organiserId == user.id || problem.submitterId == user.id)
+        model.Problem.update(id, problem.copy(status = ProblemStatus.Approved))
 
-          if (user.id != problem.submitterId) {
-            val url = URL.externalUrl(routes.Problem.view(hid, problem.id))
-            val params = Seq(problem.name, url)
+        if (user.id != problem.submitterId) {
+          val url = URL.externalUrl(routes.Problem.view(hid, problem.id))
+          val params = Seq(problem.name, url)
 
-            EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.approved.subject", "notifications.email.problem.approved.body", params)
-          }
-
-          Ok(JsArray(Seq(JsObject(List(
-            "status" -> JsString("ok"))))))
-
+          EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.approved.subject", "notifications.email.problem.approved.body", params)
         }
 
-      result.getOrElse {
+        Ok(JsArray(Seq(JsObject(List(
+          "status" -> JsString("ok"))))))
+
+      }.getOrElse {
         NotFound(JsArray(Seq(JsObject(List(
           "status" -> JsString("error"))))))
       }
@@ -159,13 +150,11 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
 
   def suspend(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      val result =
-        for (
-          user <- model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId);
-          problem <- model.Problem.lookup(id)
-        ) yield {
+      model.Problem.lookup(id).map { problem =>
 
         implicit val socialUser = request.user
+        val user = userFromRequest(request)
+
         helpers.Security.verifyIfAllowed(hid == problem.hackathonId)
         helpers.Security.verifyIfAllowed(user.isAdmin || problem.submitterId == user.id || problem.hackathon.organiserId == user.id)
         model.Problem.update(id, problem.copy(status = ProblemStatus.Suspended))
@@ -180,9 +169,7 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
         Ok(JsArray(Seq(JsObject(List(
           "status" -> JsString("ok"))))))
 
-      }
-      
-      result.getOrElse {
+      }.getOrElse {
         NotFound(JsArray(Seq(JsObject(List(
           "status" -> JsString("error"))))))
       }
@@ -191,13 +178,10 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
 
   def block(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      val result =
-        for (
-          user <- model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId);
-          problem <- model.Problem.lookup(id)
-        ) yield {
+      model.Problem.lookup(id).map { problem =>
 
         implicit val socialUser = request.user
+        val user = userFromRequest(request)
         helpers.Security.verifyIfAllowed(hid == problem.hackathonId)
         helpers.Security.verifyIfAllowed(user.isAdmin || problem.hackathon.organiserId == user.id)
         model.Problem.update(id, problem.copy(status = ProblemStatus.Blocked))
@@ -210,9 +194,7 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
         Ok(JsArray(Seq(JsObject(List(
           "status" -> JsString("ok"))))))
 
-      }
-      
-      result.getOrElse {
+      }.getOrElse {
         NotFound(JsArray(Seq(JsObject(List(
           "status" -> JsString("error"))))))
       }
@@ -221,13 +203,10 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
 
   def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      val result =
-        for (
-          user <- model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId);
-          problem <- model.Problem.lookup(id)
-        ) yield {
+      model.Problem.lookup(id).map { problem =>
 
         implicit val socialUser = request.user
+        val user = userFromRequest(request)
         helpers.Security.verifyIfAllowed(hid == problem.hackathonId)
         helpers.Security.verifyIfAllowed(problem.submitterId, problem.hackathon.organiserId)
 

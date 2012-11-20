@@ -59,7 +59,7 @@
                   <li class="@("active".when(nav == "contents"))"><a href="@routes.Content.index">@helpers.CmsMessages("navigation.contents")</a></li>
                   <li class="@("active".when(nav == "locations"))"><a href="@routes.Location.index">@helpers.CmsMessages("navigation.locations")</a></li>
                 }
-                <li class="@("active".when(nav == "profile"))"><a href="@routes.Application.profile">@user.displayName</a></li>
+                <li class="@("active".when(nav == "profile"))"><a href="@routes.Application.profile">@user.name</a></li>
               }.getOrElse {
                 <li><a href="@routes.Application.profile">@helpers.CmsMessages("navigation.login")</a></li>
               }

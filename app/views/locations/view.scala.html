@@ -1,8 +1,8 @@
-@(location: Option[model.Location], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(location: Option[model.Location], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 
-@main(helpers.CmsMessages("locations.view.title"), user, nav = "locations") {
+@main(helpers.CmsMessages("locations.view.title"), Some(user), nav = "locations") {
     
     <div class="container">
     

@@ -103,7 +103,7 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
       model.Location.lookup(id).map { location =>
         Ok(views.html.locations.edit(id, routes.Location.updateA(id), locationForm.fill(location), user))
       }.getOrElse {
-        Redirect(routes.Location.view(id))
+        Redirect(routes.Location.view(id)).flashing()
       }
     }
   }
