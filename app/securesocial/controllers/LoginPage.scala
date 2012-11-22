@@ -24,7 +24,7 @@ import Play.current
 import play.api.data._
 import play.api.data.Forms._
 import play.api.data.validation.Constraints._
-import core.LangAwareController
+import controllers.LangAwareController
 import org.squeryl.PrimitiveTypeMode.transaction
 
 /**

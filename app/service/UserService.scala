@@ -17,11 +17,11 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
   def save(socialUser: SocialUser) = {
 
     val alreadyLoggedInSocialUser = find(socialUser.id)
-    
+
     if (alreadyLoggedInSocialUser.isEmpty) {
       // user not logged in, see if user is already stored in our database
       transaction {
-    	  model.User.lookupByOpenId(socialUser.id.id + socialUser.id.providerId).getOrElse(addNewUserToDatabase(socialUser))
+        model.User.lookupByOpenId(socialUser.id.id + socialUser.id.providerId).getOrElse(addNewUserToDatabase(socialUser))
       }
     }
 
@@ -35,7 +35,7 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
     }
 
     val openId = socialUser.id.id + socialUser.id.providerId;
-    val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), core.LangAwareController.DEFAULT_LANG, "", "", socialUser.avatarUrl.getOrElse(""), openId)
+    val newUser = User(socialUser.displayName, socialUser.email.getOrElse(""), controllers.LangAwareController.DEFAULT_LANG, "", "", socialUser.avatarUrl.getOrElse(""), openId)
     model.User.insert(newUser)
   }
 

@@ -7,13 +7,12 @@ import play.api.mvc.Action
 import play.api.Logger
 import play.api.mvc.RequestHeader
 import play.api.i18n.Lang
-import core.LangAwareController
 import play.api.cache.Cache
 import org.squeryl.PrimitiveTypeMode.transaction
 import play.api.data.Forms._
 import play.api.data.Form
 
-object Application extends LangAwareController with securesocial.core.SecureSocial {
+object Application extends LangAwareController {
 
   val userForm = Form(
     mapping(
