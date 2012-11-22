@@ -4,7 +4,6 @@ import java.io.FileInputStream
 import org.squeryl.PrimitiveTypeMode.__thisDsl
 import org.squeryl.PrimitiveTypeMode.long2ScalarLong
 import org.squeryl.PrimitiveTypeMode.transaction
-import core.LangAwareController
 import play.api.Play.current
 import play.api.data.Forms.boolean
 import play.api.data.Forms.list
@@ -111,22 +110,23 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
 
   def create = SecuredAction() { implicit request =>
     transaction {
-      helpers.Security.verifyIfAllowed(request.user)
-      val sponsor = new model.dto.SponsorWithLogo()
-      val user = userFromRequest(request)
-      Ok(views.html.sponsors.create(sponsorForm.fill(sponsor), user))
+      ensureAdmin {
+        val user = userFromRequest(request)
+        val sponsor = new model.dto.SponsorWithLogo()
+        Ok(views.html.sponsors.create(sponsorForm.fill(sponsor), user))
+      }
     }
   }
 
   def createH(hid: Long) = SecuredAction() { implicit request =>
     transaction {
-      val hackathon = model.Hackathon.lookup(hid)
-      hackathon.map { h =>
-        helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
-      }
-      val sponsor = new model.dto.SponsorWithLogo(new model.Sponsor(Some(hid)), None)
-      val user = userFromRequest(request)
-      Ok(views.html.sponsors.createH(hackathon, sponsorForm.fill(sponsor), user))
+      model.Hackathon.lookup(hid).map { hackathon =>
+        ensureHackathonOrganiserOrAdmin(hackathon) {
+          val user = userFromRequest(request)
+          val sponsor = new model.dto.SponsorWithLogo(new model.Sponsor(Some(hid)), None)
+          Ok(views.html.sponsors.createH(Some(hackathon), sponsorForm.fill(sponsor), user))
+        }
+      }.getOrElse(Redirect(routes.Hackathon.view(hid)))
     }
   }
 
@@ -135,9 +135,10 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
     sponsorForm.bindFromRequest.fold(
       errors => BadRequest(views.html.sponsors.create(errors, user)),
       sponsorWithLogo => transaction {
-        helpers.Security.verifyIfAllowed(request.user)
-        model.Sponsor.insert(sponsorWithLogo.sponsor)
-        Redirect(routes.Sponsor.index).flashing("status" -> "added", "title" -> sponsorWithLogo.sponsor.name)
+        ensureAdmin {
+          model.Sponsor.insert(sponsorWithLogo.sponsor)
+          Redirect(routes.Sponsor.index).flashing("status" -> "added", "title" -> sponsorWithLogo.sponsor.name)
+        }
       })
   }
 
@@ -148,42 +149,43 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
         BadRequest(views.html.sponsors.createH(model.Hackathon.lookup(hid), errors, user))
       },
       sponsorWithLogo => transaction {
-        model.Hackathon.lookup(hid).map { h =>
-          helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
-        }
-        model.Sponsor.insert(sponsorWithLogo.sponsor)
+        model.Hackathon.lookup(hid).map { hackathon =>
+          ensureHackathonOrganiserOrAdmin(hackathon) {
+            model.Sponsor.insert(sponsorWithLogo.sponsor)
 
-        Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "added", "title" -> sponsorWithLogo.sponsor.name)
+            Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "added", "title" -> sponsorWithLogo.sponsor.name)
+          }
+        }.getOrElse(Redirect(routes.Hackathon.view(hid)))
       })
   }
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.dto.SponsorWithLogo.lookup(id).map { sponsorWithLogo =>
-        helpers.Security.verifyIfAllowed(request.user)
-        val user = userFromRequest(request)
-        Ok(views.html.sponsors.edit(id, sponsorForm.fill(sponsorWithLogo), user))
-      }.getOrElse {
-        Redirect(routes.Sponsor.index).flashing()
-      }
+        ensureAdmin {
+          val user = userFromRequest(request)
+          Ok(views.html.sponsors.edit(id, sponsorForm.fill(sponsorWithLogo), user))
+        }
+      }.getOrElse (Redirect(routes.Sponsor.view(id)))
     }
   }
 
   def editH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.dto.SponsorWithLogo.lookup(id).map { sponsorWithLogo =>
-        helpers.Security.verifyIfAllowed(Some(hid) == sponsorWithLogo.sponsor.hackathonId)(request.user)
-        val hackathon = model.Hackathon.lookup(hid)
-        hackathon.map { h =>
-          helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
-        }.getOrElse {
-          helpers.Security.verifyIfAllowed()(request.user)
-        }
-        val user = userFromRequest(request)
-        Ok(views.html.sponsors.editH(hackathon, id, sponsorForm.fill(sponsorWithLogo), user))
-      }.getOrElse {
-        Redirect(routes.Sponsor.indexH(hid)).flashing()
-      }
+      
+      model.Hackathon.lookup(hid).map { hackathon =>
+        
+        model.dto.SponsorWithLogo.lookup(id).map { sponsorWithLogo =>
+          
+          ensureHackathonOrganiserOrAdmin(hackathon, sponsorWithLogo.sponsor.hackathonId == Some(hid)) {
+            val user = userFromRequest(request)
+            Ok(views.html.sponsors.editH(Some(hackathon), id, sponsorForm.fill(sponsorWithLogo), user))
+          }
+          
+        }.getOrElse(Redirect(routes.Sponsor.viewH(hid, id)))
+        
+      }.getOrElse(Redirect(routes.Hackathon.view(hid)))
+      
     }
   }
 
@@ -192,54 +194,61 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
     sponsorForm.bindFromRequest.fold(
       errors => BadRequest(views.html.sponsors.edit(id, errors, user)),
       sponsorWithLogo => transaction {
-        helpers.Security.verifyIfAllowed(request.user)
-        model.Sponsor.update(id, sponsorWithLogo.sponsor)
-        Redirect(routes.Sponsor.index).flashing("status" -> "updated", "title" -> sponsorWithLogo.sponsor.name)
+        ensureAdmin {
+          model.Sponsor.update(id, sponsorWithLogo.sponsor)
+          Redirect(routes.Sponsor.index).flashing("status" -> "updated", "title" -> sponsorWithLogo.sponsor.name)
+        }
       })
   }
 
   def updateH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     sponsorForm.bindFromRequest.fold(
       errors => transaction {
-        val user = userFromRequest(request)
+    	  val user = userFromRequest(request)
         BadRequest(views.html.sponsors.editH(model.Hackathon.lookup(hid), id, errors, user))
       },
       sponsorWithLogo => transaction {
-        model.dto.SponsorWithLogo.lookup(id).map { sponsorWithLogo =>
-          helpers.Security.verifyIfAllowed(Some(hid) == sponsorWithLogo.sponsor.hackathonId)(request.user)
-          val hackathon = model.Hackathon.lookup(hid)
-          hackathon.map { h =>
-            helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
-          }.getOrElse {
-            helpers.Security.verifyIfAllowed(request.user)
-          }
-        }
-        model.Sponsor.update(id, sponsorWithLogo.sponsor)
-        Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "updated", "title" -> sponsorWithLogo.sponsor.name)
+        model.Hackathon.lookup(hid).map { hackathon =>
+
+          model.dto.SponsorWithLogo.lookup(id).map { sponsorWithLogo =>
+
+            ensureHackathonOrganiserOrAdmin(hackathon) {
+              model.Sponsor.update(id, sponsorWithLogo.sponsor)
+              Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "updated", "title" -> sponsorWithLogo.sponsor.name)
+            }
+
+          }.getOrElse(Redirect(routes.Sponsor.viewH(hid, id)))
+
+        }.getOrElse(Redirect(routes.Hackathon.view(hid)))
       })
   }
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      helpers.Security.verifyIfAllowed(request.user)
-      model.Sponsor.delete(id)
-      Redirect(routes.Sponsor.index).flashing("status" -> "deleted")
+      ensureAdmin {
+        model.Sponsor.delete(id)
+        Redirect(routes.Sponsor.index).flashing("status" -> "deleted")
+      }
     }
   }
 
   def deleteH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Sponsor.lookup(id).map { sponsor =>
-        helpers.Security.verifyIfAllowed(Some(hid) == sponsor.hackathonId)(request.user)
-        sponsor.hackathon.map { h =>
-          helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
-        }.getOrElse {
-          helpers.Security.verifyIfAllowed(request.user)
-        }
-      }
-      model.Sponsor.delete(id)
+
+      model.Hackathon.lookup(hid).map { hackathon =>
+
+        model.Sponsor.lookup(id).map { sponsor =>
+
+          ensureHackathonOrganiserOrAdmin(hackathon, sponsor.hackathonId == Some(hid)) {
+            model.Sponsor.delete(id)
+            Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "deleted")
+          }
+
+        }.getOrElse(Redirect(routes.Sponsor.viewH(hid, id)))
+
+      }.getOrElse(Redirect(routes.Hackathon.view(hid)))
+
     }
-    Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "deleted")
   }
 
   private def logoDetailsAsJson(url: String, resourceId: Long) = {

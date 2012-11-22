@@ -13,12 +13,12 @@ import play.api.libs.json.Json._
 import play.api.libs.json.Json._
 import play.api.mvc.Action
 import play.api.Logger
-import core.LangAwareController
 import helpers.Forms.enum
 import model.LocationStatus
 import org.squeryl.PrimitiveTypeMode._
+import play.api.libs.iteratee.Error
 
-object Location extends LangAwareController with securesocial.core.SecureSocial {
+object Location extends LangAwareController {
 
   val locationForm = Form(
     mapping(
@@ -35,8 +35,7 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
 
   def index = SecuredAction() { implicit request =>
     transaction {
-      implicit val socialUser = request.user
-      helpers.Security.secured {
+      ensureAdmin {
         val user = userFromRequest(request)
         Ok(views.html.locations.index(model.Location.all, user))
       }
@@ -45,10 +44,11 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
   }
 
   def view(id: Long) = SecuredAction() { implicit request =>
-    helpers.Security.verifyIfAllowed()(request.user)
     transaction {
-      val user = userFromRequest(request)
-      Ok(views.html.locations.view(model.Location.lookup(id), user))
+      ensureAdmin {
+        val user = userFromRequest(request)
+        Ok(views.html.locations.view(model.Location.lookup(id), user))
+      }
     }
   }
 
@@ -59,10 +59,11 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
   }
 
   def createA = SecuredAction() { implicit request =>
-    helpers.Security.verifyIfAllowed()(request.user)
     transaction {
-      val user = userFromRequest(request)
-      Ok(views.html.locations.create(routes.Location.saveA, locationForm, user))
+      ensureAdmin {
+        val user = userFromRequest(request)
+        Ok(views.html.locations.create(routes.Location.saveA, locationForm, user))
+      }
     }
   }
 
@@ -78,32 +79,28 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
   }
 
   def saveA = SecuredAction() { implicit request =>
-
-    helpers.Security.verifyIfAllowed()(request.user)
-
-    val user = userFromRequest(request)
-
-    locationForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.locations.create(routes.Location.saveA, errors, user)),
-      location => transaction {
-
-        model.Location.insert(location.copy(submitterId = user.id))
-
-        Redirect(routes.Location.index).flashing("status" -> "added", "title" -> location.name)
-      })
+    transaction {
+      ensureAdmin {
+        val user = userFromRequest(request)
+        locationForm.bindFromRequest.fold(
+          errors => BadRequest(views.html.locations.create(routes.Location.saveA, errors, user)),
+          location => {
+            model.Location.insert(location.copy(submitterId = user.id))
+            Redirect(routes.Location.index).flashing("status" -> "added", "title" -> location.name)
+          })
+      }
+    }
   }
 
   def editA(id: Long) = SecuredAction() { implicit request =>
-
-    helpers.Security.verifyIfAllowed()(request.user)
-
-    val user = userFromRequest(request)
-
     transaction {
-      model.Location.lookup(id).map { location =>
-        Ok(views.html.locations.edit(id, routes.Location.updateA(id), locationForm.fill(location), user))
-      }.getOrElse {
-        Redirect(routes.Location.view(id)).flashing()
+      ensureAdmin {
+        val user = userFromRequest(request)
+        model.Location.lookup(id).map { location =>
+          Ok(views.html.locations.edit(id, routes.Location.updateA(id), locationForm.fill(location), user))
+        }.getOrElse {
+          Redirect(routes.Location.view(id)).flashing()
+        }
       }
     }
   }
@@ -111,9 +108,12 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
   def edit(id: Long) = SecuredAction() { implicit request =>
 
     transaction {
-      model.Location.lookup(id).map { dbLocation =>
-        helpers.Security.verifyIfAllowed(dbLocation.submitterId)(request.user)
-        Ok(views.html.locations.locationForm(routes.Location.edit(id), locationForm.fill(dbLocation), false))
+      model.Location.lookup(id).map { location =>
+
+        ensureAdmin {
+          Ok(views.html.locations.locationForm(routes.Location.edit(id), locationForm.fill(location), false))
+        }
+
       }.getOrElse {
         Ok(views.html.locations.locationForm(routes.Location.edit(id), locationForm, false))
       }
@@ -125,30 +125,33 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
       errors => BadRequest(views.html.locations.locationForm(routes.Location.edit(id), errors, false)),
       location => transaction {
         model.Location.lookup(id).map { dbLocation =>
-          helpers.Security.verifyIfAllowed(dbLocation.submitterId)(request.user)
-          model.Location.update(id, location)
-        }
-        Ok("")
+          ensureLocationSubmitterOrAdmin(dbLocation) {
+            model.Location.update(id, location)
+            Ok("")
+          }
+        }.getOrElse(Ok(""))
       })
   }
 
   def updateA(id: Long) = SecuredAction() { implicit request =>
-    helpers.Security.verifyIfAllowed()(request.user)
-    val user = userFromRequest(request)
-    locationForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.locations.edit(id, routes.Location.editA(id), errors, user)),
-      location => transaction {
-        model.Location.update(id, location.copy(submitterId = user.id))
-        Redirect(routes.Location.index).flashing("status" -> "updated", "title" -> location.name)
-      })
+    ensureAdmin {
+      val user = userFromRequest(request)
+      locationForm.bindFromRequest.fold(
+        errors => BadRequest(views.html.locations.edit(id, routes.Location.editA(id), errors, user)),
+        location => transaction {
+          model.Location.update(id, location.copy(submitterId = user.id))
+          Redirect(routes.Location.index).flashing("status" -> "updated", "title" -> location.name)
+        })
+    }
   }
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     transaction {
-      helpers.Security.verifyIfAllowed()(request.user)
-      model.Location.delete(id)
+      ensureAdmin {
+        model.Location.delete(id)
+        Redirect(routes.Location.index).flashing("status" -> "deleted")
+      }
     }
-    Redirect(routes.Location.index).flashing("status" -> "deleted")
   }
 
   def findByPattern(term: String) = SecuredAction() { implicit request =>

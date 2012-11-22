@@ -1,7 +1,6 @@
 package controllers
 
 import org.squeryl.PrimitiveTypeMode.transaction
-import core.LangAwareController
 import model.TeamStatus
 import play.api.data.Forms._
 import play.api.data.Form
@@ -14,8 +13,9 @@ import securesocial.core.UserId
 import securesocial.core.AuthenticationMethod
 import helpers.URL
 import helpers.EmailSender
+import play.api.mvc.AnyContent
 
-object Team extends LangAwareController with securesocial.core.SecureSocial {
+object Team extends LangAwareController {
 
   val teamForm = Form(
     mapping(
@@ -69,9 +69,9 @@ object Team extends LangAwareController with securesocial.core.SecureSocial {
   def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
       model.Team.lookup(id).map { team =>
-        helpers.Security.verifyIfAllowed(hid == team.hackathonId)(request.user)
-        helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
-        Ok(views.html.teams.edit(Some(team.hackathon), id, teamForm.fill(team), userFromRequest(request)))
+        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team, hid == team.hackathonId) {
+          Ok(views.html.teams.edit(Some(team.hackathon), id, teamForm.fill(team), userFromRequest(request)))
+        }
       }.getOrElse {
         // no team found
         Redirect(routes.Team.view(hid, id)).flashing()
@@ -83,40 +83,30 @@ object Team extends LangAwareController with securesocial.core.SecureSocial {
     teamForm.bindFromRequest.fold(
       errors => BadRequest(views.html.teams.edit(model.Hackathon.lookup(hid), id, errors, userFromRequest(request))),
       team => transaction {
-        val dbTeam = model.Team.lookup(id)
-
-        dbTeam.map { team =>
-          helpers.Security.verifyIfAllowed(hid == team.hackathonId)(request.user)
-          helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
-        }
-
-        model.Team.update(id, team.copy(status = dbTeam.get.status))
-        Redirect(routes.Team.index(hid)).flashing("status" -> "updated", "title" -> team.name)
+        model.Team.lookup(id).map { dbTeam =>
+          ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team, hid == team.hackathonId) {
+            model.Team.update(id, team.copy(status = dbTeam.status, creatorId = dbTeam.creatorId))
+            Redirect(routes.Team.index(hid)).flashing("status" -> "updated", "title" -> team.name)
+          }
+        }.getOrElse(Redirect(routes.Team.view(hid, id)))
       })
   }
 
   def verify(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
 
-      val result = for (
-        team <- model.Team.lookup(id);
-        user <- model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId)
-      ) yield {
-        implicit val socialUser = request.user
-        helpers.Security.verifyIfAllowed(hid == team.hackathonId)
-        helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.id)
-        model.Team.update(id, team.copy(status = TeamStatus.Approved))
+      model.Team.lookup(id).map { team =>
+        ensureHackathonOrganiserOrAdmin(team.hackathon, hid == team.hackathonId) {
+          model.Team.update(id, team.copy(status = TeamStatus.Approved))
+          val url = URL.externalUrl(routes.Team.view(hid, team.id))
+          val params = Seq(team.name, url)
 
-        val url = URL.externalUrl(routes.Team.view(hid, team.id))
-        val params = Seq(team.name, url)
+          EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.verified.subject", "notifications.email.team.verified.body", params)
 
-        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.verified.subject", "notifications.email.team.verified.body", params)
-
-        Ok(JsArray(Seq(JsObject(List(
-          "status" -> JsString("ok"))))))
-      }
-
-      result.getOrElse {
+          Ok(JsArray(Seq(JsObject(List(
+            "status" -> JsString("ok"))))))
+        }
+      }.getOrElse {
         NotFound(JsArray(Seq(JsObject(List(
           "status" -> JsString("error"))))))
       }
@@ -125,25 +115,19 @@ object Team extends LangAwareController with securesocial.core.SecureSocial {
 
   def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      val result = for (
-        team <- model.Team.lookup(id);
-        user <- model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId)
-      ) yield {
-        implicit val socialUser = request.user
-        helpers.Security.verifyIfAllowed(hid == team.hackathonId)
-        helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.id || team.creatorId == user.id)
-        model.Team.update(id, team.copy(status = TeamStatus.Approved))
+      model.Team.lookup(id).map { team =>
+        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team, hid == team.hackathonId) {
+          model.Team.update(id, team.copy(status = TeamStatus.Approved))
 
-        val url = URL.externalUrl(routes.Team.view(hid, team.id))
-        val params = Seq(team.name, url)
+          val url = URL.externalUrl(routes.Team.view(hid, team.id))
+          val params = Seq(team.name, url)
 
-        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.approved.subject", "notifications.email.team.approved.body", params)
+          EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.approved.subject", "notifications.email.team.approved.body", params)
 
-        Ok(JsArray(Seq(JsObject(List(
-          "status" -> JsString("ok"))))))
-      }
-
-      result.getOrElse {
+          Ok(JsArray(Seq(JsObject(List(
+            "status" -> JsString("ok"))))))
+        }
+      }.getOrElse {
         NotFound(JsArray(Seq(JsObject(List(
           "status" -> JsString("error"))))))
       }
@@ -152,27 +136,20 @@ object Team extends LangAwareController with securesocial.core.SecureSocial {
 
   def suspend(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      val result = for (
-        team <- model.Team.lookup(id);
-        user <- model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId)
-      ) yield {
-        implicit val socialUser = request.user
+      model.Team.lookup(id).map { team =>
+        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team, hid == team.hackathonId) {
+          model.Team.update(id, team.copy(status = TeamStatus.Suspended))
 
-        helpers.Security.verifyIfAllowed(hid == team.hackathonId)
-        helpers.Security.verifyIfAllowed(user.isAdmin || team.creatorId == user.id || team.hackathon.organiserId == user.id)
-        model.Team.update(id, team.copy(status = TeamStatus.Suspended))
+          val url = URL.externalUrl(routes.Team.view(hid, team.id))
+          val params = Seq(team.name, url)
 
-        val url = URL.externalUrl(routes.Team.view(hid, team.id))
-        val params = Seq(team.name, url)
+          EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.suspended.subject", "notifications.email.team.suspended.body", params)
 
-        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.suspended.subject", "notifications.email.team.suspended.body", params)
+          Ok(JsArray(Seq(JsObject(List(
+            "status" -> JsString("ok"))))))
 
-        Ok(JsArray(Seq(JsObject(List(
-          "status" -> JsString("ok"))))))
-
-      }
-
-      result.getOrElse {
+        }
+      }.getOrElse {
         NotFound(JsArray(Seq(JsObject(List(
           "status" -> JsString("error"))))))
       }
@@ -181,26 +158,19 @@ object Team extends LangAwareController with securesocial.core.SecureSocial {
 
   def block(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      val result = for (
-        team <- model.Team.lookup(id);
-        user <- model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId)
-      ) yield {
-        implicit val socialUser = request.user
+      model.Team.lookup(id).map { team =>
+        ensureHackathonOrganiserOrAdmin(team.hackathon, hid == team.hackathonId) {
+          model.Team.update(id, team.copy(status = TeamStatus.Blocked))
 
-        helpers.Security.verifyIfAllowed(hid == team.hackathonId)
-        helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.id)
-        model.Team.update(id, team.copy(status = TeamStatus.Blocked))
+          val url = URL.externalUrl(routes.Team.view(hid, team.id))
+          val params = Seq(team.name, url)
 
-        val url = URL.externalUrl(routes.Team.view(hid, team.id))
-        val params = Seq(team.name, url)
+          EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.blocked.subject", "notifications.email.team.blocked.body", params)
 
-        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.blocked.subject", "notifications.email.team.blocked.body", params)
-
-        Ok(JsArray(Seq(JsObject(List(
-          "status" -> JsString("ok"))))))
-      }
-
-      result.getOrElse {
+          Ok(JsArray(Seq(JsObject(List(
+            "status" -> JsString("ok"))))))
+        }
+      }.getOrElse {
         NotFound(JsArray(Seq(JsObject(List(
           "status" -> JsString("error"))))))
       }
@@ -209,73 +179,58 @@ object Team extends LangAwareController with securesocial.core.SecureSocial {
 
   def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      val result = for (
-        team <- model.Team.lookup(id)
-      ) yield {
-        implicit val socialUser = request.user
+      model.Team.lookup(id).map { team =>
+        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team, hid == team.hackathonId) {
 
-        helpers.Security.verifyIfAllowed(hid == team.hackathonId)
-        helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)
+          model.Team.delete(id)
+          val url = URL.externalUrl(routes.Hackathon.view(hid))
+          val params = Seq(team.name, url)
 
-        val url = URL.externalUrl(routes.Hackathon.view(hid))
-        val params = Seq(team.name, url)
+          EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.deleted.subject", "notifications.email.team.deleted.body", params)
 
-        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.deleted.subject", "notifications.email.team.deleted.body", params)
-
-        model.Team.delete(id)
-
-        Redirect(routes.Team.index(hid)).flashing("status" -> "deleted")
-      }
-
-      result.getOrElse(Redirect(routes.Team.index(hid)).flashing("status" -> "error"))
+          Redirect(routes.Team.index(hid)).flashing("status" -> "deleted")
+        }
+      }.getOrElse(Redirect(routes.Team.index(hid)).flashing("status" -> "error"))
     }
   }
 
   def join(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      val result = for (
-        team <- model.Team.lookup(id);
-        user <- model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId)
-      ) yield {
+      model.Team.lookup(id).map { team =>
+        val user = userFromRequest(request)
+
         if (!team.hasMember(user.id)) {
           team.addMember(user)
         }
         Redirect(routes.Team.view(hid, id)).flashing("status" -> "joined")
-      }
-
-      result.getOrElse(Redirect(routes.Team.view(hid, id)).flashing("status" -> "error"))
+      }.getOrElse(Redirect(routes.Team.view(hid, id)).flashing("status" -> "error"))
     }
   }
 
   def disconnect(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      val result = for (
-        team <- model.Team.lookup(id);
-        user <- model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId)
-      ) yield {
+      model.Team.lookup(id).map { team =>
+        val user = userFromRequest(request)
         if (!team.hasMember(user.id)) {
           team.deleteMember(user)
         }
         Redirect(routes.Team.view(hid, id)).flashing("status" -> "disconnected")
-      }
-
-      result.getOrElse(Redirect(routes.Team.view(hid, id)).flashing("status" -> "error"))
+      }.getOrElse(Redirect(routes.Team.view(hid, id)).flashing("status" -> "error"))
     }
   }
 
   def disconnectUser(hid: Long, id: Long, userId: Long) = SecuredAction() { implicit request =>
     transaction {
-      val result = for (
+      (for (
         team <- model.Team.lookup(id);
-        user <- model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId)
+        user <- model.User.lookup(userId)
       ) yield {
-        helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
+        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team, hid == team.hackathonId) {
         team.deleteMember(user)
 
         Redirect(routes.Team.view(hid, id)).flashing("status" -> "disconnectedUser")
-      }
-
-      result.getOrElse(Redirect(routes.Team.view(hid, id)).flashing("status" -> "error"))
+        }
+      }).getOrElse(Redirect(routes.Team.view(hid, id)).flashing("status" -> "error"))
     }
   }
 }
