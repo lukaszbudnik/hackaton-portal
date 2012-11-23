@@ -40,7 +40,6 @@ object Feed extends Controller {
     val feedDocument = output.outputString(syndFeed, true)
 
     Ok(feedDocument).withHeaders(CONTENT_TYPE -> "application/xml; charset=utf-8")
-
   }
 
   def news(feed: String) = Action { implicit request =>
