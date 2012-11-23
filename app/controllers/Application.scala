@@ -56,13 +56,13 @@ object Application extends LangAwareController {
   def changeLanguage(lang: String) = UserAwareAction { implicit request =>
     val result = Redirect(request.headers.get(REFERER).getOrElse("/")).withSession(request.session + (LangAwareController.SESSION_LANG_KEY -> lang))
 
-    request.user match {
-      case Some(user: securesocial.core.SocialUser) => {
+    val user = userFromRequest(request)
+
+    user match {
+      case Some(user: model.User) => {
         transaction {
-          model.User.lookupByOpenId(user.id.id + user.id.providerId).map { hackatonUser =>
-            val newUser = hackatonUser.copy(language = lang)
-            model.User.update(hackatonUser.id, newUser)
-          }
+          val newUser = user.copy(language = lang)
+          model.User.update(user.id, newUser)
         }
         result.flashing("language.status" -> "language.updated")
       }

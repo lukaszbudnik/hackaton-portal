@@ -19,7 +19,6 @@ object Content extends LangAwareController {
         "value" -> text)(cms.dto.Content.apply)(cms.dto.Content.unapply)))(Entry.apply)(Entry.unapply))
 
   def index = SecuredAction() { implicit request =>
-
     ensureAdmin {
       val user = userFromRequest(request)
 
@@ -27,7 +26,6 @@ object Content extends LangAwareController {
 
       Ok(views.html.contents.index(entityList, user))
     }
-
   }
 
   def create = SecuredAction() { implicit request =>

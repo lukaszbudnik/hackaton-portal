@@ -1,6 +1,6 @@
 package controllers
 
-import org.squeryl.PrimitiveTypeMode.transaction
+import org.squeryl.PrimitiveTypeMode.inTransaction
 import play.api.data.Forms.date
 import play.api.data.Forms.longNumber
 import play.api.data.Forms.mapping
@@ -22,31 +22,31 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
       "hackathonId" -> optional(longNumber))(model.News.apply)(model.News.unapply))
 
   def index = UserAwareAction { implicit request =>
-    transaction {
+    inTransaction {
       Ok(views.html.news.index(model.News.all, userFromRequest))
     }
   }
 
   def search(label: String) = UserAwareAction { implicit request =>
-    transaction {
+    inTransaction {
       Ok(views.html.news.index(model.News.findByLabel(label), userFromRequest, label))
     }
   }
 
   def indexH(hid: Long) = UserAwareAction { implicit request =>
-    transaction {
+    inTransaction {
       Ok(views.html.news.indexH(model.Hackathon.lookup(hid), userFromRequest))
     }
   }
 
   def view(id: Long) = UserAwareAction { implicit request =>
-    transaction {
+    inTransaction {
       Ok(views.html.news.view(model.News.lookup(id), userFromRequest))
     }
   }
 
   def viewH(hid: Long, id: Long) = UserAwareAction { implicit request =>
-    transaction {
+    inTransaction {
       val news = model.News.lookup(id)
       val hackathon = news.map { news => news.hackathon }.getOrElse { model.Hackathon.lookup(hid) }
       Ok(views.html.news.viewH(hackathon, news, userFromRequest))
@@ -54,7 +54,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
   }
 
   def create = SecuredAction() { implicit request =>
-    transaction {
+    inTransaction {
       ensureAdmin {
         val user = userFromRequest(request)
         val news = new model.News(user.id)
@@ -64,7 +64,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
   }
 
   def createH(hid: Long) = SecuredAction() { implicit request =>
-    transaction {
+    inTransaction {
       val hackathon = model.Hackathon.lookup(hid)
       hackathon.map { hackathon =>
         ensureHackathonOrganiserOrAdmin(hackathon) {
@@ -81,7 +81,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
       val user = userFromRequest(request)
       newsForm.bindFromRequest.fold(
         errors => BadRequest(views.html.news.create(errors, user)),
-        news => transaction {
+        news => inTransaction {
           model.News.insert(news.copy(authorId = user.id))
           Redirect(routes.News.index).flashing("status" -> "added", "title" -> news.title)
         })
@@ -90,7 +90,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
 
   def saveH(hid: Long) = SecuredAction() { implicit request =>
     val user = userFromRequest(request)
-    transaction {
+    inTransaction {
       model.Hackathon.lookup(hid).map { hackathon =>
         ensureHackathonOrganiserOrAdmin(hackathon) {
           newsForm.bindFromRequest.fold(
@@ -106,7 +106,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     val user = userFromRequest(request)
-    transaction {
+    inTransaction {
       model.News.lookup(id).map { news =>
         ensureNewsAuthorOrAdmin(news) {
           Ok(views.html.news.edit(id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), user))
@@ -119,7 +119,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
   }
 
   def editH(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
+    inTransaction {
       (for (
         news <- model.News.lookup(id);
         hackathon <- model.Hackathon.lookup(hid)
@@ -139,7 +139,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
     val user = userFromRequest(request)
     newsForm.bindFromRequest.fold(
       errors => BadRequest(views.html.news.edit(id, errors, user)),
-      news => transaction {
+      news => inTransaction {
         model.News.lookup(id).map { news =>
           ensureNewsAuthorOrAdmin(news) {
             model.News.update(id, news)
@@ -153,7 +153,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
     val user = userFromRequest(request)
     newsForm.bindFromRequest.fold(
       errors => BadRequest(views.html.news.editH(model.Hackathon.lookup(hid), id, errors, user)),
-      news => transaction {
+      news => inTransaction {
         (for (
           dbNews <- model.News.lookup(id);
           hackathon <- model.Hackathon.lookup(hid)
@@ -167,7 +167,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
   }
 
   def delete(id: Long) = SecuredAction() { implicit request =>
-    transaction {
+    inTransaction {
       model.News.lookup(id).map { news =>
         ensureNewsAuthorOrAdmin(news) {
           model.News.delete(id)
@@ -178,13 +178,12 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
   }
 
   def deleteH(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
+    inTransaction {
       (for (
         news <- model.News.lookup(id);
         hackathon <- model.Hackathon.lookup(hid)
-      // cross check dbNews.hackathon = Some(hackathon)
       ) yield {
-        ensureHackathonOrganiserOrNewsAuthorOrAdmin(hackathon, news) {
+        ensureHackathonOrganiserOrNewsAuthorOrAdmin(hackathon, news, news.hackathonId == Some(hid) ) {
           model.News.delete(id)
           Redirect(routes.News.indexH(hid)).flashing("status" -> "updated", "title" -> news.title)
         }
