@@ -41,15 +41,27 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
 
   def view(id: Long) = UserAwareAction { implicit request =>
     inTransaction {
-      Ok(views.html.news.view(model.News.lookup(id), userFromRequest))
+      model.News.lookup(id).map { news =>
+        Ok(views.html.news.view(Some(news), userFromRequest))
+      }.getOrElse {
+        NotFound(views.html.news.view(None, userFromRequest))
+      }
     }
   }
 
   def viewH(hid: Long, id: Long) = UserAwareAction { implicit request =>
     inTransaction {
-      val news = model.News.lookup(id)
-      val hackathon = news.map { news => news.hackathon }.getOrElse { model.Hackathon.lookup(hid) }
-      Ok(views.html.news.viewH(hackathon, news, userFromRequest))
+      val hackathon = model.Hackathon.lookup(hid)
+      hackathon.map { hackathon =>
+        val news = model.News.lookup(id)
+        news.filter(_.hackathonId == Some(hid)).map { news =>
+          Ok(views.html.news.viewH(Some(hackathon), Some(news), userFromRequest))
+        }.getOrElse {
+          NotFound(views.html.news.viewH(Some(hackathon), None, userFromRequest))
+        }
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(hackathon, userFromRequest))
+      }
     }
   }
 
@@ -112,58 +124,69 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
           Ok(views.html.news.edit(id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), user))
         }
       }.getOrElse {
-        // news view will handle not found cases 
-        Redirect(routes.News.view(id)).flashing()
+        NotFound(views.html.news.view(None, Some(user)))
       }
     }
   }
 
   def editH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     inTransaction {
-      (for (
-        news <- model.News.lookup(id);
-        hackathon <- model.Hackathon.lookup(hid)
-      ) yield {
-        ensureHackathonOrganiserOrNewsAuthorOrAdmin(hackathon, news) {
-          val user = userFromRequest(request)
-          Ok(views.html.news.editH(news.hackathon, id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), user))
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        model.News.lookup(id).map { news =>
+          ensureHackathonOrganiserOrNewsAuthorOrAdmin(hackathon, news, news.hackathonId == Some(hid)) {
+            Ok(views.html.news.editH(news.hackathon, id, newsForm.fill(news.copy(labelsAsString = news.labels.map(_.value).mkString(","))), user))
+          }
+        }.getOrElse {
+          NotFound(views.html.news.viewH(Some(hackathon), None, Some(user)))
         }
-      }).getOrElse {
-        // no news found
-        Redirect(routes.News.viewH(hid, id)).flashing()
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
       }
     }
   }
 
   def update(id: Long) = SecuredAction() { implicit request =>
-    val user = userFromRequest(request)
-    newsForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.news.edit(id, errors, user)),
-      news => inTransaction {
-        model.News.lookup(id).map { news =>
-          ensureNewsAuthorOrAdmin(news) {
-            model.News.update(id, news)
-            Redirect(routes.News.index).flashing("status" -> "updated", "title" -> news.title)
-          }
-        }.getOrElse(Redirect(routes.News.view(id)))
-      })
+    inTransaction {
+      val user = userFromRequest(request)
+      model.News.lookup(id).map { dbNews =>
+        ensureNewsAuthorOrAdmin(dbNews) {
+          newsForm.bindFromRequest.fold(
+            errors => BadRequest(views.html.news.edit(id, errors, user)),
+            news => {
+              model.News.update(id, news.copy(authorId = dbNews.authorId))
+              Redirect(routes.News.index).flashing("status" -> "updated", "title" -> news.title)
+            })
+        }
+      }.getOrElse {
+        NotFound(views.html.news.view(None, Some(user)))
+      }
+    }
   }
 
   def updateH(hid: Long, id: Long) = SecuredAction() { implicit request =>
     val user = userFromRequest(request)
-    newsForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.news.editH(model.Hackathon.lookup(hid), id, errors, user)),
-      news => inTransaction {
-        (for (
-          dbNews <- model.News.lookup(id);
-          hackathon <- model.Hackathon.lookup(hid)
-        ) yield {
-          ensureHackathonOrganiserOrNewsAuthorOrAdmin(hackathon, dbNews) {
-            model.News.update(id, news.copy(hackathonId = Some(hid), authorId = dbNews.authorId))
-            Redirect(routes.News.indexH(hid)).flashing("status" -> "updated", "title" -> news.title)
+    inTransaction {
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        model.News.lookup(id).map { dbNews =>
+          ensureHackathonOrganiserOrNewsAuthorOrAdmin(hackathon, dbNews, dbNews.hackathonId == Some(hid)) {
+
+            newsForm.bindFromRequest.fold(
+              errors => BadRequest(views.html.news.editH(model.Hackathon.lookup(hid), id, errors, user)),
+              news => {
+                model.News.update(id, news.copy(hackathonId = Some(hid), authorId = dbNews.authorId))
+                Redirect(routes.News.indexH(hid)).flashing("status" -> "updated", "title" -> news.title)
+              })
+
           }
-        }).getOrElse(Redirect(routes.News.viewH(hid, id)))
-      })
+        }.getOrElse {
+          NotFound(views.html.news.viewH(Some(hackathon), None, Some(user)))
+        }
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
+    }
   }
 
   def delete(id: Long) = SecuredAction() { implicit request =>
@@ -173,21 +196,30 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
           model.News.delete(id)
           Redirect(routes.News.index).flashing("status" -> "deleted")
         }
-      }.getOrElse(Redirect(routes.News.view(id)))
+      }.getOrElse {
+        NotFound(views.html.news.view(None, Some(userFromRequest(request))))
+      }
     }
   }
 
   def deleteH(hid: Long, id: Long) = SecuredAction() { implicit request =>
+    val user = userFromRequest(request)
     inTransaction {
-      (for (
-        news <- model.News.lookup(id);
-        hackathon <- model.Hackathon.lookup(hid)
-      ) yield {
-        ensureHackathonOrganiserOrNewsAuthorOrAdmin(hackathon, news, news.hackathonId == Some(hid) ) {
-          model.News.delete(id)
-          Redirect(routes.News.indexH(hid)).flashing("status" -> "updated", "title" -> news.title)
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        model.News.lookup(id).map { dbNews =>
+          ensureHackathonOrganiserOrNewsAuthorOrAdmin(hackathon, dbNews, dbNews.hackathonId == Some(hid)) {
+
+            model.News.delete(id)
+            Redirect(routes.News.indexH(hid)).flashing("status" -> "deleted")
+
+          }
+        }.getOrElse {
+          NotFound(views.html.news.viewH(Some(hackathon), None, Some(user)))
         }
-      }).getOrElse(Redirect(routes.News.viewH(hid, id)))
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
     }
   }
 }
