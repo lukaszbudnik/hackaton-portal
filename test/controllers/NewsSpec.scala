@@ -7,6 +7,7 @@ import play.api.test.Helpers._
 import play.api.i18n.Messages
 import play.api.test.FakeRequest$
 import helpers.SecureSocialUtils
+import core.SecurityAbuseException
 
 class NewsSpec extends Specification with DataTables {
 
@@ -99,6 +100,27 @@ class NewsSpec extends Specification with DataTables {
 
                 status(result) must equalTo(NOT_FOUND)
                 contentAsString(result) must contain(helpers.CmsMessages("news.notFound"))
+              }
+            }
+        }
+    }
+
+    "throw SecurityAbuseException when tampering with edit, update, and delete" in {
+
+      "" | "httpMethod" | "action" |
+        1 ! GET ! "/news/1/edit" |
+        1 ! POST ! "/news/1" |
+        1 ! POST ! "/news/1/delete" |
+        1 ! GET ! "/hackathons/1/news/3/edit" |
+        1 ! POST ! "/hackathons/1/news/3" |
+        1 ! POST ! "/hackathons/1/news/3/delete" |> {
+          (justIgnoreMe, httpMethod, action) =>
+            {
+              val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
+              running(application) {
+                {
+                  SecureSocialUtils.fakeAuthNormalUser(FakeRequest(httpMethod, action), application)
+                } must throwA[SecurityAbuseException]
               }
             }
         }

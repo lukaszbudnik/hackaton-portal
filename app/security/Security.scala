@@ -12,8 +12,9 @@ trait Security extends securesocial.core.SecureSocial {
   def ensure(condition: model.User => Boolean, optionalCondition: Boolean = true)(f: => Result)(implicit request: SecuredRequest[AnyContent]): Result = {
     inTransaction {
       val socialUser = request.user
+      
       val user = model.User.lookupByOpenId(socialUser.id.id + socialUser.id.providerId)
-
+      
       user match {
         case Some(u: model.User) if optionalCondition && condition(u) => f
         case _ => throw new SecurityAbuseException(socialUser)

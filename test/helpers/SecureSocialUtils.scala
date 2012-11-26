@@ -19,8 +19,6 @@ object SecureSocialUtils {
   /**
    * Makes call on given request, faking authentication first. Method usefull when testing secured content/ functionality
    * This method will not work when accessing resources restricted for administrator. In such case following user has to be added to db:
-   * 
-   *  insert into users (name, email, github_username, open_id, avatar_url, is_admin) values ('Mock mockowski','d.bykowski@kainos.com', 'bykes', 'mockIdmockProvider', 'https://lh4.googleusercontent.com/-_qzaBoetBfc/AAAAAAAAAAI/AAAAAAAAENc/q3rBQpasMfI/photo.jpg', true);
    *  
    */
    def fakeAuth[T](request: FakeRequest[AnyContent], application: Application ): Result = {
@@ -32,6 +30,20 @@ object SecureSocialUtils {
     }
     
     val decoratedRequest = request.withSession(SecureSocial.UserKey -> "mockId", SecureSocial.ProviderKey -> "mockProvider")
+    val result = routeAndCall(decoratedRequest).get
+    result
+    
+  }
+   
+   def fakeAuthNormalUser[T](request: FakeRequest[AnyContent], application: Application ): Result = {
+     // saving user information, this information is then retrieved in SecuredAction when authenticating
+    transaction {
+      val socialUser = SocialUser(UserId("mockNormalUserId", "mockProvider"), "mockNormalUser", None, None, AuthenticationMethod.UserPassword, true, None, None, None)
+      val service = new UserService(application)
+      securesocial.core.UserService.save(socialUser)
+    }
+    
+    val decoratedRequest = request.withSession(SecureSocial.UserKey -> "mockNormalUserId", SecureSocial.ProviderKey -> "mockProvider")
     val result = routeAndCall(decoratedRequest).get
     result
     
