@@ -6,7 +6,8 @@
 insert into users (name, email, github_username, open_id, is_admin) values ('Przemek','email', 'test', '103280383330259834711google', true);
 insert into users (name, email, github_username, open_id) values ('test user','email', 'test', 'open_id_test');
 
-insert into users (name, email, github_username, open_id, avatar_url, is_admin) values ('Daniel Bykowski','d.bykowski@kainos.com', 'bykes', 'mockIdmockProvider', 'https://lh4.googleusercontent.com/-_qzaBoetBfc/AAAAAAAAAAI/AAAAAAAAENc/q3rBQpasMfI/photo.jpg', true);
+insert into users (name, email, open_id, is_admin) values ('Mr. Mock Admin','super@secret.com', 'mockIdmockProvider', true);
+insert into users (name, email, open_id, is_admin) values ('Mr. Mock Normal','normal@secret.com', 'mockNormalUserIdmockProvider', false);
 
 
 insert into locations (country, city, postal_code, full_address, name, latitude, longitude, submitter_id, status) values ('Polska', 'Gdańsk', '80-000', 'Ul. Długa 55', 'Hackaton Gdansk!', 54.366667, 18.633333, 3, 1);
@@ -18,7 +19,6 @@ insert into hackathons (subject, date, description, status, organiser_id) values
 
 insert into hackathons_locations(hackathon_id, location_id) values(1,1);
 insert into hackathons_locations(hackathon_id, location_id) values(2,2);
-
 
 
 insert into problems (name, description, status, submitter_id, hackathon_id) values ('Problem 1', 'Problem testowy numer 1', 1, 1, 1);
