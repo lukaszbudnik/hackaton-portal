@@ -109,6 +109,26 @@ class NewsSpec extends Specification with DataTables {
             }
         }
     }
+    
+    "send 404 and display not found on view, edit, update, delete when hackathon does not exists" in {
+
+      "" | "httpMethod" | "action" |
+        1 ! GET ! "/hackathons/11111/news/11111" |
+        1 ! GET ! "/hackathons/11111/news/11111/edit" |
+        1 ! POST ! "/hackathons/11111/news/11111" |
+        1 ! POST ! "/hackathons/11111/news/11111/delete" |> {
+          (justIgnoreMe, httpMethod, action) =>
+            {
+              val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
+              running(application) {
+                val result = SecureSocialUtils.fakeAuth(FakeRequest(httpMethod, action), application)
+
+                status(result) must equalTo(NOT_FOUND)
+                contentAsString(result) must contain(helpers.CmsMessages("hackathons.notFound"))
+              }
+            }
+        }
+    }
 
     "throw SecurityAbuseException when tampering with edit, update, and delete" in {
 
