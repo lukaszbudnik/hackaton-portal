@@ -7,7 +7,9 @@ import play.api.i18n.Messages
 import play.api.test.FakeRequest$
 import org.squeryl.PrimitiveTypeMode.transaction
 import helpers.CmsMessages
-import org.specs2.matcher.DataTables;
+import org.specs2.matcher.DataTables
+import helpers.SecureSocialUtils
+import core.SecurityAbuseException
 
 class PrizeSpec extends Specification with DataTables {
 
@@ -45,26 +47,12 @@ class PrizeSpec extends Specification with DataTables {
       }
     }
 
-    "display prize not found when hackathon found on GET /hackathons/:hid/prizes/:id" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        transaction {
-          val result = routeAndCall(FakeRequest(GET, "/hackathons/1/prizes/10")).get
-
-          val prizeDb: Option[model.Prize] = model.Prize.lookup(1L)
-          prizeDb.isEmpty must beFalse
-
-          status(result) must equalTo(OK)
-          contentAsString(result) must contain(helpers.CmsMessages("prizes.notFound"))
-        }
-      }
-    }
-
     "redirect to Login Page if user not logged in" in {
       "" | "httpMethod" | "action" |
         1 ! GET ! "/hackathons/1/prizes/new" |
         1 ! POST ! "/hackathons/1/prizes" |
         1 ! GET ! "/hackathons/1/prizes/1/edit" |
-        1 ! POST ! "/hackathons/1/prizes/1/update" |
+        1 ! POST ! "/hackathons/1/prizes/1" |
         1 ! POST ! "/hackathons/1/prizes/1/delete" |> {
           (justIgnoreMe, httpMethod, action) =>
             {
@@ -77,5 +65,62 @@ class PrizeSpec extends Specification with DataTables {
             }
         }
     }
+
+    "send 404 when prize not found in edit, update, delete" in {
+      "" | "httpMethod" | "action" |
+        1 ! GET ! "/hackathons/1/prizes/11111" |
+        1 ! GET ! "/hackathons/1/prizes/11111/edit" |
+        1 ! POST ! "/hackathons/1/prizes/11111" |
+        1 ! POST ! "/hackathons/1/prizes/11111/delete" |> {
+          (justIgnoreMe, httpMethod, action) =>
+            {
+              val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
+              running(application) {
+                val result = SecureSocialUtils.fakeAuthNormalUser(FakeRequest(httpMethod, action), application)
+
+                status(result) must equalTo(NOT_FOUND)
+                contentAsString(result) must contain(helpers.CmsMessages("prizes.notFound"))
+              }
+            }
+        }
+    }
+    
+    "send 404 when hackathon not found in edit, update, delete" in {
+      "" | "httpMethod" | "action" |
+        1 ! GET ! "/hackathons/11111/prizes/11111" |
+        1 ! GET ! "/hackathons/11111/prizes/11111/edit" |
+        1 ! POST ! "/hackathons/11111/prizes/11111" |
+        1 ! POST ! "/hackathons/11111/prizes/11111/delete" |> {
+          (justIgnoreMe, httpMethod, action) =>
+            {
+              val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
+              running(application) {
+                val result = SecureSocialUtils.fakeAuthNormalUser(FakeRequest(httpMethod, action), application)
+
+                status(result) must equalTo(NOT_FOUND)
+                contentAsString(result) must contain(helpers.CmsMessages("hackathons.notFound"))
+              }
+            }
+        }
+    }
+    
+    "throw SecurityAbuseException when tampering with edit, update, and delete" in {
+
+      "" | "httpMethod" | "action" |
+        1 ! GET ! "/hackathons/1/prizes/1/edit" |
+        1 ! POST ! "/hackathons/1/prizes/1" |
+        1 ! POST ! "/hackathons/1/prizes/1/delete" |> {
+          (justIgnoreMe, httpMethod, action) =>
+            {
+              val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
+              running(application) {
+                {
+                  SecureSocialUtils.fakeAuthNormalUser(FakeRequest(httpMethod, action), application)
+                } must throwA[SecurityAbuseException]
+              }
+            }
+        }
+    }
+
   }
 }
