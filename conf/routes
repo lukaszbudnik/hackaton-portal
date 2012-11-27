@@ -130,7 +130,7 @@ GET     /hackathons/:hid/prizes                   	controllers.Prize.index(hid: 
 GET     /hackathons/:hid/prizes/:id                 controllers.Prize.view(hid: Long, id: Long)
 # Update
 GET     /hackathons/:hid/prizes/:id/edit          	controllers.Prize.edit(hid: Long, id: Long)
-POST    /hackathons/:hid/prizes/:id/update        	controllers.Prize.update(hid: Long, id: Long)
+POST    /hackathons/:hid/prizes/:id		        	controllers.Prize.update(hid: Long, id: Long)
 # Delete
 POST    /hackathons/:hid/prizes/:id/delete        	controllers.Prize.delete(hid: Long, id: Long)
 
