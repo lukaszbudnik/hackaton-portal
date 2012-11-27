@@ -140,7 +140,12 @@ object Hackathon extends LangAwareController {
 
   def view(id: Long) = UserAwareAction { implicit request =>
     inTransaction {
-      Ok(views.html.hackathons.view(model.Hackathon.lookup(id), userFromRequest(request)))
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(id).map { hackathon =>
+        Ok(views.html.hackathons.view(Some(hackathon), user))
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, user))
+      }
     }
   }
 
@@ -175,23 +180,24 @@ object Hackathon extends LangAwareController {
 
   def edit(id: Long) = SecuredAction() { implicit request =>
     inTransaction {
+      val user = userFromRequest(request)
       model.dto.HackathonWithLocations.lookup(id).map { hackathonWithL =>
         ensureHackathonOrganiserOrAdmin(hackathonWithL.hackathon) {
-          Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathonWithL), userFromRequest(request)))
+          Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathonWithL), user))
         }
       }.getOrElse {
-        Redirect(routes.Hackathon.view(id)).flashing()
+        NotFound(views.html.hackathons.view(None, Some(user)))
       }
     }
   }
 
   def update(id: Long) = SecuredAction() { implicit request =>
     inTransaction {
+      val user = userFromRequest(request)
       model.Hackathon.lookup(id).map { hackathon =>
 
         ensureHackathonOrganiserOrAdmin(hackathon) {
 
-          val user = userFromRequest(request)
           hackathonForm.bindFromRequest.fold(
             errors => BadRequest(views.html.hackathons.edit(id, errors, user)),
             hackathonWithL => {
@@ -214,12 +220,13 @@ object Hackathon extends LangAwareController {
               Redirect(routes.Hackathon.index).flashing("status" -> "updated", "title" -> hackathonWithL.hackathon.subject)
             })
         }
-      }.getOrElse(Redirect(routes.Hackathon.view(id)))
+      }.getOrElse(NotFound(views.html.hackathons.view(None, Some(user))))
     }
   }
 
   def delete(id: Long) = SecuredAction() { implicit request =>
     inTransaction {
+      val user = userFromRequest(request)
       model.Hackathon.lookup(id).map { hackathon =>
 
         ensureHackathonOrganiserOrAdmin(hackathon) {
@@ -227,47 +234,51 @@ object Hackathon extends LangAwareController {
           Redirect(routes.Hackathon.index).flashing("status" -> "deleted")
         }
 
-      }.getOrElse(Redirect(routes.Hackathon.view(id)))
+      }.getOrElse(NotFound(views.html.hackathons.view(None, Some(user))))
     }
   }
 
   def join(id: Long) = SecuredAction() { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
-      val result = Redirect(routes.Hackathon.view(id))
       model.Hackathon.lookup(id).map { hackathon =>
         if (!hackathon.hasMember(user.id)) {
           hackathon.addMember(user)
         }
-        result.flashing("status" -> "joined")
-      }.getOrElse(result.flashing("status" -> "error"))
+        Redirect(routes.Hackathon.view(id)).flashing("status" -> "joined")
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
     }
   }
 
   def disconnect(id: Long) = SecuredAction() { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
-      val result = Redirect(routes.Hackathon.view(id))
       model.Hackathon.lookup(id).map { hackathon =>
         hackathon.deleteMember(user)
-        result.flashing("status" -> "disconnected")
-      }.getOrElse(result.flashing("status" -> "error"))
+        Redirect(routes.Hackathon.view(id)).flashing("status" -> "disconnected")
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
     }
   }
 
   def disconnectUser(id: Long, userId: Long) = SecuredAction() { implicit request =>
     inTransaction {
-      val user = userFromRequest(request)
-      val result = Redirect(routes.Hackathon.view(id))
-      (for (
-        userToRemove <- model.User.lookup(userId);
-        hackathon <- model.Hackathon.lookup(id)
-      ) yield {
-        ensureHackathonOrganiserOrAdmin(hackathon) {
-          hackathon.deleteMember(userToRemove)
-          result.flashing("status" -> "disconnectedUser")
+      ensureAdmin {
+        val user = userFromRequest(request)
+        model.Hackathon.lookup(id).map { hackathon =>
+          model.User.lookup(userId).map { userToRemove =>
+            hackathon.deleteMember(userToRemove)
+            Redirect(routes.Hackathon.view(id)).flashing("status" -> "disconnectedUser")
+          }.getOrElse {
+            Redirect(routes.Hackathon.view(id)).flashing("status" -> "error")
+          }
+        }.getOrElse {
+          NotFound(views.html.hackathons.view(None, Some(user)))
         }
-      }).getOrElse(result.flashing("status" -> "error"))
+      }
     }
   }
 }

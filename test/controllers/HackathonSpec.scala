@@ -9,7 +9,6 @@ import org.squeryl.PrimitiveTypeMode.transaction
 import helpers.CmsMessages
 import org.specs2.matcher.DataTables
 import securesocial.core.ProviderRegistry
-
 import securesocial.core.SecureSocial
 import securesocial.core.UserService
 import securesocial.core.SocialUser
@@ -19,6 +18,7 @@ import play.api.mvc.Request
 import play.api.mvc.AnyContent
 import play.api.mvc.Result
 import helpers.SecureSocialUtils
+import core.SecurityAbuseException
 
 class HackathonSpec extends Specification with DataTables {
 
@@ -32,7 +32,6 @@ class HackathonSpec extends Specification with DataTables {
         contentAsString(result) must contain(helpers.CmsMessages("hackathons.title"))
       }
     }
-    
 
     "display hackathon details on GET /hackathons/id" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
@@ -41,19 +40,10 @@ class HackathonSpec extends Specification with DataTables {
 
           val hackathonDb: Option[model.Hackathon] = model.Hackathon.lookup(1L)
           hackathonDb.isEmpty must beFalse
-          
+
           status(result) must equalTo(OK)
           contentAsString(result) must contain(helpers.CmsMessages("hackathons.organiser.label"))
         }
-      }
-    }
-
-    "display message about no hackathon found on GET /hackathons/id" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        val result = routeAndCall(FakeRequest(GET, "/hackathons/10")).get
-
-        status(result) must equalTo(OK)
-        contentAsString(result) must contain(helpers.CmsMessages("hackathons.notFound"))
       }
     }
 
@@ -100,30 +90,28 @@ class HackathonSpec extends Specification with DataTables {
         }
       }
     }
-    
-    
-    "display add hackathon form when logged in" in {
-      
-    		val fakeapp = FakeApplication(additionalConfiguration = inMemoryDatabase())
-              running(fakeapp) {
-               
-            	val action = "/hackathons/new"
-            	// adding userId 
-            	val result = SecureSocialUtils.fakeAuth(FakeRequest(GET, action), fakeapp) 
 
-                status(result) must equalTo(OK)
-            	contentAsString(result) must contain(helpers.CmsMessages("hackathons.create.title"))
-              }
+    "display add hackathon form when logged in" in {
+
+      val fakeapp = FakeApplication(additionalConfiguration = inMemoryDatabase())
+      running(fakeapp) {
+
+        val action = "/hackathons/new"
+        // adding userId 
+        val result = SecureSocialUtils.fakeAuth(FakeRequest(GET, action), fakeapp)
+
+        status(result) must equalTo(OK)
+        contentAsString(result) must contain(helpers.CmsMessages("hackathons.create.title"))
+      }
     }
 
     "redirect to Login Page if user not logged in" in {
-      
-      
+
       "" | "httpMethod" | "action" |
         1 ! GET ! "/hackathons/new" |
         1 ! POST ! "/hackathons" |
         1 ! GET ! "/hackathons/1/edit" |
-        1 ! POST ! "/hackathons/1/update" |
+        1 ! POST ! "/hackathons/1" |
         1 ! POST ! "/hackathons/1/delete" |
         1 ! GET ! "/hackathons/1/join" |
         1 ! GET ! "/hackathons/1/disconnect" |
@@ -140,9 +128,49 @@ class HackathonSpec extends Specification with DataTables {
             }
         }
     }
-    
+
+    "send 404 and display not found on view, edit, update, delete when news does not exists" in {
+
+      "" | "httpMethod" | "action" |
+        1 ! GET ! "/hackathons/11111" |
+        1 ! GET ! "/hackathons/11111/edit" |
+        1 ! POST ! "/hackathons/11111" |
+        1 ! POST ! "/hackathons/11111/delete" |
+        1 ! GET ! "/hackathons/11111/join" |
+        1 ! GET ! "/hackathons/11111/disconnect" |
+        1 ! GET ! "/hackathons/11111/1/disconnect" |> {
+          (justIgnoreMe, httpMethod, action) =>
+            {
+              val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
+              running(application) {
+                val result = SecureSocialUtils.fakeAuth(FakeRequest(httpMethod, action), application)
+
+                status(result) must equalTo(NOT_FOUND)
+                contentAsString(result) must contain(helpers.CmsMessages("hackathons.notFound"))
+              }
+            }
+        }
+    }
+
+    "throw SecurityAbuseException when tampering with edit, update, and delete" in {
+
+      "" | "httpMethod" | "action" |
+        1 ! GET ! "/hackathons/1/edit" |
+        1 ! POST ! "/hackathons/1" |
+        1 ! POST ! "/hackathons/1/delete" |
+        1 ! GET ! "/hackathons/1/1/disconnect" |> {
+          (justIgnoreMe, httpMethod, action) =>
+            {
+              val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
+              running(application) {
+                {
+                  SecureSocialUtils.fakeAuthNormalUser(FakeRequest(httpMethod, action), application)
+                } must throwA[SecurityAbuseException]
+              }
+            }
+        }
+    }
+
   }
 
- 
-  
 }
