@@ -92,7 +92,7 @@ GET     /hackathons/:hid/problems   				controllers.Problem.index(hid: Long)
 GET     /hackathons/:hid/problems/:id           	controllers.Problem.view(hid: Long, id: Long)
 # Update
 GET     /hackathons/:hid/problems/:id/edit      	controllers.Problem.edit(hid: Long, id: Long)
-POST    /hackathons/:hid/problems/:id/update    	controllers.Problem.update(hid: Long, id: Long)
+POST    /hackathons/:hid/problems/:id		    	controllers.Problem.update(hid: Long, id: Long)
 POST    /hackathons/:hid/problems/:id/verify        controllers.Problem.verify(hid: Long, id: Long)
 POST    /hackathons/:hid/problems/:id/approve       controllers.Problem.approve(hid: Long, id: Long)
 POST    /hackathons/:hid/problems/:id/suspend       controllers.Problem.suspend(hid: Long, id: Long)

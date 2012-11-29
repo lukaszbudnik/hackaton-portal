@@ -175,9 +175,9 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
       
       model.Hackathon.lookup(hid).map { hackathon =>
         
-        model.dto.SponsorWithLogo.lookup(id).map { sponsorWithLogo =>
+        model.dto.SponsorWithLogo.lookup(id).filter(_.sponsor.hackathonId == Some(hid)).map { sponsorWithLogo =>
           
-          ensureHackathonOrganiserOrAdmin(hackathon, sponsorWithLogo.sponsor.hackathonId == Some(hid)) {
+          ensureHackathonOrganiserOrAdmin(hackathon) {
             val user = userFromRequest(request)
             Ok(views.html.sponsors.editH(Some(hackathon), id, sponsorForm.fill(sponsorWithLogo), user))
           }
@@ -237,9 +237,9 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
 
       model.Hackathon.lookup(hid).map { hackathon =>
 
-        model.Sponsor.lookup(id).map { sponsor =>
+        model.Sponsor.lookup(id).filter(_.hackathonId == Some(hid)).map { sponsor =>
 
-          ensureHackathonOrganiserOrAdmin(hackathon, sponsor.hackathonId == Some(hid)) {
+          ensureHackathonOrganiserOrAdmin(hackathon) {
             model.Sponsor.delete(id)
             Redirect(routes.Sponsor.indexH(hid)).flashing("status" -> "deleted")
           }

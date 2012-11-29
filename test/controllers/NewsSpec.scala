@@ -131,9 +131,9 @@ class NewsSpec extends Specification with DataTables {
         1 ! GET ! "/news/1/edit" |
         1 ! POST ! "/news/1" |
         1 ! POST ! "/news/1/delete" |
-        1 ! GET ! "/hackathons/1/news/3/edit" |
-        1 ! POST ! "/hackathons/1/news/3" |
-        1 ! POST ! "/hackathons/1/news/3/delete" |> {
+        1 ! GET ! "/hackathons/1/news/1/edit" |
+        1 ! POST ! "/hackathons/1/news/1" |
+        1 ! POST ! "/hackathons/1/news/1/delete" |> {
           (justIgnoreMe, httpMethod, action) =>
             {
               val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
