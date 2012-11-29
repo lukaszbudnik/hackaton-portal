@@ -22,37 +22,53 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
       "hackathonId" -> longNumber)(model.Problem.apply)(model.Problem.unapply))
 
   def index(hid: Long) = UserAwareAction { implicit request =>
-    transaction {
+    inTransaction {
       Ok(views.html.problems.index(model.Hackathon.lookup(hid), userFromRequest))
     }
   }
 
   def view(hid: Long, id: Long) = UserAwareAction { implicit request =>
-    transaction {
-      val problem = model.Problem.lookup(id)
-      val hackathon = problem.map { p => Some(p.hackathon) }.getOrElse { model.Hackathon.lookup(hid) }
-      Ok(views.html.problems.view(hackathon, problem, userFromRequest))
+    inTransaction {
+
+      val user = userFromRequest(request)
+
+      model.Hackathon.lookup(hid).map { hackathon =>
+
+        model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
+
+          Ok(views.html.problems.view(Some(hackathon), Some(problem), user))
+
+        }.getOrElse {
+          NotFound(views.html.problems.view(Some(hackathon), None, user))
+        }
+
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, user))
+      }
+
     }
   }
 
   def create(hid: Long) = SecuredAction() { implicit request =>
-    transaction {
+    inTransaction {
+      val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
-        val user = userFromRequest(request)
         val problem = new model.Problem(user.id, hid)
         Ok(views.html.problems.create(Some(hackathon), problemForm.fill(problem), user))
-      }.getOrElse(Redirect(routes.Hackathon.view(hid)).flashing())
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
     }
   }
 
   def save(hid: Long) = SecuredAction() { implicit request =>
-    transaction {
+    inTransaction {
+      val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
-        val user = userFromRequest(request)
         problemForm.bindFromRequest.fold(
           errors => BadRequest(views.html.problems.create(Some(hackathon), errors, user)),
           problem => {
-            val dbProblem = model.Problem.insert(problem.copy(submitterId = user.id))
+            val dbProblem = model.Problem.insert(problem.copy(submitterId = user.id, status = model.ProblemStatus.Unverified))
 
             val url = URL.externalUrl(routes.Problem.view(hid, dbProblem.id))
             val params = Seq(dbProblem.name, url)
@@ -62,49 +78,63 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
             Redirect(routes.Problem.index(hid)).flashing("status" -> "added", "title" -> problem.name)
           })
 
-      }.getOrElse(Redirect(routes.Hackathon.view(hid)))
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
     }
   }
 
   def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
+    inTransaction {
+      val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
-        model.Problem.lookup(id).map { problem =>
-          ensureHackathonOrganiserOrProblemSubmitterOrAdmin(hackathon, problem, problem.hackathonId == hid) {
-            val user = userFromRequest(request)
+        model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
+          ensureHackathonOrganiserOrProblemSubmitterOrAdmin(hackathon, problem) {
             Ok(views.html.problems.edit(Some(problem.hackathon), id, problemForm.fill(problem), user))
           }
-        }.getOrElse(Redirect(routes.Problem.view(hid, id)))
-      }.getOrElse(Redirect(routes.Hackathon.view(hid)))
+        }.getOrElse {
+          NotFound(views.html.problems.view(Some(hackathon), None, Some(user)))
+        }
+
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
     }
   }
 
   def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
+    inTransaction {
+      val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
-        model.Problem.lookup(id).map { dbProblem =>
+        model.Problem.lookup(id).filter(_.hackathonId == hid).map { dbProblem =>
 
-          problemForm.bindFromRequest.fold(
-            errors => {
-              val user = userFromRequest(request)
-              BadRequest(views.html.problems.edit(model.Hackathon.lookup(hid), id, errors, user))
-            },
-            problem => {
-              ensureHackathonOrganiserOrProblemSubmitterOrAdmin(hackathon, dbProblem, hid == problem.hackathonId) {
+          ensureHackathonOrganiserOrProblemSubmitterOrAdmin(hackathon, dbProblem) {
+
+            problemForm.bindFromRequest.fold(
+              errors => BadRequest(views.html.problems.edit(model.Hackathon.lookup(hid), id, errors, user)),
+              problem => {
                 model.Problem.update(id, problem.copy(status = dbProblem.status))
                 Redirect(routes.Problem.index(hid)).flashing("status" -> "updated", "title" -> problem.name)
-              }
-            })
-        }.getOrElse(Redirect(routes.Problem.view(hid, id)))
-      }.getOrElse(Redirect(routes.Hackathon.view(hid)))
+              })
+
+          }
+
+        }.getOrElse {
+          NotFound(views.html.problems.view(Some(hackathon), None, Some(user)))
+        }
+
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
     }
   }
 
   def verify(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Problem.lookup(id).map { problem =>
+    inTransaction {
 
-        ensureHackathonOrganiserOrAdmin(problem.hackathon, hid == problem.hackathonId) {
+      model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
+
+        ensureHackathonOrganiserOrAdmin(problem.hackathon) {
           model.Problem.update(id, problem.copy(status = ProblemStatus.Approved))
 
           val url = URL.externalUrl(routes.Problem.view(hid, problem.id))
@@ -123,10 +153,12 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
   }
 
   def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Problem.lookup(id).map { problem =>
+    inTransaction {
+      model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
 
-        ensureHackathonOrganiserOrProblemSubmitterOrAdmin(problem.hackathon, problem, hid == problem.hackathonId) {
+        ensureHackathonOrganiserOrProblemSubmitterOrAdmin(problem.hackathon, problem, u => {
+          !(problem.submitterId == u.id && problem.status == model.ProblemStatus.Unverified)
+        }) {
           model.Problem.update(id, problem.copy(status = ProblemStatus.Approved))
 
           val user = userFromRequest(request)
@@ -150,10 +182,10 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
   }
 
   def suspend(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Problem.lookup(id).map { problem =>
+    inTransaction {
+      model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
 
-        ensureHackathonOrganiserOrProblemSubmitterOrAdmin(problem.hackathon, problem, hid == problem.hackathonId) {
+        ensureHackathonOrganiserOrProblemSubmitterOrAdmin(problem.hackathon, problem) {
 
           val user = userFromRequest(request)
 
@@ -177,10 +209,10 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
   }
 
   def block(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Problem.lookup(id).map { problem =>
+    inTransaction {
+      model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
 
-        ensureHackathonOrganiserOrAdmin(problem.hackathon, hid == problem.hackathonId) {
+        ensureHackathonOrganiserOrAdmin(problem.hackathon) {
 
           model.Problem.update(id, problem.copy(status = ProblemStatus.Blocked))
 
@@ -200,12 +232,12 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
   }
 
   def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
+    inTransaction {
+      val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
-        model.Problem.lookup(id).map { problem =>
+        model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
 
-          ensureHackathonOrganiserOrAdmin(problem.hackathon, hid == problem.hackathonId) {
-            val user = userFromRequest(request)
+          ensureHackathonOrganiserOrAdmin(problem.hackathon) {
 
             if (user.id != problem.submitterId) {
               val url = URL.externalUrl(routes.Hackathon.view(hid))
@@ -217,9 +249,13 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
             model.Problem.delete(id)
             Redirect(routes.Problem.index(hid)).flashing("status" -> "deleted")
           }
-        }.getOrElse(Redirect(routes.Problem.view(hid, id)))
-        
-      }.getOrElse(Redirect(routes.Hackathon.view(hid)))
+        }.getOrElse {
+          NotFound(views.html.problems.view(Some(hackathon), None, Some(user)))
+        }
+
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
 
     }
   }

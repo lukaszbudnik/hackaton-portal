@@ -68,8 +68,8 @@ object Team extends LangAwareController {
 
   def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Team.lookup(id).map { team =>
-        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team, hid == team.hackathonId) {
+      model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
+        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team) {
           Ok(views.html.teams.edit(Some(team.hackathon), id, teamForm.fill(team), userFromRequest(request)))
         }
       }.getOrElse {
@@ -83,8 +83,8 @@ object Team extends LangAwareController {
     teamForm.bindFromRequest.fold(
       errors => BadRequest(views.html.teams.edit(model.Hackathon.lookup(hid), id, errors, userFromRequest(request))),
       team => transaction {
-        model.Team.lookup(id).map { dbTeam =>
-          ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team, hid == team.hackathonId) {
+        model.Team.lookup(id).filter(_.hackathonId == hid).map { dbTeam =>
+          ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team) {
             model.Team.update(id, team.copy(status = dbTeam.status, creatorId = dbTeam.creatorId))
             Redirect(routes.Team.index(hid)).flashing("status" -> "updated", "title" -> team.name)
           }
@@ -95,8 +95,8 @@ object Team extends LangAwareController {
   def verify(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
 
-      model.Team.lookup(id).map { team =>
-        ensureHackathonOrganiserOrAdmin(team.hackathon, hid == team.hackathonId) {
+      model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
+        ensureHackathonOrganiserOrAdmin(team.hackathon) {
           model.Team.update(id, team.copy(status = TeamStatus.Approved))
           val url = URL.externalUrl(routes.Team.view(hid, team.id))
           val params = Seq(team.name, url)
@@ -115,8 +115,8 @@ object Team extends LangAwareController {
 
   def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Team.lookup(id).map { team =>
-        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team, hid == team.hackathonId) {
+      model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
+        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team) {
           model.Team.update(id, team.copy(status = TeamStatus.Approved))
 
           val url = URL.externalUrl(routes.Team.view(hid, team.id))
@@ -136,8 +136,8 @@ object Team extends LangAwareController {
 
   def suspend(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Team.lookup(id).map { team =>
-        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team, hid == team.hackathonId) {
+      model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
+        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team) {
           model.Team.update(id, team.copy(status = TeamStatus.Suspended))
 
           val url = URL.externalUrl(routes.Team.view(hid, team.id))
@@ -158,8 +158,8 @@ object Team extends LangAwareController {
 
   def block(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Team.lookup(id).map { team =>
-        ensureHackathonOrganiserOrAdmin(team.hackathon, hid == team.hackathonId) {
+      model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
+        ensureHackathonOrganiserOrAdmin(team.hackathon) {
           model.Team.update(id, team.copy(status = TeamStatus.Blocked))
 
           val url = URL.externalUrl(routes.Team.view(hid, team.id))
@@ -179,8 +179,8 @@ object Team extends LangAwareController {
 
   def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
     transaction {
-      model.Team.lookup(id).map { team =>
-        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team, hid == team.hackathonId) {
+      model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
+        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team) {
 
           model.Team.delete(id)
           val url = URL.externalUrl(routes.Hackathon.view(hid))
@@ -224,8 +224,9 @@ object Team extends LangAwareController {
       (for (
         team <- model.Team.lookup(id);
         user <- model.User.lookup(userId)
+        if (hid == team.hackathonId)
       ) yield {
-        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team, hid == team.hackathonId) {
+        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team) {
         team.deleteMember(user)
 
         Redirect(routes.Team.view(hid, id)).flashing("status" -> "disconnectedUser")
