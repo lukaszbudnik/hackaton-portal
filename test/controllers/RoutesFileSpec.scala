@@ -19,6 +19,7 @@ class RoutesFileSpec extends Specification {
     "/hackathons/:hid" -> "/hackathons/1",
     "/hackathons/:hid/prizes" -> "/hackathons/1/prizes",
     "/changeLanguage/:lang" -> "/changeLanguage/PL",
+    "/locations/find" -> "/locations/find?term=dummy",
     "/news/:id" -> "/news/1",
     "/search/:label" -> "/search/string",
     "/hackathon.json/:id" -> "/hackathon.json/1",
