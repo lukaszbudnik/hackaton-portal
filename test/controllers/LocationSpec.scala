@@ -14,7 +14,7 @@ class LocationSpec extends Specification with DataTables {
  
     "redirect to Login Page if user not logged in" in {
 		""|"httpMethod" | "action"                    |
-		1 ! GET         ! "/locations/find/dumymTerm" |
+		1 ! GET         ! "/locations/find?term=dummy"|
 		1 ! GET         ! "/locations/new"            |
 		1 ! GET         ! "/locations/newA"           |
 		1 ! POST        ! "/locations"                |
