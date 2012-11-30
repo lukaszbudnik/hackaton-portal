@@ -165,7 +165,7 @@ GET    	/sponsors/:id/delete		controllers.Sponsor.delete(id: Long)
 
 # Locations routes
 # Find
-GET		/locations/find/:term				controllers.Location.findByPattern(term : String)
+GET		/locations/find				controllers.Location.findByPattern(term : String)
 # Create
 GET     /locations/new              controllers.Location.create
 GET     /locations/newA             controllers.Location.createA

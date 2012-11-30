@@ -24,7 +24,10 @@ addMarker = (hackathonId, map, markerImages) ->
         	latLng = new google.maps.LatLng(lc.latitude, lc.longitude)
         	latlngbounds.extend(latLng)
         	marker = new google.maps.Marker(position: latLng, map: map, icon: markerImages[data.status])
-        map.fitBounds(latlngbounds)
+        if (data.locations.length > 1)
+        	map.fitBounds(latlngbounds)
+        else
+        	map.setCenter(new google.maps.LatLng(data.locations[0].latitude, data.locations[0].longitude))
  			  	
     )
 
