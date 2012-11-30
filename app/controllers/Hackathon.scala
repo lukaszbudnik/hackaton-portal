@@ -24,6 +24,10 @@ import play.api.Logger
 
 object Hackathon extends LangAwareController {
 
+  private lazy val unVerifiedStatus = Seq(model.HackathonStatus.Unverified.toString() -> model.HackathonStatus.Unverified.toString())
+  private lazy val editStatuses = model.HackathonStatus.values.filterNot(_.toString() == model.HackathonStatus.Unverified.toString()).map{ s => s.toString -> s.toString}.toSeq
+  private lazy val allStatuses = model.HackathonStatus.values.map{ s => s.toString -> s.toString}.toSeq
+  
   private def hackathonWithLocations2Json(h: model.dto.HackathonWithLocations): JsValue = {
 
     toJson(Map(
@@ -165,7 +169,8 @@ object Hackathon extends LangAwareController {
       val user = userFromRequest(request)
 
       val hackathon = new model.dto.HackathonWithLocations(new model.Hackathon(user.id), List[model.Location](new model.Location))
-      Ok(views.html.hackathons.create(hackathonForm.fill(hackathon), user))
+      
+      Ok(views.html.hackathons.create(hackathonForm.fill(hackathon), user, unVerifiedStatus))
     }
   }
 
@@ -173,9 +178,9 @@ object Hackathon extends LangAwareController {
     inTransaction {
       val user = userFromRequest(request)
       hackathonForm.bindFromRequest.fold(
-        errors => BadRequest(views.html.hackathons.create(errors, user)),
+        errors => BadRequest(views.html.hackathons.create(errors, user, unVerifiedStatus)),
         hackathonWithLocations => {
-          val newH = model.Hackathon.insert(hackathonWithLocations.hackathon.copy(organiserId = user.id))
+          val newH = model.Hackathon.insert(hackathonWithLocations.hackathon.copy(organiserId = user.id, status = model.HackathonStatus.Unverified))
           hackathonWithLocations.locations.map {
             location =>
               newH.addLocation(location.copy(submitterId = user.id))
@@ -190,7 +195,8 @@ object Hackathon extends LangAwareController {
       val user = userFromRequest(request)
       model.dto.HackathonWithLocations.lookup(id).map { hackathonWithL =>
         ensureHackathonOrganiserOrAdmin(hackathonWithL.hackathon) {
-          Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathonWithL), user))
+          
+          Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathonWithL), user, editStatuses))
         }
       }.getOrElse {
         NotFound(views.html.hackathons.view(None, Some(user)))
@@ -206,7 +212,7 @@ object Hackathon extends LangAwareController {
         ensureHackathonOrganiserOrAdmin(hackathon) {
 
           hackathonForm.bindFromRequest.fold(
-            errors => BadRequest(views.html.hackathons.edit(id, errors, user)),
+            errors => BadRequest(views.html.hackathons.edit(id, errors, user, editStatuses)),
             hackathonWithL => {
 
               model.Hackathon.update(id, hackathonWithL.hackathon)

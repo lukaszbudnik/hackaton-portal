@@ -1,4 +1,4 @@
-@(hackathonForm: Form[model.dto.HackathonWithLocations], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathonForm: Form[model.dto.HackathonWithLocations], user: model.User, statuses: Seq[(String,String)])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @scripts = {
 		<script src="@routes.Assets.at("javascripts/bootstrap-typeahead.min.js")" type="text/javascript"></script>
@@ -16,7 +16,7 @@
     		<h2>@helpers.CmsMessages("hackathons.create.title")</h2>
 		</div>
   
-		@hackathons.hackathonForm(hackathonForm, routes.Hackathon.save, user, "global.add")
+		@hackathons.hackathonForm(hackathonForm, routes.Hackathon.save, user, statuses, "global.add")
 		
 		@tags.footer(false)
     
