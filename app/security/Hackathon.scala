@@ -1,11 +1,11 @@
 package security
 
 object Hackathon {
-
-  def canAddTeam(hackathon: model.Hackathon, user: Option[model.User]) = {
+  
+  def canAddProblem(hackathon: model.Hackathon, user: Option[model.User]) = {
 
     user.map { user =>
-      !hackathon.newTeamsDisabled || user.isAdmin || user.id == hackathon.organiserId
+      !hackathon.newProblemsDisabled || user.isAdmin || user.id == hackathon.organiserId
     }.getOrElse(false)
 
   }

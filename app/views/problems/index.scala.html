@@ -10,10 +10,10 @@
 		 * or hackathon organiser
 		 *  or normal user and hackathon configuration allows new problem creation
 		 *@
-		 
-        @if((user.isDefined && (user.get.isAdmin || user.get.id == hackathon.organiserId || !hackathon.newProblemsDisabled ) )) {
+		
+		 @if(security.Hackathon.canAddProblem(hackathon, user)) {
 			<a class="btn btn-success" href="@routes.Problem.create(hackathon.id)">@helpers.CmsMessages("problems.addProblem")</a>
-		}
+		 }
 
     	@hackathon.problems.map { problem =>
     	  

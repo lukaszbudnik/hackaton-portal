@@ -4,7 +4,7 @@
 
   @hackathon.map { hackathon =>
 		 
-        @if(security.Hackathon.canAddTeam(hackathon, user)) {
+        @if(security.Team.canAddTeam(hackathon, user)) {
   			<a class="btn btn-success" href="@routes.Team.create(hackathon.id)">@helpers.CmsMessages("teams.addTeam")</a>
   		}
 
