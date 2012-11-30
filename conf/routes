@@ -50,7 +50,7 @@ POST    /hackathons					controllers.Hackathon.save
 # Retrieve
 GET     /hackathons					controllers.Hackathon.index
 GET     /hackathons/:id				controllers.Hackathon.view(id: Long)
-GET     /hackathons/chat/:id		controllers.Hackathon.chat(id: Long)
+GET     /hackathons/:id/chat		controllers.Hackathon.chat(id: Long)
 # Update
 GET     /hackathons/:id/edit		controllers.Hackathon.edit(id: Long)
 POST    /hackathons/:id				controllers.Hackathon.update(id: Long)
@@ -109,7 +109,7 @@ GET     /hackathons/:hid/teams						controllers.Team.index(hid: Long)
 GET     /hackathons/:hid/teams/:id               	controllers.Team.view(hid: Long, id: Long)
 # Update
 GET     /hackathons/:hid/teams/:id/edit          	controllers.Team.edit(hid: Long, id: Long)
-POST    /hackathons/:hid/teams/:id/update        	controllers.Team.update(hid: Long, id: Long)
+POST    /hackathons/:hid/teams/:id		        	controllers.Team.update(hid: Long, id: Long)
 POST    /hackathons/:hid/teams/:id/verify        	controllers.Team.verify(hid: Long, id: Long)
 POST    /hackathons/:hid/teams/:id/approve        	controllers.Team.approve(hid: Long, id: Long)
 POST    /hackathons/:hid/teams/:id/suspend        	controllers.Team.suspend(hid: Long, id: Long)

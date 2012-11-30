@@ -9,7 +9,7 @@ import org.squeryl.PrimitiveTypeMode.transaction
 import helpers.CmsMessages
 import org.specs2.matcher.DataTables
 import helpers.SecureSocialUtils
-import core.SecurityAbuseException
+import security.SecurityAbuseException
 
 class PrizeSpec extends Specification with DataTables {
 

@@ -18,7 +18,7 @@ import play.api.mvc.Request
 import play.api.mvc.AnyContent
 import play.api.mvc.Result
 import helpers.SecureSocialUtils
-import core.SecurityAbuseException
+import security.SecurityAbuseException
 
 class HackathonSpec extends Specification with DataTables {
 
@@ -129,10 +129,11 @@ class HackathonSpec extends Specification with DataTables {
         }
     }
 
-    "send 404 and display not found on view, edit, update, delete when news does not exists" in {
+    "send 404 and display not found on view, chat, edit, update, delete when news does not exists" in {
 
       "" | "httpMethod" | "action" |
         1 ! GET ! "/hackathons/11111" |
+        1 ! GET ! "/hackathons/11111/chat" |
         1 ! GET ! "/hackathons/11111/edit" |
         1 ! POST ! "/hackathons/11111" |
         1 ! POST ! "/hackathons/11111/delete" |

@@ -8,7 +8,7 @@ import play.api.i18n.Messages
 import play.api.test.FakeRequest$
 import org.squeryl.PrimitiveTypeMode.transaction
 import helpers.SecureSocialUtils
-import core.SecurityAbuseException
+import security.SecurityAbuseException
 
 class ProblemSpec extends Specification with DataTables {
   "Problem controller" should {
