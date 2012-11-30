@@ -1,4 +1,4 @@
-package core
+package security
 
 import securesocial.core.SocialUser
 

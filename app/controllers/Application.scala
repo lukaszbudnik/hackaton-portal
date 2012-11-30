@@ -8,7 +8,7 @@ import play.api.Logger
 import play.api.mvc.RequestHeader
 import play.api.i18n.Lang
 import play.api.cache.Cache
-import org.squeryl.PrimitiveTypeMode.transaction
+import org.squeryl.PrimitiveTypeMode.inTransaction
 import play.api.data.Forms._
 import play.api.data.Form
 
@@ -35,19 +35,18 @@ object Application extends LangAwareController {
     Ok(views.html.contact(userFromRequest))
   }
 
-  def profile = SecuredAction() {
-    implicit request =>
-      transaction {
-        val user = userFromRequest(request)
-        Ok(views.html.profile(userForm.fill(user), user))
-      }
+  def profile = SecuredAction() { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
+      Ok(views.html.profile(userForm.fill(user), user))
+    }
   }
 
   def updateProfile = SecuredAction() { implicit request =>
     val requestUser = userFromRequest(request)
     userForm.bindFromRequest.fold(
       errors => BadRequest(views.html.profile(errors, requestUser)),
-      user => transaction {
+      user => inTransaction {
         model.User.update(requestUser.id, user)
         Redirect(routes.Application.profile).flashing("status" -> "updated", "title" -> user.name).withSession(request.session + (LangAwareController.SESSION_LANG_KEY -> user.language))
       })
@@ -56,19 +55,19 @@ object Application extends LangAwareController {
   def changeLanguage(lang: String) = UserAwareAction { implicit request =>
     val result = Redirect(request.headers.get(REFERER).getOrElse("/")).withSession(request.session + (LangAwareController.SESSION_LANG_KEY -> lang))
 
-    val user = userFromRequest(request)
+    inTransaction {
+      val user = userFromRequest(request)
 
-    user match {
-      case Some(user: model.User) => {
-        transaction {
-          val newUser = user.copy(language = lang)
-          model.User.update(user.id, newUser)
-        }
-        result.flashing("language.status" -> "language.updated")
+      user match {
+        case Some(user: model.User) =>
+          {
+            val newUser = user.copy(language = lang)
+            model.User.update(user.id, newUser)
+          }
+          result.flashing("language.status" -> "language.updated")
+        case _ => result
       }
-      case _ => result
     }
-
   }
 
 }

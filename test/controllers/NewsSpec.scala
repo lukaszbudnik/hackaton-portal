@@ -7,7 +7,7 @@ import play.api.test.Helpers._
 import play.api.i18n.Messages
 import play.api.test.FakeRequest$
 import helpers.SecureSocialUtils
-import core.SecurityAbuseException
+import security.SecurityAbuseException
 
 class NewsSpec extends Specification with DataTables {
 

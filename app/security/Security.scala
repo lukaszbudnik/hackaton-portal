@@ -1,6 +1,5 @@
 package security
 
-import core.SecurityAbuseException
 import play.api.mvc._
 import org.squeryl.PrimitiveTypeMode.inTransaction
 

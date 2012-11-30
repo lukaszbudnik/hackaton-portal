@@ -97,12 +97,12 @@ object Hackathon extends LangAwareController {
         "fullAddress" -> nonEmptyText,
         "submitterId" -> longNumber) // apply location
         ((id, name, city, country, fullAddress, submitterId) =>
-          new model.Location(id, country, city, "", fullAddress, name, 0, 0, submitterId, model.LocationStatus.Unverified)) // unapply location
+          model.Location(id, country, city, "", fullAddress, name, 0, 0, submitterId, model.LocationStatus.Unverified)) // unapply location
           ((l: model.Location) =>
           Some(l.id, l.name, l.city, l.country, l.fullAddress, l.submitterId)))) // apply HackathonWithLocations
           ((subject, status, date, description, organizerId, newProblemsDisabled, newTeamsDisabled, locations) =>
-        new HackathonWithLocations(
-          new model.Hackathon(subject, status, date, description, organizerId, newProblemsDisabled, newTeamsDisabled), locations)) // unapply HackathonWithLocations
+        HackathonWithLocations(
+          model.Hackathon(subject, status, date, description, organizerId, newProblemsDisabled, newTeamsDisabled), locations)) // unapply HackathonWithLocations
           ((hWl: HackathonWithLocations) =>
         Some(hWl.hackathon.subject, hWl.hackathon.status, hWl.hackathon.date, hWl.hackathon.description, hWl.hackathon.organiserId, hWl.hackathon.newProblemsDisabled, hWl.hackathon.newTeamsDisabled, hWl.locations.toList)))
 
@@ -151,7 +151,12 @@ object Hackathon extends LangAwareController {
 
   def chat(id: Long) = UserAwareAction { implicit request =>
     inTransaction {
-      Ok(views.html.hackathons.chat(model.Hackathon.lookup(id), userFromRequest(request)))
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(id).map { hackathon =>
+        Ok(views.html.hackathons.chat(Some(hackathon), user))
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, user))
+      }
     }
   }
 
@@ -165,17 +170,19 @@ object Hackathon extends LangAwareController {
   }
 
   def save = SecuredAction() { implicit request =>
-    val user = userFromRequest(request)
-    hackathonForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.hackathons.create(errors, user)),
-      hackathonWithLocations => inTransaction {
-        val newH = model.Hackathon.insert(hackathonWithLocations.hackathon.copy(organiserId = user.id))
-        hackathonWithLocations.locations.map {
-          location =>
-            newH.addLocation(location.copy(submitterId = user.id))
-        }
-        Redirect(routes.Hackathon.index).flashing("status" -> "added", "title" -> newH.subject)
-      })
+    inTransaction {
+      val user = userFromRequest(request)
+      hackathonForm.bindFromRequest.fold(
+        errors => BadRequest(views.html.hackathons.create(errors, user)),
+        hackathonWithLocations => {
+          val newH = model.Hackathon.insert(hackathonWithLocations.hackathon.copy(organiserId = user.id))
+          hackathonWithLocations.locations.map {
+            location =>
+              newH.addLocation(location.copy(submitterId = user.id))
+          }
+          Redirect(routes.Hackathon.index).flashing("status" -> "added", "title" -> newH.subject)
+        })
+    }
   }
 
   def edit(id: Long) = SecuredAction() { implicit request =>
@@ -269,7 +276,7 @@ object Hackathon extends LangAwareController {
       ensureAdmin {
         val user = userFromRequest(request)
         model.Hackathon.lookup(id).map { hackathon =>
-          model.User.lookup(userId).map { userToRemove =>
+          model.User.lookup(userId).filter(u => hackathon.hasMember(u.id)).map { userToRemove =>
             hackathon.deleteMember(userToRemove)
             Redirect(routes.Hackathon.view(id)).flashing("status" -> "disconnectedUser")
           }.getOrElse {

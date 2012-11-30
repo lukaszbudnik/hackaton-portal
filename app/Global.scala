@@ -3,7 +3,7 @@ import org.squeryl.adapters.PostgreSqlAdapter
 import org.squeryl.internals.DatabaseAdapter
 import org.squeryl.Session
 import org.squeryl.SessionFactory
-import core.SecurityAbuseException
+import security.SecurityAbuseException
 import play.api.db.DB
 import play.api.mvc.Results.Forbidden
 import play.api.mvc.Results.InternalServerError
