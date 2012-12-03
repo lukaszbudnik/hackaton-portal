@@ -50,19 +50,21 @@ object Hackathon extends LangAwareController {
 
   }
 
-  def hackathonsJson = Action {
+  def hackathonsJson = UserAwareAction { implicit request =>
     inTransaction {
+      val user = userFromRequest(request)
       val hackathons = model.dto.HackathonWithLocations.all
 
-      Ok(toJson(hackathons.map {
+      Ok(toJson(hackathons.filter(h => helpers.Conditions.Hackathon.canRender(h.hackathon, user)).map {
         hWl => hackathonWithLocations2Json(hWl)
       }.toSeq))
     }
   }
 
-  def hackathonJson(id: Long) = Action {
+  def hackathonJson(id: Long) = UserAwareAction { implicit request =>
     inTransaction {
-      Ok(model.dto.HackathonWithLocations.lookup(id) match {
+      val user = userFromRequest(request)
+      Ok(model.dto.HackathonWithLocations.lookup(id).filter(h => helpers.Conditions.Hackathon.canRender(h.hackathon, user)) match {
         case Some(h) =>
           hackathonWithLocations2Json(h)
         case _ =>
@@ -138,7 +140,8 @@ object Hackathon extends LangAwareController {
 
   def index = UserAwareAction { implicit request =>
     inTransaction {
-      Ok(views.html.hackathons.index(model.Hackathon.all.toSeq.sortWith((a, b) => a.date.after(b.date)), userFromRequest(request)))
+      val user = userFromRequest(request)
+      Ok(views.html.hackathons.index(model.Hackathon.all.filter(h => helpers.Conditions.Hackathon.canRender(h, user)).toSeq.sortWith((a, b) => a.date.after(b.date)), userFromRequest(request)))
     }
   }
 
