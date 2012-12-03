@@ -24,8 +24,8 @@ import play.api.Logger
 
 object Hackathon extends LangAwareController {
 
-  private lazy val unVerifiedStatus = Seq(model.HackathonStatus.Unverified.toString() -> model.HackathonStatus.Unverified.toString())
-  private lazy val editStatuses = model.HackathonStatus.values.filterNot(_.toString() == model.HackathonStatus.Unverified.toString()).map{ s => s.toString -> s.toString}.toSeq
+  private lazy val unVerifiedStatus = Seq(model.HackathonStatus.Unverified.toString -> model.HackathonStatus.Unverified.toString)
+  private lazy val editStatuses = model.HackathonStatus.values.filterNot(_ == model.HackathonStatus.Unverified).map{ s => s.toString -> s.toString}.toSeq
   private lazy val allStatuses = model.HackathonStatus.values.map{ s => s.toString -> s.toString}.toSeq
   
   private def hackathonWithLocations2Json(h: model.dto.HackathonWithLocations): JsValue = {
@@ -199,7 +199,9 @@ object Hackathon extends LangAwareController {
       model.dto.HackathonWithLocations.lookup(id).map { hackathonWithL =>
         ensureHackathonOrganiserOrAdmin(hackathonWithL.hackathon) {
           
-          Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathonWithL), user, editStatuses))
+          val statuses = if (user.isAdmin) allStatuses else editStatuses
+          
+          Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathonWithL), user, statuses))
         }
       }.getOrElse {
         NotFound(views.html.hackathons.view(None, Some(user)))
@@ -210,26 +212,32 @@ object Hackathon extends LangAwareController {
   def update(id: Long) = SecuredAction() { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
-      model.Hackathon.lookup(id).map { hackathon =>
+      model.Hackathon.lookup(id).map { dbHackathon =>
 
-        ensureHackathonOrganiserOrAdmin(hackathon) {
+        ensureHackathonOrganiserOrAdmin(dbHackathon) {
+          
+          val statuses = if (user.isAdmin) allStatuses else editStatuses
 
           hackathonForm.bindFromRequest.fold(
-            errors => BadRequest(views.html.hackathons.edit(id, errors, user, editStatuses)),
+            errors => BadRequest(views.html.hackathons.edit(id, errors, user, statuses)),
             hackathonWithL => {
 
-              model.Hackathon.update(id, hackathonWithL.hackathon)
+              val newStatus = if (user.id == dbHackathon.organiserId && dbHackathon.status == model.HackathonStatus.Unverified) model.HackathonStatus.Unverified else hackathonWithL.hackathon.status 
+              
+              val newHackathon = hackathonWithL.hackathon.copy(organiserId = dbHackathon.organiserId, status = newStatus)
+              
+              model.Hackathon.update(id, newHackathon)
 
               // we have to restore previous statuses
-              val locationsMap = hackathon.locations.map { t => (t.id, t) }.toMap
-              hackathon.deleteLocations()
+              val locationsMap = dbHackathon.locations.map { t => (t.id, t) }.toMap
+              dbHackathon.deleteLocations()
               hackathonWithL.locations.map {
                 location =>
                   val lookupLoc = locationsMap.get(location.id)
                   if (lookupLoc.isDefined) {
-                    hackathon.addLocation(location.copy(status = lookupLoc.get.status))
+                    newHackathon.addLocation(location.copy(status = lookupLoc.get.status))
                   } else {
-                    hackathon.addLocation(location)
+                    newHackathon.addLocation(location)
                   }
 
               }
