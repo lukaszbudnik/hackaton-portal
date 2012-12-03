@@ -2,6 +2,16 @@ package helpers
 
 object Conditions {
 
+  object Hackathon {
+
+    def canRender(hackathon: model.Hackathon, user: Option[model.User]) = {
+      hackathon.status != model.HackathonStatus.Unverified || user.map { user =>
+        user.isAdmin || user.id == hackathon.organiserId
+      }.getOrElse(false)
+    }
+
+  }
+
   object Team {
 
     def canAdd(hackathon: model.Hackathon, user: Option[model.User]) = {
@@ -21,9 +31,9 @@ object Conditions {
     }
 
     def canRender(hackathon: model.Hackathon, team: model.Team, user: Option[model.User]) = {
-      user.map { user =>
+      team.status == model.TeamStatus.Approved || user.map { user =>
         user.isAdmin || user.id == hackathon.organiserId || user.id == team.creatorId
-      }.getOrElse(team.status == model.TeamStatus.Approved)
+      }.getOrElse(false)
     }
 
   }
@@ -37,13 +47,13 @@ object Conditions {
       }.getOrElse(false)
 
     }
-    
+
     def canRender(hackathon: model.Hackathon, problem: model.Problem, user: Option[model.User]) = {
-      
-      user.map { user =>
+
+      problem.status == model.ProblemStatus.Approved || user.map { user =>
         user.isAdmin || hackathon.organiserId == user.id || problem.submitterId == user.id
-      }.getOrElse(problem.status == model.ProblemStatus.Approved)
-      
+      }.getOrElse(false)
+
     }
 
   }

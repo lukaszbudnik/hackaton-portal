@@ -69,7 +69,10 @@ object User extends Schema {
   }
 
   def lookupByOpenId(openId: String): Option[User] = {
-    users.find(u => u.openId == openId)
+    from(users)(u =>
+      where(u.openId ===  openId)
+      select (u)
+      ).headOption
   }
 
   def insert(user: User): User = {
