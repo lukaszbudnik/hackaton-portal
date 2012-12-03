@@ -109,7 +109,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
       model.Hackathon.lookup(hid).map { hackathon =>
         ensureHackathonOrganiserOrAdmin(hackathon) {
           newsForm.bindFromRequest.fold(
-            errors => BadRequest(views.html.news.createH(model.Hackathon.lookup(hid), errors, user)),
+            errors => BadRequest(views.html.news.createH(Some(hackathon), errors, user)),
             news => {
               model.News.insert(news.copy(authorId = user.id))
               Redirect(routes.News.indexH(hid)).flashing("status" -> "added", "title" -> news.title)

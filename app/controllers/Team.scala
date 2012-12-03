@@ -72,7 +72,7 @@ object Team extends LangAwareController {
       model.Hackathon.lookup(hid).map { hackathon =>
 
         teamForm.bindFromRequest.fold(
-          errors => BadRequest(views.html.teams.create(model.Hackathon.lookup(hid), errors, user)),
+          errors => BadRequest(views.html.teams.create(Some(hackathon), errors, user)),
           team => {
             // insert team and add creator as a member
             val dbTeam = model.Team.insert(team.copy(creatorId = user.id))
