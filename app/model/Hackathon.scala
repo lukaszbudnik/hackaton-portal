@@ -22,8 +22,8 @@ case class Hackathon(subject: String,
   @Column("new_teams_off") newTeamsDisabled: Boolean = false) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  def this() = this("", HackathonStatus.Planning, new Date(),"", 0) // need for status enumeration
-  def this(organiserId: Long) = this("", HackathonStatus.Planning, new Date(), "", organiserId)
+  def this() = this("", HackathonStatus.Unverified, new Date(),"", 0) // need for status enumeration
+  def this(organiserId: Long) = this("", HackathonStatus.Unverified, new Date(), "", organiserId)
 
   private lazy val organiserRel: ManyToOne[User] = Hackathon.organiserToHackathons.right(this)
   private lazy val teamsRel = Team.hackathonToTeams.left(this)
