@@ -123,7 +123,7 @@ object Team extends LangAwareController {
 
           ensureHackathonOrganiserOrTeamLeaderOrAdmin(dbTeam.hackathon, dbTeam) {
             teamForm.bindFromRequest.fold(
-              errors => BadRequest(views.html.teams.edit(model.Hackathon.lookup(hid), id, errors, user)),
+              errors => BadRequest(views.html.teams.edit(Some(hackathon), id, errors, user)),
               team => {
                 model.Team.update(id, team.copy(status = dbTeam.status, creatorId = dbTeam.creatorId))
                 Redirect(routes.Team.index(hid)).flashing("status" -> "updated", "title" -> team.name)
