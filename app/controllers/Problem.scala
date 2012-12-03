@@ -111,9 +111,9 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
           ensureHackathonOrganiserOrProblemSubmitterOrAdmin(hackathon, dbProblem) {
 
             problemForm.bindFromRequest.fold(
-              errors => BadRequest(views.html.problems.edit(model.Hackathon.lookup(hid), id, errors, user)),
+              errors => BadRequest(views.html.problems.edit(Some(hackathon), id, errors, user)),
               problem => {
-                model.Problem.update(id, problem.copy(status = dbProblem.status))
+                model.Problem.update(id, problem.copy(submitterId = dbProblem.submitterId, status = dbProblem.status))
                 Redirect(routes.Problem.index(hid)).flashing("status" -> "updated", "title" -> problem.name)
               })
 
