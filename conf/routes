@@ -58,9 +58,9 @@ POST    /hackathons/:id				controllers.Hackathon.update(id: Long)
 POST    /hackathons/:id/delete		controllers.Hackathon.delete(id: Long)
 
 # Delete location
-POST   /hackathons/deleteLocation/:id controllers.Hackathon.deleteLocation(id:Int)
+POST   /hackathons/location/:id/delete controllers.Hackathon.deleteLocation(id:Int)
 # Add location
-POST   /hackathons/addLocation 		 controllers.Hackathon.addLocation
+POST   /hackathons/location/add 		 controllers.Hackathon.addLocation
 
 # Join
 GET    	/hackathons/:id/join			controllers.Hackathon.join(id: Long)

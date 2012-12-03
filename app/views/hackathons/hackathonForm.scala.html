@@ -11,7 +11,7 @@
 		createLocationAction: '@routes.Location.create',
 		saveLocationAction: '@routes.Location.save',
 		addHackathonLocationAction : '@routes.Hackathon.addLocation',
-		deleteHackathonLocationAction : '/hackathons/deleteLocation',		
+		deleteHackathonLocationAction : '@routes.Hackathon.deleteLocation(0)',		
 		noMatchFoundText : '@helpers.CmsMessages("locations.nomatchfound")',
 		userHackathonId : '@user.id'
 	}).initHackathonLocations();
