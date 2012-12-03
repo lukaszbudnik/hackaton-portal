@@ -115,7 +115,7 @@ class HackathonSpec extends Specification with DataTables {
         1 ! POST ! "/hackathons/1/delete" |
         1 ! GET ! "/hackathons/1/join" |
         1 ! GET ! "/hackathons/1/disconnect" |
-        1 ! GET ! "/hackathons/1/1/disconnect" |> {
+        1 ! GET ! "/hackathons/1/disconnect/1" |> {
           (justIgnoreMe, httpMethod, action) =>
             {
               running(FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))) {
@@ -139,7 +139,7 @@ class HackathonSpec extends Specification with DataTables {
         1 ! POST ! "/hackathons/11111/delete" |
         1 ! GET ! "/hackathons/11111/join" |
         1 ! GET ! "/hackathons/11111/disconnect" |
-        1 ! GET ! "/hackathons/11111/1/disconnect" |> {
+        1 ! GET ! "/hackathons/11111/disconnect/1" |> {
           (justIgnoreMe, httpMethod, action) =>
             {
               val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
@@ -159,7 +159,7 @@ class HackathonSpec extends Specification with DataTables {
         1 ! GET ! "/hackathons/1/edit" |
         1 ! POST ! "/hackathons/1" |
         1 ! POST ! "/hackathons/1/delete" |
-        1 ! GET ! "/hackathons/1/1/disconnect" |> {
+        1 ! GET ! "/hackathons/1/disconnect/1" |> {
           (justIgnoreMe, httpMethod, action) =>
             {
               val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))

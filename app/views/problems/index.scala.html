@@ -11,7 +11,7 @@
 		 *  or normal user and hackathon configuration allows new problem creation
 		 *@
 		
-		 @if(security.Hackathon.canAddProblem(hackathon, user)) {
+		 @if(helpers.Conditions.Problem.canAdd(hackathon, user)) {
 			<a class="btn btn-success" href="@routes.Problem.create(hackathon.id)">@helpers.CmsMessages("problems.addProblem")</a>
 		 }
 
@@ -20,12 +20,12 @@
     	  	@*
     		 * Display problem when:
     		 *		1. user is admin
-    		 *		2. team is verified
-    		 *		3. user is hackathon organiser or team creator
+    		 *		2. problem is verified
+    		 *		3. user is hackathon organiser or problem submitter
     		 *
     		 *@
 
-    		@if((user.isDefined && user.get.isAdmin) || problem.status == model.ProblemStatus.Approved || (user.isDefined && (user.get.id == hackathon.organiserId || user.get.id == problem.submitterId))) {
+    		@if(helpers.Conditions.Problem.canRender(hackathon, problem, user)) {
 
     			<div class="page-header problem" data-problem-id="@problem.id">
     				<h2>@problem.name @problemActions(hackathon, problem, user)</h2>

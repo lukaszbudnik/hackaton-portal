@@ -65,7 +65,7 @@ POST   /hackathons/addLocation 		 controllers.Hackathon.addLocation
 # Join
 GET    	/hackathons/:id/join			controllers.Hackathon.join(id: Long)
 GET    	/hackathons/:id/disconnect		controllers.Hackathon.disconnect(id: Long)
-GET    	/hackathons/:id/:uid/disconnect	controllers.Hackathon.disconnectUser(id: Long, uid: Long)
+GET    	/hackathons/:id/disconnect/:uid	controllers.Hackathon.disconnectUser(id: Long, uid: Long)
 
 GET     /hackathons.json			controllers.Hackathon.hackathonsJson
 GET     /hackathon.json/:id         controllers.Hackathon.hackathonJson(id: Long)

@@ -30,7 +30,7 @@
 								<img src="@member.avatarUrl" alt="@member.name" height="40px" width="40px" />    				
 							}
 							@member.name
-							@if(security.Team.canEdit(team, user)) { 
+							@if(helpers.Conditions.Team.canEdit(team, user)) { 
 								<a class="btn btn-warning" href="@routes.Team.disconnectUser(hackathon.get.id, team.id, member.id)">@helpers.CmsMessages("teams.remove.label")</a> 
 							}
 						</li>
