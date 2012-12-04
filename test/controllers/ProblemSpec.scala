@@ -76,7 +76,7 @@ class ProblemSpec extends Specification with DataTables {
 =======
     }
 
-    "send 404 when prize not found in edit, update, delete" in {
+    "send 404 when problem not found in edit, update, delete" in {
       "" | "httpMethod" | "action" |
         1 ! GET ! "/hackathons/1/problems/11111" |
         1 ! GET ! "/hackathons/1/problems/11111/edit" |
@@ -97,6 +97,7 @@ class ProblemSpec extends Specification with DataTables {
 
     "send 404 when hackathon not found in create, save, edit, update, delete" in {
       "" | "httpMethod" | "action" |
+      	1 ! GET ! "/hackathons/11111/problems" |
         1 ! GET ! "/hackathons/11111/problems/new" |
         1 ! POST ! "/hackathons/11111/problems" |
         1 ! GET ! "/hackathons/11111/problems/11111" |
