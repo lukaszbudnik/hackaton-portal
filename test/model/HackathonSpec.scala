@@ -133,7 +133,7 @@ class HackathonSpec extends Specification {
           Hackathon.insert(hackathon)
           hackathon.isPersisted must beTrue
 
-          val problem: Problem = new Problem("New problem", "New problem description", ProblemStatus.Unverified, 1L, hackathon.id)
+          val problem: Problem = new Problem("New problem", "New problem description", ProblemStatus.Blocked, 1L, hackathon.id)
           Problem.insert(problem)
           problem.isPersisted must beTrue
 

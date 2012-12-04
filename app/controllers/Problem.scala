@@ -17,7 +17,7 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
     mapping(
       "name" -> nonEmptyText,
       "description" -> nonEmptyText,
-      "status" -> ignored(ProblemStatus.Unverified),
+      "status" -> ignored(ProblemStatus.Blocked),
       "submitterId" -> longNumber,
       "hackathonId" -> longNumber)(model.Problem.apply)(model.Problem.unapply))
 
@@ -68,7 +68,7 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
         problemForm.bindFromRequest.fold(
           errors => BadRequest(views.html.problems.create(Some(hackathon), errors, user)),
           problem => {
-            val dbProblem = model.Problem.insert(problem.copy(submitterId = user.id, status = model.ProblemStatus.Unverified))
+            val dbProblem = model.Problem.insert(problem.copy(submitterId = user.id, status = model.ProblemStatus.Blocked))
 
             val url = URL.externalUrl(routes.Problem.view(hid, dbProblem.id))
             val params = Seq(dbProblem.name, url)
@@ -129,78 +129,24 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def verify(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
     inTransaction {
-
       model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
 
         ensureHackathonOrganiserOrAdmin(problem.hackathon) {
           model.Problem.update(id, problem.copy(status = ProblemStatus.Approved))
 
+          val user = userFromRequest(request)
+
           val url = URL.externalUrl(routes.Problem.view(hid, problem.id))
           val params = Seq(problem.name, url)
 
-          EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.verified.subject", "notifications.email.problem.verified.body", params)
-
-          Ok(JsArray(Seq(JsObject(List(
-            "status" -> JsString("ok"))))))
-        }
-      }.getOrElse {
-        NotFound(JsArray(Seq(JsObject(List(
-          "status" -> JsString("error"))))))
-      }
-    }
-  }
-
-  def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    inTransaction {
-      model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
-
-        ensureHackathonOrganiserOrProblemSubmitterOrAdmin(problem.hackathon, problem, u => {
-          !(problem.submitterId == u.id && problem.status == model.ProblemStatus.Unverified)
-        }) {
-          model.Problem.update(id, problem.copy(status = ProblemStatus.Approved))
-
-          val user = userFromRequest(request)
-
-          if (user.id != problem.submitterId) {
-            val url = URL.externalUrl(routes.Problem.view(hid, problem.id))
-            val params = Seq(problem.name, url)
-
-            EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.approved.subject", "notifications.email.problem.approved.body", params)
-          }
+          EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.approved.subject", "notifications.email.problem.approved.body", params)
 
           Ok(JsArray(Seq(JsObject(List(
             "status" -> JsString("ok"))))))
         }
 
-      }.getOrElse {
-        NotFound(JsArray(Seq(JsObject(List(
-          "status" -> JsString("error"))))))
-      }
-    }
-  }
-
-  def suspend(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    inTransaction {
-      model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
-
-        ensureHackathonOrganiserOrProblemSubmitterOrAdmin(problem.hackathon, problem) {
-
-          val user = userFromRequest(request)
-
-          model.Problem.update(id, problem.copy(status = ProblemStatus.Suspended))
-
-          if (user.id != problem.submitterId) {
-            val url = URL.externalUrl(routes.Problem.view(hid, problem.id))
-            val params = Seq(problem.name, url)
-
-            EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.suspended.subject", "notifications.email.problem.suspended.body", params)
-          }
-
-          Ok(JsArray(Seq(JsObject(List(
-            "status" -> JsString("ok"))))))
-        }
       }.getOrElse {
         NotFound(JsArray(Seq(JsObject(List(
           "status" -> JsString("error"))))))

@@ -7,10 +7,8 @@ import org.squeryl.Schema
 import org.squeryl.annotations.Column
 
 object ProblemStatus extends Enumeration {
-  val Unverified = Value(1, "Unverified")
+  val Blocked = Value(1, "Blocked")
   val Approved = Value(2, "Approved")
-  val Suspended = Value(3, "Suspended")
-  val Blocked = Value(4, "Blocked")
 }
 
 case class Problem(name: String,
@@ -20,7 +18,7 @@ case class Problem(name: String,
   @Column("hackathon_id") hackathonId: Long) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  def this(submitterId: Long, hackathonId: Long) = this("", "", ProblemStatus.Unverified, submitterId, hackathonId)
+  def this(submitterId: Long, hackathonId: Long) = this("", "", ProblemStatus.Blocked, submitterId, hackathonId)
 
   private lazy val submitterRel: ManyToOne[User] = Problem.submitterToProblems.right(this)
   private lazy val hackathonRel: ManyToOne[Hackathon] = Problem.hackathonToProblems.right(this)

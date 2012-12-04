@@ -102,7 +102,7 @@ class ProblemSpec extends Specification with DataTables {
         1 ! GET ! "/hackathons/11111/problems/11111" |
         1 ! GET ! "/hackathons/11111/problems/11111/edit" |
         1 ! POST ! "/hackathons/11111/problems/11111" |
-        1 ! POST ! "/hackathons/11111/problems/11111/delete" |> {
+        1 ! POST ! "/hackathons/11111/problems/11111/delete"|> {
           (justIgnoreMe, httpMethod, action) =>
             {
               val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
@@ -116,12 +116,14 @@ class ProblemSpec extends Specification with DataTables {
         }
     }
 
-    "throw SecurityAbuseException when tampering with edit, update, and delete" in {
+    "throw SecurityAbuseException when tampering with approve, block, edit, update, and delete" in {
 
       "" | "httpMethod" | "action" |
         1 ! GET ! "/hackathons/1/problems/1/edit" |
         1 ! POST ! "/hackathons/1/problems/1" |
-        1 ! POST ! "/hackathons/1/problems/1/delete" |> {
+        1 ! POST ! "/hackathons/1/problems/1/delete" |
+        1 ! POST ! "/hackathons/1/problems/1/approve" |
+        1 ! POST ! "/hackathons/1/problems/1/block" |> {
           (justIgnoreMe, httpMethod, action) =>
             {
               val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
