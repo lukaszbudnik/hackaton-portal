@@ -8,10 +8,8 @@ import org.squeryl.Schema
 import org.squeryl.annotations.Column
 
 object TeamStatus extends Enumeration {
-  val Unverified = Value(1, "Unverified")
+  val Blocked = Value(1, "Blocked")
   val Approved = Value(2, "Approved")
-  val Suspended = Value(3, "Suspended")
-  val Blocked = Value(4, "Blocked")
 }
 
 case class Team(name: String,
@@ -20,8 +18,8 @@ case class Team(name: String,
   @Column("hackathon_id") hackathonId: Long,
   @Column("problem_id") problemId: Option[Long] = None) extends KeyedEntity[Long] {
   val id: Long = 0L
-  
-  def this(creatorId: Long, hackathonId: Long) = this("", TeamStatus.Unverified, creatorId, hackathonId)
+
+  def this(creatorId: Long, hackathonId: Long) = this("", TeamStatus.Blocked, creatorId, hackathonId)
 
   private lazy val creatorRel: ManyToOne[User] = Team.creatorToTeams.right(this)
   private lazy val hackathonRel: ManyToOne[Hackathon] = Team.hackathonToTeams.right(this)
@@ -38,13 +36,13 @@ case class Team(name: String,
   }
 
   def addMember(user: User) = {
-	hackathon.deleteMember(user)
+    hackathon.deleteMember(user)
     hackathon.addMember(user, id)
   }
 
   def deleteMember(user: User) = {
-	hackathon.deleteMember(user)
-	hackathon.addMember(user)
+    hackathon.deleteMember(user)
+    hackathon.addMember(user)
   }
 }
 
