@@ -19,6 +19,8 @@ import play.api.Play
 import play.api.PlayException
 import play.api.UnexpectedException
 import play.api.Logger
+import org.squeryl.PrimitiveTypeMode.inTransaction
+import helpers.EmailSender
 
 object Global extends GlobalSettings {
 
@@ -31,6 +33,11 @@ object Global extends GlobalSettings {
   }
 
   override def onError(request: RequestHeader, ex: Throwable): Result = {
+    
+    Play.maybeApplication.map {
+      case app if app.mode == Mode.Prod => tryToNotifyAdministrators(ex)
+    }
+
     ex.getCause() match {
       case e: SecurityAbuseException => Forbidden(views.html.errors.securityAbuse(e))
       case _ => InternalServerError(Play.maybeApplication.map {
@@ -75,6 +82,16 @@ object Global extends GlobalSettings {
       session.setLogger(msg => Logger.debug(msg))
     }
     session
+  }
+
+  private def tryToNotifyAdministrators(ex: Throwable) = {
+    try {
+      inTransaction {
+        EmailSender.sendEmailToAdministrators(model.User.admins, ex.getClass().getCanonicalName(), ex.toString)
+      }
+    } catch {
+      case e => Logger.error("Not able to notify administrators about" + ex.toString())
+    }
   }
 
 }
