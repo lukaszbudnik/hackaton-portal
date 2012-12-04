@@ -20,7 +20,7 @@ object Team extends LangAwareController {
   val teamForm = Form(
     mapping(
       "name" -> text.verifying("teams.name.error", !_.isEmpty()),
-      "status" -> ignored(TeamStatus.Unverified),
+      "status" -> ignored(TeamStatus.Blocked),
       "creatorId" -> longNumber,
       "hackathonId" -> longNumber,
       "problemId" -> optional(longNumber))(model.Team.apply)(model.Team.unapply))
@@ -75,7 +75,7 @@ object Team extends LangAwareController {
           errors => BadRequest(views.html.teams.create(Some(hackathon), errors, user)),
           team => {
             // insert team and add creator as a member
-            val dbTeam = model.Team.insert(team.copy(creatorId = user.id))
+            val dbTeam = model.Team.insert(team.copy(creatorId = user.id, status = model.TeamStatus.Blocked))
             dbTeam.addMember(team.creator)
 
             val url = URL.externalUrl(routes.Team.view(hid, team.id))
@@ -141,7 +141,7 @@ object Team extends LangAwareController {
     }
   }
 
-  def verify(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
     inTransaction {
 
       model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
@@ -154,49 +154,6 @@ object Team extends LangAwareController {
 
           Ok(JsArray(Seq(JsObject(List(
             "status" -> JsString("ok"))))))
-        }
-      }.getOrElse {
-        NotFound(JsArray(Seq(JsObject(List(
-          "status" -> JsString("error"))))))
-      }
-    }
-  }
-
-  def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    inTransaction {
-      model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
-        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team) {
-          model.Team.update(id, team.copy(status = TeamStatus.Approved))
-
-          val url = URL.externalUrl(routes.Team.view(hid, team.id))
-          val params = Seq(team.name, url)
-
-          EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.approved.subject", "notifications.email.team.approved.body", params)
-
-          Ok(JsArray(Seq(JsObject(List(
-            "status" -> JsString("ok"))))))
-        }
-      }.getOrElse {
-        NotFound(JsArray(Seq(JsObject(List(
-          "status" -> JsString("error"))))))
-      }
-    }
-  }
-
-  def suspend(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    inTransaction {
-      model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
-        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team) {
-          model.Team.update(id, team.copy(status = TeamStatus.Suspended))
-
-          val url = URL.externalUrl(routes.Team.view(hid, team.id))
-          val params = Seq(team.name, url)
-
-          EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.suspended.subject", "notifications.email.team.suspended.body", params)
-
-          Ok(JsArray(Seq(JsObject(List(
-            "status" -> JsString("ok"))))))
-
         }
       }.getOrElse {
         NotFound(JsArray(Seq(JsObject(List(

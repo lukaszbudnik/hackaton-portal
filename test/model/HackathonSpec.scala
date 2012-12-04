@@ -115,7 +115,7 @@ class HackathonSpec extends Specification {
           Hackathon.insert(hackathon)
           hackathon.isPersisted must beTrue
 
-          val team: Team = new Team("New team", TeamStatus.Unverified, 1L, hackathon.id, None)
+          val team: Team = new Team("New team", TeamStatus.Blocked, 1L, hackathon.id, None)
           Team.insert(team)
           team.isPersisted must beTrue
 

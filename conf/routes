@@ -108,16 +108,14 @@ GET     /hackathons/:hid/teams/:id               	controllers.Team.view(hid: Lon
 # Update
 GET     /hackathons/:hid/teams/:id/edit          	controllers.Team.edit(hid: Long, id: Long)
 POST    /hackathons/:hid/teams/:id		        	controllers.Team.update(hid: Long, id: Long)
-POST    /hackathons/:hid/teams/:id/verify        	controllers.Team.verify(hid: Long, id: Long)
 POST    /hackathons/:hid/teams/:id/approve        	controllers.Team.approve(hid: Long, id: Long)
-POST    /hackathons/:hid/teams/:id/suspend        	controllers.Team.suspend(hid: Long, id: Long)
 POST    /hackathons/:hid/teams/:id/block        	controllers.Team.block(hid: Long, id: Long)
 # Delete
 POST    /hackathons/:hid/teams/:id/delete        	controllers.Team.delete(hid: Long, id: Long)
 # Join
 GET    	/hackathons/:hid/teams/:id/join				controllers.Team.join(hid: Long, id: Long)
 GET    	/hackathons/:hid/teams/:id/disconnect		controllers.Team.disconnect(hid: Long, id: Long)
-GET    	/hackathons/:hid/teams/:id/:uid/disconnect	controllers.Team.disconnectUser(hid: Long, id: Long, uid: Long)
+GET    	/hackathons/:hid/teams/:id/disconnect/:uid	controllers.Team.disconnectUser(hid: Long, id: Long, uid: Long)
 
 # Prizes routes
 # Create
