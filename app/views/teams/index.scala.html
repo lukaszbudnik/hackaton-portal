@@ -1,35 +1,24 @@
-@(hackathon: Option[model.Hackathon], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], teams: Iterable[model.Team], canAdd: Boolean, user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @hackathons.hackathonMain(hackathon, user, "teams", "teams.status", true) {
 
   @hackathon.map { hackathon =>
 		 
-        @if(helpers.Conditions.Team.canAdd(hackathon, user)) {
+        @if(canAdd) {
   			<a class="btn btn-success" href="@routes.Team.create(hackathon.id)">@helpers.CmsMessages("teams.addTeam")</a>
   		}
 
-    	@hackathon.teams.map { team =>
+    	@teams.map { team =>
 
-    		@if(helpers.Conditions.Team.canRender(hackathon, team, user)) {
 	    	  	<div class="page-header team" data-team-id="@team.id">
 					<h2>@team.name @teamActions(hackathon, team, user)</h2>
 	   				<p>@helpers.CmsMessages("teams.creator.label"): @team.creator.name</p>
 					<p>@helpers.CmsMessages("teams.members.label"): @team.members.size</p>
 	    			<p><a class="btn" href="@routes.Team.view(hackathon.id, team.id)">@helpers.CmsMessages("global.readMore")</a></p>
 	  			</div>
-  			}
     	}
 
-		 @*
-		  * Show teams.empty.text when
-		  *
-		  * 	1. There are no teams at all
-		  *		2. User is not logged in and there are no approved teams
-		  *		3. User is logged but all added teams not approved and logged in user is not their creator
-		  *
-		  *@
-
-		@if(hackathon.teams.size == 0 || (user.isEmpty && hackathon.teams.filter(_.status == model.TeamStatus.Approved).size == 0)  || (user.isDefined && hackathon.teams.filterNot(_.status == model.TeamStatus.Approved).filterNot(_.creatorId == user.get.id).size == hackathon.teams.size)) {
+		@if(teams.size == 0) {
 			<div class="page-header">
 				<h2>@helpers.CmsMessages("teams.empty.text")</h2>
         	</div>

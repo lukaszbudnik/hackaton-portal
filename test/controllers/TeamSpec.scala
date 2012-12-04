@@ -65,6 +65,7 @@ class TeamSpec extends Specification with DataTables {
 
     "send 404 when hackathon not found in create, save, edit, update, delete" in {
       "" | "httpMethod" | "action" |
+        1 ! GET ! "/hackathons/11111/teams" |
         1 ! GET ! "/hackathons/11111/teams/new" |
         1 ! POST ! "/hackathons/11111/teams" |
         1 ! GET ! "/hackathons/11111/teams/11111" |

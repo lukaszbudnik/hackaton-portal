@@ -10,6 +10,7 @@ import play.api.libs.json.JsString
 import model.ProblemStatus
 import helpers.EmailSender
 import helpers.URL
+import helpers.Conditions
 
 object Problem extends LangAwareController with securesocial.core.SecureSocial {
 
@@ -23,7 +24,13 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
 
   def index(hid: Long) = UserAwareAction { implicit request =>
     inTransaction {
-      Ok(views.html.problems.index(model.Hackathon.lookup(hid), userFromRequest))
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        val problems = hackathon.problems.filter(p => Conditions.Problem.canRender(hackathon, p, user))
+        val canAdd = helpers.Conditions.Problem.canAdd(hackathon, user)
+        Ok(views.html.problems.index(Some(hackathon), problems, canAdd, user))
+      }.getOrElse(NotFound(views.html.hackathons.view(None, user)))
+
     }
   }
 

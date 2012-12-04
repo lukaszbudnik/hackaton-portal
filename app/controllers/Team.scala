@@ -14,6 +14,7 @@ import securesocial.core.AuthenticationMethod
 import helpers.URL
 import helpers.EmailSender
 import play.api.mvc.AnyContent
+import helpers.Conditions
 
 object Team extends LangAwareController {
 
@@ -27,7 +28,13 @@ object Team extends LangAwareController {
 
   def index(hid: Long) = UserAwareAction { implicit request =>
     inTransaction {
-      Ok(views.html.teams.index(model.Hackathon.lookup(hid), userFromRequest))
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        val teams = hackathon.teams.filter(t => Conditions.Team.canRender(hackathon, t, user))
+        val canAdd = Conditions.Team.canAdd(hackathon, user)
+        Ok(views.html.teams.index(Some(hackathon), teams, canAdd, user))
+      }.getOrElse(NotFound(views.html.hackathons.view(None, user)))
+      
     }
   }
 
