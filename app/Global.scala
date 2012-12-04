@@ -24,6 +24,8 @@ import scala.io.Source
 import scala.io.Codec
 import play.api.libs.Codecs._
 import java.sql.Date
+import org.squeryl.PrimitiveTypeMode.inTransaction
+import helpers.EmailSender
 
 object Global extends GlobalSettings {
 
@@ -36,6 +38,11 @@ object Global extends GlobalSettings {
   }
 
   override def onError(request: RequestHeader, ex: Throwable): Result = {
+    
+    Play.maybeApplication.map {
+      case app if app.mode == Mode.Prod => tryToNotifyAdministrators(ex)
+    }
+
     ex.getCause() match {
       case e: SecurityAbuseException => Forbidden(views.html.errors.securityAbuse(e))
       case _ => InternalServerError(Play.maybeApplication.map {
@@ -114,6 +121,16 @@ object Global extends GlobalSettings {
       }
 
       connection.commit()
+  }
+
+  private def tryToNotifyAdministrators(ex: Throwable) = {
+    try {
+      inTransaction {
+        EmailSender.sendEmailToAdministrators(model.User.admins, ex.getClass().getCanonicalName(), ex.toString)
+      }
+    } catch {
+      case e => Logger.error("Not able to notify administrators about " + ex.toString())
+    }
   }
 
 }

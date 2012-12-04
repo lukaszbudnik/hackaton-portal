@@ -34,6 +34,12 @@ object User extends Schema {
   def all(): Iterable[User] = {
     users.toIterable
   }
+  
+  def admins: Iterable[User] = {
+    from(users)(u =>
+      where(u.isAdmin === true)
+        select (u))
+  }
 
   def pagedUsers(orderBy: Int, filter: String, offset: Int, pageSize: Int): Iterable[User] = {
     from(users)(u =>
