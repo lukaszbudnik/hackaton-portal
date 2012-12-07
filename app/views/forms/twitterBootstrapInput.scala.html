@@ -8,7 +8,7 @@
       <div class="controls">
         @elements.input
         @if(elements.hasErrors) {
-        <p class="help-inline">@elements.errors.mkString(", ")</p>
+        <p class="help-inline">@elements.field.errors.map(e => Messages(e.message)(elements.lang)).mkString(", ")</p>
         }
         <p class="help-block"><small>@elements.infos.mkString(", ")</small></p>
       </div>
