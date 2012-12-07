@@ -88,19 +88,19 @@ object Hackathon extends LangAwareController {
 
   val hackathonForm = Form(
     mapping(
-      "subject" -> nonEmptyText,
+      "subject" -> helpers.Forms.nonEmptyTextNonHtml,
       "status" -> enum(model.HackathonStatus),
       "date" -> date("dd-MM-yyyy"),
-      "description" -> nonEmptyText,
+      "description" -> helpers.Forms.nonEmptyTextSimpleHtmlOnly,
       "organizerId" -> longNumber,
       "new_problems_disabled" -> boolean,
       "new_teams_disabled" -> boolean,
       "locations" -> list(mapping(
         "id" -> longNumber,
-        "name" -> nonEmptyText,
-        "city" -> nonEmptyText,
-        "country" -> nonEmptyText,
-        "fullAddress" -> nonEmptyText,
+        "name" -> helpers.Forms.nonEmptyTextNonHtml,
+        "city" -> helpers.Forms.nonEmptyTextNonHtml,
+        "country" -> helpers.Forms.nonEmptyTextNonHtml,
+        "fullAddress" -> helpers.Forms.nonEmptyTextNonHtml,
         "submitterId" -> longNumber) // apply location
         ((id, name, city, country, fullAddress, submitterId) =>
           model.Location(id, country, city, "", fullAddress, name, 0, 0, submitterId, model.LocationStatus.Unverified)) // unapply location
