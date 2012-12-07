@@ -43,10 +43,9 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <img src="@routes.Assets.at("images/logo.png")" class="brand" style="padding: 0px;"/>
+          <a href="@routes.Application.index"><img src="@routes.Assets.at("images/logo.png")" title="@helpers.CmsMessages("navigation.home")" class="brand" style="padding: 0px;"/></a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="@("active".when(nav == "home"))"><a href="@routes.Application.index">@helpers.CmsMessages("navigation.home")</a></li>
               <li class="@("active".when(nav == "news"))"><a href="@routes.News.index">@helpers.CmsMessages("navigation.news")</a></li>
               <li class="@("active".when(nav == "hackathons"))"><a href="@routes.Hackathon.index">@helpers.CmsMessages("navigation.hackathons")</a></li>
               <li class="@("active".when(nav == "about"))"><a href="@routes.Application.about">@helpers.CmsMessages("navigation.about")</a></li>
