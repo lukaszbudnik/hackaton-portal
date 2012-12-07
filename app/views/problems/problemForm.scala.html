@@ -13,10 +13,12 @@
 	    '_showConstraints -> false
 	)
 	
-	@inputText(
+	@textarea(
 	    problemForm("description"),
 	    '_label -> helpers.CmsMessages("problems.description.label"),
-	    '_showConstraints -> false
+	    '_showConstraints -> false,
+	    'rows -> 30, 
+	    'cols -> 100
 	)
 	
 	@forms.hidden(problemForm("hackathonId"))
