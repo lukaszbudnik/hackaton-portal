@@ -11,7 +11,10 @@ object Constraints {
 
   private lazy val htmlTagRegex = "[^<]*</?([a-zA-Z]+[0-9]*)[^>]*?>.*?"
 
-  private lazy val allowedSimpleHtmlTags = "br, ul, ol, li, p, div, h1, h2, h3, h4, h5, h6, b, i, strong".split(",").toList.map(_.trim)
+  /**
+   * @TODO this can be moved to application config (with default values hardcoded here)
+   */
+  private lazy val allowedSimpleHtmlTags = "a, br, ul, ol, li, p, div, span, h1, h2, h3, h4, h5, h6, b, i, strong".split(",").toList.map(_.trim)
 
   def nonHtml: Constraint[String] = Constraint[String]("constraint.nonHtml") { o =>
     if (o.matches(htmlTagRegex)) Invalid(ValidationError("error.nonHtml")) else Valid
@@ -31,11 +34,9 @@ object Constraints {
 
     val tags = findAllTags(Nil, m)
 
-    println("found tags")
-    println(tags)
-    println("intersection 2" + (tags filterNot (allowedSimpleHtmlTags contains)))
+    val forbiddenTags = tags filterNot (allowedSimpleHtmlTags contains)
 
-    if ((tags filterNot (allowedSimpleHtmlTags contains)).size > 0) Invalid(ValidationError("error.simpleHtmlOnly")) else Valid
+    if (forbiddenTags.size > 0) Invalid(ValidationError("error.simpleHtmlOnly", allowedSimpleHtmlTags.mkString(", "))) else Valid
   }
 
 }
