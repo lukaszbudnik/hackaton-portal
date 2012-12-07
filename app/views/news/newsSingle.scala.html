@@ -1,4 +1,4 @@
-@(news: Option[model.News])(implicit request: Request[AnyContent], lang: Lang)
+@(news: Option[model.News], showHackathonSubject: Boolean = true)(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
 
@@ -8,7 +8,10 @@
 			@if(n.author.avatarUrl) { 
 				<img src="@n.author.avatarUrl" alt="@n.author.name" height="40px" width="40px" />    				
 			}
-			@n.hackathon.map { h => @h.subject: } @n.title
+			@if(showHackathonSubject) {
+					@n.hackathon.map { h => @h.subject: } 
+			}
+			@n.title
 		</h2>
 		<p>@Html(n.text)</p>
 	    <p>@helpers.CmsMessages("news.author.label"): @n.author.name @helpers.CmsMessages("news.publishedDate.label"): @tags.dateFormat(n.publishedDate)</p>
