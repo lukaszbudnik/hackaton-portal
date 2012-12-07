@@ -16,8 +16,8 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
 
   val problemForm = Form(
     mapping(
-      "name" -> nonEmptyText,
-      "description" -> nonEmptyText,
+      "name" -> helpers.Forms.nonEmptyTextNonHtml,
+      "description" -> helpers.Forms.nonEmptyTextSimpleHtmlOnly,
       "status" -> ignored(ProblemStatus.Blocked),
       "submitterId" -> longNumber,
       "hackathonId" -> longNumber)(model.Problem.apply)(model.Problem.unapply))
