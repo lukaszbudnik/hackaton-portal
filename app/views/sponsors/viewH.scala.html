@@ -3,7 +3,7 @@
 @import helper._
 @import tags._
 
-@hackathons.hackathonMain(hackathon, user, "sponsors", "sponsors.status", sponsor.isDefined) {
+@hackathons.hackathonMain(hackathon, user, "sponsors", "sponsors.status", sponsor.isDefined, sponsor.map(_.sponsor.name)) {
 	
 	@single(sponsor)
 	

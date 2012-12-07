@@ -3,7 +3,7 @@
 @import helper._
 @import tags._
 
-@hackathons.hackathonMain(hackathon, user, "news", "news.status", news.isDefined) {
+@hackathons.hackathonMain(hackathon, user, "news", "news.status", news.isDefined, news.map(_.title)) {
 	
 	@newsSingle(news, false)
 	

@@ -2,7 +2,7 @@
 
 @import tags._
 
-@hackathons.hackathonMain(hackathon, user, "news", "news.status", true) {
+@hackathons.hackathonMain(hackathon, user, "news", "news.status", true, Some(helpers.CmsMessages("navigation.news"))) {
 
 	@hackathon.map { h =>
 		

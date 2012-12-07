@@ -3,7 +3,7 @@
 @import tags._
 @import java.text._
 
-@hackathonMain(hackathon, user, "details", "hackathons.status", true) {
+@hackathonMain(hackathon, user, "details", "hackathons.status", hackathon.isDefined, Some(helpers.CmsMessages("hackathons.view.title"))) {
 
   @hackathon.map { hackathon =>
   

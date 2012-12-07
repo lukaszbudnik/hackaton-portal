@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser], subnav: String, prefix: String, socialFooter: Boolean)(content: Html)(implicit flash: Flash, request: Request[AnyContent], lang: Lang) 
+@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser], subnav: String, prefix: String, socialFooter: Boolean, title: Option[String] = None)(content: Html)(implicit flash: Flash, request: Request[AnyContent], lang: Lang) 
 
 @import helper._
 @import tags._
@@ -12,7 +12,7 @@
 	}
 }
 
-@main(helpers.CmsMessages("hackathons.view.title"), user, nav = "hackathons", scripts) {
+@main(hackathon.map(_.subject + title.map(t => " | " + t).getOrElse("")).getOrElse(helpers.CmsMessages("hackathons.notFound")), user, nav = "hackathons", scripts) {
     
     <div class="container">
 

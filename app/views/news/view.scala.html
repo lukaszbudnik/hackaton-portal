@@ -3,7 +3,7 @@
 @import helper._
 @import tags._
 
-@main(helpers.CmsMessages("news.title"), user, nav = "news", feed(routes.News.index)) {
+@main(news.map(_.title).getOrElse(helpers.CmsMessages("news.title")), user, nav = "news", feed(routes.News.index)) {
 	
 	<div class="container">
 

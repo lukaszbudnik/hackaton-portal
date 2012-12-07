@@ -4,7 +4,7 @@
 
 @allowEdit = @{ !user.isEmpty && !team.isEmpty && (team.get.creatorId == user.get.hackathonUserId || team.get.hackathon.organiserId == user.get.hackathonUserId || user.get.isAdmin ) }
 
-@hackathons.hackathonMain(hackathon, user, "teams", "teams.status", team.isDefined) {
+@hackathons.hackathonMain(hackathon, user, "teams", "teams.status", team.isDefined, team.map(_.name)) {
 	@team.map{ team =>
 		<div class="page-header team" data-team-id="@team.id">
 			<h2>@team.name @teamActions(hackathon.get, team, user, false)</h2>

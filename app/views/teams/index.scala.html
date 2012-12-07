@@ -1,6 +1,6 @@
 @(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
-@hackathons.hackathonMain(hackathon, user, "teams", "teams.status", true) {
+@hackathons.hackathonMain(hackathon, user, "teams", "teams.status", hackathon.isDefined, Some(helpers.CmsMessages("navigation.teams"))) {
 
   @hackathon.map { hackathon =>
     	@*

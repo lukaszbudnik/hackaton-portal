@@ -2,7 +2,7 @@
 
 @import tags._
 
-@hackathons.hackathonMain(hackathon, user, "sponsors", "sponsors.status", true) {
+@hackathons.hackathonMain(hackathon, user, "sponsors", "sponsors.status", hackathon.isDefined, Some(helpers.CmsMessages("navigation.sponsors"))) {
 
 	@hackathon.map { h =>
 		
@@ -13,7 +13,7 @@
 	  		}
 		}
 		
-	@list(sponsors, hackathon)
+		@list(sponsors, hackathon)
 		
 	}
 }
