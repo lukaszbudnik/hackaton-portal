@@ -1,7 +1,7 @@
-# Last evolution contains ONLY test data
-# this evolution is removed when deploying to Heroku!
-
-# --- !Ups 
+# test evolutions
+#  * contain ONLY test data
+#  * are applied only when app is in TEST or DEV mode
+#  * do not have downs
 
 insert into users (name, email, github_username, open_id, is_admin) values ('Przemek','email', 'test', '103280383330259834711google', true);
 insert into users (name, email, github_username, open_id) values ('test user','email', 'test', 'open_id_test');
@@ -68,28 +68,3 @@ insert into sponsors (name, title, description, website, sponsor_order, hackatho
 
 insert into resources(publicId, url) values('1', 'http://fake')
 
-# --- !Downs
-
-delete from sponsors;
-
-delete from prizes;
-
-delete from news_labels;
-
-delete from labels;
-
-delete from news;
-
-delete from hackathons_users;
-
-delete from teams;
-
-delete from problems;
-
-delete from hackathons_locations;
-
-delete from hackathons;
-
-delete from locations;
-
-delete from users where github_username != 'lukasz-budnik'

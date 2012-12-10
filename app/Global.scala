@@ -19,6 +19,8 @@ import play.api.Play
 import play.api.PlayException
 import play.api.UnexpectedException
 import play.api.Logger
+import scala.io.Source
+import scala.io.Codec
 
 object Global extends GlobalSettings {
 
@@ -70,10 +72,24 @@ object Global extends GlobalSettings {
   }
 
   private def getSession(adapter: DatabaseAdapter, app: Application) = {
-    val session = Session.create(DB.getConnection()(app), adapter)
+    val connection = DB.getConnection()(app)
+    val session = Session.create(connection, adapter)
+
     if (!play.Play.isProd) {
       session.setLogger(msg => Logger.debug(msg))
+
+      val testEvolutionsOpt = app.getExistingFile("conf/evolutions/test")
+      for (
+        testEvolutions <- testEvolutionsOpt if testEvolutions.exists();
+        sqlFile <- testEvolutions.listFiles().toSeq.filter(_.getName().endsWith(".sql")).sortWith(_.getName() < _.getName());
+        sqlCommands <- Source.fromFile(sqlFile)(Codec.UTF8).getLines() if !sqlCommands.startsWith("#") && sqlCommands.trim().length > 0
+      ) {
+        connection.prepareStatement(sqlCommands).executeUpdate()
+      }
+      connection.commit()
+
     }
+
     session
   }
 
