@@ -4,7 +4,7 @@ import org.squeryl.internals.DatabaseAdapter
 import org.squeryl.Session
 import org.squeryl.SessionFactory
 import core.SecurityAbuseException
-import play.api.db.DB
+import play.api.db._
 import play.api.mvc.Results.Forbidden
 import play.api.mvc.Results.InternalServerError
 import play.api.mvc.Results.NotFound
@@ -21,6 +21,8 @@ import play.api.UnexpectedException
 import play.api.Logger
 import scala.io.Source
 import scala.io.Codec
+import play.api.libs.Codecs._
+import java.sql.Date
 
 object Global extends GlobalSettings {
 
@@ -78,19 +80,39 @@ object Global extends GlobalSettings {
     if (!play.Play.isProd) {
       session.setLogger(msg => Logger.debug(msg))
 
-      val testEvolutionsOpt = app.getExistingFile("conf/evolutions/test")
-      for (
-        testEvolutions <- testEvolutionsOpt if testEvolutions.exists();
-        sqlFile <- testEvolutions.listFiles().toSeq.filter(_.getName().endsWith(".sql")).sortWith(_.getName() < _.getName());
-        sqlCommands <- Source.fromFile(sqlFile)(Codec.UTF8).getLines() if !sqlCommands.startsWith("#") && sqlCommands.trim().length > 0
-      ) {
-        connection.prepareStatement(sqlCommands).executeUpdate()
-      }
-      connection.commit()
-
+      applyTestEvolutions(connection, app)
     }
 
     session
+  }
+  
+  private def applyTestEvolutions(connection: java.sql.Connection, app: Application) = {
+    app.getExistingFile("conf/evolutions/test").filter(_.exists).map { testEvolutions =>
+
+        if (!connection.createStatement().executeQuery("select id from play_evolutions where id = -1").next()) {
+
+          val sqlCommands = for (
+            sqlFile <- testEvolutions.listFiles().toSeq.filter(_.getName().endsWith(".sql")).sortWith(_.getName() < _.getName());
+            sqlCommand <- Source.fromFile(sqlFile)(Codec.UTF8).getLines() if !sqlCommand.startsWith("#") && sqlCommand.trim().length > 0
+          ) yield sqlCommand
+
+          val script = sqlCommands.mkString("\n")
+
+          connection.createStatement().executeUpdate(script)
+
+          val ps = connection.prepareStatement("insert into play_evolutions values(?, ?, ?, ?, ?, ?, ?)")
+          ps.setInt(1, -1)
+          ps.setString(2, sha1(script))
+          ps.setDate(3, new Date(System.currentTimeMillis()))
+          ps.setString(4, script)
+          ps.setString(5, "")
+          ps.setString(6, "applied")
+          ps.setString(7, "")
+          ps.execute()
+        }
+      }
+
+      connection.commit()
   }
 
 }
