@@ -36,7 +36,10 @@
 	@textarea(
 	    hackathonForm("description"),
 	    '_label -> helpers.CmsMessages("hackathons.description.label"),
-	    '_showConstraints -> false
+	    '_showConstraints -> false,
+	    'rows -> 30, 
+	    'cols -> 100,
+	    'style -> "width:100%"
 	)
 
     @select(
