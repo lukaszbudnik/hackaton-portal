@@ -141,7 +141,7 @@ object Hackathon extends LangAwareController {
   def index = UserAwareAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
-      Ok(views.html.hackathons.index(model.Hackathon.all.filter(h => helpers.Conditions.Hackathon.canRender(h, user)).toSeq.sortWith((a, b) => a.date.after(b.date)), userFromRequest(request)))
+      Ok(views.html.hackathons.index(model.Hackathon.all.filter(h => helpers.Conditions.Hackathon.canRender(h, user)).toSeq.sortWith((a, b) => a.date.after(b.date)), user))
     }
   }
 
