@@ -46,7 +46,7 @@ case class Hackathon(subject: String,
   def hasMember(userId: Long): Boolean = {
     membersRel.exists(u => u.id == userId)
   }
-
+  
   def addMember(user: User): HackathonUser = {
     membersRel.associate(user)
   }

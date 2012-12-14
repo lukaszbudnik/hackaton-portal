@@ -66,6 +66,19 @@ object Team extends Schema {
     teams.lookup(id)
   }
 
+  def lookupByHackathonIdAndCreatorId(hackathonId: Long, creatorId: Long) = {
+    teams.find(t => t.hackathonId == hackathonId && t.creatorId == creatorId)
+  }
+
+  def lookupByHackathonIdAndMemberId(hackathonId: Long, memberId: Long): Option[Team] = {
+    val hackathonUser = Hackathon.hackathonsToUsers.find(hu => hu.hackathonId == hackathonId && hu.userId == memberId && hu.teamId != None)
+    val team = for (
+      hu <- hackathonUser;
+      teamId <- hu.teamId
+    ) yield teams.lookup(teamId)
+    team.flatMap(t => t)
+  }
+
   def insert(team: Team): Team = {
     teams.insert(team)
   }

@@ -34,7 +34,7 @@ object Team extends LangAwareController {
         val canAdd = Conditions.Team.canAdd(hackathon, user)
         Ok(views.html.teams.index(Some(hackathon), teams, canAdd, user))
       }.getOrElse(NotFound(views.html.hackathons.view(None, user)))
-      
+
     }
   }
 
@@ -62,11 +62,25 @@ object Team extends LangAwareController {
     inTransaction {
       val user = userFromRequest(request)
 
-      model.Hackathon.lookup(hid).map { hackathon =>
-        val team = new model.Team(user.id, hid)
-        Ok(views.html.teams.create(Some(hackathon), teamForm.fill(team), user))
+      model.Team.lookupByHackathonIdAndCreatorId(hid, user.id).map { team =>
+
+        Redirect(routes.Team.view(hid, team.id)).flashing("status" -> "cannotCreateBecauseTeamAlreadyCreatedByUser")
+
+      }.orElse {
+
+        model.Team.lookupByHackathonIdAndMemberId(hid, user.id).map { team =>
+          Redirect(routes.Team.view(hid, team.id)).flashing("status" -> "cannotCreateBecauseAlreadyMemberOfAnotherTeam")
+        }
+
       }.getOrElse {
-        NotFound(views.html.hackathons.view(None, Some(user)))
+
+        model.Hackathon.lookup(hid).map { hackathon =>
+          val team = new model.Team(user.id, hid)
+          Ok(views.html.teams.create(Some(hackathon), teamForm.fill(team), user))
+        }.getOrElse {
+          NotFound(views.html.hackathons.view(None, Some(user)))
+        }
+
       }
 
     }
@@ -76,25 +90,43 @@ object Team extends LangAwareController {
     inTransaction {
       val user = userFromRequest(request)
 
-      model.Hackathon.lookup(hid).map { hackathon =>
+      model.Team.lookupByHackathonIdAndCreatorId(hid, user.id).map { team =>
 
-        teamForm.bindFromRequest.fold(
-          errors => BadRequest(views.html.teams.create(Some(hackathon), errors, user)),
-          team => {
-            // insert team and add creator as a member
-            val dbTeam = model.Team.insert(team.copy(creatorId = user.id, status = model.TeamStatus.Blocked))
-            dbTeam.addMember(team.creator)
+        Redirect(routes.Team.view(hid, team.id)).flashing("status" -> "teamAlreadyCreatedByUser")
 
-            val url = URL.externalUrl(routes.Team.view(hid, team.id))
-            val params = Seq(team.name, url)
+      }.orElse {
 
-            EmailSender.sendEmailToHackathonOrganiser(dbTeam.hackathon, "notifications.email.team.created.subject", "notifications.email.team.created.body", params)
-
-            Redirect(routes.Team.index(hid)).flashing("status" -> "added", "title" -> team.name)
-          })
+        model.Team.lookupByHackathonIdAndMemberId(hid, user.id).map { team =>
+          Redirect(routes.Team.view(hid, team.id)).flashing("status" -> "alreadyMemberOfAnotherTeam")
+        }
 
       }.getOrElse {
-        NotFound(views.html.hackathons.view(None, Some(user)))
+
+        model.Hackathon.lookup(hid).map { hackathon =>
+
+          teamForm.bindFromRequest.fold(
+            errors => BadRequest(views.html.teams.create(Some(hackathon), errors, user)),
+            team => {
+
+              // insert team and add creator as a member
+              val dbTeam = model.Team.insert(team.copy(creatorId = user.id, status = model.TeamStatus.Blocked))
+              dbTeam.addMember(team.creator)
+
+              if (!hackathon.hasMember(user.id)) {
+                hackathon.addMember(user)
+              }
+
+              val url = URL.externalUrl(routes.Team.view(hid, team.id))
+              val params = Seq(team.name, url)
+
+              EmailSender.sendEmailToHackathonOrganiser(dbTeam.hackathon, "notifications.email.team.created.subject", "notifications.email.team.created.body", params)
+
+              Redirect(routes.Team.index(hid)).flashing("status" -> "added", "title" -> team.name)
+            })
+
+        }.getOrElse {
+          NotFound(views.html.hackathons.view(None, Some(user)))
+        }
       }
     }
   }
@@ -220,14 +252,30 @@ object Team extends LangAwareController {
 
   def join(hid: Long, id: Long) = SecuredAction() { implicit request =>
     inTransaction {
-      model.Team.lookup(id).map { team =>
-        val user = userFromRequest(request)
+      val user = userFromRequest(request)
 
-        if (!team.hasMember(user.id)) {
-          team.addMember(user)
+      model.Team.lookupByHackathonIdAndCreatorId(hid, user.id).map { team =>
+
+        Redirect(routes.Team.view(hid, team.id)).flashing("status" -> "cannotJoinBecauseTeamAlreadyCreatedByUser")
+
+      }.orElse {
+
+        model.Team.lookupByHackathonIdAndMemberId(hid, user.id).map { team =>
+          Redirect(routes.Team.view(hid, team.id)).flashing("status" -> "cannotJoinBecauseAlreadyMemberOfAnotherTeam")
         }
-        Redirect(routes.Team.view(hid, id)).flashing("status" -> "joined")
-      }.getOrElse(Redirect(routes.Team.view(hid, id)).flashing("status" -> "error"))
+
+      }.getOrElse {
+
+        model.Hackathon.lookup(hid).map { hackathon =>
+
+          model.Team.lookup(id).map { team =>
+
+            team.addMember(user)
+            Redirect(routes.Team.view(hid, id)).flashing("status" -> "joined")
+
+          }.getOrElse(NotFound(views.html.teams.view(Some(hackathon), None, Some(user))))
+        }.getOrElse(NotFound(views.html.hackathons.view(None, Some(user))))
+      }
     }
   }
 
@@ -246,8 +294,8 @@ object Team extends LangAwareController {
   def disconnectUser(hid: Long, id: Long, userId: Long) = SecuredAction() { implicit request =>
     inTransaction {
       (for (
-        team <- model.Team.lookup(id);
-        user <- model.User.lookup(userId) if (hid == team.hackathonId)
+        team <- model.Team.lookup(id) if (hid == team.hackathonId);
+        user <- model.User.lookup(userId) if (team.hasMember(user.id))
       ) yield {
         ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team) {
           team.deleteMember(user)
