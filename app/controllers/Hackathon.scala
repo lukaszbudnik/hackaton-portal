@@ -183,12 +183,13 @@ object Hackathon extends LangAwareController {
       hackathonForm.bindFromRequest.fold(
         errors => BadRequest(views.html.hackathons.create(errors, user, unVerifiedStatus)),
         hackathonWithLocations => {
-          val newH = model.Hackathon.insert(hackathonWithLocations.hackathon.copy(organiserId = user.id, status = model.HackathonStatus.Unverified))
+          val newHackathon = model.Hackathon.insert(hackathonWithLocations.hackathon.copy(organiserId = user.id, status = model.HackathonStatus.Unverified))
           hackathonWithLocations.locations.map {
             location =>
-              newH.addLocation(location.copy(submitterId = user.id))
+              newHackathon.addLocation(location.copy(submitterId = user.id))
           }
-          Redirect(routes.Hackathon.index).flashing("status" -> "added", "title" -> newH.subject)
+          newHackathon.addMember(user)
+          Redirect(routes.Hackathon.index).flashing("status" -> "added", "title" -> newHackathon.subject)
         })
     }
   }

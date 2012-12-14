@@ -77,6 +77,10 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
           problem => {
             val dbProblem = model.Problem.insert(problem.copy(submitterId = user.id, status = model.ProblemStatus.Blocked))
 
+            if (!hackathon.hasMember(user.id)) {
+              hackathon.addMember(user)
+            }
+
             val url = URL.externalUrl(routes.Problem.view(hid, dbProblem.id))
             val params = Seq(dbProblem.name, url)
 
