@@ -7,13 +7,12 @@ import play.api.mvc.Action
 import play.api.Logger
 import play.api.mvc.RequestHeader
 import play.api.i18n.Lang
-import core.LangAwareController
 import play.api.cache.Cache
-import org.squeryl.PrimitiveTypeMode.transaction
+import org.squeryl.PrimitiveTypeMode.inTransaction
 import play.api.data.Forms._
 import play.api.data.Form
 
-object Application extends LangAwareController with securesocial.core.SecureSocial {
+object Application extends LangAwareController {
 
   val userForm = Form(
     mapping(
@@ -25,37 +24,30 @@ object Application extends LangAwareController with securesocial.core.SecureSoci
       "avatar_url" -> text)((name, email, language, github_username, twitter_account, avatar_url) => model.User(name, email, language, github_username, twitter_account, avatar_url, "", false, false))((user: model.User) => Some(user.name, user.email, user.language, user.githubUsername, user.twitterAccount, user.avatarUrl)))
 
   def index = UserAwareAction { implicit request =>
-    Ok(views.html.index(request.user))
+    Ok(views.html.index(userFromRequest))
   }
 
   def about = UserAwareAction { implicit request =>
-    Ok(views.html.about(request.user))
+    Ok(views.html.about(userFromRequest))
   }
 
   def contact = UserAwareAction { implicit request =>
-    Ok(views.html.contact(request.user))
+    Ok(views.html.contact(userFromRequest))
   }
 
-  def profile = SecuredAction() {
-    implicit request =>
-      transaction {
-        val id = request.user.hackathonUserId
-        val user = model.User.lookup(id)
-        user.map { u =>
-          Ok(views.html.profile(userForm.fill(u), request.user))
-        }.getOrElse {
-          Redirect(securesocial.controllers.routes.LoginPage.login).flashing()
-        }
-      }
+  def profile = SecuredAction() { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
+      Ok(views.html.profile(userForm.fill(user), user))
+    }
   }
 
   def updateProfile = SecuredAction() { implicit request =>
+    val requestUser = userFromRequest(request)
     userForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.profile(errors, request.user))
-      },
-      user => transaction {
-        model.User.update(request.user.hackathonUserId, user)
+      errors => BadRequest(views.html.profile(errors, requestUser)),
+      user => inTransaction {
+        model.User.update(requestUser.id, user)
         Redirect(routes.Application.profile).flashing("status" -> "updated", "title" -> user.name).withSession(request.session + (LangAwareController.SESSION_LANG_KEY -> user.language))
       })
   }
@@ -63,19 +55,19 @@ object Application extends LangAwareController with securesocial.core.SecureSoci
   def changeLanguage(lang: String) = UserAwareAction { implicit request =>
     val result = Redirect(request.headers.get(REFERER).getOrElse("/")).withSession(request.session + (LangAwareController.SESSION_LANG_KEY -> lang))
 
-    request.user match {
-      case Some(user: securesocial.core.SocialUser) => {
-        transaction {
-          model.User.lookup(user.hackathonUserId).map { hackatonUser =>
-            val newUser = hackatonUser.copy(language = lang)
-            model.User.update(user.hackathonUserId, newUser)
-          }
-        }
-        result.flashing("language.status" -> "language.updated")
-      }
-      case _ => result
-    }
+    inTransaction {
+      val user = userFromRequest(request)
 
+      user match {
+        case Some(user: model.User) =>
+          {
+            val newUser = user.copy(language = lang)
+            model.User.update(user.id, newUser)
+          }
+          result.flashing("language.status" -> "language.updated")
+        case _ => result
+      }
+    }
   }
 
 }

@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import tags._
 @import java.text._
@@ -15,7 +15,7 @@
   		<div class="span4">
   			<dl data-hackathon-id="@hackathon.id">
   				@for((location, idx) <- hackathon.locations.zipWithIndex) {
-  				<dt>@helpers.CmsMessages("hackathons.location.label") @(idx + 1)</dt>
+  				<dt>@helpers.CmsMessages("hackathons.location.label")</dt>
   					<dd>@location.name</dd>
        				<dd>@location.fullAddress</dd>
        				<dd>@location.city, @location.postalCode</dd>

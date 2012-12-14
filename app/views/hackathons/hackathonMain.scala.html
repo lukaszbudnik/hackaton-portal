@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser], subnav: String, prefix: String, socialFooter: Boolean, title: Option[String] = None)(content: Html)(implicit flash: Flash, request: Request[AnyContent], lang: Lang) 
+@(hackathon: Option[model.Hackathon], user: Option[model.User], subnav: String, prefix: String, socialFooter: Boolean, title: Option[String] = None)(content: Html)(implicit flash: Flash, request: Request[AnyContent], lang: Lang) 
 
 @import helper._
 @import tags._
@@ -22,12 +22,12 @@
 					<small>@helpers.CmsMessages("hackathons.hackathonStatus." + hackathon.status)</small>
 					@user.map { user =>
 							@form(routes.Hackathon.delete(hackathon.id), 'class -> "pull-right", 'style -> "display: inline") {
-								@if(hackathon.hasMember(user.hackathonUserId)){
+								@if(hackathon.hasMember(user.id)){
 							  		<a class="btn btn-warning" href="@routes.Hackathon.disconnect(hackathon.id)">@helpers.CmsMessages("hackathons.leave.label")</a>
 							  	} else {
 							  		<a class="btn btn-warning" href="@routes.Hackathon.join(hackathon.id)">@helpers.CmsMessages("hackathons.join.label")</a>  
 							  	}
-								@if(user.isAdmin || hackathon.organiserId == user.hackathonUserId) {
+								@if(user.isAdmin || hackathon.organiserId == user.id) {
 								<a class="btn btn-success" href="@routes.Hackathon.edit(hackathon.id)">@helpers.CmsMessages("global.edit")</a>
 								<input type="submit" value="@helpers.CmsMessages("global.delete")" class="btn btn-danger confirm-action" style="font-weight: bold" />
 								}

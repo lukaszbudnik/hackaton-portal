@@ -1,11 +1,11 @@
-@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @hackathons.hackathonMain(hackathon, user, "prizes", "prizes.status", hackathon.isDefined, Some(helpers.CmsMessages("navigation.prizes"))) {
 
   @hackathon.map { hackathon =>
 
   		@user.map { user =>
-	  		@if(user.isAdmin || user.hackathonUserId == hackathon.organiserId) {
+	  		@if(user.isAdmin || user.id == hackathon.organiserId) {
   				<a class="btn btn-success" href="@routes.Prize.create(hackathon.id)">@helpers.CmsMessages("prizes.addPrize")</a>
 	  		}
     	}

@@ -37,7 +37,8 @@ case class News(title: String,
   }
 
   def storeLabels(newLabelsAsString: String): News = {
-    val newLabels = newLabelsAsString.split(",").filter(s => !s.isEmpty()).map(_.trim().toLowerCase()).distinct.toSeq
+    val newLabels = newLabelsAsString.toLowerCase().split(",").filter(s => !s.isEmpty).map(_.trim.split(" ").filter(s => !s.isEmpty).map(_.trim)).flatten.distinct
+
     val existingLabels = labels.map(_.value).toSeq
 
     // remove old labels

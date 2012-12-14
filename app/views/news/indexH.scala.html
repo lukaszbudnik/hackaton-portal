@@ -1,4 +1,4 @@
-@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import tags._
 
@@ -7,7 +7,7 @@
 	@hackathon.map { h =>
 		
 		@user.map { user =>
-	  		@if(user.isAdmin || user.hackathonUserId == h.organiserId) {
+	  		@if(user.isAdmin || user.id == h.organiserId) {
  				<a class="btn btn-success" href="@routes.News.createH(h.id)">@helpers.CmsMessages("news.addNews")</a>
 	  		}
 		}

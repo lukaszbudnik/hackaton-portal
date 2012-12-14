@@ -1,4 +1,4 @@
-@(hackathonForm: Form[model.dto.HackathonWithLocations], action: play.api.mvc.Call, user: securesocial.core.SocialUser, actionMessage: String)(implicit request: Request[AnyContent], lang: Lang)
+@(hackathonForm: Form[model.dto.HackathonWithLocations], action: play.api.mvc.Call, user: model.User, statuses: Seq[(String,String)], actionMessage: String)(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -11,9 +11,9 @@
 		createLocationAction: '@routes.Location.create',
 		saveLocationAction: '@routes.Location.save',
 		addHackathonLocationAction : '@routes.Hackathon.addLocation',
-		deleteHackathonLocationAction : '/hackathons/deleteLocation',		
+		deleteHackathonLocationAction : '@routes.Hackathon.deleteLocation(0)',		
 		noMatchFoundText : '@helpers.CmsMessages("locations.nomatchfound")',
-		userHackathonId : '@user.hackathonUserId'
+		userHackathonId : '@user.id'
 	}).initHackathonLocations();
 </script>
 
@@ -27,7 +27,6 @@
 	
 	@locationsContainer(hackathonForm)
  
-    
 	@forms.inputDate(
 	    hackathonForm("date"),
 	    '_label -> helpers.CmsMessages("hackathons.date.label"),
@@ -37,12 +36,15 @@
 	@textarea(
 	    hackathonForm("description"),
 	    '_label -> helpers.CmsMessages("hackathons.description.label"),
-	    '_showConstraints -> false
+	    '_showConstraints -> false,
+	    'rows -> 30, 
+	    'cols -> 100,
+	    'style -> "width:100%"
 	)
-	
+
     @select(
 	    hackathonForm("status"),
-	    model.HackathonStatus.values.map{ s => s.toString -> s.toString}.toSeq,
+	    statuses,
 	    '_label -> helpers.CmsMessages("hackathons.status.label"),
 	    '_showConstraints -> false
 	)
@@ -78,7 +80,7 @@
 
 	<div class="modal-body">
    	   	<div class="row">
-       		<div id="locationBox""></div>
+       		<div id="locationBox"></div>
     	</div>
     </div>
 	

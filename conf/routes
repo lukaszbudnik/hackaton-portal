@@ -50,22 +50,22 @@ POST    /hackathons					controllers.Hackathon.save
 # Retrieve
 GET     /hackathons					controllers.Hackathon.index
 GET     /hackathons/:id				controllers.Hackathon.view(id: Long)
-GET     /hackathons/chat/:id		controllers.Hackathon.chat(id: Long)
+GET     /hackathons/:id/chat		controllers.Hackathon.chat(id: Long)
 # Update
 GET     /hackathons/:id/edit		controllers.Hackathon.edit(id: Long)
-POST    /hackathons/:id/update		controllers.Hackathon.update(id: Long)
+POST    /hackathons/:id				controllers.Hackathon.update(id: Long)
 # Delete
 POST    /hackathons/:id/delete		controllers.Hackathon.delete(id: Long)
 
 # Delete location
-POST   /hackathons/deleteLocation/:id controllers.Hackathon.deleteLocation(id:Int)
+POST   /hackathons/location/:id/delete controllers.Hackathon.deleteLocation(id:Int)
 # Add location
-POST   /hackathons/addLocation 		 controllers.Hackathon.addLocation
+POST   /hackathons/location/add 		 controllers.Hackathon.addLocation
 
 # Join
 GET    	/hackathons/:id/join			controllers.Hackathon.join(id: Long)
 GET    	/hackathons/:id/disconnect		controllers.Hackathon.disconnect(id: Long)
-GET    	/hackathons/:id/:uid/disconnect	controllers.Hackathon.disconnectUser(id: Long, uid: Long)
+GET    	/hackathons/:id/disconnect/:uid	controllers.Hackathon.disconnectUser(id: Long, uid: Long)
 
 GET     /hackathons.json			controllers.Hackathon.hackathonsJson
 GET     /hackathon.json/:id         controllers.Hackathon.hackathonJson(id: Long)
@@ -79,7 +79,7 @@ GET     /hackathons/:hid/news   					controllers.News.indexH(hid: Long)
 GET     /hackathons/:hid/news/:id           		controllers.News.viewH(hid: Long, id: Long)
 # Update
 GET     /hackathons/:hid/news/:id/edit      		controllers.News.editH(hid: Long, id: Long)
-POST    /hackathons/:hid/news/:id/update    		controllers.News.updateH(hid: Long, id: Long)
+POST    /hackathons/:hid/news/:id		    		controllers.News.updateH(hid: Long, id: Long)
 # Delete
 POST    /hackathons/:hid/news/:id/delete    		controllers.News.deleteH(hid: Long, id: Long)
 
@@ -92,10 +92,8 @@ GET     /hackathons/:hid/problems   				controllers.Problem.index(hid: Long)
 GET     /hackathons/:hid/problems/:id           	controllers.Problem.view(hid: Long, id: Long)
 # Update
 GET     /hackathons/:hid/problems/:id/edit      	controllers.Problem.edit(hid: Long, id: Long)
-POST    /hackathons/:hid/problems/:id/update    	controllers.Problem.update(hid: Long, id: Long)
-POST    /hackathons/:hid/problems/:id/verify        controllers.Problem.verify(hid: Long, id: Long)
+POST    /hackathons/:hid/problems/:id		    	controllers.Problem.update(hid: Long, id: Long)
 POST    /hackathons/:hid/problems/:id/approve       controllers.Problem.approve(hid: Long, id: Long)
-POST    /hackathons/:hid/problems/:id/suspend       controllers.Problem.suspend(hid: Long, id: Long)
 POST    /hackathons/:hid/problems/:id/block        	controllers.Problem.block(hid: Long, id: Long)
 # Delete
 POST    /hackathons/:hid/problems/:id/delete    	controllers.Problem.delete(hid: Long, id: Long)
@@ -109,17 +107,15 @@ GET     /hackathons/:hid/teams						controllers.Team.index(hid: Long)
 GET     /hackathons/:hid/teams/:id               	controllers.Team.view(hid: Long, id: Long)
 # Update
 GET     /hackathons/:hid/teams/:id/edit          	controllers.Team.edit(hid: Long, id: Long)
-POST    /hackathons/:hid/teams/:id/update        	controllers.Team.update(hid: Long, id: Long)
-POST    /hackathons/:hid/teams/:id/verify        	controllers.Team.verify(hid: Long, id: Long)
+POST    /hackathons/:hid/teams/:id		        	controllers.Team.update(hid: Long, id: Long)
 POST    /hackathons/:hid/teams/:id/approve        	controllers.Team.approve(hid: Long, id: Long)
-POST    /hackathons/:hid/teams/:id/suspend        	controllers.Team.suspend(hid: Long, id: Long)
 POST    /hackathons/:hid/teams/:id/block        	controllers.Team.block(hid: Long, id: Long)
 # Delete
 POST    /hackathons/:hid/teams/:id/delete        	controllers.Team.delete(hid: Long, id: Long)
 # Join
 GET    	/hackathons/:hid/teams/:id/join				controllers.Team.join(hid: Long, id: Long)
 GET    	/hackathons/:hid/teams/:id/disconnect		controllers.Team.disconnect(hid: Long, id: Long)
-GET    	/hackathons/:hid/teams/:id/:uid/disconnect	controllers.Team.disconnectUser(hid: Long, id: Long, uid: Long)
+GET    	/hackathons/:hid/teams/:id/disconnect/:uid	controllers.Team.disconnectUser(hid: Long, id: Long, uid: Long)
 
 # Prizes routes
 # Create
@@ -130,7 +126,7 @@ GET     /hackathons/:hid/prizes                   	controllers.Prize.index(hid: 
 GET     /hackathons/:hid/prizes/:id                 controllers.Prize.view(hid: Long, id: Long)
 # Update
 GET     /hackathons/:hid/prizes/:id/edit          	controllers.Prize.edit(hid: Long, id: Long)
-POST    /hackathons/:hid/prizes/:id/update        	controllers.Prize.update(hid: Long, id: Long)
+POST    /hackathons/:hid/prizes/:id		        	controllers.Prize.update(hid: Long, id: Long)
 # Delete
 POST    /hackathons/:hid/prizes/:id/delete        	controllers.Prize.delete(hid: Long, id: Long)
 
@@ -165,7 +161,7 @@ GET    	/sponsors/:id/delete		controllers.Sponsor.delete(id: Long)
 
 # Locations routes
 # Find
-GET		/locations/find/:term				controllers.Location.findByPattern(term : String)
+GET		/locations/find				controllers.Location.findByPattern(term : String)
 # Create
 GET     /locations/new              controllers.Location.create
 GET     /locations/newA             controllers.Location.createA

@@ -1,4 +1,4 @@
-@(user: Option[securesocial.core.SocialUser], hackathonId: Long, teamId: Option[Long] = None)(implicit request: Request[AnyContent], lang: Lang)
+@(user: Option[model.User], hackathonId: Long, teamId: Option[Long] = None)(implicit request: Request[AnyContent], lang: Lang)
 
 @user.map { user =>
 
@@ -28,7 +28,7 @@
 				channel : channel, message : {
 				text: input.value,
 				date: new Date(),
-				who: '@user.displayName'
+				who: '@user.name'
 				}
 				, x : (input.value='')
 			});

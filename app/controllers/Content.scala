@@ -1,16 +1,14 @@
 package controllers
 
-import play.mvc.Controller
-import cms.ContentManager
 import cms.dto.Entry
-import play.api.data.Forms._
-import play.api.data._
-import play.api.data.validation.Constraints._
-import org.squeryl.PrimitiveTypeMode.transaction
-import play.api.mvc.Action
-import helpers.Security
+import cms.ContentManager
+import play.api.data.Forms.list
+import play.api.data.Forms.mapping
+import play.api.data.Forms.nonEmptyText
+import play.api.data.Forms.text
+import play.api.data.Form
 
-object Content extends core.LangAwareController with securesocial.core.SecureSocial {
+object Content extends LangAwareController {
 
   val entryForm = Form(
     mapping(
@@ -21,82 +19,79 @@ object Content extends core.LangAwareController with securesocial.core.SecureSoc
         "value" -> text)(cms.dto.Content.apply)(cms.dto.Content.unapply)))(Entry.apply)(Entry.unapply))
 
   def index = SecuredAction() { implicit request =>
+    ensureAdmin {
+      val user = userFromRequest(request)
 
-    implicit val user = request.user
-    Security.verifyIfAllowed
+      val entityList = ContentManager.all.sortWith(_.key < _.key)
 
-    val entityList = ContentManager.all.sortWith(_.key < _.key)
-
-    Ok(views.html.contents.index(entityList, user))
+      Ok(views.html.contents.index(entityList, user))
+    }
   }
 
   def create = SecuredAction() { implicit request =>
+    ensureAdmin {
+      val user = userFromRequest(request)
 
-    implicit val user = request.user
-    Security.verifyIfAllowed
-
-    val entry = Entry("", cms.dto.EntryType.HTML, List.empty)
-    Ok(views.html.contents.create(entryForm.fill(entry), user))
+      val entry = Entry("", cms.dto.EntryType.HTML, List.empty)
+      Ok(views.html.contents.create(entryForm.fill(entry), user))
+    }
   }
 
   def save = SecuredAction() { implicit request =>
+    ensureAdmin {
+      val user = userFromRequest(request)
 
-    implicit val user = request.user
-    Security.verifyIfAllowed
-
-    entryForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.contents.create(errors, user)),
-      entry => {
-        ContentManager.create(entry)
-        Redirect(routes.Content.index)
-      })
-
+      entryForm.bindFromRequest.fold(
+        errors => BadRequest(views.html.contents.create(errors, user)),
+        entry => {
+          ContentManager.create(entry)
+          Redirect(routes.Content.index)
+        })
+    }
   }
 
   def edit(key: String) = SecuredAction() { implicit request =>
+    ensureAdmin {
+      val user = userFromRequest(request)
 
-    implicit val user = request.user
-    Security.verifyIfAllowed
-
-    val entry = ContentManager.find(key)
-    entry.map { entry =>
-      Ok(views.html.contents.edit(key, entryForm.fill(entry), user))
-    }.getOrElse {
-      Redirect(routes.Content.index)
+      val entry = ContentManager.find(key)
+      entry.map { entry =>
+        Ok(views.html.contents.edit(key, entryForm.fill(entry), user))
+      }.getOrElse {
+        Redirect(routes.Content.index)
+      }
     }
-
   }
 
   def update(key: String) = SecuredAction() { implicit request =>
+    ensureAdmin {
+      val user = userFromRequest(request)
 
-    implicit val user = request.user
-    Security.verifyIfAllowed
-
-    val entry = ContentManager.find(key)
-    entry.map { entry =>
-      entryForm.bindFromRequest.fold(
-        errors => BadRequest(views.html.contents.edit(key, errors, user)),
-        entry => {
-          ContentManager.update(entry)
-          Redirect(routes.Content.index)
-        })
-    }.getOrElse {
-      Redirect(routes.Content.index)
+      val entry = ContentManager.find(key)
+      entry.map { entry =>
+        entryForm.bindFromRequest.fold(
+          errors => BadRequest(views.html.contents.edit(key, errors, user)),
+          entry => {
+            ContentManager.update(entry)
+            Redirect(routes.Content.index)
+          })
+      }.getOrElse {
+        Redirect(routes.Content.index)
+      }
     }
-
   }
 
   def delete(key: String) = SecuredAction() { implicit request =>
+    ensureAdmin {
+      val user = userFromRequest(request)
 
-    implicit val user = request.user
-    Security.verifyIfAllowed
-
-    val entry = ContentManager.find(key)
-    entry.map { entry =>
-      ContentManager.remove(entry)
-      Redirect(routes.Content.index)
-    }.getOrElse {
-      Redirect(routes.Content.index)
+      val entry = ContentManager.find(key)
+      entry.map { entry =>
+        ContentManager.remove(entry)
+        Redirect(routes.Content.index)
+      }.getOrElse {
+        Redirect(routes.Content.index)
+      }
     }
   }
 }

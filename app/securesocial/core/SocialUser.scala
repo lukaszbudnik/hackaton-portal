@@ -26,9 +26,7 @@ case class SocialUser(id: UserId, displayName: String, email: Option[String],
                       isEmailVerified: Boolean = false,
                       oAuth1Info: Option[OAuth1Info] = None,
                       oAuth2Info: Option[OAuth2Info] = None,
-                      passwordInfo: Option[PasswordInfo] = None,
-                      hackathonUserId: Long = 0,
-                      isAdmin: Boolean = false)
+                      passwordInfo: Option[PasswordInfo] = None)
 
 /**
  * The ID of a Social user

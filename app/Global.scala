@@ -3,7 +3,8 @@ import org.squeryl.adapters.PostgreSqlAdapter
 import org.squeryl.internals.DatabaseAdapter
 import org.squeryl.Session
 import org.squeryl.SessionFactory
-import core.SecurityAbuseException
+import play.api.db._
+import security.SecurityAbuseException
 import play.api.db.DB
 import play.api.mvc.Results.Forbidden
 import play.api.mvc.Results.InternalServerError
@@ -19,6 +20,12 @@ import play.api.Play
 import play.api.PlayException
 import play.api.UnexpectedException
 import play.api.Logger
+import scala.io.Source
+import scala.io.Codec
+import play.api.libs.Codecs._
+import java.sql.Date
+import org.squeryl.PrimitiveTypeMode.inTransaction
+import helpers.EmailSender
 
 object Global extends GlobalSettings {
 
@@ -31,6 +38,11 @@ object Global extends GlobalSettings {
   }
 
   override def onError(request: RequestHeader, ex: Throwable): Result = {
+    
+    Play.maybeApplication.map {
+      case app if app.mode == Mode.Prod => tryToNotifyAdministrators(ex)
+    }
+
     ex.getCause() match {
       case e: SecurityAbuseException => Forbidden(views.html.errors.securityAbuse(e))
       case _ => InternalServerError(Play.maybeApplication.map {
@@ -70,11 +82,55 @@ object Global extends GlobalSettings {
   }
 
   private def getSession(adapter: DatabaseAdapter, app: Application) = {
-    val session = Session.create(DB.getConnection()(app), adapter)
+    val connection = DB.getConnection()(app)
+    val session = Session.create(connection, adapter)
+
     if (!play.Play.isProd) {
       session.setLogger(msg => Logger.debug(msg))
+
+      applyTestEvolutions(connection, app)
     }
+
     session
+  }
+  
+  private def applyTestEvolutions(connection: java.sql.Connection, app: Application) = {
+    app.getExistingFile("conf/evolutions/test").filter(_.exists).map { testEvolutions =>
+
+        if (!connection.createStatement().executeQuery("select id from play_evolutions where id = -1").next()) {
+
+          val sqlCommands = for (
+            sqlFile <- testEvolutions.listFiles().toSeq.filter(_.getName().endsWith(".sql")).sortWith(_.getName() < _.getName());
+            sqlCommand <- Source.fromFile(sqlFile)(Codec.UTF8).getLines() if !sqlCommand.startsWith("#") && sqlCommand.trim().length > 0
+          ) yield sqlCommand
+
+          val script = sqlCommands.mkString("\n")
+
+          connection.createStatement().executeUpdate(script)
+
+          val ps = connection.prepareStatement("insert into play_evolutions values(?, ?, ?, ?, ?, ?, ?)")
+          ps.setInt(1, -1)
+          ps.setString(2, sha1(script))
+          ps.setDate(3, new Date(System.currentTimeMillis()))
+          ps.setString(4, script)
+          ps.setString(5, "")
+          ps.setString(6, "applied")
+          ps.setString(7, "")
+          ps.execute()
+        }
+      }
+
+      connection.commit()
+  }
+
+  private def tryToNotifyAdministrators(ex: Throwable) = {
+    try {
+      inTransaction {
+        EmailSender.sendEmailToAdministrators(model.User.admins, ex.getClass().getCanonicalName(), ex.toString)
+      }
+    } catch {
+      case e => Logger.error("Not able to notify administrators about " + ex.toString())
+    }
   }
 
 }

@@ -1,0 +1,2 @@
+error.nonHtml = HTML tags not permitted
+error.simpleHtmlOnly = Only simple HTML tags are allowed: {0}

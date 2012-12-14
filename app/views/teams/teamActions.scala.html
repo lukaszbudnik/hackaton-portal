@@ -1,4 +1,4 @@
-@(hackathon: model.Hackathon, team: model.Team, user: Option[securesocial.core.SocialUser], ajaxDelete: Boolean = true)(implicit request: Request[AnyContent], lang: Lang)
+@(hackathon: model.Hackathon, team: model.Team, user: Option[model.User], ajaxDelete: Boolean = true)(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
 
@@ -6,25 +6,21 @@
 					
 <div class="pull-right">
 	@user.map { user =>
-		@if(team.hasMember(user.hackathonUserId)){
+		@if(team.hasMember(user.id)){
 			<a class="btn btn-warning" href="@routes.Team.disconnect(hackathon.id, team.id)">@helpers.CmsMessages("teams.leave.label")</a>
 		} else {
 			<a class="btn btn-warning" href="@routes.Team.join(hackathon.id, team.id)">@helpers.CmsMessages("teams.join.label")</a>  
 		}
-		@if(user.isAdmin || user.hackathonUserId == hackathon.organiserId || user.hackathonUserId == team.creatorId) {
+		@if(user.isAdmin || user.id == hackathon.organiserId || user.id == team.creatorId) {
+			@if(user.isAdmin || user.id == hackathon.organiserId) {
+				@if(team.status == model.TeamStatus.Blocked) {
+					<a class="btn btn-success team-approve" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@helpers.CmsMessages("teams.approve.label")</a>
+				}
+				@if(team.status == model.TeamStatus.Approved) {
+					<a class="btn btn-danger team-suspend" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@helpers.CmsMessages("teams.suspend.label")</a>
+				}
+			}
 			<a class="btn btn-success" href="@routes.Team.edit(hackathon.id, team.id)">@helpers.CmsMessages("global.edit")</a>
-			@if((team.status == model.TeamStatus.Unverified || team.status == model.TeamStatus.Blocked) && (user.isAdmin || user.hackathonUserId == hackathon.organiserId)) {
-				<a class="btn btn-success team-verify" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@helpers.CmsMessages("teams.verify.label")</a>
-			}
-			@if(team.status == model.TeamStatus.Approved) {
-				<a class="btn btn-danger team-suspend" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@helpers.CmsMessages("teams.suspend.label")</a>
-			}
-			@if(team.status == model.TeamStatus.Suspended) {
-				<a class="btn btn-success team-approve" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@helpers.CmsMessages("teams.approve.label")</a>
-			}
-			@if((team.status != model.TeamStatus.Unverified && team.status != model.TeamStatus.Blocked) && (user.isAdmin || user.hackathonUserId == hackathon.organiserId)) {
-				<a class="btn btn-danger team-block" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@helpers.CmsMessages("teams.block.label")</a>
-			}
 			@if(ajaxDelete) {
 				<a class="btn btn-danger team-delete" data-hackathon-id="@hackathon.id" data-team-id="@team.id">@helpers.CmsMessages("global.delete")</a>
 			} else {

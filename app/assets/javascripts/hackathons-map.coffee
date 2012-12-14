@@ -46,8 +46,10 @@ addMarkers = (map, markerImages, data) ->
             )(marker, infoBubble)
                   
     )
-    map.fitBounds(latlngbounds)
-    
+    if (data.length == 1 && data[0].locations.length == 1)
+    	map.setCenter(new google.maps.LatLng(data.locations[0].latitude, data.locations[0].longitude))
+    else
+    	map.fitBounds(latlngbounds)
 
 google.maps.event.addDomListener(window, 'load', initialize);
 

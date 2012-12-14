@@ -1,12 +1,12 @@
-@(hackathon: Option[model.Hackathon], team: Option[model.Team], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], team: Option[model.Team], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 
-@allowEdit = @{ !user.isEmpty && !team.isEmpty && (team.get.creatorId == user.get.hackathonUserId || team.get.hackathon.organiserId == user.get.hackathonUserId || user.get.isAdmin ) }
-
 @hackathons.hackathonMain(hackathon, user, "teams", "teams.status", team.isDefined, team.map(_.name)) {
-	@team.map{ team =>
-		<div class="page-header team" data-team-id="@team.id">
+
+  @team.map{ team =>
+
+    <div class="page-header team" data-team-id="@team.id">
 			<h2>@team.name @teamActions(hackathon.get, team, user, false)</h2>
 		</div>
 	  
@@ -31,7 +31,7 @@
 								<img src="@member.avatarUrl" alt="@member.name" height="40px" width="40px" />    				
 							}
 							@member.name
-							@if(allowEdit){ 
+							@if(helpers.Conditions.Team.canEdit(team, user)) { 
 								<a class="btn btn-warning" href="@routes.Team.disconnectUser(hackathon.get.id, team.id, member.id)">@helpers.CmsMessages("teams.remove.label")</a> 
 							}
 						</li>
@@ -42,7 +42,7 @@
 	    	</div>
 	   	</div>
 
-		@if(user.isDefined && (team.hasMember(user.get.hackathonUserId) || team.creatorId == user.get.hackathonUserId)) {
+		@{user.filter(u => team.hasMember(u.id) || team.creatorId == u.id)}.map {
 		<div class="page-header">
 			<h2>@helpers.CmsMessages("teams.chat")</h2>
 		</div>  

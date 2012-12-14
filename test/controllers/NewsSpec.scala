@@ -1,13 +1,16 @@
 package controllers
 
+import org.specs2.matcher.DataTables
 import org.specs2.mutable._
 import play.api.test._
 import play.api.test.Helpers._
 import play.api.i18n.Messages
 import play.api.test.FakeRequest$
 import org.squeryl.PrimitiveTypeMode.transaction
+import helpers.SecureSocialUtils
+import security.SecurityAbuseException
 
-class NewsSpec extends Specification {
+class NewsSpec extends Specification with DataTables {
 
   "News controller" should {
 
@@ -81,6 +84,71 @@ class NewsSpec extends Specification {
         status(result) must equalTo(SEE_OTHER)
         redirectLocation(result) must beSome.which(_ == "/login")
       }
+    }
+
+    "send 404 and display not found on view, edit, update, delete when news does not exists" in {
+
+      "" | "httpMethod" | "action" |
+        1 ! GET ! "/news/11111" |
+        1 ! GET ! "/news/11111/edit" |
+        1 ! POST ! "/news/11111" |
+        1 ! POST ! "/news/11111/delete" |
+        1 ! GET ! "/hackathons/1/news/11111" |
+        1 ! GET ! "/hackathons/1/news/11111/edit" |
+        1 ! POST ! "/hackathons/1/news/11111" |
+        1 ! POST ! "/hackathons/1/news/11111/delete" |> {
+          (justIgnoreMe, httpMethod, action) =>
+            {
+              val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
+              running(application) {
+                val result = SecureSocialUtils.fakeAuth(FakeRequest(httpMethod, action), application)
+
+                status(result) must equalTo(NOT_FOUND)
+                contentAsString(result) must contain(helpers.CmsMessages("news.notFound"))
+              }
+            }
+        }
+    }
+    
+    "send 404 and display not found on view, edit, update, delete when hackathon does not exists" in {
+
+      "" | "httpMethod" | "action" |
+        1 ! GET ! "/hackathons/11111/news/11111" |
+        1 ! GET ! "/hackathons/11111/news/11111/edit" |
+        1 ! POST ! "/hackathons/11111/news/11111" |
+        1 ! POST ! "/hackathons/11111/news/11111/delete" |> {
+          (justIgnoreMe, httpMethod, action) =>
+            {
+              val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
+              running(application) {
+                val result = SecureSocialUtils.fakeAuth(FakeRequest(httpMethod, action), application)
+
+                status(result) must equalTo(NOT_FOUND)
+                contentAsString(result) must contain(helpers.CmsMessages("hackathons.notFound"))
+              }
+            }
+        }
+    }
+
+    "throw SecurityAbuseException when tampering with edit, update, and delete" in {
+
+      "" | "httpMethod" | "action" |
+        1 ! GET ! "/news/1/edit" |
+        1 ! POST ! "/news/1" |
+        1 ! POST ! "/news/1/delete" |
+        1 ! GET ! "/hackathons/1/news/1/edit" |
+        1 ! POST ! "/hackathons/1/news/1" |
+        1 ! POST ! "/hackathons/1/news/1/delete" |> {
+          (justIgnoreMe, httpMethod, action) =>
+            {
+              val application = FakeApplication(additionalConfiguration = inMemoryDatabase() + (("application.secret", "asasasas")))
+              running(application) {
+                {
+                  SecureSocialUtils.fakeAuthNormalUser(FakeRequest(httpMethod, action), application)
+                } must throwA[SecurityAbuseException]
+              }
+            }
+        }
     }
 
   }

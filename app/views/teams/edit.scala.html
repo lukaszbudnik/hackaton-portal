@@ -1,11 +1,15 @@
-@(hackathon: Option[model.Hackathon], id: Long, teamForm: Form[model.Team], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], id: Long, teamForm: Form[model.Team], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @hackathons.hackathonMain(hackathon, Some(user), "teams", "teams.status", false) {
 	
-	<div class="page-header">
-		<h2>@helpers.CmsMessages("teams.edit.title")</h2>
-	</div>
+	@hackathon.map { hackathon =>
   
-	@teams.teamForm(hackathon.get, teamForm, routes.Team.update(hackathon.get.id, id), "global.update")
+		<div class="page-header">
+			<h2>@helpers.CmsMessages("teams.edit.title")</h2>
+		</div>
+  
+		@teams.teamForm(hackathon, teamForm, routes.Team.update(hackathon.id, id), "global.update")
+
+	}
 
 }

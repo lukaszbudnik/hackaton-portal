@@ -5,7 +5,7 @@ import play.api.Play.current
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.api.mvc.RequestHeader
-import org.squeryl.PrimitiveTypeMode.transaction
+import org.squeryl.PrimitiveTypeMode.inTransaction
 import java.util.ArrayList
 import com.sun.syndication.feed.synd.SyndEntry
 import com.sun.syndication.feed.synd.SyndEntryImpl
@@ -40,25 +40,24 @@ object Feed extends Controller {
     val feedDocument = output.outputString(syndFeed, true)
 
     Ok(feedDocument).withHeaders(CONTENT_TYPE -> "application/xml; charset=utf-8")
-
   }
 
   def news(feed: String) = Action { implicit request =>
-    transaction {
+    inTransaction {
       val (entries, allCategories) = generateEntriesAndCategories(model.News.all)
       generateFeed(feed, entries, allCategories, helpers.URL.externalUrl(routes.News.index))
     }
   }
 
   def newsH(hid: Long, feed: String) = Action { implicit request =>
-    transaction {
+    inTransaction {
       val (entries, allCategories) = generateEntriesAndCategories(model.Hackathon.lookup(hid).get.news, true)
       generateFeed(feed, entries, allCategories, helpers.URL.externalUrl(routes.News.indexH(hid)))
     }
   }
 
   def hackathons(feed: String) = Action { implicit request =>
-    transaction {
+    inTransaction {
       val entries = new ArrayList[SyndEntry]
       val allCategories = new ArrayList[SyndCategory]
 

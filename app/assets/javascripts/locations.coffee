@@ -222,7 +222,7 @@ class Locations
 	  	locationsContainer.on 'click', '.delete-hackathon-location', (evt) ->
 	  		idx = thisObj.locationContainerOf($(this)).attr('data-index')
 	  		target = $(evt.delegateTarget)
-	  		target.load params.deleteHackathonLocationAction + "/" + idx
+	  		target.load params.deleteHackathonLocationAction.replace('0', idx)
 	  		, target.find(':input').serializeObject()
 	  		, () ->
 	  			thisObj.initTypeahead()
