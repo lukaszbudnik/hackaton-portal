@@ -223,7 +223,7 @@ object Hackathon extends LangAwareController {
             errors => BadRequest(views.html.hackathons.edit(id, errors, user, statuses)),
             hackathonWithL => {
 
-              val newStatus = if (user.id == dbHackathon.organiserId && dbHackathon.status == model.HackathonStatus.Unverified) model.HackathonStatus.Unverified else hackathonWithL.hackathon.status 
+              val newStatus = if (!user.isAdmin && user.id == dbHackathon.organiserId && dbHackathon.status == model.HackathonStatus.Unverified) model.HackathonStatus.Unverified else hackathonWithL.hackathon.status 
               
               val newHackathon = hackathonWithL.hackathon.copy(organiserId = dbHackathon.organiserId, status = newStatus)
               
@@ -236,9 +236,9 @@ object Hackathon extends LangAwareController {
                 location =>
                   val lookupLoc = locationsMap.get(location.id)
                   if (lookupLoc.isDefined) {
-                    newHackathon.addLocation(location.copy(status = lookupLoc.get.status))
+                    dbHackathon.addLocation(location.copy(status = lookupLoc.get.status))
                   } else {
-                    newHackathon.addLocation(location)
+                    dbHackathon.addLocation(location)
                   }
 
               }
