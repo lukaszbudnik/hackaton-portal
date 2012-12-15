@@ -47,7 +47,7 @@ object Application extends LangAwareController {
     userForm.bindFromRequest.fold(
       errors => BadRequest(views.html.profile(errors, requestUser)),
       user => inTransaction {
-        model.User.update(requestUser.id, user)
+        model.User.update(requestUser.id, user.copy(openId = requestUser.openId))
         Redirect(routes.Application.profile).flashing("status" -> "updated", "title" -> user.name).withSession(request.session + (LangAwareController.SESSION_LANG_KEY -> user.language))
       })
   }
