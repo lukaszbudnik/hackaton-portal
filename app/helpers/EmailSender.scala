@@ -16,16 +16,17 @@ object EmailSender {
   private val emailNotifierService = use[EmailNotifierPlugin].emailNotifierService
 
   def sendEmailToAdministrators(admins: Iterable[User], subject: String, body: String, params: Seq[String] = Seq()) = {
-      admins.map { admin =>
+    admins.map { admin =>
       implicit val lang = Lang(admin.language)
       val mailBody = CmsMessages(body, params: _*)
       val mailSubject = CmsMessages(subject, params: _*)
       emailNotifierService.send(from, admin.email, mailSubject, mailBody, Some(mailBody))
     }
   }
-  
+
   def sendEmailToHackathonOrganiser(hackathon: Hackathon, subject: String, body: String, params: Seq[String] = Seq()) = {
     implicit val lang = Lang(hackathon.organiser.language)
+
     val mailBody = CmsMessages(body, params: _*)
     val mailSubject = CmsMessages(subject, params: _*)
 

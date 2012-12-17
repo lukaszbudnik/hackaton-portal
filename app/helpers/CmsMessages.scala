@@ -9,13 +9,13 @@ import play.api.Mode
 
 object CmsMessages {
 
-  def apply(key: String, args: Any*)(implicit lang: Lang) = {
+  def apply(key: String, args: Object*)(implicit lang: Lang) = {
 
     Play.current.mode match {
       case Mode.Test => key
       case _ => {
         if (args.size > 0) {
-          getMessage(key).format(args)
+          String.format(getMessage(key), args.map{a => a}:_*)
         } else {
           getMessage(key)
         }
