@@ -28,6 +28,7 @@ import org.apache.http.protocol.SyncBasicHttpContext
 import org.apache.http.impl.auth.BasicScheme
 import org.apache.http.protocol.BasicHttpContext
 import plugins.utils.HttpUtils
+import java.nio.charset.Charset
 
 class MailgunEmailNotifierPlugin(app: Application) extends EmailNotifierPlugin {
 
@@ -40,29 +41,29 @@ class MailgunEmailNotifierPlugin(app: Application) extends EmailNotifierPlugin {
     lazy val apiKey = app.configuration.getString("mailgun.apiKey").getOrElse {
       throw new RuntimeException("MAILGUN_API_KEY not set")
     }
-    
+
     loginDomain match {
       case "mock" => new MockEmailNotifierService()
       case _ => {
         val loginDomainParsingRegex(login, domain) = loginDomain
 
-		Logger.debug(String.format("MailgunEmailNotifierService about to be created: api_key: %s, login: %s, domain: %s", apiKey, login, domain))
-    
-		new MailgunEmailNotifierService(apiKey, login, domain)
+        Logger.debug(String.format("MailgunEmailNotifierService about to be created: api_key: %s, login: %s, domain: %s", apiKey, login, domain))
+
+        new MailgunEmailNotifierService(apiKey, login, domain)
       }
     }
   }
 
   def emailNotifierService = emailNotifierServiceInstance
-  
+
 }
 
 class MailgunEmailNotifierService(apiKey: String, login: String, domain: String) extends EmailNotifierService {
 
   private val SEND_URL_PATTERN = "https://api.mailgun.net/v2/%s/messages"
-  
+
   val sendUrl = SEND_URL_PATTERN.format(domain)
-  
+
   def send(from: String, to: String, subject: String, textMessage: String, htmlMessage: Option[String] = None) = {
     val httpClient = new DefaultHttpClient
 
@@ -71,19 +72,26 @@ class MailgunEmailNotifierService(apiKey: String, login: String, domain: String)
     val post = new HttpPost(sendUrl)
     val multiPartEntity: MultipartEntity = new MultipartEntity(HttpMultipartMode.STRICT)
 
-    multiPartEntity.addPart("from", new StringBody(from))
-    multiPartEntity.addPart("subject", new StringBody(subject))
-    multiPartEntity.addPart("to", new StringBody(to))
-    multiPartEntity.addPart("text", new StringBody(textMessage))
+    val charset = Option(Charset.availableCharsets().get("UTF-8")) match {
+      case Some(charset) => charset
+      case None => Charset.defaultCharset()
+    }  
+    
+    multiPartEntity.addPart("from", new StringBody(from, charset))
+    multiPartEntity.addPart("subject", new StringBody(subject, charset))
+    multiPartEntity.addPart("to", new StringBody(to, charset))
+    multiPartEntity.addPart("text", new StringBody(textMessage, charset))
     htmlMessage.map { htmlMessage =>
-      multiPartEntity.addPart("html", new StringBody(htmlMessage))
+      multiPartEntity.addPart("html", new StringBody(htmlMessage, charset))
     }
 
     post.setEntity(multiPartEntity)
 
     val r: HttpResponse = httpClient.execute(post, execContext)
     val responseBody = IOUtils.toString(r.getEntity().getContent())
+
     Logger.debug("Got MailGun Response: " + responseBody)
+
     val jsonResponse = Json.parse(responseBody)
 
     (jsonResponse \ "id").asOpt[String] match {
@@ -91,6 +99,6 @@ class MailgunEmailNotifierService(apiKey: String, login: String, domain: String)
       case Some(id) => EmailNotifierSuccessResponse(id)
     }
   }
-  
+
 }
 
