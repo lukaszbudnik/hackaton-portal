@@ -35,10 +35,10 @@ case class Hackathon(subject: String,
   private lazy val locationsRel = Hackathon.hackathonLocations.left(this)
 
   def organiser = organiserRel.head
-  def teams = teamsRel.toIterable
-  def problems = problemsRel.toIterable
+  def teams = from(teamsRel)(t => select(t) orderBy(t.name asc))
+  def problems = from(problemsRel)(p => select(p) orderBy(p.name asc))
   def prizes = prizeRel.toIterable
-  def news = from(newsRel)(n => select(n) orderBy(n.publishedDate desc))
+  def news = from(newsRel)(n => select(n) orderBy(n.publishedDate desc))	
   def sponsors = from(sponsorsRel)(s => select(s) orderBy (s.order asc))
   def members = membersRel.toIterable
   def locations = locationsRel.toIterable
