@@ -3,7 +3,7 @@ package model
 import org.specs2.mutable.Specification
 import org.squeryl.PrimitiveTypeMode.transaction
 import play.api.test.FakeApplication
-import play.api.test.Helpers.{running, inMemoryDatabase}
+import play.api.test.Helpers.{ running, inMemoryDatabase }
 
 class UserSpec extends Specification {
 
@@ -31,6 +31,15 @@ class UserSpec extends Specification {
 
           userDb.isEmpty must beFalse
           userDb.get.id must equalTo(user.id)
+        }
+      }
+    }
+    "retrive all admins" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        transaction {
+          val admins = model.User.admins
+
+          admins.size must beGreaterThan(0)
         }
       }
     }
