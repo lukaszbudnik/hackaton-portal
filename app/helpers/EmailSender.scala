@@ -15,12 +15,19 @@ object EmailSender {
   private val from = Play.current.configuration.getString("application.noReply").get
   private val emailNotifierService = use[EmailNotifierPlugin].emailNotifierService
 
-  def sendEmailToAdministrators(admins: Iterable[User], subject: String, body: String, params: Seq[String] = Seq()) = {
-    admins.map { admin =>
-      implicit val lang = Lang(admin.language)
+  def sendEmailToUsers(users: Iterable[User], subject: String, body: String, params: Seq[String] = Seq()) = {
+    users.map { user =>
+      implicit val lang = Lang(user.language)
       val mailBody = CmsMessages(body, params: _*)
       val mailSubject = CmsMessages(subject, params: _*)
-      emailNotifierService.send(from, admin.email, mailSubject, mailBody, Some(mailBody))
+      emailNotifierService.send(from, user.email, mailSubject, mailBody, Some(mailBody))
+    }
+  }
+  
+  def sendPlainEmailToUsers(users: Iterable[User], subject: String, body: String, params: Seq[String] = Seq()) = {
+    users.map { user =>
+      implicit val lang = Lang(user.language)
+      emailNotifierService.send(from, user.email, subject, body, None)
     }
   }
 
