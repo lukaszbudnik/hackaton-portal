@@ -87,26 +87,7 @@ object LoginPage extends LangAwareController {
               val toUrl = session.get(SecureSocial.OriginalUrlKey).getOrElse(
                 Play.configuration.getString(onLoginGoTo).getOrElse(Root))
 
-
-              val hackathonUser = transaction {
-                model.User.lookupByOpenId(user.id.id + user.id.providerId)
-              }
-
-              val newSession = session +
-            		  (SecureSocial.UserKey -> user.id.id) +
-            		  (SecureSocial.ProviderKey -> user.id.providerId) -
-            		  SecureSocial.OriginalUrlKey
-
-              val newSessionWithLang = hackathonUser match {
-                case Some(user) => {
-                  newSession + (LangAwareController.SESSION_LANG_KEY -> user.language)
-                }
-                case _ => {
-                  newSession
-                }
-              }
-
-              Redirect(toUrl).withSession { newSessionWithLang }
+              Redirect(toUrl)
 
           })
         } catch {
