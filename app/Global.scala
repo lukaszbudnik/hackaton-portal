@@ -2,6 +2,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.sql.Date
 
+import scala.annotation.implicitNotFound
 import scala.io.Codec.charset2codec
 import scala.io.Codec
 import scala.io.Source
@@ -12,7 +13,9 @@ import play.api.mvc.Results.BadRequest
 import play.api.mvc.Results.Forbidden
 import play.api.mvc.Results.InternalServerError
 import play.api.mvc.Results.NotFound
+import play.api.mvc.Action
 import play.api.mvc.Handler
+import play.api.mvc.PlainResult
 import play.api.mvc.RequestHeader
 import play.api.mvc.Result
 import play.api.Application
@@ -30,7 +33,9 @@ import org.squeryl.internals.DatabaseAdapter
 import org.squeryl.Session
 import org.squeryl.SessionFactory
 
+import controllers.LangAwareController
 import helpers.EmailSender
+import securesocial.core.SecureSocial
 import security.SecurityAbuseException
 
 object Global extends GlobalSettings {
@@ -93,8 +98,62 @@ object Global extends GlobalSettings {
   override def onRouteRequest(request: RequestHeader): Option[Handler] = {
     if (play.Play.isProd() && request.path.contains("sponsors")) {
       None
+    } else if (request.path.startsWith("/authenticate")) {
+      super.onRouteRequest(request) map {
+        case a: Action[_] => Action(a.parser) { request =>
+          removeLangVarFromSession(request, a(request))
+        }
+        case h => h
+      }
     } else {
-      super.onRouteRequest(request)
+      super.onRouteRequest(request) map {
+        case a: Action[_] => Action(a.parser) { request =>
+          addLangVarToSession(request, a(request))
+        }
+        case h => h
+      }
+    }
+  }
+
+  private def removeLangVarFromSession(request: RequestHeader, r: Result): Result = {
+    r match {
+      case sr: PlainResult => {
+        inTransaction {
+          val session = request.session
+          val sessionLanguage = session.get(LangAwareController.SESSION_LANG_KEY)
+
+          sessionLanguage.map { sessionLanguage =>
+            sr.withSession(session - LangAwareController.SESSION_LANG_KEY)
+          }.getOrElse(sr)
+
+        }
+      }
+      //case asr @ AsyncResult(promise) => asr.copy(result = promise.map(addVarToSession))
+      case any => any
+    }
+  }
+
+  private def addLangVarToSession(request: RequestHeader, r: Result): Result = {
+    r match {
+      case sr: PlainResult => {
+        inTransaction {
+          val session = request.session
+          val sessionLanguage = session.get(LangAwareController.SESSION_LANG_KEY)
+
+          val userSetLanguage = for (
+            userId <- session.get(SecureSocial.UserKey) if sessionLanguage.isEmpty;
+            providerId <- session.get(SecureSocial.ProviderKey);
+            user <- model.User.lookupByOpenId(userId + providerId) if !user.language.trim().isEmpty
+          ) yield user.language
+
+          userSetLanguage.map { newLanguage =>
+            sr.withSession(session + (LangAwareController.SESSION_LANG_KEY -> newLanguage))
+          }.getOrElse(sr)
+
+        }
+      }
+      //case asr @ AsyncResult(promise) => asr.copy(result = promise.map(addVarToSession))
+      case any => any
     }
   }
 
