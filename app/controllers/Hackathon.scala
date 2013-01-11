@@ -1,33 +1,32 @@
 package controllers
 
 import java.text.SimpleDateFormat
-import org.squeryl.PrimitiveTypeMode.inTransaction
-import helpers.Forms.enum
-import model.dto.HackathonWithLocations
+
+import scala.collection.mutable.ListBuffer
+
+import play.api.data.Forms.boolean
 import play.api.data.Forms.date
 import play.api.data.Forms.list
-import play.api.data.Forms.boolean
-import play.api.data.Forms.of
-import play.api.data.Forms._
 import play.api.data.Forms.longNumber
 import play.api.data.Forms.mapping
 import play.api.data.Forms.text
-import play.api.data.Forms.nonEmptyText
 import play.api.data.Form
-import play.api.i18n.Messages
 import play.api.libs.json.Json.toJson
 import play.api.libs.json.JsValue
-import play.api.mvc.Action
-import play.api.mvc.Controller
-import scala.collection.mutable.ListBuffer
-import play.api.Logger
+
+import org.squeryl.PrimitiveTypeMode.inTransaction
+
+import helpers.Forms.enum
+import helpers.EmailSender
+import helpers.URL
+import model.dto.HackathonWithLocations
 
 object Hackathon extends LangAwareController {
 
   private lazy val unVerifiedStatus = Seq(model.HackathonStatus.Unverified.toString -> model.HackathonStatus.Unverified.toString)
-  private lazy val editStatuses = model.HackathonStatus.values.filterNot(_ == model.HackathonStatus.Unverified).map{ s => s.toString -> s.toString}.toSeq
-  private lazy val allStatuses = model.HackathonStatus.values.map{ s => s.toString -> s.toString}.toSeq
-  
+  private lazy val editStatuses = model.HackathonStatus.values.filterNot(_ == model.HackathonStatus.Unverified).map { s => s.toString -> s.toString }.toSeq
+  private lazy val allStatuses = model.HackathonStatus.values.map { s => s.toString -> s.toString }.toSeq
+
   private def hackathonWithLocations2Json(h: model.dto.HackathonWithLocations): JsValue = {
 
     toJson(Map(
@@ -172,7 +171,7 @@ object Hackathon extends LangAwareController {
       val user = userFromRequest(request)
 
       val hackathon = new model.dto.HackathonWithLocations(new model.Hackathon(user.id), List[model.Location](new model.Location))
-      
+
       Ok(views.html.hackathons.create(hackathonForm.fill(hackathon), user, unVerifiedStatus))
     }
   }
@@ -189,6 +188,12 @@ object Hackathon extends LangAwareController {
               newHackathon.addLocation(location.copy(submitterId = user.id))
           }
           newHackathon.addMember(user)
+
+          val url = URL.externalUrl(routes.Hackathon.view(newHackathon.id))
+          val params = Seq(newHackathon.subject, url)
+
+          EmailSender.sendEmailToUsers(model.User.admins, "notifications.email.hackathon.added.subject", "notifications.email.hackathon.added.body", params)
+
           Redirect(routes.Hackathon.index).flashing("status" -> "added", "title" -> newHackathon.subject)
         })
     }
@@ -199,9 +204,9 @@ object Hackathon extends LangAwareController {
       val user = userFromRequest(request)
       model.dto.HackathonWithLocations.lookup(id).map { hackathonWithL =>
         ensureHackathonOrganiserOrAdmin(hackathonWithL.hackathon) {
-          
+
           val statuses = if (user.isAdmin) allStatuses else editStatuses
-          
+
           Ok(views.html.hackathons.edit(id, hackathonForm.fill(hackathonWithL), user, statuses))
         }
       }.getOrElse {
@@ -216,17 +221,18 @@ object Hackathon extends LangAwareController {
       model.Hackathon.lookup(id).map { dbHackathon =>
 
         ensureHackathonOrganiserOrAdmin(dbHackathon) {
-          
+
           val statuses = if (user.isAdmin) allStatuses else editStatuses
 
           hackathonForm.bindFromRequest.fold(
             errors => BadRequest(views.html.hackathons.edit(id, errors, user, statuses)),
             hackathonWithL => {
 
-              val newStatus = if (!user.isAdmin && user.id == dbHackathon.organiserId && dbHackathon.status == model.HackathonStatus.Unverified) model.HackathonStatus.Unverified else hackathonWithL.hackathon.status 
+              val oldStatus = dbHackathon.status
+              val newStatus = if (!user.isAdmin && oldStatus == model.HackathonStatus.Unverified) model.HackathonStatus.Unverified else hackathonWithL.hackathon.status
               
               val newHackathon = hackathonWithL.hackathon.copy(organiserId = dbHackathon.organiserId, status = newStatus)
-              
+
               model.Hackathon.update(id, newHackathon)
 
               // we have to restore previous statuses
@@ -240,8 +246,20 @@ object Hackathon extends LangAwareController {
                   } else {
                     dbHackathon.addLocation(location)
                   }
-
               }
+
+              if (oldStatus != newStatus && (oldStatus == model.HackathonStatus.Unverified || newStatus == model.HackathonStatus.Unverified)) {
+                val url = URL.externalUrl(routes.Hackathon.view(id))
+                val params = Seq(newHackathon.subject, url)
+
+                if (oldStatus == model.HackathonStatus.Unverified) {
+                  EmailSender.sendEmailToUsers(dbHackathon.members, "notifications.email.hackathon.approved.subject", "notifications.email.hackathon.approved.body", params)
+                }
+                if (newStatus == model.HackathonStatus.Unverified) {
+                  EmailSender.sendEmailToUsers(dbHackathon.members, "notifications.email.hackathon.blocked.subject", "notifications.email.hackathon.blocked.body", params)
+                }
+              }
+
               Redirect(routes.Hackathon.index).flashing("status" -> "updated", "title" -> hackathonWithL.hackathon.subject)
             })
         }
@@ -255,7 +273,16 @@ object Hackathon extends LangAwareController {
       model.Hackathon.lookup(id).map { hackathon =>
 
         ensureHackathonOrganiserOrAdmin(hackathon) {
+          
+          // load members as after deletion members will evaluate to empty QueryDsl
+          val members = hackathon.members.map(u => u)
+          
           model.Hackathon.delete(id)
+          
+          val params = Seq(hackathon.subject)
+
+          EmailSender.sendEmailToUsers(members, "notifications.email.hackathon.deleted.subject", "notifications.email.hackathon.deleted.body", params)
+
           Redirect(routes.Hackathon.index).flashing("status" -> "deleted")
         }
 

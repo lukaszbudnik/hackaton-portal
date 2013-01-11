@@ -16,14 +16,16 @@ object EmailSender {
   private val emailNotifierService = use[EmailNotifierPlugin].emailNotifierService
 
   def sendEmailToUsers(users: Iterable[User], subject: String, body: String, params: Seq[String] = Seq()) = {
-    users.map { user =>
-      implicit val lang = Lang(user.language)
-      val mailBody = CmsMessages(body, params: _*)
-      val mailSubject = CmsMessages(subject, params: _*)
-      emailNotifierService.send(from, user.email, mailSubject, mailBody, Some(mailBody))
-    }
+    users.foreach(sendEmailToUser(_, subject, body, params))
   }
-  
+
+  def sendEmailToUser(user: User, subject: String, body: String, params: Seq[String] = Seq()) = {
+    implicit val lang = Lang(user.language)
+    val mailBody = CmsMessages(body, params: _*)
+    val mailSubject = CmsMessages(subject, params: _*)
+    emailNotifierService.send(from, user.email, mailSubject, mailBody, Some(mailBody))
+  }
+
   def sendPlainEmailToUsers(users: Iterable[User], subject: String, body: String, params: Seq[String] = Seq()) = {
     users.map { user =>
       implicit val lang = Lang(user.language)
