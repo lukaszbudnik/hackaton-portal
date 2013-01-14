@@ -8,7 +8,7 @@ import org.squeryl.PrimitiveTypeMode.transaction
 import securesocial.core.SocialUser
 import securesocial.core.UserId
 import securesocial.core.AuthenticationMethod
-import service.UserService
+import security.UserService
 import play.api.Application
 
 /**
@@ -24,7 +24,7 @@ object SecureSocialUtils {
    def fakeAuth[T](request: FakeRequest[AnyContent], application: Application ): Result = {
      // saving user information, this information is then retrieved in SecuredAction when authenticating
     transaction {
-      val socialUser = SocialUser(UserId("mockId", "mockProvider"), "mockUser", None, None, AuthenticationMethod.UserPassword, true, None, None, None)
+      val socialUser = SocialUser(UserId("mockId", "mockProvider"), "mockUser", "mockUser", "mockUser", None, None, AuthenticationMethod.UserPassword)
       val service = new UserService(application)
       securesocial.core.UserService.save(socialUser)
     }
@@ -38,7 +38,7 @@ object SecureSocialUtils {
    def fakeAuthNormalUser[T](request: FakeRequest[AnyContent], application: Application ): Result = {
      // saving user information, this information is then retrieved in SecuredAction when authenticating
     transaction {
-      val socialUser = SocialUser(UserId("mockNormalUserId", "mockProvider"), "mockNormalUser", None, None, AuthenticationMethod.UserPassword, true, None, None, None)
+      val socialUser = SocialUser(UserId("mockNormalUserId", "mockProvider"), "mockNormalUser", "mockNormalUser", "mockNormalUser", None, None, AuthenticationMethod.UserPassword)
       val service = new UserService(application)
       securesocial.core.UserService.save(socialUser)
     }

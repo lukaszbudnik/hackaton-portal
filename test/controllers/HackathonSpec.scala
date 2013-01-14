@@ -8,7 +8,6 @@ import play.api.test.FakeRequest$
 import org.squeryl.PrimitiveTypeMode.transaction
 import helpers.CmsMessages
 import org.specs2.matcher.DataTables
-import securesocial.core.ProviderRegistry
 import securesocial.core.SecureSocial
 import securesocial.core.UserService
 import securesocial.core.SocialUser
