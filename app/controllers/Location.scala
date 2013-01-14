@@ -33,7 +33,7 @@ object Location extends LangAwareController {
       "submitterId" -> ignored(0L),
       "status" -> enum(model.LocationStatus))(model.Location.apply)(model.Location.unapply))
 
-  def index = SecuredAction() { implicit request =>
+  def index = SecuredAction { implicit request =>
     inTransaction {
       ensureAdmin {
         val user = userFromRequest(request)
@@ -43,7 +43,7 @@ object Location extends LangAwareController {
 
   }
 
-  def view(id: Long) = SecuredAction() { implicit request =>
+  def view(id: Long) = SecuredAction { implicit request =>
     inTransaction {
       ensureAdmin {
         val user = userFromRequest(request)
@@ -52,13 +52,13 @@ object Location extends LangAwareController {
     }
   }
 
-  def create = SecuredAction() { implicit request =>
+  def create = SecuredAction { implicit request =>
     inTransaction {
       Ok(views.html.locations.locationForm(routes.Location.save, locationForm, false))
     }
   }
 
-  def createA = SecuredAction() { implicit request =>
+  def createA = SecuredAction { implicit request =>
     inTransaction {
       ensureAdmin {
         val user = userFromRequest(request)
@@ -67,7 +67,7 @@ object Location extends LangAwareController {
     }
   }
 
-  def save = SecuredAction() { implicit request =>
+  def save = SecuredAction { implicit request =>
     locationForm.bindFromRequest.fold(
       errors => BadRequest(views.html.locations.locationForm(routes.Location.save, errors, false)),
       location => inTransaction {
@@ -78,7 +78,7 @@ object Location extends LangAwareController {
       })
   }
 
-  def saveA = SecuredAction() { implicit request =>
+  def saveA = SecuredAction { implicit request =>
     inTransaction {
       ensureAdmin {
         val user = userFromRequest(request)
@@ -92,7 +92,7 @@ object Location extends LangAwareController {
     }
   }
 
-  def edit(id: Long) = SecuredAction() { implicit request =>
+  def edit(id: Long) = SecuredAction { implicit request =>
 
     inTransaction {
       model.Location.lookup(id).map { location =>
@@ -107,7 +107,7 @@ object Location extends LangAwareController {
     }
   }
 
-  def editA(id: Long) = SecuredAction() { implicit request =>
+  def editA(id: Long) = SecuredAction { implicit request =>
     inTransaction {
       ensureAdmin {
         val user = userFromRequest(request)
@@ -120,7 +120,7 @@ object Location extends LangAwareController {
     }
   }
 
-  def update(id: Long) = SecuredAction() { implicit request =>
+  def update(id: Long) = SecuredAction { implicit request =>
     locationForm.bindFromRequest.fold(
       errors => BadRequest(views.html.locations.locationForm(routes.Location.edit(id), errors, false)),
       location => inTransaction {
@@ -133,7 +133,7 @@ object Location extends LangAwareController {
       })
   }
 
-  def updateA(id: Long) = SecuredAction() { implicit request =>
+  def updateA(id: Long) = SecuredAction { implicit request =>
     ensureAdmin {
       val user = userFromRequest(request)
       locationForm.bindFromRequest.fold(
@@ -145,7 +145,7 @@ object Location extends LangAwareController {
     }
   }
 
-  def delete(id: Long) = SecuredAction() { implicit request =>
+  def delete(id: Long) = SecuredAction { implicit request =>
     inTransaction {
       ensureAdmin {
         model.Location.delete(id)
@@ -154,7 +154,7 @@ object Location extends LangAwareController {
     }
   }
 
-  def findByPattern(term: String) = SecuredAction() { implicit request =>
+  def findByPattern(term: String) = SecuredAction { implicit request =>
     inTransaction {
       implicit object LocationFormat extends Format[model.Location] {
         def reads(json: JsValue): model.Location = new model.Location()

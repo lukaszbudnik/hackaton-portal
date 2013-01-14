@@ -56,7 +56,7 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def create(hid: Long) = SecuredAction() { implicit request =>
+  def create(hid: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
@@ -68,7 +68,7 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def save(hid: Long) = SecuredAction() { implicit request =>
+  def save(hid: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
@@ -95,7 +95,7 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def edit(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
@@ -113,7 +113,7 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def update(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
@@ -140,7 +140,7 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def approve(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
       model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
 
@@ -165,7 +165,7 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def block(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def block(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
       model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
 
@@ -188,7 +188,7 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def delete(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>

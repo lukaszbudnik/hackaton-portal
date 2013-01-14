@@ -42,7 +42,7 @@ object Prize extends LangAwareController {
     }
   }
 
-  def create(hid: Long) = SecuredAction() { implicit request =>
+  def create(hid: Long) = SecuredAction { implicit request =>
     inTransaction {
       model.Hackathon.lookup(hid).map { hackathon =>
         ensureHackathonOrganiserOrAdmin(hackathon) {
@@ -54,7 +54,7 @@ object Prize extends LangAwareController {
     }
   }
 
-  def save(hid: Long) = SecuredAction() { implicit request =>
+  def save(hid: Long) = SecuredAction { implicit request =>
     inTransaction {
       model.Hackathon.lookup(hid).map { hackathon =>
         val user = userFromRequest(request)
@@ -68,7 +68,7 @@ object Prize extends LangAwareController {
     }
   }
 
-  def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def edit(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
@@ -85,7 +85,7 @@ object Prize extends LangAwareController {
     }
   }
 
-  def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def update(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
@@ -109,7 +109,7 @@ object Prize extends LangAwareController {
     }
   }
 
-  def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def delete(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>

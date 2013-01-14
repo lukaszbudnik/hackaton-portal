@@ -18,7 +18,7 @@ object Content extends LangAwareController {
         "lang" -> text,
         "value" -> text)(cms.dto.Content.apply)(cms.dto.Content.unapply)))(Entry.apply)(Entry.unapply))
 
-  def index = SecuredAction() { implicit request =>
+  def index = SecuredAction { implicit request =>
     ensureAdmin {
       val user = userFromRequest(request)
 
@@ -28,7 +28,7 @@ object Content extends LangAwareController {
     }
   }
 
-  def create = SecuredAction() { implicit request =>
+  def create = SecuredAction { implicit request =>
     ensureAdmin {
       val user = userFromRequest(request)
 
@@ -37,7 +37,7 @@ object Content extends LangAwareController {
     }
   }
 
-  def save = SecuredAction() { implicit request =>
+  def save = SecuredAction { implicit request =>
     ensureAdmin {
       val user = userFromRequest(request)
 
@@ -50,7 +50,7 @@ object Content extends LangAwareController {
     }
   }
 
-  def edit(key: String) = SecuredAction() { implicit request =>
+  def edit(key: String) = SecuredAction { implicit request =>
     ensureAdmin {
       val user = userFromRequest(request)
 
@@ -63,7 +63,7 @@ object Content extends LangAwareController {
     }
   }
 
-  def update(key: String) = SecuredAction() { implicit request =>
+  def update(key: String) = SecuredAction { implicit request =>
     ensureAdmin {
       val user = userFromRequest(request)
 
@@ -81,7 +81,7 @@ object Content extends LangAwareController {
     }
   }
 
-  def delete(key: String) = SecuredAction() { implicit request =>
+  def delete(key: String) = SecuredAction { implicit request =>
     ensureAdmin {
       val user = userFromRequest(request)
 
