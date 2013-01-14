@@ -13,9 +13,7 @@ import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.Application
 import play.api.Logger
-import org.apache.commons.lang.StringUtils
-
-
+import org.apache.commons.lang3.StringUtils
 
 class ClaudinaryCloudImagePlugin(app: Application) extends CloudImagePlugin {
 
