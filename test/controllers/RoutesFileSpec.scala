@@ -57,8 +57,10 @@ class RoutesFileSpec extends Specification {
 //            case Some(contentType: String) if contentType == "text/html" || contentType == "application/xml" => XML.loadString(contentAsString(result).replaceAll("&", "&#38;"))
 //            case _ =>
 //          }
-          
-          status(result) must beOneOf(OK, SEE_OTHER)
+          if (action.startsWith("/not-authorized"))
+        	  status(result) must beEqualTo (FORBIDDEN)
+          else 
+            status(result) must beOneOf(OK, SEE_OTHER)
 
         }
       }
