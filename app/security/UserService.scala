@@ -1,5 +1,7 @@
 package security
 
+import org.squeryl.PrimitiveTypeMode.transaction
+
 import model.User
 import play.api.Application
 import play.api.Logger
@@ -7,7 +9,6 @@ import securesocial.core.Identity
 import securesocial.core.UserId
 import securesocial.core.UserServicePlugin
 import securesocial.core.providers.Token
-import org.squeryl.PrimitiveTypeMode.inTransaction
 
 class UserService(application: Application) extends UserServicePlugin(application) {
 
@@ -24,7 +25,7 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
 
     if (alreadyLoggedInSocialUser.isEmpty) {
       // user not logged in, see if user is already stored in our database
-      inTransaction {
+      transaction {
         model.User.lookupByOpenId(socialUser.id.id + socialUser.id.providerId).getOrElse(addNewUserToDatabase(socialUser))
       }
     }

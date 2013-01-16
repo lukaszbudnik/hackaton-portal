@@ -3,6 +3,7 @@ package forms
 import java.util.Date
 import java.text.SimpleDateFormat
 import org.specs2.mutable._
+import play.api.test._
 import play.api.test.Helpers._
 
 class PrizeSpec extends Specification {
@@ -12,6 +13,7 @@ class PrizeSpec extends Specification {
   "Prize form" should {
 
     "require all fields" in {
+
       val form = prizeForm.bind(Map.empty[String, String])
 
       form.hasErrors must beTrue

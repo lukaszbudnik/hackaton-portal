@@ -3,70 +3,76 @@ package forms
 import java.util.Date
 import java.text.SimpleDateFormat
 import org.specs2.mutable._
+import play.api.test._
 import play.api.test.Helpers._
 import model.dto.HackathonWithLocations$
-
+import controllers.Hackathon.hackathonForm
+	
 class HackathonSpec extends Specification {
 
-  import controllers.Hackathon.hackathonForm
+	"Hackathon form" should { 
+		
+		"require all fields" in {
+			running(FakeApplication()) {
+				val form = hackathonForm.bind(Map.empty[String, String])
+				
+				form.hasErrors must beTrue
+				form.errors.size must equalTo(5)
 
-  "Hackathon form" should {
+				form("subject").hasErrors must beTrue
+				form("status").hasErrors must beTrue
+				form("date").hasErrors must beTrue
+				form("description").hasErrors must beTrue
+				form("organizerId").hasErrors must beTrue
 
-    "require all fields" in {
-      val form = hackathonForm.bind(Map.empty[String, String])
+				form.value must beNone
+			}
+		}
 
-      form.hasErrors must beTrue
-      form.errors.size must equalTo(5)
+		"require subject, description and fail if status, date and organizerId not filled" in {
+			running(FakeApplication()) {
+				val form = hackathonForm.bind(Map("subject" -> "Subject", "description" -> "Description"))
 
-      form("subject").hasErrors must beTrue
-      form("status").hasErrors must beTrue
-      form("date").hasErrors must beTrue
-      form("description").hasErrors must beTrue
-      form("organizerId").hasErrors must beTrue
+				form.hasErrors must beTrue
+				form.errors.size must equalTo(3)
 
-      form.value must beNone
-    }
+				// no errors
+				form("subject").hasErrors must beFalse
+				form("description").hasErrors must beFalse
 
-    "require subject, description and fail if status, date and organizerId not filled" in {
-      val form = hackathonForm.bind(Map("subject" -> "Subject", "description" -> "Description"))
+				// errors
+				form("status").hasErrors must beTrue
+				form("date").hasErrors must beTrue
+				form("organizerId").hasErrors must beTrue
 
-      form.hasErrors must beTrue
-      form.errors.size must equalTo(3)
+				form.data must havePair("subject" -> "Subject")
+				form.data must havePair("description" -> "Description")
 
-      // no errors
-      form("subject").hasErrors must beFalse
-      form("description").hasErrors must beFalse
+				form("subject").value must beSome.which(_ == "Subject")
+				form("description").value must beSome.which(_ == "Description")
 
-      // errors
-      form("status").hasErrors must beTrue
-      form("date").hasErrors must beTrue
-      form("organizerId").hasErrors must beTrue
+				form("status").value must beNone
+				form("date").value must beNone
+				form("organizerId").value must beNone
 
-      form.data must havePair("subject" -> "Subject")
-      form.data must havePair("description" -> "Description")
+				form.value must beNone
+			}
+		}
 
-      form("subject").value must beSome.which(_ == "Subject")
-      form("description").value must beSome.which(_ == "Description")
+		"validate status as model.HackathonStatus, date as date and organizerId as numeric" in {
+			running(FakeApplication()) {
+				val form = hackathonForm.bind(Map("subject" -> "Subject", "status" -> "_", "date" -> "_", "description" -> "Description", "organizerId" -> "organizerId"))
 
-      form("status").value must beNone
-      form("date").value must beNone
-      form("organizerId").value must beNone
+				form.hasErrors must beTrue
+				form.errors.size must equalTo(3)
 
-      form.value must beNone
-    }
+				form("status").hasErrors must beTrue
+				form("date").hasErrors must beTrue
+				form("organizerId").hasErrors must beTrue
 
-    "validate status as model.HackathonStatus, date as date and organizerId as numeric" in {
-      val form = hackathonForm.bind(Map("subject" -> "Subject", "status" -> "_", "date" -> "_", "description" -> "Description", "organizerId" -> "organizerId"))
+				form.value must beNone
+			}
+		}
 
-      form.hasErrors must beTrue
-      form.errors.size must equalTo(3)
-
-      form("status").hasErrors must beTrue
-      form("date").hasErrors must beTrue
-      form("organizerId").hasErrors must beTrue
-
-      form.value must beNone
-    }
-
-  }
+	}
 }
