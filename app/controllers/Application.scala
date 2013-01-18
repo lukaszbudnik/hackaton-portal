@@ -34,15 +34,15 @@ object Application extends LangAwareController {
   def contact = UserAwareAction { implicit request =>
     Ok(views.html.contact(userFromRequest))
   }
-
-  def profile = SecuredAction() { implicit request =>
+  
+  def profile = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       Ok(views.html.profile(userForm.fill(user), user))
     }
   }
 
-  def updateProfile = SecuredAction() { implicit request =>
+  def updateProfile = SecuredAction { implicit request =>
     val requestUser = userFromRequest(request)
     userForm.bindFromRequest.fold(
       errors => BadRequest(views.html.profile(errors, requestUser)),

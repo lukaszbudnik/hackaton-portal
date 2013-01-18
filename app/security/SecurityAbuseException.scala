@@ -1,8 +1,8 @@
 package security
 
-import securesocial.core.SocialUser
+import securesocial.core.Identity
 
-case class SecurityAbuseException(socialUser: SocialUser) extends Exception {
+case class SecurityAbuseException(socialUser: Identity) extends Exception {
   override def toString: String = {
     this.getClass().getSimpleName() + " " + socialUser
   }

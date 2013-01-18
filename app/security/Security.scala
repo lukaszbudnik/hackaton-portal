@@ -1,7 +1,12 @@
 package security
 
-import play.api.mvc._
+import scala.annotation.implicitNotFound
+
 import org.squeryl.PrimitiveTypeMode.inTransaction
+
+import play.api.mvc.AnyContent
+import play.api.mvc.Result
+import securesocial.core.SecuredRequest
 
 trait Security extends securesocial.core.SecureSocial {
 
