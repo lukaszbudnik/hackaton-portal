@@ -15,15 +15,17 @@ object ApplicationBuild extends Build {
     EclipseKeys.skipParents in ThisBuild := false) ++ Seq(jacoco.settings: _*) ++
     Seq(cpdSettings : _*) ++ Seq(findbugsSettings : _*)
 
+  val appDependenciesPlugins = Seq(
+    "net.databinder" %% "dispatch-http" % "0.8.7",
+    "net.databinder" %% "dispatch-mime" % "0.8.7",
+    "net.databinder" %% "dispatch-json" % "0.8.7")
+
   val appDependencies = Seq(
     "org.squeryl" %% "squeryl" % "0.9.5-2",
     "com.h2database" % "h2" % "1.3.168",
     "postgresql" % "postgresql" % "9.1-901.jdbc4",
     "securesocial" % "securesocial_2.9.1" % "2.0.8",
     "rome" % "rome" % "1.0",
-    "net.databinder" %% "dispatch-http" % "0.8.7",
-    "net.databinder" %% "dispatch-mime" % "0.8.7",
-    "net.databinder" %% "dispatch-json" % "0.8.7",
     "com.typesafe" %% "play-plugins-util" % "2.0.1",
     "org.mindrot" % "jbcrypt" % "0.3m",
     "com.github.mumoshu" %% "play2-memcached" % "0.2.1-SNAPSHOT",
@@ -31,7 +33,7 @@ object ApplicationBuild extends Build {
     "com.novus" %% "salat-core" % "0.0.8-SNAPSHOT")
 
   val plugins = PlayProject(
-    appName + "-play-cloud-plugins", appVersion, appDependencies, path = file("modules/play-cloud-plugins"))
+    appName + "-play-cloud-plugins", appVersion, appDependenciesPlugins, path = file("modules/play-cloud-plugins"))
 
   val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA, settings = newSettings)
     .settings(
