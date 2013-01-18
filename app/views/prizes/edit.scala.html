@@ -1,9 +1,9 @@
-@(hackathon: Option[model.Hackathon], id: Long, prizeForm: Form[model.Prize], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], id: Long, prizeForm: Form[model.Prize], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @hackathons.hackathonMain(hackathon, Some(user), "prizes", "prizes.status", false) {
 	
 	<div class="page-header">
-		<h2>@Messages("prizes.edit.title")</h2>
+		<h2>@helpers.CmsMessages("prizes.edit.title")</h2>
 	</div>
   
 	@prizes.prizeForm(hackathon.get, prizeForm, routes.Prize.update(hackathon.get.id, id), "global.update")

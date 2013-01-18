@@ -1,4 +1,4 @@
-@(userForm: Form[model.User], action: play.api.mvc.Call)
+@(userForm: Form[model.User], action: play.api.mvc.Call)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -6,28 +6,34 @@
 @helper.form(action){
 	@inputText(
         userForm("name"),
-        '_label -> "Name",
+        '_label -> helpers.CmsMessages("profile.name.label"),
         '_showConstraints -> false
     )
     @inputText(
         userForm("email"),
-        '_label -> "E-mail",
+        '_label -> helpers.CmsMessages("profile.email.label"),
+        '_showConstraints -> false
+    )
+    @select(
+        userForm("language"),
+        play.Play.application.configuration.getString("application.langs").split(",").map{ l => l.trim -> l.trim }.toSeq,
+        '_label -> helpers.CmsMessages("profile.language.label"),
         '_showConstraints -> false
     )
     @inputText(
         userForm("github_username"),
-        '_label -> "GitHub user name",
+        '_label -> helpers.CmsMessages("profile.gitHubUsername.label"),
         '_showConstraints -> false
     )
     @inputText(
         userForm("twitter_account"),
-        '_label -> "Twitter account",
+        '_label -> helpers.CmsMessages("profile.twitterAccoun.label"),
         '_showConstraints -> false
     )
     @inputText(
         userForm("avatar_url"),
-        '_label -> "Avatar URL",
+        '_label -> helpers.CmsMessages("profile.avatarUrl.label"),
         '_showConstraints -> false
     )
-    <button type="submit" class="btn">@Messages("global.submit")</button>
+    <button type="submit" class="btn">@helpers.CmsMessages("global.submit")</button>
 }

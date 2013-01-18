@@ -1,8 +1,8 @@
-@(hackathon: Option[model.Hackathon], problem: Option[model.Problem], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], problem: Option[model.Problem], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 
-@hackathons.hackathonMain(hackathon, user, "problems", "problems.status", problem.isDefined) {
+@hackathons.hackathonMain(hackathon, user, "problems", "problems.status", problem.isDefined, problem.map(_.name)) {
 
 	@hackathon.map { hackathon =>
   
@@ -13,8 +13,8 @@
 	  
 		<div class="row">
 			<div class="span12">
-				<p>@Messages("problems.description.label"): @problem.description</p>
-				<p>@Messages("problems.submitter.label"):
+				<p>@helpers.CmsMessages("problems.description.label"): @problem.description</p>
+				<p>@helpers.CmsMessages("problems.submitter.label"):
 				@if(problem.submitter.avatarUrl) { 
 					<img src="@problem.submitter.avatarUrl" alt="@problem.submitter.name" height="40px" width="40px" />    				
 				}
@@ -24,7 +24,7 @@
 	  
 	}.getOrElse{
 		<div class="page-header">
-			<h2>@Messages("problems.notFound")</h2>
+			<h2>@helpers.CmsMessages("problems.notFound")</h2>
 		</div>
 	}
 

@@ -1,7 +1,6 @@
 package controllers
 
-import org.squeryl.PrimitiveTypeMode.transaction
-import core.LangAwareController
+import org.squeryl.PrimitiveTypeMode.inTransaction
 import model.TeamStatus
 import play.api.data.Forms._
 import play.api.data.Form
@@ -14,238 +13,296 @@ import securesocial.core.UserId
 import securesocial.core.AuthenticationMethod
 import helpers.URL
 import helpers.EmailSender
+import play.api.mvc.AnyContent
+import helpers.Conditions
 
-object Team extends LangAwareController with securesocial.core.SecureSocial {
+object Team extends LangAwareController {
 
   val teamForm = Form(
     mapping(
       "name" -> text.verifying("teams.name.error", !_.isEmpty()),
-      "status" -> ignored(TeamStatus.Unverified),
+      "status" -> ignored(TeamStatus.Blocked),
       "creatorId" -> longNumber,
       "hackathonId" -> longNumber,
       "problemId" -> optional(longNumber))(model.Team.apply)(model.Team.unapply))
 
   def index(hid: Long) = UserAwareAction { implicit request =>
-    transaction {
-      Ok(views.html.teams.index(model.Hackathon.lookup(hid), request.user))
+    inTransaction {
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        val teams = hackathon.teams.filter(t => Conditions.Team.canRender(hackathon, t, user))
+        val canAdd = Conditions.Team.canAdd(hackathon, user)
+        Ok(views.html.teams.index(Some(hackathon), teams, canAdd, user))
+      }.getOrElse(NotFound(views.html.hackathons.view(None, user)))
+
     }
   }
 
   def view(hid: Long, id: Long) = UserAwareAction { implicit request =>
-    transaction {
-      val team = model.Team.lookup(id)
-      val hackathon = team.map { t => Some(t.hackathon) }.getOrElse { model.Hackathon.lookup(hid) }
-      Ok(views.html.teams.view(hackathon, team, request.user))
-    }
-  }
+    inTransaction {
 
-  def create(hid: Long) = SecuredAction() { implicit request =>
-    transaction {
-      val hackathon = model.Hackathon.lookup(hid)
-      val team = new model.Team(request.user.hackathonUserId, hid)
-      Ok(views.html.teams.create(hackathon, teamForm.fill(team), request.user))
-    }
-  }
+      val user = userFromRequest(request)
 
-  def save(hid: Long) = SecuredAction() { implicit request =>
-    teamForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.teams.create(model.Hackathon.lookup(hid), errors, request.user))
-      },
-      team => transaction {
-        // insert team and add creator as a member
-        val dbTeam = model.Team.insert(team)
-        dbTeam.addMember(team.creator)
+      model.Hackathon.lookup(hid).map { hackathon =>
 
-        val url = URL.externalUrl(routes.Team.view(hid, team.id))
-        val params = Seq(team.name, url)
-
-        EmailSender.sendEmailToHackathonOrganiser(dbTeam.hackathon, "notifications.email.team.created.subject", "notifications.email.team.created.body", params)
-
-        Redirect(routes.Team.index(hid)).flashing("status" -> "added", "title" -> team.name)
-      })
-  }
-
-  def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Team.lookup(id).map { team =>
-        helpers.Security.verifyIfAllowed(hid == team.hackathonId)(request.user)
-        helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
-        Ok(views.html.teams.edit(Some(team.hackathon), id, teamForm.fill(team), request.user))
-      }.getOrElse {
-        // no team found
-        Redirect(routes.Team.view(hid, id)).flashing()
-      }
-    }
-  }
-
-  def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    teamForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.teams.edit(model.Hackathon.lookup(hid), id, errors, request.user))
-      },
-      team => transaction {
-        val dbTeam = model.Team.lookup(id)
-
-        dbTeam.map { team =>
-          helpers.Security.verifyIfAllowed(hid == team.hackathonId)(request.user)
-          helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
+        model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
+          Ok(views.html.teams.view(Some(hackathon), Some(team), userFromRequest))
+        }.getOrElse {
+          NotFound(views.html.teams.view(Some(hackathon), None, userFromRequest))
         }
 
-        model.Team.update(id, team.copy(status = dbTeam.get.status))
-        Redirect(routes.Team.index(hid)).flashing("status" -> "updated", "title" -> team.name)
-      })
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, user))
+      }
+
+    }
   }
 
-  def verify(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Team.lookup(id).map { team =>
-        implicit val user = request.user
-        helpers.Security.verifyIfAllowed(hid == team.hackathonId)
-        helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.hackathonUserId)
-        model.Team.update(id, team.copy(status = TeamStatus.Approved))
+  def create(hid: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
 
-        val url = URL.externalUrl(routes.Team.view(hid, team.id))
-        val params = Seq(team.name, url)
+      model.Team.lookupByHackathonIdAndCreatorId(hid, user.id).map { team =>
 
-        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.verified.subject", "notifications.email.team.verified.body", params)
+        Redirect(routes.Team.view(hid, team.id)).flashing("status" -> "cannotCreateBecauseTeamAlreadyCreatedByUser")
 
-        Ok(JsArray(Seq(JsObject(List(
-          "status" -> JsString("ok"))))))
+      }.orElse {
+
+        model.Team.lookupByHackathonIdAndMemberId(hid, user.id).map { team =>
+          Redirect(routes.Team.view(hid, team.id)).flashing("status" -> "cannotCreateBecauseAlreadyMemberOfAnotherTeam")
+        }
 
       }.getOrElse {
-        NotFound(JsArray(Seq(JsObject(List(
-          "status" -> JsString("error"))))))
+
+        model.Hackathon.lookup(hid).map { hackathon =>
+          val team = new model.Team(user.id, hid)
+          Ok(views.html.teams.create(Some(hackathon), teamForm.fill(team), user))
+        }.getOrElse {
+          NotFound(views.html.hackathons.view(None, Some(user)))
+        }
+
       }
+
     }
   }
 
-  def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Team.lookup(id).map { team =>
-        implicit val user = request.user
-        helpers.Security.verifyIfAllowed(hid == team.hackathonId)
-        helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.hackathonUserId || team.creatorId == user.hackathonUserId)
-        model.Team.update(id, team.copy(status = TeamStatus.Approved))
+  def save(hid: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
 
-        val url = URL.externalUrl(routes.Team.view(hid, team.id))
-        val params = Seq(team.name, url)
+      model.Team.lookupByHackathonIdAndCreatorId(hid, user.id).map { team =>
 
-        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.approved.subject", "notifications.email.team.approved.body", params)
+        Redirect(routes.Team.view(hid, team.id)).flashing("status" -> "teamAlreadyCreatedByUser")
 
-        Ok(JsArray(Seq(JsObject(List(
-          "status" -> JsString("ok"))))))
+      }.orElse {
+
+        model.Team.lookupByHackathonIdAndMemberId(hid, user.id).map { team =>
+          Redirect(routes.Team.view(hid, team.id)).flashing("status" -> "alreadyMemberOfAnotherTeam")
+        }
 
       }.getOrElse {
-        NotFound(JsArray(Seq(JsObject(List(
-          "status" -> JsString("error"))))))
+
+        model.Hackathon.lookup(hid).map { hackathon =>
+
+          teamForm.bindFromRequest.fold(
+            errors => BadRequest(views.html.teams.create(Some(hackathon), errors, user)),
+            team => {
+
+              // insert team and add creator as a member
+              val dbTeam = model.Team.insert(team.copy(creatorId = user.id, status = model.TeamStatus.Blocked))
+              dbTeam.addMember(team.creator)
+
+              if (!hackathon.hasMember(user.id)) {
+                hackathon.addMember(user)
+              }
+
+              val url = URL.externalUrl(routes.Team.view(hid, team.id))
+              val params = Seq(team.name, url)
+
+              EmailSender.sendEmailToHackathonOrganiser(dbTeam.hackathon, "notifications.email.team.created.subject", "notifications.email.team.created.body", params)
+
+              Redirect(routes.Team.index(hid)).flashing("status" -> "added", "title" -> team.name)
+            })
+
+        }.getOrElse {
+          NotFound(views.html.hackathons.view(None, Some(user)))
+        }
       }
     }
   }
 
-  def suspend(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Team.lookup(id).map { team =>
-        implicit val user = request.user
+  def edit(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
 
-        helpers.Security.verifyIfAllowed(hid == team.hackathonId)
-        helpers.Security.verifyIfAllowed(user.isAdmin || team.creatorId == user.hackathonUserId || team.hackathon.organiserId == user.hackathonUserId)
-        model.Team.update(id, team.copy(status = TeamStatus.Suspended))
-
-        val url = URL.externalUrl(routes.Team.view(hid, team.id))
-        val params = Seq(team.name, url)
-
-        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.suspended.subject", "notifications.email.team.suspended.body", params)
-
-        Ok(JsArray(Seq(JsObject(List(
-          "status" -> JsString("ok"))))))
-
-      }.getOrElse {
-        NotFound(JsArray(Seq(JsObject(List(
-          "status" -> JsString("error"))))))
-      }
-    }
-  }
-
-  def block(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Team.lookup(id).map { team =>
-        implicit val user = request.user
-        helpers.Security.verifyIfAllowed(hid == team.hackathonId)
-        helpers.Security.verifyIfAllowed(user.isAdmin || team.hackathon.organiserId == user.hackathonUserId)
-        model.Team.update(id, team.copy(status = TeamStatus.Blocked))
-        
-        val url = URL.externalUrl(routes.Team.view(hid, team.id))
-        val params = Seq(team.name, url)
-
-        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.blocked.subject", "notifications.email.team.blocked.body", params)
-
-        Ok(JsArray(Seq(JsObject(List(
-          "status" -> JsString("ok"))))))
-
-      }.getOrElse {
-        NotFound(JsArray(Seq(JsObject(List(
-          "status" -> JsString("error"))))))
-      }
-    }
-  }
-
-  def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Team.lookup(id).map { team =>
-        helpers.Security.verifyIfAllowed(hid == team.hackathonId)(request.user)
-        helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
-        
-        val url = URL.externalUrl(routes.Hackathon.view(hid))
-        val params = Seq(team.name, url)
-
-        EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.deleted.subject", "notifications.email.team.deleted.body", params)
-        
-        model.Team.delete(id)
-      }
-      Redirect(routes.Team.index(hid)).flashing("status" -> "deleted")
-    }
-  }
-
-  def join(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      var status = "error"
-      model.User.lookup(request.user.hackathonUserId).map { user =>
-        model.Team.lookup(id).map { team =>
-          if (!team.hasMember(user.id)) {
-            team.addMember(user)
-            status = "joined"
+        model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
+          ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team) {
+            Ok(views.html.teams.edit(Some(team.hackathon), id, teamForm.fill(team), user))
           }
+        }.getOrElse {
+          NotFound(views.html.teams.view(Some(hackathon), None, Some(user)))
         }
+
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
       }
-      Redirect(routes.Team.view(hid, id)).flashing("status" -> status)
+
     }
   }
 
-  def disconnect(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      var status = "error"
-      model.User.lookup(request.user.hackathonUserId).map { user =>
-        model.Team.lookup(id).map { team =>
-          team.deleteMember(user)
-          status = "disconnected"
+  def update(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+
+      val user = userFromRequest(request)
+
+      model.Hackathon.lookup(hid).map { hackathon =>
+
+        model.Team.lookup(id).filter(_.hackathonId == hid).map { dbTeam =>
+
+          ensureHackathonOrganiserOrTeamLeaderOrAdmin(dbTeam.hackathon, dbTeam) {
+            teamForm.bindFromRequest.fold(
+              errors => BadRequest(views.html.teams.edit(Some(hackathon), id, errors, user)),
+              team => {
+                model.Team.update(id, team.copy(status = dbTeam.status, creatorId = dbTeam.creatorId))
+                Redirect(routes.Team.index(hid)).flashing("status" -> "updated", "title" -> team.name)
+              })
+          }
+
+        }.getOrElse {
+          NotFound(views.html.teams.view(Some(hackathon), None, Some(user)))
         }
+
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
       }
-      Redirect(routes.Team.view(hid, id)).flashing("status" -> status)
+
     }
   }
 
-  def disconnectUser(hid: Long, id: Long, userId: Long) = SecuredAction() { implicit request =>
-    transaction {
-      var status = "error"
-      model.User.lookup(userId).map { user =>
-        model.Team.lookup(id).map { team =>
-          helpers.Security.verifyIfAllowed(team.creatorId, team.hackathon.organiserId)(request.user)
-          team.deleteMember(user)
-          status = "disconnectedUser"
+  def approve(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+
+      model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
+        ensureHackathonOrganiserOrAdmin(team.hackathon) {
+          model.Team.update(id, team.copy(status = TeamStatus.Approved))
+          val url = URL.externalUrl(routes.Team.view(hid, team.id))
+          val params = Seq(team.name, url)
+
+          EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.verified.subject", "notifications.email.team.verified.body", params)
+
+          Ok(JsArray(Seq(JsObject(List(
+            "status" -> JsString("ok"))))))
         }
+      }.getOrElse {
+        NotFound(JsArray(Seq(JsObject(List(
+          "status" -> JsString("error"))))))
       }
-      Redirect(routes.Team.view(hid, id)).flashing("status" -> status)
+    }
+  }
+
+  def block(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
+        ensureHackathonOrganiserOrAdmin(team.hackathon) {
+          model.Team.update(id, team.copy(status = TeamStatus.Blocked))
+
+          val url = URL.externalUrl(routes.Team.view(hid, team.id))
+          val params = Seq(team.name, url)
+
+          EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.blocked.subject", "notifications.email.team.blocked.body", params)
+
+          Ok(JsArray(Seq(JsObject(List(
+            "status" -> JsString("ok"))))))
+        }
+      }.getOrElse {
+        NotFound(JsArray(Seq(JsObject(List(
+          "status" -> JsString("error"))))))
+      }
+    }
+  }
+
+  def delete(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+
+      val user = userFromRequest(request)
+
+      model.Hackathon.lookup(hid).map { hackathon =>
+
+        model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
+          ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team) {
+
+            model.Team.delete(id)
+            val url = URL.externalUrl(routes.Hackathon.view(hid))
+            val params = Seq(team.name, url)
+
+            EmailSender.sendEmailToWholeTeam(team, "notifications.email.team.deleted.subject", "notifications.email.team.deleted.body", params)
+
+            Redirect(routes.Team.index(hid)).flashing("status" -> "deleted")
+          }
+        }.getOrElse {
+          NotFound(views.html.teams.view(Some(hackathon), None, Some(user)))
+        }
+
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
+    }
+  }
+
+  def join(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
+
+      model.Team.lookupByHackathonIdAndCreatorId(hid, user.id).map { team =>
+
+        Redirect(routes.Team.view(hid, team.id)).flashing("status" -> "cannotJoinBecauseTeamAlreadyCreatedByUser")
+
+      }.orElse {
+
+        model.Team.lookupByHackathonIdAndMemberId(hid, user.id).map { team =>
+          Redirect(routes.Team.view(hid, team.id)).flashing("status" -> "cannotJoinBecauseAlreadyMemberOfAnotherTeam")
+        }
+
+      }.getOrElse {
+
+        model.Hackathon.lookup(hid).map { hackathon =>
+
+          model.Team.lookup(id).map { team =>
+
+            team.addMember(user)
+            Redirect(routes.Team.view(hid, id)).flashing("status" -> "joined")
+
+          }.getOrElse(NotFound(views.html.teams.view(Some(hackathon), None, Some(user))))
+        }.getOrElse(NotFound(views.html.hackathons.view(None, Some(user))))
+      }
+    }
+  }
+
+  def disconnect(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      model.Team.lookup(id).map { team =>
+        val user = userFromRequest(request)
+        if (!team.hasMember(user.id)) {
+          team.deleteMember(user)
+        }
+        Redirect(routes.Team.view(hid, id)).flashing("status" -> "disconnected")
+      }.getOrElse(Redirect(routes.Team.view(hid, id)).flashing("status" -> "error"))
+    }
+  }
+
+  def disconnectUser(hid: Long, id: Long, userId: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      (for (
+        team <- model.Team.lookup(id) if (hid == team.hackathonId);
+        user <- model.User.lookup(userId) if (team.hasMember(user.id))
+      ) yield {
+        ensureHackathonOrganiserOrTeamLeaderOrAdmin(team.hackathon, team) {
+          team.deleteMember(user)
+
+          Redirect(routes.Team.view(hid, id)).flashing("status" -> "disconnectedUser")
+        }
+      }).getOrElse(Redirect(routes.Team.view(hid, id)).flashing("status" -> "error"))
     }
   }
 }

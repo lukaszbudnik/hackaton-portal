@@ -4,9 +4,8 @@ import org.squeryl.PrimitiveTypeMode._
 import play.api.data.Forms._
 import play.api.data.Form
 import play.api.mvc.Controller
-import core.LangAwareController
 
-object Prize extends LangAwareController with securesocial.core.SecureSocial {
+object Prize extends LangAwareController {
 
   val prizeForm = Form(
     mapping(
@@ -18,83 +17,116 @@ object Prize extends LangAwareController with securesocial.core.SecureSocial {
       "hackathonId" -> longNumber)(model.Prize.apply)(model.Prize.unapply))
 
   def index(hid: Long) = UserAwareAction { implicit request =>
-    transaction {
-      Ok(views.html.prizes.index(model.Hackathon.lookup(hid), request.user))
+    inTransaction {
+      Ok(views.html.prizes.index(model.Hackathon.lookup(hid), userFromRequest))
     }
   }
 
   def view(hid: Long, id: Long) = UserAwareAction { implicit request =>
-    transaction {
-      val prize = model.Prize.lookup(id)
-      val hackathon = prize.map { p => Some(p.hackathon) }.getOrElse { model.Hackathon.lookup(hid) }
-      Ok(views.html.prizes.view(hackathon, prize, request.user))
-    }
-  }
-
-  def create(hid: Long) = SecuredAction() { implicit request =>
-    transaction {
+    inTransaction {
+      val user = userFromRequest(request)
       val hackathon = model.Hackathon.lookup(hid)
-      hackathon.map { h =>
-        helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
-      }
-      val prize = new model.Prize(1, hid)
-      Ok(views.html.prizes.create(hackathon, prizeForm.fill(prize), request.user))
-    }
-  }
+      hackathon.map { hackathon =>
 
-  def save(hid: Long) = SecuredAction() { implicit request =>
-    prizeForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.prizes.create(model.Hackathon.lookup(hid), errors, request.user))
-      },
-      prize => transaction {
-        model.Hackathon.lookup(hid).map { h =>
-          helpers.Security.verifyIfAllowed(h.organiserId)(request.user)
+        model.Prize.lookup(id).filter(_.hackathonId == hid).map { prize =>
+          Ok(views.html.prizes.view(Some(hackathon), Some(prize), userFromRequest))
+
+        }.getOrElse {
+          NotFound(views.html.prizes.view(Some(hackathon), None, user))
         }
-        //TODO check if added
-        model.Prize.insert(prize)
-        Redirect(routes.Prize.index(hid)).flashing("status" -> "added", "title" -> prize.name)
-      })
-  }
 
-  def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Prize.lookup(id).map { prize =>
-        helpers.Security.verifyIfAllowed(hid == prize.hackathonId)(request.user)
-        helpers.Security.verifyIfAllowed(prize.hackathon.organiserId)(request.user)
-        Ok(views.html.prizes.edit(Some(prize.hackathon), id, prizeForm.fill(prize), request.user))
       }.getOrElse {
-        // no prize found
-        Redirect(routes.Prize.view(hid, id)).flashing()
+        NotFound(views.html.hackathons.view(None, user))
+      }
+
+    }
+  }
+
+  def create(hid: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      model.Hackathon.lookup(hid).map { hackathon =>
+        ensureHackathonOrganiserOrAdmin(hackathon) {
+          val user = userFromRequest(request)
+          val prize = new model.Prize(1, hid)
+          Ok(views.html.prizes.create(Some(hackathon), prizeForm.fill(prize), user))
+        }
+      }.getOrElse(Redirect(routes.Hackathon.view(hid)))
+    }
+  }
+
+  def save(hid: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      model.Hackathon.lookup(hid).map { hackathon =>
+        val user = userFromRequest(request)
+        prizeForm.bindFromRequest.fold(
+          errors => BadRequest(views.html.prizes.create(Some(hackathon), errors, user)),
+          prize => {
+            model.Prize.insert(prize)
+            Redirect(routes.Prize.index(hid)).flashing("status" -> "added", "title" -> prize.name)
+          })
+      }.getOrElse(Redirect(routes.Hackathon.view(hid)))
+    }
+  }
+
+  def edit(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        model.Prize.lookup(id).filter(_.hackathonId == hid).map { prize =>
+          ensureHackathonOrganiserOrAdmin(hackathon) {
+            Ok(views.html.prizes.edit(Some(prize.hackathon), id, prizeForm.fill(prize), user))
+          }
+        }.getOrElse {
+          NotFound(views.html.prizes.view(Some(hackathon), None, Some(user)))
+        }
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
       }
     }
   }
 
-  def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    prizeForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.prizes.edit(model.Hackathon.lookup(hid), id, errors, request.user))
-      },
-      prize => transaction {
-        model.Prize.lookup(id).map { prize =>
-          helpers.Security.verifyIfAllowed(hid == prize.hackathonId)(request.user)
-          helpers.Security.verifyIfAllowed(prize.hackathon.organiserId)(request.user)
+  def update(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        model.Prize.lookup(id).filter(_.hackathonId == hid).map { prize =>
+
+          ensureHackathonOrganiserOrAdmin(hackathon) {
+            prizeForm.bindFromRequest.fold(
+              errors => BadRequest(views.html.prizes.edit(Some(hackathon), id, errors, user)),
+              prize => {
+                model.Prize.update(id, prize)
+                Redirect(routes.Prize.index(hid)).flashing("status" -> "updated", "title" -> prize.name)
+              })
+          }
+
+        }.getOrElse {
+          NotFound(views.html.prizes.view(Some(hackathon), None, Some(user)))
         }
-        //TODO check if updated
-        model.Prize.update(id, prize)
-        Redirect(routes.Prize.index(hid)).flashing("status" -> "updated", "title" -> prize.name)
-      })
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
+    }
   }
 
-  def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Prize.lookup(id).map { prize =>
-        helpers.Security.verifyIfAllowed(hid == prize.hackathonId)(request.user)
-        helpers.Security.verifyIfAllowed(prize.hackathon.organiserId)(request.user)
+  def delete(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        model.Prize.lookup(id).filter(_.hackathonId == hid).map { prize =>
+
+          ensureHackathonOrganiserOrAdmin(hackathon) {
+            model.Prize.delete(id)
+            Redirect(routes.Prize.index(hid)).flashing("status" -> "deleted")
+          }
+
+        }.getOrElse {
+          NotFound(views.html.prizes.view(Some(hackathon), None, Some(user)))
+        }
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
       }
-      //TODO check if deleted
-      model.Prize.delete(id)
-      Redirect(routes.Prize.index(hid)).flashing("status" -> "deleted")
+
     }
   }
 }

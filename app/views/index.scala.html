@@ -1,33 +1,33 @@
-@(user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent], lang: Lang)
+@(user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import tags._
 
-@main(Messages("home.welcome"), user, nav = "home") {
+@main(helpers.CmsMessages("home.welcome"), user, nav = "home") {
     
 	<div class="container">
 	
       <div class="hero-unit">
-        <h1>@Messages("home.welcome")</h1>
-        <p>@Messages("home.text")</p>
-        <p><a href="@routes.Application.about" class="btn btn-primary btn-large">@Messages("global.learnMore")</a></p>
+        <h1>@helpers.CmsMessages("home.welcome")</h1>
+        <p>@helpers.CmsMessages("home.text")</p>
+        <p><a href="@routes.Application.about" class="btn btn-primary btn-large">@helpers.CmsMessages("global.learnMore")</a></p>
       </div>
 
       <div class="row">
         <div class= @if(!play.Play.isProd()){"span4"}else{"span6"}>
-          <h2>@Messages("home.news1.title")</h2>
-          <p>@Messages("home.news1.text")</p>
-          <p><a class="btn" href="/news">@Messages("global.viewDetails")</a></p>
+          <h2>@helpers.CmsMessages("home.news1.title")</h2>
+          <p>@helpers.CmsMessages("home.news1.text")</p>
+          <p><a class="btn" href="/news">@helpers.CmsMessages("global.viewDetails")</a></p>
         </div>
         <div class= @if(!play.Play.isProd()){"span4"}else{"span6"}>  
-          <h2>@Messages("home.news2.title")</h2>
-          <p>@Messages("home.news2.text")</p>
-          <p><a class="btn" href="@routes.Application.about#hackaton-portal">@Messages("global.viewDetails")</a></p>
+          <h2>@helpers.CmsMessages("home.news2.title")</h2>
+          <p>@helpers.CmsMessages("home.news2.text")</p>
+          <p><a class="btn" href="@routes.Application.about#hackaton-portal">@helpers.CmsMessages("global.viewDetails")</a></p>
        </div>
 @if(!play.Play.isProd()) {
         <div class="span4">
-          <h2>@Messages("home.news3.title")</h2>
-          <p>@Messages("home.news3.text")</p>
-          <p><a class="btn" href="@routes.Sponsor.index">@Messages("global.viewDetails")</a></p>
+          <h2>@helpers.CmsMessages("home.news3.title")</h2>
+          <p>@helpers.CmsMessages("home.news3.text")</p>
+          <p><a class="btn" href="@routes.Sponsor.index">@helpers.CmsMessages("global.viewDetails")</a></p>
         </div>
 }
       </div>

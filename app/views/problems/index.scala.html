@@ -1,53 +1,26 @@
-@(hackathon: Option[model.Hackathon], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], problems: Iterable[model.Problem], canAdd: Boolean, user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
-@hackathons.hackathonMain(hackathon, user, "problems", "problems.status", true) {
+@hackathons.hackathonMain(hackathon, user, "problems", "problems.status", hackathon.isDefined, Some(helpers.CmsMessages("navigation.problems"))) {
 
   @hackathon.map { hackathon =>
 
-		@*
-		 * Display add problem when:
-		 * User is admin 
-		 * or hackathon organiser
-		 *  or normal user and hackathon configuration allows new problem creation
-		 *@
-		 
-        @if((user.isDefined && (user.get.isAdmin || user.get.hackathonUserId == hackathon.organiserId || !hackathon.newProblemsDisabled ) )) {
-			<a class="btn btn-success" href="@routes.Problem.create(hackathon.id)">@Messages("problems.addProblem")</a>
-		}
+		 @if(canAdd) {
+			<a class="btn btn-success" href="@routes.Problem.create(hackathon.id)">@helpers.CmsMessages("problems.addProblem")</a>
+		 }
 
-    	@hackathon.problems.map { problem =>
+    	 @problems.map { problem =>
     	  
-    	  	@*
-    		 * Display problem when:
-    		 *		1. user is admin
-    		 *		2. team is verified
-    		 *		3. user is hackathon organiser or team creator
-    		 *
-    		 *@
-
-    		@if((user.isDefined && user.get.isAdmin) || problem.status == model.ProblemStatus.Approved || (user.isDefined && (user.get.hackathonUserId == hackathon.organiserId || user.get.hackathonUserId == problem.submitterId))) {
-
     			<div class="page-header problem" data-problem-id="@problem.id">
     				<h2>@problem.name @problemActions(hackathon, problem, user)</h2>
-    				<p>@Messages("problems.submitter.label"): @problem.submitter.name</p>
-    				<p><a class="btn" href="@routes.Problem.view(hackathon.id, problem.id)">@Messages("global.readMore")</a></p>
+    				<p>@helpers.CmsMessages("problems.submitter.label"): @problem.submitter.name</p>
+    				<p><a class="btn" href="@routes.Problem.view(hackathon.id, problem.id)">@helpers.CmsMessages("global.readMore")</a></p>
     			</div>
-    		  
-    		}
-    	}
 
-    	 @*
-		  * Show problems.empty.text when
-		  *
-		  * 	1. There are no problems at all
-		  *		2. User is not logged in and there are no approved problems
-		  *		3. User is logged but all added problems not approved and logged in user is not their creator
-		  *
-		  *@
+    	 }
 
-		 @if(hackathon.problems.size == 0 || (user.isEmpty && hackathon.problems.filter(_.status == model.ProblemStatus.Approved).size == 0)  || (user.isDefined && hackathon.problems.filterNot(_.status == model.ProblemStatus.Approved).filterNot(_.submitterId == user.get.hackathonUserId).size == hackathon.problems.size)) {
+		 @if(problems.size == 0) {
     		<div class="page-header">
-            	<h2>@Messages("problems.empty.text")</h2>
+            	<h2>@helpers.CmsMessages("problems.empty.text")</h2>
         	</div>
     	}
 

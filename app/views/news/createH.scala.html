@@ -1,9 +1,9 @@
-@(hackathon: Option[model.Hackathon], newsForm: Form[model.News], user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], newsForm: Form[model.News], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @hackathons.hackathonMain(hackathon, Some(user), "news", "news.status", false) {
 	
 	<div class="page-header">
-		<h2>@Messages("news.create.title")</h2>
+		<h2>@helpers.CmsMessages("news.create.title")</h2>
 	</div>
 
 	@news.newsForm(hackathon, newsForm, routes.News.saveH(hackathon.get.id), "news.publish")

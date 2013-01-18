@@ -1,4 +1,4 @@
-@(hackathonForm: Form[model.dto.HackathonWithLocations], action: play.api.mvc.Call, user: securesocial.core.SocialUser, actionMessage: String)(implicit request: Request[AnyContent], lang: Lang)
+@(hackathonForm: Form[model.dto.HackathonWithLocations], action: play.api.mvc.Call, user: model.User, statuses: Seq[(String,String)], actionMessage: String)(implicit request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -11,9 +11,9 @@
 		createLocationAction: '@routes.Location.create',
 		saveLocationAction: '@routes.Location.save',
 		addHackathonLocationAction : '@routes.Hackathon.addLocation',
-		deleteHackathonLocationAction : '/hackathons/deleteLocation',		
-		noMatchFoundText : '@Messages("locations.nomatchfound")',
-		userHackathonId : '@user.hackathonUserId'
+		deleteHackathonLocationAction : '@routes.Hackathon.deleteLocation(0)',		
+		noMatchFoundText : '@helpers.CmsMessages("locations.nomatchfound")',
+		userHackathonId : '@user.id'
 	}).initHackathonLocations();
 </script>
 
@@ -21,41 +21,43 @@
 
 	@inputText(
 	    hackathonForm("subject"),
-	    '_label -> Messages("hackathons.subject.label"),
+	    '_label -> helpers.CmsMessages("hackathons.subject.label"),
 	    '_showConstraints -> false
 	)
 	
 	@locationsContainer(hackathonForm)
  
-    
 	@forms.inputDate(
 	    hackathonForm("date"),
-	    '_label -> Messages("hackathons.date.label"),
+	    '_label -> helpers.CmsMessages("hackathons.date.label"),
 	    '_showConstraints -> false
 	)
 	
 	@textarea(
 	    hackathonForm("description"),
-	    '_label -> Messages("hackathons.description.label"),
-	    '_showConstraints -> false
+	    '_label -> helpers.CmsMessages("hackathons.description.label"),
+	    '_showConstraints -> false,
+	    'rows -> 30, 
+	    'cols -> 100,
+	    'style -> "width:100%"
 	)
-	
+
     @select(
 	    hackathonForm("status"),
-	    model.HackathonStatus.values.map{ s => s.toString -> s.toString}.toSeq,
-	    '_label -> Messages("hackathons.status.label"),
+	    statuses,
+	    '_label -> helpers.CmsMessages("hackathons.status.label"),
 	    '_showConstraints -> false
 	)
 	
 	@checkbox(
 		hackathonForm("new_problems_disabled"),
-		'_label -> Messages("hackathons.newProblemsDisabled.label"),
+		'_label -> helpers.CmsMessages("hackathons.newProblemsDisabled.label"),
 		'_showConstraints -> false
 		)
 		
     @checkbox(
 		hackathonForm("new_teams_disabled"),
-		'_label -> Messages("hackathons.newTeamsDisabled.label"),
+		'_label -> helpers.CmsMessages("hackathons.newTeamsDisabled.label"),
 		'_showConstraints -> false
 		)
 		
@@ -64,8 +66,8 @@
 	<input type="hidden" id="isAdmin" value="@user.isAdmin"/>
 
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
-        <a href="@routes.Hackathon.index" class="btn">@Messages("global.cancel")</a>
+        <button type="submit" class="btn btn-primary">@helpers.CmsMessages(actionMessage)</button>
+        <a href="@routes.Hackathon.index" class="btn">@helpers.CmsMessages("global.cancel")</a>
   	</div>
 }
 
@@ -73,18 +75,18 @@
 
     <div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">×</button>
-    	<h3 class="modal-title">@Messages("locations.create.title")</h3>
+    	<h3 class="modal-title">@helpers.CmsMessages("locations.create.title")</h3>
     </div>
 
 	<div class="modal-body">
    	   	<div class="row">
-       		<div id="locationBox""></div>
+       		<div id="locationBox"></div>
     	</div>
     </div>
 	
 	 <div class="modal-footer">
-		<a id="submitLocation" href="#" class="btn btn-primary">@Messages("global.save")</a>
-		<a id="cancelLocation" href="#" class="btn" data-dismiss="modal">@Messages("global.cancel")</a>
+		<a id="submitLocation" href="#" class="btn btn-primary">@helpers.CmsMessages("global.save")</a>
+		<a id="cancelLocation" href="#" class="btn" data-dismiss="modal">@helpers.CmsMessages("global.cancel")</a>
 	</div>    	
 
 </div>

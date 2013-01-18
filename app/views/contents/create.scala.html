@@ -1,0 +1,19 @@
+@(eForm: Form[cms.dto.Entry], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+
+@import helper._
+@main(helpers.CmsMessages("contents.create.title"), Some(user), nav="contents") {
+  
+	<div class="container">
+
+    	<div class="page-header">
+    		<h2>@helpers.CmsMessages("contents.create.title")</h2>
+		</div>
+  
+		@entryForm(eForm, routes.Content.save)
+
+	</div>
+
+}
+
+
+

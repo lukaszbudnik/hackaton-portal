@@ -9,7 +9,7 @@ initialize = () ->
 	    	
 	    map = new google.maps.Map(mapDiv, 
 	        center: new google.maps.LatLng(0, 0),
-	        zoom: 1,
+	        zoom: 15,
 	        mapTypeId: google.maps.MapTypeId.ROADMAP
 	    )
 	
@@ -46,8 +46,10 @@ addMarkers = (map, markerImages, data) ->
             )(marker, infoBubble)
                   
     )
-    map.fitBounds(latlngbounds)
-    
+    if (data.length == 1 && data[0].locations.length == 1)
+    	map.setCenter(new google.maps.LatLng(data[0].locations[0].latitude, data[0].locations[0].longitude))
+    else
+    	map.fitBounds(latlngbounds)
 
 google.maps.event.addDomListener(window, 'load', initialize);
 

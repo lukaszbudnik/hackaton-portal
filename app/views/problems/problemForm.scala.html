@@ -9,22 +9,25 @@
 
 	@inputText(
 	    problemForm("name"),
-	    '_label -> Messages("problems.name.label"),
+	    '_label -> helpers.CmsMessages("problems.name.label"),
 	    '_showConstraints -> false
 	)
 	
-	@inputText(
+	@textarea(
 	    problemForm("description"),
-	    '_label -> Messages("problems.description.label"),
-	    '_showConstraints -> false
+	    '_label -> helpers.CmsMessages("problems.description.label"),
+	    '_showConstraints -> false,
+	    'rows -> 30, 
+	    'cols -> 100,
+	    'style -> "width:100%"
 	)
 	
 	@forms.hidden(problemForm("hackathonId"))
 	@forms.hidden(problemForm("submitterId"))
 	
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
-        <a href="@routes.Problem.index(hackathon.id)" class="btn">@Messages("global.cancel")</a>
+        <button type="submit" class="btn btn-primary">@helpers.CmsMessages(actionMessage)</button>
+        <a href="@routes.Problem.index(hackathon.id)" class="btn">@helpers.CmsMessages("global.cancel")</a>
   	</div>
         
 }

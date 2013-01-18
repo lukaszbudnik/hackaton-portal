@@ -1,20 +1,20 @@
-@(user: Option[securesocial.core.SocialUser])(implicit request: Request[AnyContent], lang: Lang)
+@(user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import tags._
 
-@main(Messages("contact.title"), user, nav = "contact") {
+@main(helpers.CmsMessages("contact.title"), user, nav = "contact") {
 
 	<div class="container">
 	
 		<div class="content">
                 
 			<div class="page-header">
-				<h1>@Messages("contact.title")</h1>
+				<h1>@helpers.CmsMessages("contact.title")</h1>
           	</div>
 
 			<div class="row">
 				<div class="span12">
-					@Html(Messages("contact.text"))
+					@Html(helpers.CmsMessages("contact.text"))
         		</div>	
 			</div>
                 

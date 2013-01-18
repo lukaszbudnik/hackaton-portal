@@ -1,23 +1,23 @@
-@(userForm: Form[model.User],user: securesocial.core.SocialUser)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(userForm: Form[model.User],user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import tags._
 
-@main(Messages("profile.title"), Some(user), nav = "profile") {
-  
+@main(helpers.CmsMessages("profile.title"), Some(user), nav = "profile") {
+
 <div class="container">
 
 	 <div class="container">
-        <div class="page-header">
-            <h2>
-                @if(user.avatarUrl) { 
-                    <img src="@user.avatarUrl" alt="@user.displayName" width="40px" height="40px"/> 
-                }
-                @Messages("profile.welcome") @user.displayName!
-            </h2>
-        </div>
-        @flashing("profile")
-        @form(userForm, routes.Application.updateProfile)
-    </div>
+		<div class="page-header">
+			<h2>
+				@if(user.avatarUrl) { 
+					<img src="@user.avatarUrl" alt="@user.name" width="40px" height="40px"/> 
+				}
+				@helpers.CmsMessages("profile.welcome") @user.name!
+			</h2>
+		</div>
+		@flashing("profile")
+		@form(userForm, routes.Application.updateProfile)
+	</div>
 </div>
-                
+
 }

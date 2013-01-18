@@ -1,18 +1,18 @@
-@(sponsors: Seq[model.dto.SponsorWithLogo], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(sponsors: Seq[model.dto.SponsorWithLogo], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import tags._
 
-@main(Messages("sponsors.title"), user, nav = "sponsors") {
+@main(helpers.CmsMessages("sponsors.title"), user, nav = "sponsors") {
 	<div class="container">
   
     	<div class="page-header">
 			@if(user.isDefined && user.get.isAdmin) {
-				<a class="btn btn-success pull-right" href="@routes.Sponsor.create">@Messages("sponsors.addSponsor")</a>
+				<a class="btn btn-success pull-right" href="@routes.Sponsor.create">@helpers.CmsMessages("sponsors.addSponsor")</a>
 			}
-    		<h1>@Messages("sponsors.title")</h1>
+    		<h1>@helpers.CmsMessages("sponsors.title")</h1>
 			<br/>
-			@Html(Messages("sponsors.text"))
+			@Html(helpers.CmsMessages("sponsors.text"))
 		</div>
 
 		@flashing("sponsors.status")

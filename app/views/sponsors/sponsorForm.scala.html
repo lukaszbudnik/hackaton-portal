@@ -14,31 +14,31 @@
         
 			@inputText(
 				sponsorForm("name"),
-				'_label -> Messages("sponsors.name.label"),
+				'_label -> helpers.CmsMessages("sponsors.name.label"),
 				'_showConstraints -> false
 			)
 			
 			@inputText(
 				sponsorForm("title"),
-				'_label -> Messages("sponsors.title.label"),
+				'_label -> helpers.CmsMessages("sponsors.title.label"),
 				'_showConstraints -> false
 			)
 
 			@inputText(
 				sponsorForm("website"),
-				'_label -> Messages("sponsors.website.label"),
+				'_label -> helpers.CmsMessages("sponsors.website.label"),
 				'_showConstraints -> false
 			)
         
 			@textarea(
 				sponsorForm("description"),
-				'_label -> Messages("sponsors.description.label"),
+				'_label -> helpers.CmsMessages("sponsors.description.label"),
 				'_showConstraints -> false
 			)
 
 			@inputText(
 				sponsorForm("order"),
-				'_label -> Messages("sponsors.order.label"),
+				'_label -> helpers.CmsMessages("sponsors.order.label"),
 				'_showConstraints -> false
 			)
 			
@@ -46,12 +46,12 @@
 			@forms.hidden(field = sponsorForm("logoResourceId"))
             	
 			<div class="form-actions">
-				<button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
+				<button type="submit" class="btn btn-primary">@helpers.CmsMessages(actionMessage)</button>
 				
 				@hackathon.map { hackathon =>
-				<a href="@routes.Sponsor.indexH(hackathon.id)" class="btn">@Messages("global.cancel")</a>
+				<a href="@routes.Sponsor.indexH(hackathon.id)" class="btn">@helpers.CmsMessages("global.cancel")</a>
 				}.getOrElse{
-				<a href="@routes.Sponsor.index" class="btn">@Messages("global.cancel")</a>
+				<a href="@routes.Sponsor.index" class="btn">@helpers.CmsMessages("global.cancel")</a>
 				}
 			</div>       
 		}
@@ -67,10 +67,10 @@
 	         		<!-- The fileinput-button span is used to style the file input field as button -->
 	             	<span class="btn btn-primary fileinput-button" style="visibility:hidden">
 						<i class="icon-upload icon-white"></i>
-						<span>@Messages("sponsors.button.upload")</span>
+						<span>@helpers.CmsMessages("sponsors.button.upload")</span>
 						<input type="file" name="files">					
 					</span>
-					<br/><br/><div>@Messages("sponsors.upload.maxfilesizeinfo", 
+					<br/><br/><div>@helpers.CmsMessages("sponsors.upload.maxfilesizeinfo", 
 						play.api.Play.current.configuration.getString("sponsors.logo.maxsize").getOrElse(""))</div>	
 			</div>
 			<div class="files span2"></div>

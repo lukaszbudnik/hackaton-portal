@@ -1,10 +1,10 @@
-@(id: Long, newsForm: Form[model.News], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent], lang: Lang)
+@(id: Long, newsForm: Form[model.News], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
-@main(Messages("news.edit.title"), Some(user), nav = "news") {
+@main(helpers.CmsMessages("news.edit.title"), Some(user), nav = "news") {
 	<div class="container">
 
     	<div class="page-header">
-    		<h2>@Messages("news.edit.title")</h2>
+    		<h2>@helpers.CmsMessages("news.edit.title")</h2>
 		</div>
   
     	@news.newsForm(None, newsForm, routes.News.update(id), "global.update")

@@ -1,0 +1,106 @@
+@(eForm: Form[cms.dto.Entry], actionToRun: play.api.mvc.Call)(implicit request: Request[AnyContent], lang: Lang)
+
+@import helper._
+
+<script type="text/javascript">
+var contentRowName = "contentRow";
+var divWithContentsId = "contents";
+var lastContentIndexAttribute = "data-last-index";
+
+var CMS = CMS || {};
+CMS.addContentRow = function() {
+	var newIndex = document.getElementsByName(contentRowName).length;
+	var divWithContents = document.getElementById(divWithContentsId);
+	var tableBody = divWithContents.getElementsByTagName("tbody")[0];
+	var lastContentIndex = parseInt(divWithContents
+			.getAttribute(lastContentIndexAttribute));
+	if (lastContentIndex >= newIndex) {
+		newIndex = lastContentIndex + 1;
+	}
+	var newRow = CMS.createNewRow(newIndex);
+	tableBody.appendChild(newRow);
+	divWithDemos.removeAttribute(lastContentIndexAttribute);
+	divWithDemos.setAttribute(lastContentIndexAttribute, newIndex);
+
+}
+CMS.removeContentRow = function(rowId) {
+	var rowToRemove = document.getElementById(rowId);
+	if (rowToRemove != null && rowToRemove != undefined) {
+		var numberOfRows = document.getElementsByName(contentRowName).length;
+		var divWithContents = document.getElementById(divWithContentsId);
+		var lastContentIndex = parseInt(divWithContents
+				.getAttribute(lastContentIndexAttribute));
+		if (lastContentIndex < numberOfRows) {
+			divWithContents.removeAttribute(lastContentIndexAttribute);
+			divWithContents.setAttribute(lastContentIndexAttribute, numberOfRows);
+		}
+		var tableBody = divWithContents.getElementsByTagName("tbody")[0];
+		tableBody.removeChild(rowToRemove);
+	}
+}
+
+CMS.createNewRow = function(rowId) {
+	// create elements
+	var contentFormKey = "content[" + rowId + "]";
+	var tr = document.createElement("tr");
+	var tds = [ document.createElement("td"), document.createElement("td"),
+			document.createElement("td") ];
+	var langInput = document.createElement("input");
+	var valueInput = document.createElement("input");
+	var removeButton = document.createElement("i");
+	// prepare row
+	tr.setAttribute("name", contentRowName);
+	tr.setAttribute("id", contentFormKey);
+	// prepare title input
+	langInput.setAttribute("type", "text");
+	langInput.setAttribute("name", contentFormKey + ".lang");
+	// prepare url input
+	valueInput.setAttribute("type", "text");
+	valueInput.setAttribute("name", contentFormKey + ".value");
+	// prepare remove button
+	removeButton.setAttribute("class", "icon-trash");
+	removeButton.setAttribute("onclick", 'CMS.removeContentRow("'+contentFormKey+'")');
+	removeButton.setAttribute("style", "'cursor: pointer'");
+	// build DOM
+	tds[0].appendChild(langInput);
+	tds[1].appendChild(valueInput);
+	tds[2].appendChild(removeButton);
+	for (i = 0; i < tds.length; i++) {
+		tr.appendChild(tds[i]);
+	}
+	return tr;
+}
+
+
+</script>
+
+@form(action = actionToRun, 'id -> "entryForm"){
+	@inputText(eForm("key"),
+	'_label -> helpers.CmsMessages("contents.forms.key.label"),
+	'_showConstraints -> false
+	)
+	 
+	@select(eForm("entryType"),
+		cms.dto.EntryType.values.map{ s => s.toString -> s.toString }.toSeq,
+		'_label -> helpers.CmsMessages("contents.forms.entryType.label"),
+		'_showConstraints -> false
+	)
+	<table id="contents" data-last-index="-1">
+		<tr>
+		<th>@helpers.CmsMessages("contents.forms.contents.lang.label")</th>
+		<th>@helpers.CmsMessages("contents.forms.contents.value.label")</th>
+		</tr>
+		@repeat(eForm("content"), min = 1) { contentField =>
+		<tr name="contentRow" id="entryRow@contentField.name">
+			<td><input id='@contentField("lang").name' name='@contentField("lang").name' type="text" value='@contentField("lang").value' /></td>
+			<td><input id='@contentField("value").name' name='@contentField("value").name' type="text" value='@contentField("value").value' /></td>
+			<td><i class="icon-trash" style="cursor: pointer" onclick='CMS.removeContentRow("entryRow@contentField.name")'></i></td>
+		</tr> 
+	}
+	</table>
+	
+	<div class="actions">
+		<p><i class="icon-plus-sign" style="cursor: pointer" onclick="CMS.addContentRow()"></i></p>
+	</div>
+	<input type="submit" value="@helpers.CmsMessages("contents.save.label")" class="btn btn-primary"/>
+}

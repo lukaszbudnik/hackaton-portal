@@ -5,11 +5,10 @@ import play.api.Play.current
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import org.apache.commons.codec.digest.DigestUtils
-import core.LangAwareController
 
-object JsMessagesFeed extends LangAwareController  {
+object JsMessagesFeed extends LangAwareController {
 
- def jsMessages = Action { implicit request =>
+  def jsMessages = Action { implicit request =>
 
     val content = JsMessages(Some("Messages"))
     val hash = DigestUtils.md5Hex(content)

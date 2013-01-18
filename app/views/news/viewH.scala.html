@@ -1,20 +1,20 @@
-@(hackathon: Option[model.Hackathon], news: Option[model.News], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], news: Option[model.News], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import tags._
 
-@hackathons.hackathonMain(hackathon, user, "news", "news.status", news.isDefined) {
+@hackathons.hackathonMain(hackathon, user, "news", "news.status", news.isDefined, news.map(_.title)) {
 	
-	@newsSingle(news)
+	@newsSingle(news, false)
 	
 	@news.map{ news =>
 	  
 		@user.map { user =>
-		  	@if(user.isAdmin || news.authorId == user.hackathonUserId || hackathon.get.organiserId == news.authorId) {
+		  	@if(user.isAdmin || news.authorId == user.id || hackathon.get.organiserId == news.authorId) {
 		  		<div class="form-actions">
 		  			@form(routes.News.deleteH(hackathon.get.id, news.id)) {
-		  				<a class="btn btn-success" href="@routes.News.editH(hackathon.get.id, news.id)">@Messages("global.edit")</a>
-		  				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger" />
+		  				<a class="btn btn-success" href="@routes.News.editH(hackathon.get.id, news.id)">@helpers.CmsMessages("global.edit")</a>
+		  				<input type="submit" value="@helpers.CmsMessages("global.delete")" class="btn btn-danger" />
 		  			}
 		  		</div>
 		  	}

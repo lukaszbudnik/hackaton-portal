@@ -2,6 +2,9 @@ package jsmessages.api
 
 import play.api.i18n._
 import play.api.Application
+import cms.ContentManager
+import cms.dto.EntryType
+import cms.dto.Entry
 
 object JsMessages {
   /**
@@ -54,15 +57,20 @@ object JsMessages {
   }
 
   def apply(namespace: Option[String], messages: Map[String, String]): String = {
-    import org.apache.commons.lang.StringEscapeUtils.escapeJavaScript
+    import org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript
     """%s(function(){var ms={%s}; return function(k){var m=ms[k]||k;for(var i=1;i<arguments.length;i++){m=m.replace('{'+(i-1)+'}',arguments[i])} return m}})();""".format(
            namespace.map{_ + "="}.getOrElse(""),
            (for ((key, msg) <- messages) yield {
-             "'%s':'%s'".format(escapeJavaScript(key), escapeJavaScript(msg.replace("''", "'")))
+             "'%s':'%s'".format(escapeEcmaScript(key), escapeEcmaScript(msg.replace("''", "'")))
            }).mkString(",")
     )
   }
 
-  private def allMessages(implicit app: Application, lang: Lang) =
+  private def allMessages(implicit app: Application, lang: Lang) = {
     Messages.messages.get("default").getOrElse(Map.empty) ++ Messages.messages.get(lang.code).getOrElse(Map.empty)
+    
+    val seq: Seq[Entry] = ContentManager.filtered(EntryType.Message)
+    seq.map {e => (e.key, helpers.CmsMessages.getMessage(e.key))}.toMap
+  }
+    
 }

@@ -1,12 +1,17 @@
 package controllers
 
-
 import org.specs2.mutable._
 
 import play.api.test.Helpers._
 import play.api.test._
+import play.api.Play
 
 class JsMessageFeedSpec extends Specification {
+
+  running(FakeApplication()) {
+    val skipAll = Play.current.configuration.getString("mongodb.uri").get == "mock"
+    args(skipAll = skipAll)
+  }
 
   "JsMessageFeed" should {
 
@@ -32,6 +37,5 @@ class JsMessageFeedSpec extends Specification {
       }
     }
   }
-  
 
 }

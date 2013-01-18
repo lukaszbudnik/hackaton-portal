@@ -1,13 +1,13 @@
 @(request: RequestHeader, routes: Option[play.core.Router.Routes])
 
-@error(Messages("notFound.title")) {
+@error(helpers.CmsMessages("notFound.title")) {
 
 	<div class="container">
     
 	    <div class="page-header">
-	    <h1>@Messages("notFound.title")</h1>
+	    <h1>@helpers.CmsMessages("notFound.title")</h1>
 		<br/>
-		@Html(Messages("notFound.text"))
+		@Html(helpers.CmsMessages("notFound.text"))
 	    </div>
 
     </div>

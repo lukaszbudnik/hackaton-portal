@@ -7,132 +7,156 @@ import play.api.mvc.Controller
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
-import core.LangAwareController
 import model.ProblemStatus
 import helpers.EmailSender
 import helpers.URL
+import helpers.Conditions
 
 object Problem extends LangAwareController with securesocial.core.SecureSocial {
 
   val problemForm = Form(
     mapping(
-      "name" -> nonEmptyText,
-      "description" -> nonEmptyText,
-      "status" -> ignored(ProblemStatus.Unverified),
+      "name" -> helpers.Forms.nonEmptyTextNonHtml,
+      "description" -> helpers.Forms.nonEmptyTextSimpleHtmlOnly,
+      "status" -> ignored(ProblemStatus.Blocked),
       "submitterId" -> longNumber,
       "hackathonId" -> longNumber)(model.Problem.apply)(model.Problem.unapply))
 
   def index(hid: Long) = UserAwareAction { implicit request =>
-    transaction {
-      Ok(views.html.problems.index(model.Hackathon.lookup(hid), request.user))
+    inTransaction {
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        val problems = hackathon.problems.filter(p => Conditions.Problem.canRender(hackathon, p, user))
+        val canAdd = helpers.Conditions.Problem.canAdd(hackathon, user)
+        Ok(views.html.problems.index(Some(hackathon), problems, canAdd, user))
+      }.getOrElse(NotFound(views.html.hackathons.view(None, user)))
+
     }
   }
 
   def view(hid: Long, id: Long) = UserAwareAction { implicit request =>
-    transaction {
-      val problem = model.Problem.lookup(id)
-      val hackathon = problem.map { p => Some(p.hackathon) }.getOrElse { model.Hackathon.lookup(hid) }
-      Ok(views.html.problems.view(hackathon, problem, request.user))
-    }
-  }
+    inTransaction {
 
-  def create(hid: Long) = SecuredAction() { implicit request =>
-    transaction {
-      val hackathon = model.Hackathon.lookup(hid)
-      val problem = new model.Problem(request.user.hackathonUserId, hid)
-      Ok(views.html.problems.create(hackathon, problemForm.fill(problem), request.user))
-    }
-  }
+      val user = userFromRequest(request)
 
-  def save(hid: Long) = SecuredAction() { implicit request =>
-    problemForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.problems.create(model.Hackathon.lookup(hid), errors, request.user))
-      },
-      problem => transaction {
-        val dbProblem = model.Problem.insert(problem)
+      model.Hackathon.lookup(hid).map { hackathon =>
 
-        val url = URL.externalUrl(routes.Problem.view(hid, dbProblem.id))
-        val params = Seq(dbProblem.name, url)
+        model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
 
-        EmailSender.sendEmailToHackathonOrganiser(dbProblem.hackathon, "notifications.email.problem.added.subject", "notifications.email.problem.added.body", params)
+          Ok(views.html.problems.view(Some(hackathon), Some(problem), user))
 
-        Redirect(routes.Problem.index(hid)).flashing("status" -> "added", "title" -> problem.name)
-      })
-  }
-
-  def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Problem.lookup(id).map { problem =>
-        helpers.Security.verifyIfAllowed(hid == problem.hackathonId)(request.user)
-        helpers.Security.verifyIfAllowed(problem.submitterId, problem.hackathon.organiserId)(request.user)
-        Ok(views.html.problems.edit(Some(problem.hackathon), id, problemForm.fill(problem), request.user))
-      }.getOrElse {
-        // no problem found
-        Redirect(routes.Problem.view(hid, id)).flashing()
-      }
-    }
-  }
-
-  def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    problemForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.problems.edit(model.Hackathon.lookup(hid), id, errors, request.user))
-      },
-      problem => transaction {
-        val dbProblem = model.Problem.lookup(id)
-
-        dbProblem.map { problem =>
-          helpers.Security.verifyIfAllowed(hid == problem.hackathonId)(request.user)
-          helpers.Security.verifyIfAllowed(problem.submitterId, problem.hackathon.organiserId)(request.user)
+        }.getOrElse {
+          NotFound(views.html.problems.view(Some(hackathon), None, user))
         }
 
-        model.Problem.update(id, problem.copy(status = dbProblem.get.status))
-        Redirect(routes.Problem.index(hid)).flashing("status" -> "updated", "title" -> problem.name)
-      })
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, user))
+      }
 
+    }
   }
 
-  def verify(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Problem.lookup(id).map { problem =>
-        implicit val user = request.user
-        helpers.Security.verifyIfAllowed(hid == problem.hackathonId)
-        helpers.Security.verifyIfAllowed(user.isAdmin || problem.hackathon.organiserId == user.hackathonUserId)
-        model.Problem.update(id, problem.copy(status = ProblemStatus.Approved))
-
-        val url = URL.externalUrl(routes.Problem.view(hid, problem.id))
-        val params = Seq(problem.name, url)
-
-        EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.verified.subject", "notifications.email.problem.verified.body", params)
-
-        Ok(JsArray(Seq(JsObject(List(
-          "status" -> JsString("ok"))))))
-
+  def create(hid: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        val problem = new model.Problem(user.id, hid)
+        Ok(views.html.problems.create(Some(hackathon), problemForm.fill(problem), user))
       }.getOrElse {
-        NotFound(JsArray(Seq(JsObject(List(
-          "status" -> JsString("error"))))))
+        NotFound(views.html.hackathons.view(None, Some(user)))
       }
     }
   }
 
-  def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Problem.lookup(id).map { problem =>
-        implicit val user = request.user
-        helpers.Security.verifyIfAllowed(hid == problem.hackathonId)
-        helpers.Security.verifyIfAllowed(user.isAdmin || problem.hackathon.organiserId == user.hackathonUserId || problem.submitterId == user.hackathonUserId)
-        model.Problem.update(id, problem.copy(status = ProblemStatus.Approved))
+  def save(hid: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        problemForm.bindFromRequest.fold(
+          errors => BadRequest(views.html.problems.create(Some(hackathon), errors, user)),
+          problem => {
+            val dbProblem = model.Problem.insert(problem.copy(submitterId = user.id, status = model.ProblemStatus.Blocked))
 
-        if (user.hackathonUserId != problem.submitterId) {
+            if (!hackathon.hasMember(user.id)) {
+              hackathon.addMember(user)
+            }
+
+            val url = URL.externalUrl(routes.Problem.view(hid, dbProblem.id))
+            val params = Seq(dbProblem.name, url)
+
+            EmailSender.sendEmailToHackathonOrganiser(dbProblem.hackathon, "notifications.email.problem.added.subject", "notifications.email.problem.added.body", params)
+
+            Redirect(routes.Problem.index(hid)).flashing("status" -> "added", "title" -> problem.name)
+          })
+
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
+    }
+  }
+
+  def edit(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
+          ensureHackathonOrganiserOrProblemSubmitterOrAdmin(hackathon, problem) {
+            Ok(views.html.problems.edit(Some(problem.hackathon), id, problemForm.fill(problem), user))
+          }
+        }.getOrElse {
+          NotFound(views.html.problems.view(Some(hackathon), None, Some(user)))
+        }
+
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
+    }
+  }
+
+  def update(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        model.Problem.lookup(id).filter(_.hackathonId == hid).map { dbProblem =>
+
+          ensureHackathonOrganiserOrProblemSubmitterOrAdmin(hackathon, dbProblem) {
+
+            problemForm.bindFromRequest.fold(
+              errors => BadRequest(views.html.problems.edit(Some(hackathon), id, errors, user)),
+              problem => {
+                model.Problem.update(id, problem.copy(submitterId = dbProblem.submitterId, status = dbProblem.status))
+                Redirect(routes.Problem.index(hid)).flashing("status" -> "updated", "title" -> problem.name)
+              })
+
+          }
+
+        }.getOrElse {
+          NotFound(views.html.problems.view(Some(hackathon), None, Some(user)))
+        }
+
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
+      }
+    }
+  }
+
+  def approve(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
+
+        ensureHackathonOrganiserOrAdmin(problem.hackathon) {
+          model.Problem.update(id, problem.copy(status = ProblemStatus.Approved))
+
+          val user = userFromRequest(request)
+
           val url = URL.externalUrl(routes.Problem.view(hid, problem.id))
           val params = Seq(problem.name, url)
 
           EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.approved.subject", "notifications.email.problem.approved.body", params)
-        }
 
-        Ok(JsArray(Seq(JsObject(List(
-          "status" -> JsString("ok"))))))
+          Ok(JsArray(Seq(JsObject(List(
+            "status" -> JsString("ok"))))))
+        }
 
       }.getOrElse {
         NotFound(JsArray(Seq(JsObject(List(
@@ -141,24 +165,22 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def suspend(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Problem.lookup(id).map { problem =>
-        implicit val user = request.user
-        helpers.Security.verifyIfAllowed(hid == problem.hackathonId)
-        helpers.Security.verifyIfAllowed(user.isAdmin || problem.submitterId == user.hackathonUserId || problem.hackathon.organiserId == user.hackathonUserId)
-        model.Problem.update(id, problem.copy(status = ProblemStatus.Suspended))
+  def block(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
 
-        if (user.hackathonUserId != problem.submitterId) {
+        ensureHackathonOrganiserOrAdmin(problem.hackathon) {
+
+          model.Problem.update(id, problem.copy(status = ProblemStatus.Blocked))
+
           val url = URL.externalUrl(routes.Problem.view(hid, problem.id))
           val params = Seq(problem.name, url)
 
-          EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.suspended.subject", "notifications.email.problem.suspended.body", params)
+          EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.blocked.subject", "notifications.email.problem.blocked.body", params)
+
+          Ok(JsArray(Seq(JsObject(List(
+            "status" -> JsString("ok"))))))
         }
-
-        Ok(JsArray(Seq(JsObject(List(
-          "status" -> JsString("ok"))))))
-
       }.getOrElse {
         NotFound(JsArray(Seq(JsObject(List(
           "status" -> JsString("error"))))))
@@ -166,47 +188,32 @@ object Problem extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def block(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Problem.lookup(id).map { problem =>
-        implicit val user = request.user
-        helpers.Security.verifyIfAllowed(hid == problem.hackathonId)
-        helpers.Security.verifyIfAllowed(user.isAdmin || problem.hackathon.organiserId == user.hackathonUserId)
-        model.Problem.update(id, problem.copy(status = ProblemStatus.Blocked))
+  def delete(hid: Long, id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      val user = userFromRequest(request)
+      model.Hackathon.lookup(hid).map { hackathon =>
+        model.Problem.lookup(id).filter(_.hackathonId == hid).map { problem =>
 
-        val url = URL.externalUrl(routes.Problem.view(hid, problem.id))
-        val params = Seq(problem.name, url)
+          ensureHackathonOrganiserOrAdmin(problem.hackathon) {
 
-        EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.blocked.subject", "notifications.email.problem.blocked.body", params)
+            if (user.id != problem.submitterId) {
+              val url = URL.externalUrl(routes.Hackathon.view(hid))
+              val params = Seq(problem.name, url)
 
-        Ok(JsArray(Seq(JsObject(List(
-          "status" -> JsString("ok"))))))
+              EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.deleted.subject", "notifications.email.problem.deleted.body", params)
+            }
 
-      }.getOrElse {
-        NotFound(JsArray(Seq(JsObject(List(
-          "status" -> JsString("error"))))))
-      }
-    }
-  }
-
-  def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      model.Problem.lookup(id).map { problem =>
-        implicit val user = request.user
-        helpers.Security.verifyIfAllowed(hid == problem.hackathonId)
-        helpers.Security.verifyIfAllowed(problem.submitterId, problem.hackathon.organiserId)
-
-        if (user.hackathonUserId != problem.submitterId) {
-          val url = URL.externalUrl(routes.Hackathon.view(hid))
-          val params = Seq(problem.name, url)
-
-          EmailSender.sendEmailToProblemSubmitter(problem, "notifications.email.problem.deleted.subject", "notifications.email.problem.deleted.body", params)
+            model.Problem.delete(id)
+            Redirect(routes.Problem.index(hid)).flashing("status" -> "deleted")
+          }
+        }.getOrElse {
+          NotFound(views.html.problems.view(Some(hackathon), None, Some(user)))
         }
 
-        model.Problem.delete(id)
+      }.getOrElse {
+        NotFound(views.html.hackathons.view(None, Some(user)))
       }
 
-      Redirect(routes.Problem.index(hid)).flashing("status" -> "deleted")
     }
   }
 }

@@ -22,8 +22,8 @@ case class Hackathon(subject: String,
   @Column("new_teams_off") newTeamsDisabled: Boolean = false) extends KeyedEntity[Long] {
   val id: Long = 0L
 
-  def this() = this("", HackathonStatus.Planning, new Date(),"", 0) // need for status enumeration
-  def this(organiserId: Long) = this("", HackathonStatus.Planning, new Date(), "", organiserId)
+  def this() = this("", HackathonStatus.Unverified, new Date(),"", 0) // need for status enumeration
+  def this(organiserId: Long) = this("", HackathonStatus.Unverified, new Date(), "", organiserId)
 
   private lazy val organiserRel: ManyToOne[User] = Hackathon.organiserToHackathons.right(this)
   private lazy val teamsRel = Team.hackathonToTeams.left(this)
@@ -35,18 +35,18 @@ case class Hackathon(subject: String,
   private lazy val locationsRel = Hackathon.hackathonLocations.left(this)
 
   def organiser = organiserRel.head
-  def teams = teamsRel.toIterable
-  def problems = problemsRel.toIterable
+  def teams = from(teamsRel)(t => select(t) orderBy(t.name asc))
+  def problems = from(problemsRel)(p => select(p) orderBy(p.name asc))
   def prizes = prizeRel.toIterable
-  def news = newsRel.toIterable
-  def sponsors = from(sponsorsRel)(s => select(s) orderBy (s.order asc)).toSeq
+  def news = from(newsRel)(n => select(n) orderBy(n.publishedDate desc))	
+  def sponsors = from(sponsorsRel)(s => select(s) orderBy (s.order asc))
   def members = membersRel.toIterable
   def locations = locationsRel.toIterable
 
   def hasMember(userId: Long): Boolean = {
     membersRel.exists(u => u.id == userId)
   }
-
+  
   def addMember(user: User): HackathonUser = {
     membersRel.associate(user)
   }

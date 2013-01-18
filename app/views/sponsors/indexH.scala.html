@@ -1,19 +1,19 @@
-@(hackathon: Option[model.Hackathon], sponsors: Seq[model.dto.SponsorWithLogo], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], sponsors: Seq[model.dto.SponsorWithLogo], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import tags._
 
-@hackathons.hackathonMain(hackathon, user, "sponsors", "sponsors.status", true) {
+@hackathons.hackathonMain(hackathon, user, "sponsors", "sponsors.status", hackathon.isDefined, Some(helpers.CmsMessages("navigation.sponsors"))) {
 
 	@hackathon.map { h =>
 		
 		@user.map { user =>
-	  		@if(user.isAdmin || user.hackathonUserId == h.organiserId) {
-	  			<a class="btn btn-success" href="@routes.Sponsor.createH(h.id)">@Messages("sponsors.addSponsor")</a>
+	  		@if(user.isAdmin || user.id == h.organiserId) {
+	  			<a class="btn btn-success" href="@routes.Sponsor.createH(h.id)">@helpers.CmsMessages("sponsors.addSponsor")</a>
 	  			<p>&nbsp;</p>
 	  		}
 		}
 		
-	@list(sponsors, hackathon)
+		@list(sponsors, hackathon)
 		
 	}
 }

@@ -1,13 +1,13 @@
-@(id: Long, sponsorForm: Form[model.dto.SponsorWithLogo], user: securesocial.core.SocialUser)(implicit request: Request[AnyContent], lang: Lang)
+@(id: Long, sponsorForm: Form[model.dto.SponsorWithLogo], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import helper.twitterBootstrap._
 
-@main(Messages("sponsors.edit.title"), Some(user), nav = "sponsors") {
+@main(helpers.CmsMessages("sponsors.edit.title"), Some(user), nav = "sponsors") {
 	<div class="container">
     
 		<div class="page-header">
-    		<h2>@Messages("sponsors.edit.title")</h2>
+    		<h2>@helpers.CmsMessages("sponsors.edit.title")</h2>
 		</div>
     
     	@sponsors.sponsorForm(None, sponsorForm, routes.Sponsor.update(id), "global.update")

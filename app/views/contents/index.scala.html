@@ -1,0 +1,54 @@
+@(entries: Seq[cms.dto.Entry], user: model.User)(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+  
+@import helper._
+@import tags._
+
+@main(helpers.CmsMessages("contents.title"), Some(user), nav="contents") {
+  
+  <div class="container">
+
+		<div class="page-header">
+			<h1>@helpers.CmsMessages("contents.title")</h1>
+    	</div>
+    	
+		<div class="actions">
+			<p><a id="addNewEntry" class="btn btn-primary" href="@routes.Content.create">@helpers.CmsMessages("contents.add.label")</a></p>
+		</div>
+
+		@Option(entries).filterNot(_.isEmpty).map { entries =>
+		  
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th>@helpers.CmsMessages("contents.key.label")</th>
+								<th>@helpers.CmsMessages("contents.type.label")</th>
+								<th>@helpers.CmsMessages("contents.contents.label")</th>
+								<th>@helpers.CmsMessages("contents.actions.label")</th>
+							</tr>
+						</thead>
+						<tbody>
+						@entries.map { e =>
+							<tr>
+							<td>@e.key</td>
+							<td>@e.entryType</td>
+							<td>@e.contents.size</td>
+							<td><a href="@routes.Content.edit(e.key)"><i class="icon-pencil"></i>@helpers.CmsMessages("contents.edit.label")</a>
+							<a href="@routes.Content.delete(e.key)"><i class="icon-trash"></i>@helpers.CmsMessages("contents.delete.label")</a></td>
+							</tr>
+						}
+						</tbody>
+					</table>
+
+		}.getOrElse {
+
+        <div class="well">
+            <em>@helpers.CmsMessages("contents.empty.text")</em>
+        </div>
+
+		}
+
+		@footer(false)
+	
+	</div>
+  
+}

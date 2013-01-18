@@ -5,7 +5,7 @@ import org.squeryl.dsl.ast.LogicalBoolean
 import model.Hackathon
 import model.Location
 
-case class HackathonWithLocations(var hackathon: model.Hackathon, var locations: Seq[model.Location]) {
+case class HackathonWithLocations(val hackathon: model.Hackathon, val locations: Seq[model.Location]) {
   def this(hackathon: model.Hackathon) = this(hackathon, List[model.Location]())
 }
 

@@ -1,6 +1,6 @@
 package controllers
 
-import org.squeryl.PrimitiveTypeMode.transaction
+import org.squeryl.PrimitiveTypeMode.inTransaction
 import play.api.data.Forms._
 import play.api.data.Form
 import play.api.mvc.Controller
@@ -13,13 +13,12 @@ import play.api.libs.json.Json._
 import play.api.libs.json.Json._
 import play.api.mvc.Action
 import play.api.Logger
-import core.LangAwareController
 import helpers.Forms.enum
 import model.LocationStatus
 import org.squeryl.PrimitiveTypeMode._
+import play.api.libs.iteratee.Error
 
-
-object Location extends LangAwareController with securesocial.core.SecureSocial {
+object Location extends LangAwareController {
 
   val locationForm = Form(
     mapping(
@@ -34,128 +33,129 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
       "submitterId" -> ignored(0L),
       "status" -> enum(model.LocationStatus))(model.Location.apply)(model.Location.unapply))
 
-
-      
-  def index = SecuredAction() { implicit request =>
-    helpers.Security.verifyIfAllowed()(request.user)
-    transaction {
-      helpers.Security.verifyIfAllowed(request.user)
-      Ok(views.html.locations.index(model.Location.all, Some(request.user)))
+  def index = SecuredAction { implicit request =>
+    inTransaction {
+      ensureAdmin {
+        val user = userFromRequest(request)
+        Ok(views.html.locations.index(model.Location.all, user))
+      }
     }
-    
+
   }
 
-  def view(id: Long) = SecuredAction() { implicit request =>
-    helpers.Security.verifyIfAllowed()(request.user)
-    transaction {
-      helpers.Security.verifyIfAllowed(request.user)
-      Ok(views.html.locations.view(model.Location.lookup(id), Some(request.user)))
+  def view(id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      ensureAdmin {
+        val user = userFromRequest(request)
+        Ok(views.html.locations.view(model.Location.lookup(id), user))
+      }
     }
   }
 
-  def create = SecuredAction() { implicit request =>
-    transaction {
+  def create = SecuredAction { implicit request =>
+    inTransaction {
       Ok(views.html.locations.locationForm(routes.Location.save, locationForm, false))
     }
   }
-  
-  def createA = SecuredAction() { implicit request =>
-    transaction {
-      helpers.Security.verifyIfAllowed()(request.user)
-      Ok(views.html.locations.create(routes.Location.saveA, locationForm, request.user))
+
+  def createA = SecuredAction { implicit request =>
+    inTransaction {
+      ensureAdmin {
+        val user = userFromRequest(request)
+        Ok(views.html.locations.create(routes.Location.saveA, locationForm, user))
+      }
     }
   }
 
-  
-  def save = SecuredAction() { implicit request =>
+  def save = SecuredAction { implicit request =>
     locationForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.locations.locationForm(routes.Location.save, errors, false))
-      },
-      location => transaction {
-        model.Location.insert(location.copy(submitterId = request.user.hackathonUserId, status = LocationStatus.Unverified))
+      errors => BadRequest(views.html.locations.locationForm(routes.Location.save, errors, false)),
+      location => inTransaction {
+        val user = userFromRequest(request)
+        model.Location.insert(location.copy(submitterId = user.id, status = LocationStatus.Unverified))
+
         Ok("")
       })
   }
-  
-  def saveA = SecuredAction() { implicit request =>
-    
-    helpers.Security.verifyIfAllowed()(request.user)
-    
-    locationForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.locations.create(routes.Location.saveA, errors, request.user))
-      },
-      location => transaction {
-        model.Location.insert(location.copy(submitterId = request.user.hackathonUserId))
-         Redirect(routes.Location.index).flashing("status" -> "added", "title" -> location.name)
-      })
-  }
-  
 
-  def editA(id: Long) = SecuredAction() { implicit request =>
-    
-    helpers.Security.verifyIfAllowed()(request.user)
-    
-    transaction {
+  def saveA = SecuredAction { implicit request =>
+    inTransaction {
+      ensureAdmin {
+        val user = userFromRequest(request)
+        locationForm.bindFromRequest.fold(
+          errors => BadRequest(views.html.locations.create(routes.Location.saveA, errors, user)),
+          location => {
+            model.Location.insert(location.copy(submitterId = user.id))
+            Redirect(routes.Location.index).flashing("status" -> "added", "title" -> location.name)
+          })
+      }
+    }
+  }
+
+  def edit(id: Long) = SecuredAction { implicit request =>
+
+    inTransaction {
       model.Location.lookup(id).map { location =>
-        Ok(views.html.locations.edit(id, routes.Location.updateA(id), locationForm.fill(location), request.user))
-      }.getOrElse {
-        // no location found
-        Redirect(routes.Location.view(id)).flashing()
-      }
-    }
-  }
-  
-  
-  def edit(id: Long) = SecuredAction() { implicit request =>
-        
-    transaction {
-      model.Location.lookup(id).map { dbLocation =>       
-        helpers.Security.verifyIfAllowed(dbLocation.submitterId)(request.user)   
-        Ok(views.html.locations.locationForm(routes.Location.edit(id), locationForm.fill(dbLocation), false))       
-      }.getOrElse {
-    	Ok(views.html.locations.locationForm(routes.Location.edit(id), locationForm, false))      
-      }
-    }
-  }
 
-  def update(id: Long) = SecuredAction() { implicit request =>
-    locationForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.locations.locationForm(routes.Location.edit(id), errors, false))
-      },
-      location => transaction {
-        model.Location.lookup(id).map { dbLocation =>
-        	helpers.Security.verifyIfAllowed(dbLocation.submitterId)(request.user) 
-        	model.Location.update(id, location)
+        ensureAdmin {
+          Ok(views.html.locations.locationForm(routes.Location.edit(id), locationForm.fill(location), false))
         }
-        Ok("")
-      })
-  }
-  
- def updateA(id: Long) = SecuredAction() { implicit request =>
-   helpers.Security.verifyIfAllowed()(request.user)
-    locationForm.bindFromRequest.fold(
-      errors => transaction {
-        BadRequest(views.html.locations.edit(id, routes.Location.editA(id), errors, request.user))
-      },
-      location => transaction {
-        model.Location.update(id, location.copy(submitterId = request.user.hackathonUserId))
-        Redirect(routes.Location.index).flashing("status" -> "updated", "title" -> location.name)
-      })
-  }
 
-  def delete(id: Long) = SecuredAction() { implicit request =>
-    transaction {
-      helpers.Security.verifyIfAllowed()(request.user)
-      model.Location.delete(id)
+      }.getOrElse {
+        Ok(views.html.locations.locationForm(routes.Location.edit(id), locationForm, false))
+      }
     }
-    Redirect(routes.Location.index).flashing("status" -> "deleted")
   }
 
-  def findByPattern(term: String) = SecuredAction() { implicit request =>
-    transaction {
+  def editA(id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      ensureAdmin {
+        val user = userFromRequest(request)
+        model.Location.lookup(id).map { location =>
+          Ok(views.html.locations.edit(id, routes.Location.updateA(id), locationForm.fill(location), user))
+        }.getOrElse {
+          Redirect(routes.Location.view(id)).flashing()
+        }
+      }
+    }
+  }
+
+  def update(id: Long) = SecuredAction { implicit request =>
+    locationForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.locations.locationForm(routes.Location.edit(id), errors, false)),
+      location => inTransaction {
+        model.Location.lookup(id).map { dbLocation =>
+          ensureLocationSubmitterOrAdmin(dbLocation) {
+            model.Location.update(id, location)
+            Ok("")
+          }
+        }.getOrElse(Ok(""))
+      })
+  }
+
+  def updateA(id: Long) = SecuredAction { implicit request =>
+    ensureAdmin {
+      val user = userFromRequest(request)
+      locationForm.bindFromRequest.fold(
+        errors => BadRequest(views.html.locations.edit(id, routes.Location.editA(id), errors, user)),
+        location => inTransaction {
+          model.Location.update(id, location.copy(submitterId = user.id))
+          Redirect(routes.Location.index).flashing("status" -> "updated", "title" -> location.name)
+        })
+    }
+  }
+
+  def delete(id: Long) = SecuredAction { implicit request =>
+    inTransaction {
+      ensureAdmin {
+        model.Location.delete(id)
+        Redirect(routes.Location.index).flashing("status" -> "deleted")
+      }
+    }
+  }
+
+  def findByPattern(term: String) = SecuredAction { implicit request =>
+    inTransaction {
       implicit object LocationFormat extends Format[model.Location] {
         def reads(json: JsValue): model.Location = new model.Location()
 
@@ -168,9 +168,12 @@ object Location extends LangAwareController with securesocial.core.SecureSocial 
           "city" -> JsString(l.city)))
       }
 
-      val locations: List[model.Location] = model.Location.findByPattern("%" + term + "%",
-          (l) => l.status === LocationStatus.Approved or request.user.hackathonUserId === l.submitterId
-          or request.user.isAdmin === true).toList
+      val locations: List[model.Location] =
+        model.User.lookupByOpenId(request.user.id.id + request.user.id.providerId).map { user =>
+          model.Location.findByPattern("%" + term + "%",
+            (l) => l.status === LocationStatus.Approved or user.id === l.submitterId
+              or user.isAdmin === true).toList
+        }.getOrElse(Nil)
       Ok(toJson(locations))
     }
   }

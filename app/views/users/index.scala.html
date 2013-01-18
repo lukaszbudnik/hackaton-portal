@@ -1,4 +1,4 @@
-@(currentPage: model.Page[model.User], user: securesocial.core.SocialUser, currentOrderBy: Int = 0, currentFilter: String = "")(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(currentPage: model.Page[model.User], user: model.User, currentOrderBy: Int = 0, currentFilter: String = "")(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import tags._
@@ -18,7 +18,7 @@
 ***********************************@
 @header(orderBy: Int, title: String) = {
         <a href="@link(0, Some(orderBy))">
-        @Messages("users." + title + ".label")
+        @helpers.CmsMessages("users." + title + ".label")
         <i class="@if(scala.math.abs(currentOrderBy) == orderBy) @{if(currentOrderBy < 0) "icon-chevron-down" else "icon-chevron-up"}"></i>
         </a>
 }
@@ -28,19 +28,19 @@
     <script src="@routes.JsMessagesFeed.jsMessages" type="text/javascript"></script>
 }
 
-@main(Messages("users.title"), Some(user), nav = "users", scripts) {
+@main(helpers.CmsMessages("users.title"), Some(user), nav = "users", scripts) {
     
     <div class="container">
 
 		<div class="page-header">
-			<h1>@Messages("users.title")</h1>
+			<h1>@helpers.CmsMessages("users.title")</h1>
     	</div>
     	
     	<div id="actions">
         
         @form(action=routes.User.index()) {
-            <input type="search" name="filter" value="@currentFilter" placeholder="@Messages("users.filter.placeholder")" style="vertical-align: top">
-            <input type="submit" value="@Messages("users.filter.label")" class="btn btn-primary">
+            <input type="search" name="filter" value="@currentFilter" placeholder="@helpers.CmsMessages("users.filter.placeholder")" style="vertical-align: top" />
+            <input type="submit" value="@helpers.CmsMessages("users.filter.label")" class="btn btn-primary" />
         }
         
     	</div>
@@ -56,7 +56,7 @@
                     <th class="header">@header(4, "twitterAccount")</th>
                     <th class="header">@header(5, "isAdmin")</th>
                     <th class="header">@header(5, "isBlocked")</th>
-                    <th class="header">@Messages("users.actions.label")</th>
+                    <th class="header">@helpers.CmsMessages("users.actions.label")</th>
                 </tr>
             </thead>
             <tbody>
@@ -80,8 +80,8 @@
                         <span class="human-readable-is-blocked" data-user-id="@u.id">@u.isBlocked</span>
                     </td>
                     <td>
-                        <a class="btn change-is-admin" data-user-id="@u.id" data-is-admin="@if(u.isAdmin) {1} else {0}">@Messages("users.updateIsAdmin.label")</a>
-                        <a class="btn change-is-blocked" data-user-id="@u.id" data-is-blocked="@if(u.isBlocked) {1} else {0}">@Messages("users.updateIsBlocked.label")</a>
+                        <a class="btn change-is-admin" data-user-id="@u.id" data-is-admin="@if(u.isAdmin) {1} else {0}">@helpers.CmsMessages("users.updateIsAdmin.label")</a>
+                        <a class="btn change-is-blocked" data-user-id="@u.id" data-is-blocked="@if(u.isBlocked) {1} else {0}">@helpers.CmsMessages("users.updateIsBlocked.label")</a>
                     </td>
                 </tr>
             }
@@ -93,23 +93,23 @@
             <ul>
                 @currentPage.prev.map { page =>
                     <li class="prev">
-                        <a href="@link(page)">@Html(Messages("pagination.previous"))</a>
+                        <a href="@link(page)">@Html(helpers.CmsMessages("pagination.previous"))</a>
                     </li>
                 }.getOrElse {
                     <li class="prev disabled">
-                        <a>@Html(Messages("pagination.previous"))</a>
+                        <a>@Html(helpers.CmsMessages("pagination.previous"))</a>
                     </li>
                 }
                 <li class="current">
-                    <a>@Html(Messages("pagination.current").format(currentPage.offset + 1, currentPage.offset + users.size, currentPage.total))</a>
+                    <a>@Html(helpers.CmsMessages("pagination.current").format(currentPage.offset + 1, currentPage.offset + users.size, currentPage.total))</a>
                 </li>
                 @currentPage.next.map { page =>
                     <li class="next">
-                        <a href="@link(page)">@Html(Messages("pagination.next"))</a>
+                        <a href="@link(page)">@Html(helpers.CmsMessages("pagination.next"))</a>
                     </li>
                 }.getOrElse {
                     <li class="next disabled">
-                        <a>@Html(Messages("pagination.next"))</a>
+                        <a>@Html(helpers.CmsMessages("pagination.next"))</a>
                     </li>
                 }
             </ul>
@@ -118,7 +118,7 @@
     }.getOrElse {
 
         <div class="well">
-            <em>@Messages("users.empty.text")</em>
+            <em>@helpers.CmsMessages("users.empty.text")</em>
         </div>
 
     }

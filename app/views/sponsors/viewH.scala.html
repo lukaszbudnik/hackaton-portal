@@ -1,19 +1,19 @@
-@(hackathon: Option[model.Hackathon], sponsor: Option[model.dto.SponsorWithLogo], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], sponsor: Option[model.dto.SponsorWithLogo], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 @import tags._
 
-@hackathons.hackathonMain(hackathon, user, "sponsors", "sponsors.status", sponsor.isDefined) {
+@hackathons.hackathonMain(hackathon, user, "sponsors", "sponsors.status", sponsor.isDefined, sponsor.map(_.sponsor.name)) {
 	
 	@single(sponsor)
 	
 	@sponsor.map{ s =>
 	  	@user.map { user =>
-	  		@if(user.isAdmin || user.hackathonUserId == hackathon.get.organiserId ) {
+	  		@if(user.isAdmin || user.id == hackathon.get.organiserId ) {
 	  		<div class="form-actions">
 	  			@form(routes.Sponsor.deleteH(hackathon.get.id, s.sponsor.id)) {
-	  				<a class="btn btn-success" href="@routes.Sponsor.editH(hackathon.get.id, s.sponsor.id)">@Messages("global.edit")</a>
-	  				<input type="submit" value="@Messages("global.delete")" class="btn btn-danger confirm-action" />
+	  				<a class="btn btn-success" href="@routes.Sponsor.editH(hackathon.get.id, s.sponsor.id)">@helpers.CmsMessages("global.edit")</a>
+	  				<input type="submit" value="@helpers.CmsMessages("global.delete")" class="btn btn-danger confirm-action" />
 	  			}
 	  		</div>
 			}

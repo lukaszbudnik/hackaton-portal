@@ -9,15 +9,15 @@
         
 	@inputText(
 	    teamForm("name"),
-	    '_label -> Messages("teams.name.label"),
+	    '_label -> helpers.CmsMessages("teams.name.label"),
 	    '_showConstraints -> false
 	)
 	
 	@select(
 		teamForm("problemId"),
 		hackathon.problems.map{ p => p.id.toString -> p.name }.toSeq,
-		'_label -> Messages("teams.problem.label"),
-		'_default -> Messages("global.none"),
+		'_label -> helpers.CmsMessages("teams.problem.label"),
+		'_default -> helpers.CmsMessages("global.none"),
 		'_showConstraints -> false
 	)
   
@@ -25,7 +25,7 @@
     @forms.hidden(teamForm("creatorId"))
         
 	<div class="form-actions">
-		<button type="submit" class="btn btn-primary">@Messages(actionMessage)</button>
-		<a href="@routes.Team.index(hackathon.id)" class="btn">@Messages("global.cancel")</a>
+		<button type="submit" class="btn btn-primary">@helpers.CmsMessages(actionMessage)</button>
+		<a href="@routes.Team.index(hackathon.id)" class="btn">@helpers.CmsMessages("global.cancel")</a>
 	</div>
 }

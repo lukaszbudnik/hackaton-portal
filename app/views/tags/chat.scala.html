@@ -1,11 +1,11 @@
-@(user: Option[securesocial.core.SocialUser], hackathonId: Long, teamId: Option[Long] = None)(implicit request: Request[AnyContent], lang: Lang)
+@(user: Option[model.User], hackathonId: Long, teamId: Option[Long] = None)(implicit request: Request[AnyContent], lang: Lang)
 
 @user.map { user =>
 
 <div class="content">
-	<p>@Messages("chat.write")</p>
+	<p>@helpers.CmsMessages("chat.write")</p>
 	<div><input id="input" /></div>
-	<p>@Messages("chat.messages")</p>
+	<p>@helpers.CmsMessages("chat.messages")</p>
 	<div id="box"></div>
 	<div id="pubnub" pub-key="@play.Play.application.configuration.getString("pubnub.pubKey")" sub-key="@play.Play.application.configuration.getString("pubnub.subKey")"></div>
 	<script src="http://cdn.pubnub.com/pubnub-3.1.min.js"></script>
@@ -28,7 +28,7 @@
 				channel : channel, message : {
 				text: input.value,
 				date: new Date(),
-				who: '@user.displayName'
+				who: '@user.name'
 				}
 				, x : (input.value='')
 			});

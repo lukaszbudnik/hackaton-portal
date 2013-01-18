@@ -1,29 +1,29 @@
-@(hackathon: Option[model.Hackathon], team: Option[model.Team], user: Option[securesocial.core.SocialUser])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
+@(hackathon: Option[model.Hackathon], team: Option[model.Team], user: Option[model.User])(implicit flash: Flash, request: Request[AnyContent], lang: Lang)
 
 @import helper._
 
-@allowEdit = @{ !user.isEmpty && !team.isEmpty && (team.get.creatorId == user.get.hackathonUserId || team.get.hackathon.organiserId == user.get.hackathonUserId || user.get.isAdmin ) }
+@hackathons.hackathonMain(hackathon, user, "teams", "teams.status", team.isDefined, team.map(_.name)) {
 
-@hackathons.hackathonMain(hackathon, user, "teams", "teams.status", team.isDefined) {
-	@team.map{ team =>
-		<div class="page-header team" data-team-id="@team.id">
+  @team.map{ team =>
+
+    <div class="page-header team" data-team-id="@team.id">
 			<h2>@team.name @teamActions(hackathon.get, team, user, false)</h2>
 		</div>
 	  
 		<div class="row">
 			<div class="span12">
-				<p>@Messages("teams.problem.label"): @team.problem.map { p => @p.name }.getOrElse{ @Messages("global.none") } </p>
-		    	<p>@Messages("teams.creator.label"): 
+				<p>@helpers.CmsMessages("teams.problem.label"): @team.problem.map { p => @p.name }.getOrElse{ @helpers.CmsMessages("global.none") } </p>
+		    	<p>@helpers.CmsMessages("teams.creator.label"): 
 				@if(team.creator.avatarUrl) { 
 					<img src="@team.creator.avatarUrl" alt="@team.creator.name" height="40px" width="40px" />    				
 				}
 				@team.creator.name</p>
 
 				@if(team.members.isEmpty) {
-					<h3>@Messages("teams.noMembers")</h3>
+					<h3>@helpers.CmsMessages("teams.noMembers")</h3>
 				} else {  
-					<h3>@Messages("teams.members.label") 
-						<small>@Messages("global.total"): @team.members.size</small>
+					<h3>@helpers.CmsMessages("teams.members.label") 
+						<small>@helpers.CmsMessages("global.total"): @team.members.size</small>
 					</h3>
 					<ul style="list-style:none;">
 						@team.members.map { member =>
@@ -31,8 +31,8 @@
 								<img src="@member.avatarUrl" alt="@member.name" height="40px" width="40px" />    				
 							}
 							@member.name
-							@if(allowEdit){ 
-								<a class="btn btn-warning" href="@routes.Team.disconnectUser(hackathon.get.id, team.id, member.id)">@Messages("teams.remove.label")</a> 
+							@if(helpers.Conditions.Team.canEdit(team, user)) { 
+								<a class="btn btn-warning" href="@routes.Team.disconnectUser(hackathon.get.id, team.id, member.id)">@helpers.CmsMessages("teams.remove.label")</a> 
 							}
 						</li>
 						}
@@ -42,9 +42,9 @@
 	    	</div>
 	   	</div>
 
-		@if(user.isDefined && (team.hasMember(user.get.hackathonUserId) || team.creatorId == user.get.hackathonUserId)) {
+		@{user.filter(u => team.hasMember(u.id) || team.creatorId == u.id)}.map {
 		<div class="page-header">
-			<h2>@Messages("teams.chat")</h2>
+			<h2>@helpers.CmsMessages("teams.chat")</h2>
 		</div>  
 		<div class="content">
 			@tags.chat(user, hackathon.get.id, Some(team.id))
@@ -53,7 +53,7 @@
 	  
 	}.getOrElse{
 		<div class="page-header">
-			<h2>@Messages("teams.notFound")</h2>
+			<h2>@helpers.CmsMessages("teams.notFound")</h2>
 		</div>
 	}
 }
