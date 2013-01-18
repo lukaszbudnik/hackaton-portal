@@ -6,6 +6,6 @@
 10002:securesocial.core.providers.GoogleProvider
 10003:securesocial.core.providers.LinkedInProvider
 10005:securesocial.core.providers.GitHubProvider
-20000:plugins.cloudimage.ClaudinaryCloudImagePlugin
+20000:plugins.cloudimage.CloudinaryCloudImagePlugin
 20001:plugins.emailnotifier.MailgunEmailNotifierPlugin
 20002:plugins.smsnotifier.TwilioSmsNotifierPlugin
