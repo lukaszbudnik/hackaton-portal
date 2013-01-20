@@ -166,7 +166,7 @@ object Hackathon extends LangAwareController {
     }
   }
 
-  def create = SecuredAction() { implicit request =>
+  def create = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
 
@@ -176,7 +176,7 @@ object Hackathon extends LangAwareController {
     }
   }
 
-  def save = SecuredAction() { implicit request =>
+  def save = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       hackathonForm.bindFromRequest.fold(
@@ -199,7 +199,7 @@ object Hackathon extends LangAwareController {
     }
   }
 
-  def edit(id: Long) = SecuredAction() { implicit request =>
+  def edit(id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.dto.HackathonWithLocations.lookup(id).map { hackathonWithL =>
@@ -215,7 +215,7 @@ object Hackathon extends LangAwareController {
     }
   }
 
-  def update(id: Long) = SecuredAction() { implicit request =>
+  def update(id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(id).map { dbHackathon =>
@@ -267,7 +267,7 @@ object Hackathon extends LangAwareController {
     }
   }
 
-  def delete(id: Long) = SecuredAction() { implicit request =>
+  def delete(id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(id).map { hackathon =>
@@ -290,7 +290,7 @@ object Hackathon extends LangAwareController {
     }
   }
 
-  def join(id: Long) = SecuredAction() { implicit request =>
+  def join(id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(id).map { hackathon =>
@@ -304,7 +304,7 @@ object Hackathon extends LangAwareController {
     }
   }
 
-  def disconnect(id: Long) = SecuredAction() { implicit request =>
+  def disconnect(id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(id).map { hackathon =>
@@ -316,7 +316,7 @@ object Hackathon extends LangAwareController {
     }
   }
 
-  def disconnectUser(id: Long, userId: Long) = SecuredAction() { implicit request =>
+  def disconnectUser(id: Long, userId: Long) = SecuredAction { implicit request =>
     inTransaction {
       ensureAdmin {
         val user = userFromRequest(request)

@@ -15,7 +15,7 @@ object User extends LangAwareController {
 
   private val PAGE_SIZE = 20
 
-  def index(page: Int, orderBy: Int, filter: String) = SecuredAction() { implicit request =>
+  def index(page: Int, orderBy: Int, filter: String) = SecuredAction { implicit request =>
     transaction {
 
       ensureAdmin {
@@ -36,7 +36,7 @@ object User extends LangAwareController {
     }
   }
 
-  def updateIsAdmin(userId: Int, isAdmin: Boolean) = SecuredAction() { implicit request =>
+  def updateIsAdmin(userId: Int, isAdmin: Boolean) = SecuredAction { implicit request =>
     transaction {
 
       ensureAdmin {
@@ -56,7 +56,7 @@ object User extends LangAwareController {
     }
   }
 
-  def updateIsBlocked(userId: Int, isBlocked: Boolean) = SecuredAction() { implicit request =>
+  def updateIsBlocked(userId: Int, isBlocked: Boolean) = SecuredAction { implicit request =>
     transaction {
       ensureAdmin {
 

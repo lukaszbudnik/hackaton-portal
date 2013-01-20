@@ -3,6 +3,7 @@ package controllers
 import play.api.mvc.Controller
 import play.api.mvc.AnyContent
 import org.squeryl.PrimitiveTypeMode.inTransaction
+import securesocial.core.SecuredRequest
 
 class BaseController extends security.Security {
 

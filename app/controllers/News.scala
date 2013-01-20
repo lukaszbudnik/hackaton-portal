@@ -65,7 +65,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def create = SecuredAction() { implicit request =>
+  def create = SecuredAction { implicit request =>
     inTransaction {
       ensureAdmin {
         val user = userFromRequest(request)
@@ -75,7 +75,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def createH(hid: Long) = SecuredAction() { implicit request =>
+  def createH(hid: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
@@ -89,7 +89,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def save = SecuredAction() { implicit request =>
+  def save = SecuredAction { implicit request =>
     inTransaction {
       ensureAdmin {
         val user = userFromRequest(request)
@@ -103,7 +103,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def saveH(hid: Long) = SecuredAction() { implicit request =>
+  def saveH(hid: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
@@ -121,7 +121,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def edit(id: Long) = SecuredAction() { implicit request =>
+  def edit(id: Long) = SecuredAction { implicit request =>
     val user = userFromRequest(request)
     inTransaction {
       model.News.lookup(id).map { news =>
@@ -134,7 +134,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def editH(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def editH(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
@@ -151,7 +151,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def update(id: Long) = SecuredAction() { implicit request =>
+  def update(id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.News.lookup(id).map { dbNews =>
@@ -169,7 +169,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def updateH(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def updateH(hid: Long, id: Long) = SecuredAction { implicit request =>
     val user = userFromRequest(request)
     inTransaction {
       val user = userFromRequest(request)
@@ -194,7 +194,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def delete(id: Long) = SecuredAction() { implicit request =>
+  def delete(id: Long) = SecuredAction { implicit request =>
     inTransaction {
       model.News.lookup(id).map { news =>
         ensureNewsAuthorOrAdmin(news) {
@@ -207,7 +207,7 @@ object News extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def deleteH(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def deleteH(hid: Long, id: Long) = SecuredAction { implicit request =>
     val user = userFromRequest(request)
     inTransaction {
       val user = userFromRequest(request)

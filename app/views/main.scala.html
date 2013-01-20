@@ -3,93 +3,97 @@
 <!DOCTYPE html>
 
 <html>
-    <head>
+	<head>
 		<meta charset="utf-8" />
-        <title>@helpers.CmsMessages("brand") | @title</title>
+		<title>@helpers.CmsMessages("brand") | @title</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")"></link>
+		<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")"></link>
 		<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")"></script>
-        <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
+		<script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
 		<script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap-datepicker.js")"></script>
 		<script type="text/javascript" src="@routes.Assets.at("javascripts/google-analytics.js")"></script>
 		<script type="text/javascript" src="@routes.JsMessagesFeed.jsMessages"></script>
 		<script type="text/javascript" src="@routes.Assets.at("javascripts/js-include.js")"></script>
-    	<script type="text/javascript" src="@routes.Assets.at("javascripts/bootbox.min.js")"></script>
-    	<script type="text/javascript" src="@routes.Assets.at("javascripts/button-modals.min.js")"></script>
-    	<style type="text/css">
-      	body {
-			padding-top: 60px;
-	    	padding-bottom: 40px;
-	  	}
+		<script type="text/javascript" src="@routes.Assets.at("javascripts/bootbox.min.js")"></script>
+		<script type="text/javascript" src="@routes.Assets.at("javascripts/button-modals.min.js")"></script>
+		<style type="text/css">
+			body {
+				padding-top: 60px;
+				padding-bottom: 40px;
+			}
 		</style>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")"></link>
+		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")"></link>
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-responsive.min.css")"></link>
 		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/datepicker.css")"></link>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/jquery.fileupload-ui.css")"></link>
-		
-    	<!--[if lt IE 9]>
-      	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    	<![endif]-->
-    	
-        @scripts
-    </head>
-    <body>
+		<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/jquery.fileupload-ui.css")"></link>
 
-	<div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a href="@routes.Application.index"><img src="@routes.Assets.at("images/logo.png")" title="@helpers.CmsMessages("navigation.home")" class="brand" style="padding: 0px;"/></a>
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li class="@("active".when(nav == "news"))"><a href="@routes.News.index">@helpers.CmsMessages("navigation.news")</a></li>
-              <li class="@("active".when(nav == "hackathons"))"><a href="@routes.Hackathon.index">@helpers.CmsMessages("navigation.hackathons")</a></li>
-              <li class="@("active".when(nav == "about"))"><a href="@routes.Application.about">@helpers.CmsMessages("navigation.about")</a></li>
-@if(!play.Play.isProd()) {
-			  <li class="@("active".when(nav == "sponsors"))"><a href="@routes.Sponsor.index">@helpers.CmsMessages("navigation.sponsors")</a></li>
-}
-              <li class="@("active".when(nav == "contact"))"><a href="@routes.Application.contact">@helpers.CmsMessages("navigation.contact")</a></li>
-              @user.map { user =>
-                @if(user.isAdmin) { 
-                  <li class="@("active".when(nav == "users"))"><a href="@routes.User.index()">@helpers.CmsMessages("navigation.users")</a></li>
-                  <li class="@("active".when(nav == "contents"))"><a href="@routes.Content.index">@helpers.CmsMessages("navigation.contents")</a></li>
-                  <li class="@("active".when(nav == "locations"))"><a href="@routes.Location.index">@helpers.CmsMessages("navigation.locations")</a></li>
-                }
-                <li class="@("active".when(nav == "profile"))"><a href="@routes.Application.profile">@user.name</a></li>
-              }.getOrElse {
-                <li><a href="@routes.Application.profile">@helpers.CmsMessages("navigation.login")</a></li>
-              }
-			</ul>
-			<ul class="nav pull-right">
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">@helpers.CmsMessages("navigation.changeLanguage") <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-              	@play.Play.application.configuration.getString("application.langs").split(",").map { lang =>
-              		<li><a href="@routes.Application.changeLanguage(lang)">@lang.trim.toUpperCase</a></li>
-              	}
-              </ul>
-            </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
 
+		@scripts
 
-    <div class="container">
-    @flash.get("language.status").map { status =>
-		<div class="alert alert-success">
-			<button type="button" class="close" data-dismiss="alert">×</button>
-			<strong>@helpers.CmsMessages(status)</strong>
+	</head>
+	
+	<body>
+		<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<a href="@routes.Application.index"><img src="@routes.Assets.at("images/logo.png")" title="@helpers.CmsMessages("navigation.home")" class="brand" style="padding: 0px;"/></a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li class="@("active".when(nav == "news"))"><a href="@routes.News.index">@helpers.CmsMessages("navigation.news")</a></li>
+						<li class="@("active".when(nav == "hackathons"))"><a href="@routes.Hackathon.index">@helpers.CmsMessages("navigation.hackathons")</a></li>
+						<li class="@("active".when(nav == "about"))"><a href="@routes.Application.about">@helpers.CmsMessages("navigation.about")</a></li>
+						
+						@if(!play.Play.isProd()) {
+							<li class="@("active".when(nav == "sponsors"))"><a href="@routes.Sponsor.index">@helpers.CmsMessages("navigation.sponsors")</a></li>
+						}
+						
+						<li class="@("active".when(nav == "contact"))"><a href="@routes.Application.contact">@helpers.CmsMessages("navigation.contact")</a></li>
+						@user.map { user =>
+							@if(user.isAdmin) { 
+								<li class="@("active".when(nav == "users"))"><a href="@routes.User.index()">@helpers.CmsMessages("navigation.users")</a></li>
+								<li class="@("active".when(nav == "contents"))"><a href="@routes.Content.index">@helpers.CmsMessages("navigation.contents")</a></li>
+								<li class="@("active".when(nav == "locations"))"><a href="@routes.Location.index">@helpers.CmsMessages("navigation.locations")</a></li>
+							}
+							<li class="@("active".when(nav == "profile"))"><a href="@routes.Application.profile">@user.name</a></li>
+						}.getOrElse {
+							<li><a href="@routes.Application.profile">@helpers.CmsMessages("navigation.login")</a></li>
+						}
+					</ul>
+					<ul class="nav pull-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">@helpers.CmsMessages("navigation.changeLanguage") <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								@play.Play.application.configuration.getString("application.langs").split(",").map { lang =>
+									<li><a href="@routes.Application.changeLanguage(lang)">@lang.trim.toUpperCase</a></li>
+								}
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
 		</div>
-	}
 	</div>
 
-    @content
+		<div class="container">
 
-    </body>
+		@flash.get("language.status").map { status =>
+			<div class="alert alert-success">
+				<button type="button" class="close" data-dismiss="alert">×</button>
+				<strong>@helpers.CmsMessages(status)</strong>
+			</div>
+		}
+
+		</div>
+
+		@content
+
+	</body>
 </html>

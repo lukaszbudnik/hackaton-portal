@@ -58,7 +58,7 @@ object Team extends LangAwareController {
     }
   }
 
-  def create(hid: Long) = SecuredAction() { implicit request =>
+  def create(hid: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
 
@@ -86,7 +86,7 @@ object Team extends LangAwareController {
     }
   }
 
-  def save(hid: Long) = SecuredAction() { implicit request =>
+  def save(hid: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
 
@@ -131,7 +131,7 @@ object Team extends LangAwareController {
     }
   }
 
-  def edit(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def edit(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
       model.Hackathon.lookup(hid).map { hackathon =>
@@ -151,7 +151,7 @@ object Team extends LangAwareController {
     }
   }
 
-  def update(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def update(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
 
       val user = userFromRequest(request)
@@ -180,7 +180,7 @@ object Team extends LangAwareController {
     }
   }
 
-  def approve(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def approve(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
 
       model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
@@ -201,7 +201,7 @@ object Team extends LangAwareController {
     }
   }
 
-  def block(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def block(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
       model.Team.lookup(id).filter(_.hackathonId == hid).map { team =>
         ensureHackathonOrganiserOrAdmin(team.hackathon) {
@@ -222,7 +222,7 @@ object Team extends LangAwareController {
     }
   }
 
-  def delete(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def delete(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
 
       val user = userFromRequest(request)
@@ -250,7 +250,7 @@ object Team extends LangAwareController {
     }
   }
 
-  def join(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def join(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
       val user = userFromRequest(request)
 
@@ -279,7 +279,7 @@ object Team extends LangAwareController {
     }
   }
 
-  def disconnect(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def disconnect(hid: Long, id: Long) = SecuredAction { implicit request =>
     inTransaction {
       model.Team.lookup(id).map { team =>
         val user = userFromRequest(request)
@@ -291,7 +291,7 @@ object Team extends LangAwareController {
     }
   }
 
-  def disconnectUser(hid: Long, id: Long, userId: Long) = SecuredAction() { implicit request =>
+  def disconnectUser(hid: Long, id: Long, userId: Long) = SecuredAction { implicit request =>
     inTransaction {
       (for (
         team <- model.Team.lookup(id) if (hid == team.hackathonId);

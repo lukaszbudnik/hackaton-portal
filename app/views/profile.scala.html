@@ -3,21 +3,21 @@
 @import tags._
 
 @main(helpers.CmsMessages("profile.title"), Some(user), nav = "profile") {
-  
+
 <div class="container">
 
 	 <div class="container">
-        <div class="page-header">
-            <h2>
-                @if(user.avatarUrl) { 
-                    <img src="@user.avatarUrl" alt="@user.name" width="40px" height="40px"/> 
-                }
-                @helpers.CmsMessages("profile.welcome") @user.name!
-            </h2>
-        </div>
-        @flashing("profile")
-        @form(userForm, routes.Application.updateProfile)
-    </div>
+		<div class="page-header">
+			<h2>
+				@if(user.avatarUrl) { 
+					<img src="@user.avatarUrl" alt="@user.name" width="40px" height="40px"/> 
+				}
+				@helpers.CmsMessages("profile.welcome") @user.name!
+			</h2>
+		</div>
+		@flashing("profile")
+		@form(userForm, routes.Application.updateProfile)
+	</div>
 </div>
-                
+
 }

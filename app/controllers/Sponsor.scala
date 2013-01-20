@@ -108,7 +108,7 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def create = SecuredAction() { implicit request =>
+  def create = SecuredAction { implicit request =>
     transaction {
       ensureAdmin {
         val user = userFromRequest(request)
@@ -118,7 +118,7 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def createH(hid: Long) = SecuredAction() { implicit request =>
+  def createH(hid: Long) = SecuredAction { implicit request =>
     transaction {
       model.Hackathon.lookup(hid).map { hackathon =>
         ensureHackathonOrganiserOrAdmin(hackathon) {
@@ -130,7 +130,7 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def save = SecuredAction() { implicit request =>
+  def save = SecuredAction { implicit request =>
     val user = userFromRequest(request)
     sponsorForm.bindFromRequest.fold(
       errors => BadRequest(views.html.sponsors.create(errors, user)),
@@ -142,7 +142,7 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
       })
   }
 
-  def saveH(hid: Long) = SecuredAction() { implicit request =>
+  def saveH(hid: Long) = SecuredAction { implicit request =>
     sponsorForm.bindFromRequest.fold(
       errors => transaction {
         val user = userFromRequest(request)
@@ -159,7 +159,7 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
       })
   }
 
-  def edit(id: Long) = SecuredAction() { implicit request =>
+  def edit(id: Long) = SecuredAction { implicit request =>
     transaction {
       model.dto.SponsorWithLogo.lookup(id).map { sponsorWithLogo =>
         ensureAdmin {
@@ -170,7 +170,7 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def editH(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def editH(hid: Long, id: Long) = SecuredAction { implicit request =>
     transaction {
       
       model.Hackathon.lookup(hid).map { hackathon =>
@@ -189,7 +189,7 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def update(id: Long) = SecuredAction() { implicit request =>
+  def update(id: Long) = SecuredAction { implicit request =>
     val user = userFromRequest(request)
     sponsorForm.bindFromRequest.fold(
       errors => BadRequest(views.html.sponsors.edit(id, errors, user)),
@@ -201,7 +201,7 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
       })
   }
 
-  def updateH(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def updateH(hid: Long, id: Long) = SecuredAction { implicit request =>
     sponsorForm.bindFromRequest.fold(
       errors => transaction {
     	  val user = userFromRequest(request)
@@ -223,7 +223,7 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
       })
   }
 
-  def delete(id: Long) = SecuredAction() { implicit request =>
+  def delete(id: Long) = SecuredAction { implicit request =>
     transaction {
       ensureAdmin {
         model.Sponsor.delete(id)
@@ -232,7 +232,7 @@ object Sponsor extends LangAwareController with securesocial.core.SecureSocial {
     }
   }
 
-  def deleteH(hid: Long, id: Long) = SecuredAction() { implicit request =>
+  def deleteH(hid: Long, id: Long) = SecuredAction { implicit request =>
     transaction {
 
       model.Hackathon.lookup(hid).map { hackathon =>
