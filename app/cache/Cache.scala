@@ -8,10 +8,10 @@ object Cache {
   val defaultTTL = 1000
   val minTTL = 1
 
-  def cached[A](key: String, ttl: Int = defaultTTL)(a: A): A = {
+  def cached[A](key: String, ttl: Int = defaultTTL)(a: A)(implicit m: ClassManifest[A]): A = {
 
     play.api.cache.Cache.get(key) match {
-      case Some(a: A) if a != None => a
+      case Some(a) if m.erasure.isAssignableFrom(a.getClass) => a.asInstanceOf[A]
       case _ => {
         play.api.cache.Cache.set(key, a, ttl)
         a
