@@ -24,7 +24,7 @@ object ApplicationBuild extends Build {
     "org.squeryl" %% "squeryl" % "0.9.5-2",
     "com.h2database" % "h2" % "1.3.168",
     "postgresql" % "postgresql" % "9.1-901.jdbc4",
-    "securesocial" % "securesocial_2.9.1" % "2.0.8",
+    "securesocial" % "securesocial_2.9.1" % "2.0.10",
     "rome" % "rome" % "1.0",
     "com.typesafe" %% "play-plugins-util" % "2.0.1",
     "org.mindrot" % "jbcrypt" % "0.3m",
