@@ -32,6 +32,7 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
 
     // refresh users map
     users = users + (socialUser.id.id + socialUser.id.providerId -> socialUser)
+    socialUser
   }
 
   def findByEmailAndProvider(email: String, providerId: String): Option[Identity] = {
