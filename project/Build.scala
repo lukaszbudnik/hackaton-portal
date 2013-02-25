@@ -28,7 +28,7 @@ object ApplicationBuild extends Build {
     "rome" % "rome" % "1.0",
     "com.typesafe" %% "play-plugins-util" % "2.0.1",
     "org.mindrot" % "jbcrypt" % "0.3m",
-    "com.github.mumoshu" %% "play2-memcached" % "0.2.1-SNAPSHOT",
+    "com.github.mumoshu" %% "play2-memcached" % "0.2.4-SNAPSHOT",
     "org.mongodb" %% "casbah" % "2.4.1",
     "com.novus" %% "salat-core" % "1.9.1")
 
