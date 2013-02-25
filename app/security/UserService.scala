@@ -19,7 +19,7 @@ class UserService(application: Application) extends UserServicePlugin(applicatio
     users.get(id.id + id.providerId)
   }
 
-  def save(socialUser: Identity) = {
+  def save(socialUser: Identity): Identity = {
 
     val alreadyLoggedInSocialUser = find(socialUser.id)
 
