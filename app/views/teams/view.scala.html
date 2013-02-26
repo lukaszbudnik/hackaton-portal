@@ -42,13 +42,15 @@
 	    	</div>
 	   	</div>
 
-		@(user.filter(u => team.hasMember(u.id) || team.creatorId == u.id)).map {
-		<div class="page-header">
-			<h2>@helpers.CmsMessages("teams.chat")</h2>
-		</div>  
-		<div class="content">
-			@tags.chat(user, hackathon.get.id, Some(team.id))
-		</div>
+		@user.map { u =>
+			@if(team.hasMember(u.id) || team.creatorId == u.id){
+				<div class="page-header">
+					<h2>@helpers.CmsMessages("teams.chat")</h2>
+				</div>  
+				<div class="content">
+					@tags.chat(user, hackathon.get.id, Some(team.id))
+				</div>
+			}
 		}
 	  
 	}.getOrElse{
