@@ -141,9 +141,8 @@ object Global extends GlobalSettings {
           val sessionLanguage = session.get(LangAwareController.SESSION_LANG_KEY)
 
           val userSetLanguage = for (
-            userId <- session.get(SecureSocial.UserKey) if sessionLanguage.isEmpty;
-            providerId <- session.get(SecureSocial.ProviderKey);
-            user <- model.User.lookupByOpenId(userId + providerId) if !user.language.trim().isEmpty
+            authenticator <- SecureSocial.authenticatorFromRequest(request);
+            user <- model.User.lookupByOpenId(authenticator.userId.id + authenticator.userId.providerId) if !user.language.trim().isEmpty
           ) yield user.language
 
           userSetLanguage.map { newLanguage =>
